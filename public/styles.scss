@@ -4339,17 +4339,23 @@ main > * > :first-child {
     font-size: inherit;
     width: auto;
     border: 1px solid var(--panel-border);
+    border-radius: 0;
   }
 
   th, td {
     padding: 0.15em 0.5em;
     border: 1px solid var(--panel-border);
-    text-align: center;
+    border-radius: 0;
   }
 
   th {
     font-weight: var(--font-weight-6);
     background: var(--panel-bg);
+    text-align: center;
+  }
+
+  td {
+    text-align: left;
   }
 
   ul, ol {

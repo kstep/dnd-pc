@@ -34,7 +34,7 @@ impl ToastKind {
 }
 
 pub struct Toast {
-    message: String,
+    message: Signal<String>,
     kind: ToastKind,
     action: Option<ToastAction>,
     auto_close: Option<Duration>,
@@ -50,7 +50,7 @@ impl Toast {
     /// Create a toast with the default auto-close duration. Use
     /// [`Toast::persist`] to make it sticky, or [`Toast::auto_close`] to
     /// override the duration.
-    pub fn new(message: impl Into<String>) -> Self {
+    pub fn new(message: impl Into<Signal<String>>) -> Self {
         Self {
             message: message.into(),
             kind: ToastKind::Info,
@@ -62,25 +62,22 @@ impl Toast {
     }
 
     /// Create an error toast (red accent + warning icon).
-    pub fn error(message: impl Into<String>) -> Self {
+    pub fn error(message: impl Into<Signal<String>>) -> Self {
         Self::new(message).kind(ToastKind::Error)
     }
 
-    /// Create a toast whose message is looked up from the active i18n bundle
-    /// at call time. Use for plain translations with no arguments; for
-    /// interpolated messages use [`Toast::new`] with the `tr!`/`move_tr!`
-    /// macro.
-    pub fn i18n(key: &str) -> Self {
-        Self::new(expect_context::<I18n>().tr(key))
+    /// Look up a translation reactively from the current i18n bundle.
+    pub fn i18n(key: &'static str) -> Self {
+        Self::new(Signal::derive(move || expect_context::<I18n>().tr(key)))
     }
 
     /// i18n + success kind.
-    pub fn i18n_success(key: &str) -> Self {
+    pub fn i18n_success(key: &'static str) -> Self {
         Self::i18n(key).kind(ToastKind::Success)
     }
 
     /// i18n + error kind.
-    pub fn i18n_error(key: &str) -> Self {
+    pub fn i18n_error(key: &'static str) -> Self {
         Self::i18n(key).kind(ToastKind::Error)
     }
 
@@ -157,7 +154,7 @@ impl Toast {
 #[derive(Clone)]
 struct Entry {
     id: u64,
-    message: String,
+    message: Signal<String>,
     kind: ToastKind,
     action: Option<ToastAction>,
     on_dismiss: Option<Callback<()>>,
@@ -265,7 +262,7 @@ fn ToastView(entry: Entry) -> impl IntoView {
     view! {
         <div class=format!("toast {kind_class}") class:exiting=move || exiting.get()>
             <span class="toast-icon" aria-hidden="true" />
-            <span class="toast-message">{message}</span>
+            <span class="toast-message">{move || message.get()}</span>
             {action.map(|action| {
                 let on_click = action.on_click;
                 let label = action.label;

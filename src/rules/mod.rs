@@ -20,8 +20,12 @@ pub use feature::{
     ActionType, Assignment, ChoiceOption, ChoiceOptions, DieOrExpr, FeatureDefinition,
     FeaturesIndex, FieldDefinition, FieldKind, ReplaceWith, ValueOrExpr, WhenCondition,
 };
-pub use index::{BackgroundIndexEntry, ClassIndexEntry, Index, SpeciesIndexEntry, SpellIndexEntry};
+pub use index::{
+    BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,
+};
 pub use registry::RulesRegistry;
 pub use species::SpeciesDefinition;
-pub use spells::{CastTime, SpellDefinition, SpellList, SpellMap, SpellMeta, SpellsDefinition};
+pub use spells::{
+    CastTime, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex, SpellsList,
+};
 pub use utils::LevelRules;

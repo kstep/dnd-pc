@@ -1,74 +1,105 @@
 use std::collections::BTreeMap;
 
+use leptos::prelude::*;
+
 use crate::{
-    model::{Character, Spell, SpellData},
+    model::{Character, Spell},
     rules::{
-        class::ClassDefinition,
-        feature::{FeatureDefinition, FieldKind},
-        resolve::find_feature,
-        spells::{SpellDefinition, SpellList, SpellMap},
+        cache::FetchCache,
+        feature::{FeatureDefinition, FeaturesIndex, FieldKind},
+        locale::{LocaleKey, LocaleMap, SpellsLocaleMap},
+        registry::LocalizedIndex,
+        spells::SpellsIndex,
     },
 };
 
-/// Resolve a spell definition from an inline list or a cached reference list.
-/// O(log n) lookup via BTreeMap.
-fn resolve_spell_def<'a>(
-    list: &'a SpellList,
-    spell_list_cache: &'a BTreeMap<Box<str>, SpellMap>,
-    spell_name: &str,
-) -> Option<&'a SpellDefinition> {
-    match list {
-        SpellList::Inline(spells) => spells.get(spell_name),
-        SpellList::Ref { from } => spell_list_cache
-            .get(from.as_str())
-            .and_then(|v| v.get(spell_name)),
-    }
+/// Per-spell extras the caller wants to either fill from the feature's spell
+/// entry or clear. `cost` comes from the matching `SpellEntry` (or 0 if the
+/// feature uses a `Ref { from }` block — those have no per-entry cost).
+pub(super) struct SpellExtras {
+    pub cost: u32,
+    pub free_uses_max: u32,
 }
 
 /// Single traversal for both fill and clear operations.
 /// Closures determine the leaf behavior (fill-if-empty vs clear-if-matches).
-///
-/// `set_label`: applied to every `Option<String>` label paired with a
-///     definition `Option<String>` source.
-/// `set_desc`: applied to every `String` description paired with a definition
-///     `&str` source.
-/// `on_spell_extra`: called per spell with the matching definition (if found)
-///     and the `free_uses_max` resolved from the owning feature's `FreeUses`
-///     field kind. Fill uses this to set `cost` / `free_uses`; clear uses it
-///     to zero them.
 #[allow(clippy::too_many_arguments)]
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "labels.sync_labels", skip_all)
+)]
 pub(super) fn sync_labels(
     character: &mut Character,
-    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spell_list_cache: &BTreeMap<Box<str>, SpellMap>,
+    class_locale_cache: FetchCache<LocaleMap>,
+    features_index: LocalizedIndex<FeaturesIndex, LocaleMap>,
+    spells_index: LocalizedIndex<SpellsIndex, SpellsLocaleMap>,
     mut set_label: impl FnMut(&mut Option<String>, Option<&str>),
     mut set_desc: impl FnMut(&mut String, &str),
-    mut on_spell_extra: impl FnMut(&mut Spell, Option<&SpellDefinition>, u32),
+    mut on_spell_extra: impl FnMut(&mut Spell, SpellExtras),
 ) {
     // 1. Class/subclass labels
-    for cl in &mut character.identity.classes {
-        if cl.class.is_empty() {
+    let class_locales = class_locale_cache.read_untracked();
+    for class_level in &mut character.identity.classes {
+        if class_level.class.is_empty() {
             continue;
         }
-        if let Some(def) = class_cache.get(cl.class.as_str()) {
-            set_label(&mut cl.class_label, def.label.as_deref());
-            if let Some(sc_name) = &cl.subclass
-                && let Some(sc_def) = def.subclasses.get(sc_name.as_str())
-            {
-                set_label(&mut cl.subclass_label, sc_def.label.as_deref());
+        if let Some(map) = class_locales.get(class_level.class.as_str()) {
+            let class_text = map.get("");
+            set_label(
+                &mut class_level.class_label,
+                class_text.and_then(|t| t.label.as_deref()),
+            );
+            if let Some(sub_name) = &class_level.subclass {
+                let sub_key = format!("subclass.{sub_name}");
+                let sub_text = map.get(sub_key.as_str());
+                set_label(
+                    &mut class_level.subclass_label,
+                    sub_text.and_then(|t| t.label.as_deref()),
+                );
             }
         }
     }
+    drop(class_locales);
 
+    features_index.with_untracked(|index, locale| {
+        sync_feature_labels(
+            character,
+            &index.0,
+            locale,
+            spells_index,
+            &mut set_label,
+            &mut set_desc,
+            &mut on_spell_extra,
+        );
+    });
+}
+
+#[allow(clippy::too_many_arguments)]
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "labels.sync_feature_labels", skip_all)
+)]
+fn sync_feature_labels(
+    character: &mut Character,
+    features_map: &BTreeMap<Box<str>, FeatureDefinition>,
+    raw_locale: Option<&LocaleMap>,
+    spells_index: LocalizedIndex<SpellsIndex, SpellsLocaleMap>,
+    set_label: &mut impl FnMut(&mut Option<String>, Option<&str>),
+    set_desc: &mut impl FnMut(&mut String, &str),
+    on_spell_extra: &mut impl FnMut(&mut Spell, SpellExtras),
+) {
     // 2. Feature labels/descriptions
     for feature in &mut character.features {
         if feature.name.is_empty() {
             continue;
         }
-        if let Some(feat_def) = find_feature(&feature.name, features_index) {
-            set_label(&mut feature.label, feat_def.label.as_deref());
-            set_desc(&mut feature.description, &feat_def.description);
+        if let Some(feat_def) = features_map.get(feature.name.as_str()) {
+            let text = raw_locale.and_then(|m| m.get(&*feat_def.name));
+            set_label(&mut feature.label, text.and_then(|t| t.label.as_deref()));
+            set_desc(
+                &mut feature.description,
+                text.and_then(|t| t.description.as_deref()).unwrap_or(""),
+            );
             feature.category = feat_def.category;
         }
     }
@@ -76,39 +107,59 @@ pub(super) fn sync_labels(
     // 3. Feature data: fields, choices, spells
     let char_level = character.level();
 
-    // Pre-compute free_uses_max for each feature (needs immutable character
-    // borrow, which conflicts with the mutable feature_data iteration below).
     let free_uses_map: BTreeMap<String, u32> = character
         .features
         .keys()
         .filter_map(|key| {
-            let feat_def = find_feature(key, features_index)?;
+            let feat_def = features_map.get(key.as_str())?;
             let max = feat_def.free_uses_max(char_level, character);
             (max > 0).then(|| (key.clone(), max))
         })
         .collect();
 
     for (key, entry) in character.features.data_mut() {
-        let Some(feat_def) = find_feature(key, features_index) else {
+        let Some(feat_def) = features_map.get(key.as_str()) else {
             continue;
         };
 
         // Field labels/descriptions + choice option labels/descriptions
         for field in &mut entry.fields {
-            if let Some(field_def) = feat_def.fields.get(field.name.as_str()) {
-                set_label(&mut field.label, field_def.label.as_deref());
-                set_desc(&mut field.description, &field_def.description);
+            let Some(field_def) = feat_def.fields.get(field.name.as_str()) else {
+                continue;
+            };
+            let field_key = LocaleKey::flat_field(&feat_def.name, &field.name);
+            let field_text = raw_locale.and_then(|m| m.get(field_key.as_str()));
+            set_label(
+                &mut field.label,
+                field_text.and_then(|t| t.label.as_deref()),
+            );
+            set_desc(
+                &mut field.description,
+                field_text
+                    .and_then(|t| t.description.as_deref())
+                    .unwrap_or(""),
+            );
 
-                if let FieldKind::Choice { options, .. } = &field_def.kind {
-                    let def_options = feat_def.resolve_def_options(options);
-                    for opt in field.value.choices_mut() {
-                        if opt.name.is_empty() {
-                            continue;
-                        }
-                        if let Some(def_opt) = def_options.iter().find(|o| o.name == opt.name) {
-                            set_label(&mut opt.label, def_opt.label.as_deref());
-                            set_desc(&mut opt.description, &def_opt.description);
-                        }
+            if let FieldKind::Choice { options, .. } = &field_def.kind {
+                let def_options = feat_def.resolve_def_options(options);
+                for opt in field.value.choices_mut() {
+                    if opt.name.is_empty() {
+                        continue;
+                    }
+                    if let Some(def_opt) = def_options.iter().find(|def| *def.name == opt.name) {
+                        let opt_key = LocaleKey::flat_field_option(
+                            &feat_def.name,
+                            &field.name,
+                            &def_opt.name,
+                        );
+                        let opt_text = raw_locale.and_then(|m| m.get(opt_key.as_str()));
+                        set_label(&mut opt.label, opt_text.and_then(|t| t.label.as_deref()));
+                        set_desc(
+                            &mut opt.description,
+                            opt_text
+                                .and_then(|t| t.description.as_deref())
+                                .unwrap_or(""),
+                        );
                     }
                 }
             }
@@ -120,38 +171,53 @@ pub(super) fn sync_labels(
         {
             let free_uses_max = free_uses_map.get(key.as_str()).copied().unwrap_or(0);
 
-            // Sync spellbook (known) labels from registry first
             if let Some(known) = &mut spell_data.known {
                 for spell in known.iter_mut() {
                     if spell.name.is_empty() {
                         continue;
                     }
-                    let spell_def =
-                        resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
-                    if let Some(def) = spell_def {
-                        set_label(&mut spell.label, def.label.as_deref());
-                        set_desc(&mut spell.description, &def.description);
-                    }
+                    spells_index.lookup_untracked(spell.name.as_str(), |loc| {
+                        set_label(
+                            &mut spell.label,
+                            loc.locale.and_then(|t| t.label.as_deref()),
+                        );
+                        set_desc(&mut spell.description, loc.description());
+                    });
                 }
             }
 
-            let SpellData { known, spells, .. } = spell_data;
-            let known_spells = known.as_deref().unwrap_or_default();
-            for spell in spells.iter_mut() {
+            let known_spells = spell_data.known.as_deref().unwrap_or_default();
+            for spell in spell_data.spells.iter_mut() {
                 if spell.name.is_empty() {
                     continue;
                 }
-                // Two-tier: fill from spellbook entry first, registry fallback
-                let spell_def = resolve_spell_def(&spells_def.list, spell_list_cache, &spell.name);
-                let known_entry = known_spells.iter().find(|s| s.name == spell.name);
+                let known_entry = known_spells.iter().find(|known| known.name == spell.name);
                 if let Some(known) = known_entry {
                     set_label(&mut spell.label, known.label.as_deref());
                     set_desc(&mut spell.description, &known.description);
-                } else if let Some(def) = spell_def {
-                    set_label(&mut spell.label, def.label.as_deref());
-                    set_desc(&mut spell.description, &def.description);
+                } else {
+                    spells_index.lookup_untracked(spell.name.as_str(), |loc| {
+                        set_label(
+                            &mut spell.label,
+                            loc.locale.and_then(|t| t.label.as_deref()),
+                        );
+                        set_desc(&mut spell.description, loc.description());
+                    });
                 }
-                on_spell_extra(spell, spell_def, free_uses_max);
+                let cost = spells_def
+                    .list
+                    .inline_entries()
+                    .iter()
+                    .find(|entry| *entry.name == spell.name)
+                    .map(|entry| entry.cost)
+                    .unwrap_or(0);
+                on_spell_extra(
+                    spell,
+                    SpellExtras {
+                        cost,
+                        free_uses_max,
+                    },
+                );
             }
         }
     }

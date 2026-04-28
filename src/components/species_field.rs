@@ -5,7 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{datalist::DatalistOption, entity_field::EntityField},
     model::{AppliedStoreFields, Character, CharacterIdentityStoreFields, CharacterStoreFields},
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 /// Species name selector. Sets `identity.species` and triggers definition
@@ -19,7 +19,12 @@ pub fn SpeciesField() -> impl IntoView {
         registry.with_species_entries(|entries| {
             entries
                 .values()
-                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
+                .map(|entry| {
+                    let (label, description) = registry
+                        .index()
+                        .entry_label_desc(IndexEntry::Species(&entry.name));
+                    DatalistOption::with_signals(&*entry.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -28,7 +33,7 @@ pub fn SpeciesField() -> impl IntoView {
         <EntityField
             name=move || store.identity().species().get()
             options=options
-            ref_prefix="species"
+            kind=|n| IndexEntry::Species(n)
             required=true
             placeholder=move_tr!("species")
             on_input=move |name: String| {
@@ -37,7 +42,7 @@ pub fn SpeciesField() -> impl IntoView {
                 if name != old {
                     store.applied().species().set(false);
                 }
-                registry.species().fetch(&name);
+                registry.species().fetch_untracked(&name);
             }
         />
     }

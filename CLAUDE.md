@@ -77,7 +77,27 @@ Import supports conflict detection — shows a diff table if the local UUID exis
 
 ### Rules Registry (`src/rules/`)
 
-`RulesRegistry` is `Copy`, provided at App root. Structural data (locale-independent) in `public/data/`, locale overlays in `public/{en,ru}/`. Overlays re-applied on language change.
+`RulesRegistry` is `Copy`, provided at App root. Structural data (locale-independent) in `public/data/`, locale overlays in `public/{en,ru}/`. Definition structs (`SpellDefinition`, `FeatureDefinition`, `ClassDefinition`, `EffectTemplate`, `*IndexEntry`, etc.) carry **only structural fields** — `name: Box<str>`, exprs, kinds. Locale text lives in a parallel resource and is overlaid via `LocalizedText` wrappers; the data resource never gets mutated on locale switch.
+
+**Two parallel-resource patterns:**
+
+- `LocalizedIndex<T, L>` (registry.rs): one `LocalResource<Result<T>>` for data + one `LocalResource<Option<L>>` for the locale overlay. Used for whole-file indexes (`SpellsIndex`, `FeaturesIndex`, `EffectsIndex`, `Index`). Consumers obtain `LocalizedText<'_, Def, L>` via `.lookup(name, |loc| ...)` / `.iter(...)` and read `.label()` / `.description()` on the wrapper. Locale switch reloads only the locale resource — no deep clone of N-hundred entries. Derefs to its data resource so existing `.read*()` patterns keep working.
+- `LocalizedCache<T>` (cache.rs): the lazy per-name analog — pairs `FetchCache<T>` (data) + `FetchCache<LocaleMap>` (locale). Used for class/species/background definitions loaded one at a time. `DefinitionStore::lookup(name, |loc| ...)` gives a `LocalizedText<'_, Def, LocaleMap>` wrapper. On locale switch the locale cache is cleared; data survives.
+
+**Tracked vs untracked.** Both APIs follow the leptos `signal.get()` / `get_untracked()` convention: bare `lookup` / `has` / `with` / `fetch` subscribe the calling reactive context; `_untracked` variants don't. Apply pipeline + event handlers use `_untracked`; reactive views use the bare names.
+
+**Reactive label/description signals.** `LocalizedIndex` exposes `.label_desc(key, fallback) -> (Signal<String>, Signal<String>)` (generic over any locale map with `Borrow<str>` key) — both signals subscribe to the locale resource only. Derived signals are owned by the **calling scope**, so create them inside the `<For>` child closure (per-row scope, lives as long as the DOM node) — never inside a `Memo` body whose re-evaluation would dispose them while `<For>` keeps the matching child alive (causes "disposed reactive value" panic on locale switch).
+
+For the shared `Index` (class/species/background/spell entries under prefixed keys), use `IndexEntry<'a>::{Class,Species,Background,Spell}(&str)` + `registry.index().entry_label_desc(entry)`. `IndexEntry` has `Display` (via strum) producing the locale-overlay key (`"class.wizard"` etc.) and `prefix()`/`name()` accessors. `EntityField`, `RefSidebarEntries`, and the per-row reference views all take a `kind: for<'a> Fn(&'a str) -> IndexEntry<'a>` constructor — pass `IndexEntry::Class` (etc.) or a `|n| IndexEntry::Class(n)` closure when the constructor doesn't infer HRTB.
+
+`LocalizedText<'_, T, L>` derefs to `T` (transparent access to structural fields) and exposes `.label()` / `.description()` overlaying the locale entry on top of `name` fallback. Three flavors:
+
+- Flat `L = LocaleText` (used for spells): one entry per name, simple `t.label` / `t.description` lookup.
+- Nested `L = LocaleMap` for `FeatureDefinition`: bare key = feature name; `loc.field(name)` returns `LocalizedField` (key `Feat.field.X`); `field.option(name)` returns `LocalizedOption` (key `Feat.field.X.option.Y`).
+- Nested `L = LocaleMap` for `ClassDefinition`: root key = `""`; `loc.subclass(name)` returns `LocalizedSubclass` (key `subclass.X`).
+- Root-only for `SpeciesDefinition` / `BackgroundDefinition`: just the `""` key.
+
+**Runtime types** (`Feature`, `Spell`, `FeatureField`, `FeatureOption`, `ActiveEffect`) keep their own `label`/`description` fields — they are user-editable and persisted with the character. `labels::sync_labels` populates them from definition lookups on every reactive cycle (Effect in `character/layout.rs`).
 
 Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `class`, `species`, `background`, `feature`, `spells`, `utils`.
 
@@ -159,3 +179,4 @@ Edition 2024, `imports_granularity = "Crate"`, `group_imports = "StdExternalCrat
 
 ### Git workflow
 - One commit per logical task. Don't micro-commit.
+- Commit messages: short title + at most one sentence on **why**. Don't list files, structs, function signatures, or per-piece changes — `git diff` shows that. The body explains intent (constraint, bug, user request); the diff explains content.

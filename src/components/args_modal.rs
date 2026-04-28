@@ -124,8 +124,14 @@ fn ArgsFeatureInput(
     )
     .entered();
 
+    let registry = expect_context::<RulesRegistry>();
     let feature_name = pending_inputs.feature_name.clone();
-    let description = pending_inputs.feature_description.clone();
+    let (feature_label, description) = registry
+        .features()
+        .lookup_untracked(&feature_name, |loc| {
+            (loc.label().to_string(), loc.description().to_string())
+        })
+        .unwrap_or_else(|| (feature_name.clone(), String::new()));
     let has_description = !description.is_empty();
     let replace_with = pending_inputs.replace_with;
     let replaceable = pending_inputs.is_replaceable();
@@ -219,7 +225,7 @@ fn ArgsFeatureInput(
     view! {
         <div class="args-modal-feature">
             <h4>
-                {pending_inputs.feature_label.clone()}
+                {feature_label}
                 <span class="args-modal-source">{source_label}</span>
             </h4>
             <Show when=move || has_description>
@@ -269,7 +275,15 @@ fn ReplacementPicker(
             features_index
                 .values()
                 .filter(|feat| replace_with.matches(feat) && feat.meets_prerequisites(&character))
-                .map(|feat| DatalistOption::new(&feat.name, feat.label(), &feat.description))
+                .map(|feat| {
+                    let (label, description) = registry
+                        .features()
+                        .lookup(&feat.name, |loc| {
+                            (loc.label().to_string(), loc.description().to_string())
+                        })
+                        .unwrap_or_else(|| (feat.name.to_string(), String::new()));
+                    DatalistOption::new(&*feat.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -306,11 +320,10 @@ fn ReplacementPicker(
                 .map(|pending| pending.exprs)
                 .unwrap_or_default()
         });
-        let description = registry.with_features_index(|idx| {
-            idx.get(name)
-                .map(|feat| feat.description.clone())
-                .unwrap_or_default()
-        });
+        let description = registry
+            .features()
+            .lookup_untracked(name, |loc| loc.description().to_string())
+            .unwrap_or_default();
         (description, exprs)
     };
 
@@ -348,11 +361,10 @@ fn ReplacementPicker(
     // Seed state from pre-filled replacement (e.g. AI generation). Runs once
     // at mount; subsequent user interaction goes through `on_input`.
     if let Some(name) = initial_replacement {
-        let label = registry.with_features_index(|idx| {
-            idx.get(name.as_str())
-                .map(|feat| feat.label().to_string())
-                .unwrap_or_else(|| name.clone())
-        });
+        let label = registry
+            .features()
+            .lookup_untracked(name.as_str(), |loc| loc.label().to_string())
+            .unwrap_or_else(|| name.clone());
         let (description, exprs) = load_replacement_data(&name);
         input_value.set(label);
         replacement_description.set(description);

@@ -12,7 +12,7 @@ use crate::{
     firebase,
     hooks::join_iter,
     model::{Ability, Attribute, AttributeGroup, Character, Op, Skill},
-    rules::{FeatureDefinition, PendingInputs},
+    rules::{PendingInputs, RulesRegistry},
 };
 
 /// Hosted proxy base URL injected at build time (`PROXY_URL` env). When set,
@@ -859,37 +859,48 @@ pub struct PendingReplacementDescription {
 /// `replace_with`). For each, lists eligible replacement options.
 pub fn describe_pending_replacements(
     pending: &[PendingInputs],
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    registry: RulesRegistry,
     character: &Character,
 ) -> Vec<PendingReplacementDescription> {
-    // Pre-filter: evaluate prerequisites once per feature, not per replaceable
-    // input
-    let selectable: Vec<_> = features_index
-        .values()
-        .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(character))
-        .collect();
+    registry.with_features_index_untracked(|features_index| {
+        let selectable: Vec<_> = features_index
+            .values()
+            .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(character))
+            .collect();
 
-    pending
-        .iter()
-        .filter(|input| input.is_replaceable())
-        .filter_map(|input| {
-            let eligible: Vec<(String, String)> = selectable
-                .iter()
-                .filter(|feat| input.replace_with.matches(feat))
-                .map(|feat| (feat.name.to_string(), feat.description.clone()))
-                .collect();
+        pending
+            .iter()
+            .filter(|input| input.is_replaceable())
+            .filter_map(|input| {
+                let eligible: Vec<(String, String)> = selectable
+                    .iter()
+                    .filter(|feat| input.replace_with.matches(feat))
+                    .map(|feat| {
+                        let desc = registry
+                            .features()
+                            .lookup_untracked(&feat.name, |loc| loc.description().to_string())
+                            .unwrap_or_default();
+                        (feat.name.to_string(), desc)
+                    })
+                    .collect();
 
-            if eligible.is_empty() {
-                return None;
-            }
+                if eligible.is_empty() {
+                    return None;
+                }
 
-            Some(PendingReplacementDescription {
-                feature_name: input.feature_name.clone(),
-                feature_description: input.feature_description.clone(),
-                eligible,
+                let feature_description = registry
+                    .features()
+                    .lookup_untracked(&input.feature_name, |loc| loc.description().to_string())
+                    .unwrap_or_default();
+
+                Some(PendingReplacementDescription {
+                    feature_name: input.feature_name.clone(),
+                    feature_description,
+                    eligible,
+                })
             })
-        })
-        .collect()
+            .collect()
+    })
 }
 
 // --- ArgSummarizer: Interpreter that extracts ARG descriptions ---
@@ -1159,6 +1170,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
 /// parameters. Features with no active ARGs are skipped.
 pub fn describe_pending_args(
     pending: &[PendingInputs],
+    registry: RulesRegistry,
     character: &Character,
 ) -> Vec<PendingArgDescription> {
     pending
@@ -1237,9 +1249,13 @@ pub fn describe_pending_args(
                 return None;
             }
 
+            let feature_description = registry
+                .features()
+                .lookup_untracked(&inputs.feature_name, |loc| loc.description().to_string())
+                .unwrap_or_default();
             Some(PendingArgDescription {
                 feature_name: inputs.feature_name.clone(),
-                feature_description: inputs.feature_description.clone(),
+                feature_description,
                 args_description: description,
             })
         })

@@ -5,7 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::{datalist::DatalistOption, entity_field::EntityField},
     model::{AppliedStoreFields, Character, CharacterIdentityStoreFields, CharacterStoreFields},
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 /// Background name selector. Sets `identity.background` and triggers
@@ -19,7 +19,12 @@ pub fn BackgroundField() -> impl IntoView {
         registry.with_background_entries(|entries| {
             entries
                 .values()
-                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
+                .map(|entry| {
+                    let (label, description) = registry
+                        .index()
+                        .entry_label_desc(IndexEntry::Background(&entry.name));
+                    DatalistOption::with_signals(&*entry.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -28,7 +33,7 @@ pub fn BackgroundField() -> impl IntoView {
         <EntityField
             name=move || store.identity().background().get()
             options=options
-            ref_prefix="background"
+            kind=|n| IndexEntry::Background(n)
             required=true
             placeholder=move_tr!("background")
             on_input=move |name: String| {
@@ -37,7 +42,7 @@ pub fn BackgroundField() -> impl IntoView {
                 if name != old {
                     store.applied().background().set(false);
                 }
-                registry.backgrounds().fetch(&name);
+                registry.backgrounds().fetch_untracked(&name);
             }
         />
     }

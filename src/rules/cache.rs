@@ -1,21 +1,24 @@
 use std::collections::{BTreeMap, HashSet};
 
-use futures::future::join_all;
 use leptos::prelude::*;
 use serde::Deserialize;
 
-use crate::{BASE_URL, rules::utils::fetch_json};
+use crate::{
+    demap::Named,
+    rules::{
+        locale::{LocaleMap, LocalizedText},
+        utils::fetch_json,
+    },
+};
 
-/// Raw definition + its relative path (e.g. "classes/wizard.json").
-type RawEntry<T> = (T, Box<str>);
-
+/// Lazy per-name fetch cache. Backs the loaded class/species/background
+/// definitions and per-class spell name lists. Entries are inserted on demand
+/// and never cleared on locale change — locale lives in a parallel
+/// `FetchCache<LocaleMap>`.
 pub struct FetchCache<T: Clone + Send + Sync + 'static> {
-    /// Raw (unlocalized) definitions + relative paths. Entries added on demand,
-    /// never cleared on locale change.
-    raw: RwSignal<BTreeMap<Box<str>, RawEntry<T>>>,
-    /// Merged result (raw + locale applied). What consumers read via Deref.
+    /// Loaded entries, keyed by name. What consumers read via `Deref`.
     data: RwSignal<BTreeMap<Box<str>, T>>,
-    /// Dedup for in-flight data fetches.
+    /// Dedup for in-flight fetches.
     pending: RwSignal<HashSet<Box<str>>>,
 }
 
@@ -38,7 +41,6 @@ impl<T: Clone + Send + Sync + 'static> std::ops::Deref for FetchCache<T> {
 impl<T: Clone + Send + Sync + 'static> FetchCache<T> {
     pub fn new() -> Self {
         Self {
-            raw: RwSignal::new(BTreeMap::new()),
             data: RwSignal::new(BTreeMap::new()),
             pending: RwSignal::new(HashSet::new()),
         }
@@ -49,59 +51,36 @@ impl<T: Clone + Send + Sync + 'static> FetchCache<T> {
     }
 
     pub fn clear(&self) {
-        self.raw.update(|m| m.clear());
         self.data.update(|m| m.clear());
         self.pending.update(|s| s.clear());
     }
 }
 
 impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T> {
-    /// Fetch a resource from data URL + locale URL in parallel, store raw data
-    /// for future locale switches, and cache the localized result.
-    pub fn fetch_with_initial_locale<L: for<'de> Deserialize<'de> + 'static>(
-        &self,
-        name: &str,
-        path: &str,
-        data_url: String,
-        locale_url: String,
-        apply: fn(&mut T, &L),
-        error_ctx: &'static str,
-    ) {
-        if self.data.read_untracked().contains_key(name) {
+    /// Fetch a single resource by name. No-op if already loaded or fetch in
+    /// flight. The cached entry survives locale changes — locale text lives
+    /// in a parallel `FetchCache<LocaleMap>`.
+    pub fn fetch(&self, name: &str, data_url: String, error_ctx: &'static str) {
+        if self.data.read_untracked().contains_key(name)
+            || self.pending.read_untracked().contains(name)
+        {
             return;
         }
-        if self.pending.read_untracked().contains(name) {
-            return;
-        }
-
         let name: Box<str> = name.into();
         self.pending.update(|s| {
             s.insert(name.clone());
         });
-
-        let raw = self.raw;
         let data = self.data;
         let pending = self.pending;
-        let path: Box<str> = path.into();
         leptos::task::spawn_local(async move {
-            let (data_result, locale_result) =
-                futures::join!(fetch_json::<T>(&data_url), fetch_json::<L>(&locale_url));
+            let result = fetch_json::<T>(&data_url).await;
             pending.update(|s| {
                 s.remove(&name);
             });
-            match data_result {
-                Ok(val) => {
-                    // Store raw for future locale switches
-                    raw.update_untracked(|m| {
-                        m.insert(name.clone(), (val.clone(), path));
-                    });
-                    // Apply locale and store merged result
-                    let mut localized = val;
-                    if let Ok(locale) = locale_result {
-                        apply(&mut localized, &locale);
-                    }
+            match result {
+                Ok(value) => {
                     data.update(|m| {
-                        m.insert(name, localized);
+                        m.insert(name, value);
                     });
                 }
                 Err(error) => {
@@ -110,115 +89,127 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
             }
         });
     }
+}
 
-    /// Fetch locale files for all cached entries in parallel.
-    /// Only clones paths (cheap), not definitions.
-    pub async fn fetch_locale<L: for<'de> Deserialize<'de> + 'static>(
-        &self,
-        locale: &str,
-    ) -> Vec<(Box<str>, Option<L>)> {
-        // Collect only names + paths (cheap Box<str> clones, no definition clones)
-        let paths: Vec<(Box<str>, Box<str>)> = self
-            .raw
-            .with_untracked(|m| m.iter().map(|(n, (_, p))| (n.clone(), p.clone())).collect());
-        let futs = paths.into_iter().map(|(name, path)| {
-            let url = format!("{BASE_URL}/{locale}/{path}");
-            async move { (name, fetch_json::<L>(&url).await.ok()) }
-        });
-        join_all(futs).await
+/// Pairs a per-name data `FetchCache` with its locale overlay. Mirrors the
+/// LocalResource-based `LocalizedIndex` (in registry.rs) for the lazy
+/// per-name flavor used by class/species/background definitions.
+pub struct LocalizedCache<T: Clone + Send + Sync + 'static> {
+    pub(super) data: FetchCache<T>,
+    pub(super) locale: FetchCache<LocaleMap>,
+}
+
+impl<T: Clone + Send + Sync + 'static> Clone for LocalizedCache<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<T: Clone + Send + Sync + 'static> Copy for LocalizedCache<T> {}
+
+impl<T: Clone + Send + Sync + 'static> std::ops::Deref for LocalizedCache<T> {
+    type Target = FetchCache<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T: Clone + Send + Sync + 'static> LocalizedCache<T> {
+    pub fn new() -> Self {
+        Self {
+            data: FetchCache::new(),
+            locale: FetchCache::new(),
+        }
     }
 
-    /// Apply fetched locale data to cached entries.
-    /// Clones from raw first so stale labels from a previous locale are
-    /// cleared even when the new locale map lacks a corresponding entry.
-    pub fn apply_locale_batch<L>(
-        &self,
-        results: &[(Box<str>, Option<L>)],
-        apply: fn(&mut T, &L),
-        notify: bool,
-    ) {
-        let raw = self.raw.read_untracked();
-        let update_fn = |m: &mut BTreeMap<Box<str>, T>| {
-            for (name, locale_opt) in results {
-                // Reset to raw (unlocalized) data before applying new locale.
-                if let Some((raw_def, _)) = raw.get(name) {
-                    m.insert(name.clone(), raw_def.clone());
-                }
-                if let Some(def) = m.get_mut(name)
-                    && let Some(locale) = locale_opt
-                {
-                    apply(def, locale);
-                }
-            }
-        };
-        if notify {
-            self.data.update(update_fn);
-        } else {
-            self.data.update_untracked(update_fn);
-        }
+    pub fn is_pending(&self) -> bool {
+        self.data.is_pending() || self.locale.is_pending()
+    }
+
+    /// Drop locale entries — used on locale change. Data survives.
+    pub fn clear_locale(&self) {
+        self.locale.clear();
     }
 }
 
 /// Trait for unified access to definition caches (class, species, background).
+/// Each store wraps a `LocalizedCache<Definition>`; consumers obtain a
+/// `LocalizedText` wrapper via `lookup()`.
+///
+/// Tracked methods (`has`, `with`, `lookup`, `fetch`) subscribe the calling
+/// reactive context to data + locale; `_untracked` variants don't. Matches
+/// the leptos `signal.get()` / `get_untracked()` convention and the
+/// equivalent `LocalizedIndex` API.
 pub trait DefinitionStore {
-    type Definition: Clone + for<'de> serde::Deserialize<'de> + Send + Sync + 'static;
-    type Locale: for<'de> serde::Deserialize<'de> + 'static;
+    type Definition: Clone + Named + for<'de> serde::Deserialize<'de> + Send + Sync + 'static;
 
-    fn cache(&self) -> FetchCache<Self::Definition>;
+    fn cache(&self) -> LocalizedCache<Self::Definition>;
     fn data_url(&self, name: &str) -> Option<String>;
     fn locale_url(&self, name: &str) -> Option<String>;
-    fn data_url_tracked(&self, name: &str) -> Option<String>;
-    fn locale_url_tracked(&self, name: &str) -> Option<String>;
-    fn path(&self, name: &str) -> Option<String>;
-    fn path_tracked(&self, name: &str) -> Option<String>;
-    fn apply_locale(def: &mut Self::Definition, locale: &Self::Locale);
+    fn data_url_untracked(&self, name: &str) -> Option<String>;
+    fn locale_url_untracked(&self, name: &str) -> Option<String>;
     fn type_label() -> &'static str;
 
     fn has(&self, name: &str) -> bool {
-        self.cache().read_untracked().contains_key(name)
+        self.cache().data.read().contains_key(name)
     }
 
-    fn has_tracked(&self, name: &str) -> bool {
-        self.cache().read().contains_key(name)
+    fn has_untracked(&self, name: &str) -> bool {
+        self.cache().data.read_untracked().contains_key(name)
     }
 
     fn with<R>(&self, name: &str, f: impl FnOnce(&Self::Definition) -> R) -> Option<R> {
-        self.cache().read_untracked().get(name).map(f)
+        self.cache().data.read().get(name).map(f)
     }
 
-    fn with_tracked<R>(&self, name: &str, f: impl FnOnce(&Self::Definition) -> R) -> Option<R> {
-        self.cache().read().get(name).map(f)
+    fn with_untracked<R>(&self, name: &str, f: impl FnOnce(&Self::Definition) -> R) -> Option<R> {
+        self.cache().data.read_untracked().get(name).map(f)
+    }
+
+    fn lookup<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(LocalizedText<'_, Self::Definition, LocaleMap>) -> R,
+    ) -> Option<R> {
+        let cache = self.cache();
+        let data_guard = cache.data.read();
+        let def = data_guard.get(name)?;
+        let locale_guard = cache.locale.read();
+        let locale = locale_guard.get(name);
+        Some(f(LocalizedText { data: def, locale }))
+    }
+
+    fn lookup_untracked<R>(
+        &self,
+        name: &str,
+        f: impl FnOnce(LocalizedText<'_, Self::Definition, LocaleMap>) -> R,
+    ) -> Option<R> {
+        let cache = self.cache();
+        let data_guard = cache.data.read_untracked();
+        let def = data_guard.get(name)?;
+        let locale_guard = cache.locale.read_untracked();
+        let locale = locale_guard.get(name);
+        Some(f(LocalizedText { data: def, locale }))
     }
 
     fn fetch(&self, name: &str) {
-        if let Some(path) = self.path(name)
-            && let Some(data_url) = self.data_url(name)
-            && let Some(locale_url) = self.locale_url(name)
-        {
-            self.cache().fetch_with_initial_locale(
-                name,
-                &path,
-                data_url,
-                locale_url,
-                Self::apply_locale,
-                Self::type_label(),
-            );
+        let cache = self.cache();
+        if let Some(data_url) = self.data_url(name) {
+            cache.data.fetch(name, data_url, Self::type_label());
+        }
+        if let Some(locale_url) = self.locale_url(name) {
+            cache.locale.fetch(name, locale_url, "locale overlay");
         }
     }
 
-    fn fetch_tracked(&self, name: &str) {
-        if let Some(path) = self.path_tracked(name)
-            && let Some(data_url) = self.data_url_tracked(name)
-            && let Some(locale_url) = self.locale_url_tracked(name)
-        {
-            self.cache().fetch_with_initial_locale(
-                name,
-                &path,
-                data_url,
-                locale_url,
-                Self::apply_locale,
-                Self::type_label(),
-            );
+    fn fetch_untracked(&self, name: &str) {
+        let cache = self.cache();
+        if let Some(data_url) = self.data_url_untracked(name) {
+            cache.data.fetch(name, data_url, Self::type_label());
+        }
+        if let Some(locale_url) = self.locale_url_untracked(name) {
+            cache.locale.fetch(name, locale_url, "locale overlay");
         }
     }
 }

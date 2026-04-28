@@ -9,7 +9,11 @@ use crate::{
         Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition, Expr,
         FeatureCategory, FeatureField, FeatureValue, Translatable, short_name,
     },
-    rules::{apply::args_ctx::WithArgs, spells::SpellsDefinition, utils::LevelRules},
+    rules::{
+        apply::args_ctx::WithArgs,
+        spells::{SpellDefinition, SpellsDefinition},
+        utils::LevelRules,
+    },
 };
 
 /// A field value that is either a static number or an expression evaluated
@@ -185,11 +189,7 @@ impl ReplaceWith {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct FeatureDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub stackable: bool,
     #[serde(default)]
@@ -248,10 +248,6 @@ impl<'de> serde::Deserialize<'de> for FeaturesIndex {
 }
 
 impl FeatureDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
     pub fn is_selectable(&self) -> bool {
         !matches!(self.category, FeatureCategory::Class)
     }
@@ -448,16 +444,16 @@ impl FeatureDefinition {
         character: &mut Character,
         when: WhenCondition,
         inputs: &[AssignInputs],
+        spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     ) {
         if let Some(spells_def) = &self.spells {
-            let free_uses_max = self.free_uses_max(level, character);
-            spells_def.apply(level, character, &self.name, free_uses_max);
+            spells_def.apply(self, level, character, spells_index);
         }
 
         let mut context = Context {
             character,
             class_level: level as i32,
-            feature: Some(self.name.clone()),
+            feature: Some(self.name.to_string()),
             points: Vec::new(),
         };
         self.assign(&mut context, when, inputs);
@@ -467,14 +463,12 @@ impl FeatureDefinition {
         // Create Natural armor entry for display if the feature has exactly one
         // OnCompute assignment that writes to AC.
         if let Some(ac_assign) = self.single_ac_assignment() {
-            let already_exists = character
-                .equipment
-                .armors
-                .iter()
-                .any(|a| a.armor_type == ArmorType::Natural && a.name == self.name);
+            let already_exists = character.equipment.armors.iter().any(|armor| {
+                armor.armor_type == ArmorType::Natural && armor.name.as_str() == &*self.name
+            });
             if !already_exists {
                 character.equipment.armors.push(Armor {
-                    name: self.name.clone(),
+                    name: self.name.to_string(),
                     armor_type: ArmorType::Natural,
                     ac_expr: Some(ac_assign.expr.clone()),
                     ..Default::default()
@@ -495,7 +489,7 @@ impl FeatureDefinition {
 
     fn apply_fields(&self, level: u32, character: &mut Character) {
         // Always ensure feature_data entry exists, even for field-less features
-        character.features.entry(self.name.clone()).or_default();
+        character.features.entry(self.name.to_string()).or_default();
 
         if self.fields.is_empty() {
             return;
@@ -503,8 +497,8 @@ impl FeatureDefinition {
 
         let is_new = character
             .features
-            .get(&self.name)
-            .is_none_or(|e| e.fields.is_empty());
+            .get(&*self.name)
+            .is_none_or(|entry| entry.fields.is_empty());
 
         if is_new {
             // Pre-compute values before mutating feature_data
@@ -515,21 +509,21 @@ impl FeatureDefinition {
                     !(self.spells.is_some() && matches!(field_def.kind, FieldKind::FreeUses { .. }))
                 })
                 .map(|field_def| FeatureField {
-                    name: field_def.name.clone(),
-                    label: field_def.label.clone(),
-                    description: field_def.description.clone(),
+                    name: field_def.name.to_string(),
+                    label: None,
+                    description: String::new(),
                     value: field_def.kind.to_value(level, character),
                 })
                 .collect();
-            let entry = character.features.entry(self.name.clone()).or_default();
+            let entry = character.features.entry(self.name.to_string()).or_default();
             entry.fields = new_fields;
         } else {
             // Pre-compute expression-based values (needs &character before mutation)
             let evaluated: Vec<_> = character
                 .features
-                .get(&self.name)
+                .get(&*self.name)
                 .into_iter()
-                .flat_map(|e| e.fields.iter())
+                .flat_map(|entry| entry.fields.iter())
                 .filter_map(|field| {
                     let def = self.fields.get(field.name.as_str())?;
                     match &def.kind {
@@ -543,7 +537,7 @@ impl FeatureDefinition {
                 })
                 .collect();
 
-            let entry = character.features.entry(self.name.clone()).or_default();
+            let entry = character.features.entry(self.name.to_string()).or_default();
             for field in entry.fields.iter_mut() {
                 if let Some(def) = self.fields.get(field.name.as_str()) {
                     match (&def.kind, &mut field.value) {
@@ -591,21 +585,23 @@ impl FeatureDefinition {
                 .filter(|fd| {
                     !(self.spells.is_some() && matches!(fd.kind, FieldKind::FreeUses { .. }))
                 })
-                .filter(|fd| {
-                    !character
-                        .features
-                        .get(&self.name)
-                        .is_some_and(|e| e.fields.iter().any(|f| f.name == fd.name))
+                .filter(|field_def| {
+                    !character.features.get(&*self.name).is_some_and(|entry| {
+                        entry
+                            .fields
+                            .iter()
+                            .any(|field| field.name.as_str() == &*field_def.name)
+                    })
                 })
-                .map(|fd| FeatureField {
-                    name: fd.name.clone(),
-                    label: fd.label.clone(),
-                    description: fd.description.clone(),
-                    value: fd.kind.to_value(level, character),
+                .map(|field_def| FeatureField {
+                    name: field_def.name.to_string(),
+                    label: None,
+                    description: String::new(),
+                    value: field_def.kind.to_value(level, character),
                 })
                 .collect();
             if !missing_fields.is_empty() {
-                let entry = character.features.entry(self.name.clone()).or_default();
+                let entry = character.features.entry(self.name.to_string()).or_default();
                 entry.fields.extend(missing_fields);
             }
         }
@@ -614,20 +610,12 @@ impl FeatureDefinition {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct FieldDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(flatten)]
     pub kind: FieldKind,
 }
 
 impl FieldDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
     pub fn resolve_choice_options(
         &self,
         character_fields: &[FeatureField],
@@ -649,11 +637,11 @@ impl FieldDefinition {
                 .into_iter()
                 .flat_map(|cf| cf.value.choices())
                 .filter(|o| !o.name.is_empty())
-                .map(|o| ChoiceOption {
-                    name: o.name.clone(),
-                    label: o.label.clone(),
-                    description: o.description.clone(),
-                    cost: o.cost,
+                .map(|opt| ChoiceOption {
+                    name: opt.name.clone().into_boxed_str(),
+                    label: opt.label.clone(),
+                    description: opt.description.clone(),
+                    cost: opt.cost,
                     level: 0,
                     action: None,
                     effects: Vec::new(),
@@ -764,7 +752,7 @@ impl Default for ChoiceOptions {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ChoiceOption {
-    pub name: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub label: Option<String>,
     #[serde(default)]
@@ -782,6 +770,12 @@ pub struct ChoiceOption {
 impl ChoiceOption {
     pub fn label(&self) -> &str {
         self.label.as_deref().unwrap_or(&self.name)
+    }
+}
+
+impl Named for ChoiceOption {
+    fn name(&self) -> &str {
+        &self.name
     }
 }
 

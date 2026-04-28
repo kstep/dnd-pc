@@ -7,7 +7,7 @@ use crate::{
         character_header::split_resolved, datalist::DatalistOption, entity_field::EntityField,
     },
     model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 /// Class name selector for the first class slot. Sets `classes[0].class`,
@@ -22,7 +22,12 @@ pub fn ClassField() -> impl IntoView {
         registry.with_class_entries(|entries| {
             entries
                 .values()
-                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
+                .map(|entry| {
+                    let (label, description) = registry
+                        .index()
+                        .entry_label_desc(IndexEntry::Class(&entry.name));
+                    DatalistOption::with_signals(&*entry.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -44,7 +49,7 @@ pub fn ClassField() -> impl IntoView {
     Effect::new(move || {
         let key = class_key.get();
         if !key.is_empty() {
-            registry.classes().fetch(&key);
+            registry.classes().fetch_untracked(&key);
         }
     });
 
@@ -52,7 +57,7 @@ pub fn ClassField() -> impl IntoView {
         <EntityField
             name=class_key
             options=options
-            ref_prefix="class"
+            kind=|n| IndexEntry::Class(n)
             required=true
             placeholder=move_tr!("class")
             on_input=move |input: String| {
@@ -61,10 +66,10 @@ pub fn ClassField() -> impl IntoView {
                 let resolved = options
                     .read_untracked()
                     .iter()
-                    .find(|opt| opt.name == input || opt.label == input)
+                    .find(|opt| opt.name == input || opt.label.with_untracked(|s| s == &input))
                     .map(|opt| opt.name.clone());
                 let (name, label) = split_resolved(input, resolved);
-                let hit_die = registry.classes().with(&name, |def| def.hit_die);
+                let hit_die = registry.classes().with_untracked(&name, |def| def.hit_die);
                 {
                     let mut classes = classes.write();
                     classes[0].class.clone_from(&name);
@@ -73,7 +78,7 @@ pub fn ClassField() -> impl IntoView {
                         classes[0].hit_die_sides = hd;
                     }
                 }
-                registry.classes().fetch(&name);
+                registry.classes().fetch_untracked(&name);
             }
         />
     }

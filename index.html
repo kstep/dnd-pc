@@ -94,7 +94,7 @@
     </svg>
     <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}} @keyframes slosh{from{transform:translateX(120px)}to{transform:translateX(-120px)}}</style>
   </div>
-  <script>(function(){var killed=false;function kill(){if(killed)return;killed=true;var s=document.getElementById('loading-screen');if(s)s.remove()}function fade(){var s=document.getElementById('loading-screen');if(!s){killed=true;return}s.style.pointerEvents='none';s.style.opacity='0';s.addEventListener('transitionend',kill,{once:true});setTimeout(kill,800)}var obs=new MutationObserver(function(_,o){if(document.body.querySelector('main,nav,.app,leptos-island,[data-hk]')){o.disconnect();fade()}});obs.observe(document.body,{childList:true,subtree:true});setTimeout(function(){obs.disconnect();fade()},10000)})()</script>
+  <script>(function(){var killed=false;function kill(){if(killed)return;killed=true;var s=document.getElementById('loading-screen');if(s)s.remove()}function fade(){var s=document.getElementById('loading-screen');if(!s){killed=true;return}s.style.pointerEvents='none';s.style.opacity='0';s.addEventListener('transitionend',kill,{once:true});setTimeout(kill,800)}var obs=new MutationObserver(function(_,o){if(document.body.querySelector('main,nav,.app,leptos-island,[data-hk]')){o.disconnect();fade()}});obs.observe(document.body,{childList:true,subtree:true})})()</script>
 </body>
 
 <script>

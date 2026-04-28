@@ -72,7 +72,13 @@ pub fn FeatureReference() -> impl IntoView {
                 }
                 match &regex {
                     Some(regex) => {
-                        regex.is_match(feat.label()) || regex.is_match(&feat.description)
+                        let (label, description) = registry
+                            .features()
+                            .lookup_untracked(&feat.name, |loc| {
+                                (loc.label().to_string(), loc.description().to_string())
+                            })
+                            .unwrap_or_else(|| (feat.name.to_string(), String::new()));
+                        regex.is_match(&label) || regex.is_match(&description)
                     }
                     None => true,
                 }
@@ -86,29 +92,26 @@ pub fn FeatureReference() -> impl IntoView {
         })
     };
 
+    let categories = || FeatureCategory::iter();
+    let render_category = move |category: FeatureCategory| {
+        let name = category.to_string();
+        let label = Signal::derive(move || i18n.tr(category.tr_key()));
+        view! {
+            <Ref href=format!("/r/feature/{name}") attr:class="reference-nav-item">
+                {move || label.get()}
+            </Ref>
+        }
+    };
+
     view! {
         <Title text=move_tr!(i18n, "ref-features") />
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || {
-                        let all_label = tr!(i18n, "feat-cat-all");
-                        let categories = FeatureCategory::iter().map(|category| {
-                            let name = category.to_string();
-                            let label = i18n.tr(category.tr_key());
-                            view! {
-                                <Ref href=format!("/r/feature/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </Ref>
-                            }
-                        }).collect_view();
-                        view! {
-                            <Ref href="/r/feature" attr:class="reference-nav-item" exact=true>
-                                {all_label}
-                            </Ref>
-                            {categories}
-                        }
-                    }}
+                    <Ref href="/r/feature" attr:class="reference-nav-item" exact=true>
+                        {move_tr!("feat-cat-all")}
+                    </Ref>
+                    <For each=categories key=|c| *c children=render_category />
                 </ReferenceSidebar>
                 <div class="reference-feature-page">
                     <div class="reference-feature-header">

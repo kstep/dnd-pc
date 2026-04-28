@@ -7,6 +7,7 @@ use crate::{
         WhenCondition,
         apply::{args_ctx::WithArgsRef, pending::PendingFeature},
         feature::FeatureDefinition,
+        spells::EMPTY_SPELL_INDEX,
     },
 };
 
@@ -184,11 +185,14 @@ fn solve_assign(
                 ..AssignInputs::default()
             })
             .collect();
+        // Solver compares only `eq_derived` — sticky spell imports don't
+        // affect that surface, so an empty spells index is sound here.
         feats[feat_idx].def.apply(
             feats[feat_idx].pending.level,
             &mut trial,
             WhenCondition::OnFeatureAdd,
             &inputs,
+            &EMPTY_SPELL_INDEX,
         );
         return solve_assign(feats, feat_idx + 1, 0, &trial, target, attempts);
     }
@@ -292,6 +296,7 @@ fn candidate_changes_baseline(
         &mut trial,
         WhenCondition::OnFeatureAdd,
         &inputs,
+        &EMPTY_SPELL_INDEX,
     );
     !baseline.eq_derived(&trial)
 }

@@ -18,10 +18,11 @@ pub fn class_level_sources<'a>(
     level: u32,
     class_def: &'a ClassDefinition,
 ) -> impl Iterator<Item = (&'a str, FeatureSource)> + 'a {
-    let class_source = FeatureSource::Class(class_def.name.as_str().into(), level);
-    let subclass_source = class_level.subclass.as_deref().map(|subclass| {
-        FeatureSource::Subclass(class_def.name.as_str().into(), subclass.into(), level)
-    });
+    let class_source = FeatureSource::Class(class_def.name.clone(), level);
+    let subclass_source = class_level
+        .subclass
+        .as_deref()
+        .map(|subclass| FeatureSource::Subclass(class_def.name.clone(), subclass.into(), level));
 
     let class_iter = class_def
         .levels

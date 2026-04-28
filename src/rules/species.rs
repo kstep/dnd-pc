@@ -1,20 +1,16 @@
 use serde::Deserialize;
 
-use crate::vecset::VecSet;
+use crate::{demap::Named, vecset::VecSet};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpeciesDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub features: VecSet<String>,
 }
 
-impl SpeciesDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
+impl Named for SpeciesDefinition {
+    fn name(&self) -> &str {
+        &self.name
     }
 }

@@ -1,4 +1,7 @@
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{
+    Arc,
+    atomic::{AtomicUsize, Ordering},
+};
 
 use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
@@ -18,30 +21,60 @@ pub fn next_datalist_id() -> String {
 /// An entry shown in the `DatalistInput` suggestions list and the shared
 /// `DatalistModal` browse view.
 ///
-/// `name` is the stable key, `label` is the display text, `description` is the
-/// secondary line in the modal. `count` is an optional numeric meta used to
-/// render a localized badge via the `badge_key` Fluent message.
-#[derive(Clone, Debug, PartialEq)]
+/// `name` is the stable key. `label` and `description` are reactive so that
+/// locale switches update text in place — children of `<For>` (which is keyed
+/// by the stable `name`) subscribe via `move || opt.label.get()` instead of
+/// being pinned to a value snapshot.
+#[derive(Clone, Debug)]
 pub struct DatalistOption {
     pub name: String,
-    pub label: String,
-    pub description: String,
+    pub label: Signal<String>,
+    pub description: Signal<String>,
     pub count: Option<u32>,
     /// When set, the option is shown but not selectable in the modal list,
     /// with this string as the reason.
     pub blocked_reason: Option<String>,
 }
 
+// `name` is the stable identity (locale-stable). Reactive `label`/
+// `description` propagate updates through their own subscriptions, so
+// equality on `name` is enough for `Memo<Vec<DatalistOption>>` change
+// detection — the structural composition (which entries exist) is what
+// the Memo tracks; per-entry text changes are handled by signal subs.
+impl PartialEq for DatalistOption {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+            && self.count == other.count
+            && self.blocked_reason == other.blocked_reason
+    }
+}
+
 impl DatalistOption {
+    /// Static-text constructor. Wraps `label`/`description` in stored signals
+    /// (no reactivity). Use [`Self::with_signals`] for locale-driven entries.
     pub fn new(
         name: impl Into<String>,
         label: impl Into<String>,
         description: impl Into<String>,
     ) -> Self {
+        Self::with_signals(
+            name,
+            Signal::stored(label.into()),
+            Signal::stored(description.into()),
+        )
+    }
+
+    /// Reactive constructor. Pass `Signal<String>`s that subscribe to whatever
+    /// underlying source (locale resource, etc.) so children update in place.
+    pub fn with_signals(
+        name: impl Into<String>,
+        label: Signal<String>,
+        description: Signal<String>,
+    ) -> Self {
         Self {
             name: name.into(),
-            label: label.into(),
-            description: description.into(),
+            label,
+            description,
             count: None,
             blocked_reason: None,
         }
@@ -61,7 +94,7 @@ impl DatalistOption {
 fn resolve_name(options: &[DatalistOption], input: &str) -> Option<String> {
     options
         .iter()
-        .find(|opt| opt.label == input || opt.name == input)
+        .find(|opt| opt.name == input || opt.label.with_untracked(|s| s == input))
         .map(|opt| opt.name.clone())
 }
 
@@ -73,16 +106,20 @@ fn render_badge(i18n: I18n, key: &'static str, count: u32) -> String {
 }
 
 /// Shared state for the singleton `DatalistModal`. Each `DatalistInput`'s
-/// Browse button calls `open()` with its options + pick callback; the modal
-/// displays them. Only one modal instance lives in the DOM at a time — set
-/// up once at App root via [`DatalistModal`].
+/// Browse button calls `open()` with a snapshot of options + pick callback.
+/// One modal instance lives in the DOM at a time — set up once at App root
+/// via [`DatalistModal`].
 #[derive(Clone, Copy)]
 pub struct DatalistModalCtx {
     show: RwSignal<bool>,
+    /// Snapshot of options at `open()` time. Captured as `Vec` (not `Signal`)
+    /// because source signals live in per-iteration scopes that may be
+    /// disposed while the modal is still open (e.g. when a label sync writes
+    /// to the parent store and forces the iteration to re-render).
     options: RwSignal<Vec<DatalistOption>>,
     title: RwSignal<String>,
     badge_key: RwSignal<Option<&'static str>>,
-    on_pick: StoredValue<Option<Callback<(String, String), ()>>>,
+    on_pick: StoredValue<Option<Arc<dyn Fn(String, String) + Send + Sync>>>,
 }
 
 impl DatalistModalCtx {
@@ -106,10 +143,7 @@ impl DatalistModalCtx {
         self.options.set(options);
         self.title.set(title);
         self.badge_key.set(badge_key);
-        self.on_pick
-            .set_value(Some(Callback::new(move |(label, name)| {
-                on_pick(label, name)
-            })));
+        self.on_pick.set_value(Some(Arc::new(on_pick)));
         self.show.set(true);
     }
 }
@@ -175,7 +209,15 @@ pub fn DatalistInput(
     Effect::new(move || {
         display_value.set(value.get());
     });
-    let on_input = StoredValue::new(on_input);
+    // `Arc<dyn Fn>` rather than `StoredValue` — the user callback often
+    // mutates a parent store, whose write guard fires reactive notifications
+    // that may dispose this very component's scope synchronously. A
+    // `StoredValue` would be torn down mid-call and the next access would
+    // panic; an `Arc` is owner-independent and lives until the last clone
+    // (the event closure attached to the DOM node).
+    let on_input: Arc<dyn Fn(String, Option<String>) + Send + Sync> = Arc::new(on_input);
+    let on_input_change = Arc::clone(&on_input);
+    let on_input_pick = Arc::clone(&on_input);
 
     view! {
         <div class=format!("datalist-input-wrapper {}", class.unwrap_or_default())>
@@ -189,7 +231,7 @@ pub fn DatalistInput(
                     let input = event_target_value(&event);
                     display_value.set(input.clone());
                     let resolved = options.with_untracked(|opts| resolve_name(opts, &input));
-                    on_input.with_value(|callback| callback(input, resolved));
+                    on_input_change(input, resolved);
                 }
             />
             {move || ref_href.get().map(|href| view! {
@@ -202,11 +244,12 @@ pub fn DatalistInput(
                 class="datalist-browse-btn"
                 title=move_tr!("browse-options")
                 on:click=move |_| {
-                    let opts = options.get_untracked();
                     let title = placeholder.get_untracked();
+                    let opts = options.get();
+                    let callback = Arc::clone(&on_input_pick);
                     ctx.open(opts, title, badge_key, move |label, name| {
                         display_value.set(label.clone());
-                        on_input.with_value(|callback| callback(label, Some(name)));
+                        callback(label, Some(name));
                     });
                 }
             >
@@ -228,11 +271,11 @@ pub fn SharedDatalist(
         <datalist id=move || id.get()>
             {move || options.with(|opts| {
                 opts.iter().map(|opt| {
-                    let label = opt.label.clone();
-                    let description = opt.description.clone();
+                    let label = opt.label;
+                    let description = opt.description;
                     view! {
-                        <option value=label>
-                            {(!description.is_empty()).then_some(description)}
+                        <option value=move || label.get()>
+                            {move || description.with(|d| (!d.is_empty()).then(|| d.clone()))}
                         </option>
                     }
                 }).collect_view()
@@ -265,10 +308,12 @@ pub fn DatalistModal() -> impl IntoView {
         ctx.options.with(|opts| {
             opts.iter()
                 .filter(|opt| {
-                    query.is_empty()
-                        || opt.name.to_lowercase().contains(&query)
-                        || opt.label.to_lowercase().contains(&query)
-                        || opt.description.to_lowercase().contains(&query)
+                    if query.is_empty() {
+                        return true;
+                    }
+                    opt.name.to_lowercase().contains(&query)
+                        || opt.label.with(|s| s.to_lowercase().contains(&query))
+                        || opt.description.with(|s| s.to_lowercase().contains(&query))
                 })
                 .cloned()
                 .collect::<Vec<_>>()
@@ -297,7 +342,6 @@ pub fn DatalistModal() -> impl IntoView {
                             count,
                             blocked_reason,
                         } = opt;
-                        let selected_label = label.clone();
                         let selected_name = name.clone();
                         let badge = ctx.badge_key.get_untracked().zip(count).map(|(key, n)| {
                             view! {
@@ -315,13 +359,17 @@ pub fn DatalistModal() -> impl IntoView {
                                 disabled=is_blocked
                                 on:click=move |_| {
                                     if let Some(callback) = ctx.on_pick.get_value() {
-                                        callback.run((selected_label.clone(), selected_name.clone()));
+                                        // `label` may change with locale; pick
+                                        // the current value at click time.
+                                        callback(label.get_untracked(), selected_name.clone());
                                     }
                                     ctx.show.set(false);
                                 }
                             >
                                 <div class="datalist-option-header">
-                                    <span class="datalist-option-value">{label}</span>
+                                    <span class="datalist-option-value">
+                                        {move || label.get()}
+                                    </span>
                                     {badge}
                                 </div>
                                 <div class="datalist-option-label">

@@ -1,16 +1,14 @@
-use std::{borrow::Borrow, collections::BTreeMap, fmt};
+use std::{borrow::Borrow, collections::BTreeMap, fmt, ops::Deref};
 
 use serde::Deserialize;
 
 use crate::{
-    model::EffectsIndex,
+    demap::Named,
     rules::{
         background::BackgroundDefinition,
-        class::ClassDefinition,
-        feature::{ChoiceOptions, FeaturesIndex, FieldKind},
-        index::Index,
+        class::{ClassDefinition, SubclassDefinition},
+        feature::{ChoiceOption, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind},
         species::SpeciesDefinition,
-        spells::SpellMap,
     },
 };
 
@@ -79,6 +77,227 @@ impl LocaleText {
 /// A complete locale map for one entity file.
 pub type LocaleMap = BTreeMap<LocaleKey, LocaleText>;
 
+/// A definition paired with its current-locale text overlay. `Deref<Target =
+/// T>` gives consumers transparent access to the underlying definition fields,
+/// while `.label()` / `.description()` overlay locale on top of name fallback.
+pub struct LocalizedText<'a, T, L = LocaleText> {
+    pub data: &'a T,
+    pub locale: Option<&'a L>,
+}
+
+impl<T, L> Deref for LocalizedText<'_, T, L> {
+    type Target = T;
+
+    fn deref(&self) -> &T {
+        self.data
+    }
+}
+
+/// Flat-key flavor: locale entry is a single `LocaleText`.
+impl<T: Named> LocalizedText<'_, T, LocaleText> {
+    pub fn label(&self) -> &str {
+        self.locale
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or_else(|| self.data.name())
+    }
+
+    pub fn description(&self) -> &str {
+        self.locale
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+}
+
+/// Nested-key flavor for the global features index. Locale is the entire
+/// `LocaleMap`; bare key is the feature name, sub-keys live behind
+/// `flat_field` / `flat_field_option`.
+impl<'a> LocalizedText<'a, FeatureDefinition, LocaleMap> {
+    pub fn label(&self) -> &str {
+        self.locale
+            .and_then(|m| m.get(&*self.data.name))
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or(&*self.data.name)
+    }
+
+    pub fn description(&self) -> &str {
+        self.locale
+            .and_then(|m| m.get(&*self.data.name))
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+
+    pub fn field(&'a self, name: &str) -> Option<LocalizedField<'a>> {
+        self.data.fields.get(name).map(|fd| LocalizedField {
+            feat_name: &self.data.name,
+            data: fd,
+            locale: self.locale,
+        })
+    }
+}
+
+/// Wrapper for a `FieldDefinition` that knows its parent feature name so the
+/// flat sub-key (`"FeatName.field.X"`) can be built on demand.
+pub struct LocalizedField<'a> {
+    pub feat_name: &'a str,
+    pub data: &'a FieldDefinition,
+    pub locale: Option<&'a LocaleMap>,
+}
+
+impl<'a> Deref for LocalizedField<'a> {
+    type Target = FieldDefinition;
+
+    fn deref(&self) -> &FieldDefinition {
+        self.data
+    }
+}
+
+impl<'a> LocalizedField<'a> {
+    fn entry(&self) -> Option<&'a LocaleText> {
+        let key = LocaleKey::flat_field(self.feat_name, &self.data.name);
+        self.locale.and_then(|m| m.get(key.as_str()))
+    }
+
+    pub fn label(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or(&*self.data.name)
+    }
+
+    pub fn description(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+
+    pub fn option(&'a self, opt_name: &str) -> Option<LocalizedOption<'a>> {
+        let FieldKind::Choice {
+            options: ChoiceOptions::List(opts),
+            ..
+        } = &self.data.kind
+        else {
+            return None;
+        };
+        opts.iter()
+            .find(|opt| &*opt.name == opt_name)
+            .map(|opt| LocalizedOption {
+                feat_name: self.feat_name,
+                field_name: &self.data.name,
+                data: opt,
+                locale: self.locale,
+            })
+    }
+}
+
+/// Wrapper for a `ChoiceOption` (definition) that knows its parent
+/// feature/field names so the flat sub-key (`"FeatName.field.X.option.Y"`)
+/// can be built on demand.
+pub struct LocalizedOption<'a> {
+    pub feat_name: &'a str,
+    pub field_name: &'a str,
+    pub data: &'a ChoiceOption,
+    pub locale: Option<&'a LocaleMap>,
+}
+
+impl<'a> Deref for LocalizedOption<'a> {
+    type Target = ChoiceOption;
+
+    fn deref(&self) -> &ChoiceOption {
+        self.data
+    }
+}
+
+impl<'a> LocalizedOption<'a> {
+    fn entry(&self) -> Option<&'a LocaleText> {
+        let key = LocaleKey::flat_field_option(self.feat_name, self.field_name, &self.data.name);
+        self.locale.and_then(|m| m.get(key.as_str()))
+    }
+
+    pub fn label(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or(&*self.data.name)
+    }
+
+    pub fn description(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+}
+
+/// Marker for definitions whose locale lives under the empty `""` key in a
+/// dedicated per-entity `LocaleMap` (one file per class/species/background).
+/// Distinct from `FeatureDefinition`, which uses its bare `name` as the key
+/// in the global `features.json` map.
+pub trait RootKeyed: Named {}
+
+impl RootKeyed for ClassDefinition {}
+impl RootKeyed for SpeciesDefinition {}
+impl RootKeyed for BackgroundDefinition {}
+
+impl<T: RootKeyed> LocalizedText<'_, T, LocaleMap> {
+    pub fn label(&self) -> &str {
+        self.locale
+            .and_then(|m| m.get(""))
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or(self.data.name())
+    }
+
+    pub fn description(&self) -> &str {
+        self.locale
+            .and_then(|m| m.get(""))
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+}
+
+/// `ClassDefinition` extra: subclasses keyed by `subclass.X`.
+impl<'a> LocalizedText<'a, ClassDefinition, LocaleMap> {
+    pub fn subclass(&'a self, name: &str) -> Option<LocalizedSubclass<'a>> {
+        self.data
+            .subclasses
+            .get(name)
+            .map(|sub_def| LocalizedSubclass {
+                data: sub_def,
+                locale: self.locale,
+            })
+    }
+}
+
+/// Wrapper for a `SubclassDefinition` keyed by `subclass.X` in the parent
+/// class locale map.
+pub struct LocalizedSubclass<'a> {
+    pub data: &'a SubclassDefinition,
+    pub locale: Option<&'a LocaleMap>,
+}
+
+impl<'a> Deref for LocalizedSubclass<'a> {
+    type Target = SubclassDefinition;
+
+    fn deref(&self) -> &SubclassDefinition {
+        self.data
+    }
+}
+
+impl<'a> LocalizedSubclass<'a> {
+    fn entry(&self) -> Option<&'a LocaleText> {
+        let key = format!("subclass.{}", self.data.name);
+        self.locale.and_then(|m| m.get(key.as_str()))
+    }
+
+    pub fn label(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.label.as_deref())
+            .unwrap_or(&*self.data.name)
+    }
+
+    pub fn description(&self) -> &str {
+        self.entry()
+            .and_then(|t| t.description.as_deref())
+            .unwrap_or("")
+    }
+}
+
 // --- Deserialization ---
 
 impl<'de> Deserialize<'de> for LocaleKey {
@@ -121,66 +340,6 @@ impl LocaleKey {
     pub fn flat_field_option(feat: &str, field: &str, option: &str) -> Self {
         Self(format!("{feat}.field.{field}.option.{option}").into_boxed_str())
     }
-
-    pub fn flat_spell(feat: &str, spell: &str) -> Self {
-        Self(format!("{feat}.spell.{spell}").into_boxed_str())
-    }
-}
-
-// --- Application to definition types ---
-
-/// Apply a locale map to a `ClassDefinition`.
-/// Features are now in the global features index, so only root and subclass
-/// labels are handled here.
-pub fn apply_class_locale(def: &mut ClassDefinition, locale: &LocaleMap) {
-    for (key, text) in locale {
-        match key.parse() {
-            LocalePath::Root => {
-                text.apply_label(&mut def.label);
-                text.apply_description(&mut def.description);
-            }
-            LocalePath::Subclass(name) => {
-                if let Some(sc) = def.subclasses.get_mut(name) {
-                    text.apply_label(&mut sc.label);
-                    text.apply_description(&mut sc.description);
-                }
-            }
-            // Features are now in the global features index — locale is
-            // applied via apply_features_locale instead.
-            _ => {}
-        }
-    }
-}
-
-/// Apply a locale map to a `SpeciesDefinition`.
-pub fn apply_species_locale(def: &mut SpeciesDefinition, locale: &LocaleMap) {
-    for (key, text) in locale {
-        if key.parse() == LocalePath::Root {
-            text.apply_label(&mut def.label);
-            text.apply_description(&mut def.description);
-        }
-    }
-}
-
-/// Apply a locale map to a `BackgroundDefinition`.
-pub fn apply_background_locale(def: &mut BackgroundDefinition, locale: &LocaleMap) {
-    for (key, text) in locale {
-        if key.parse() == LocalePath::Root {
-            text.apply_label(&mut def.label);
-            text.apply_description(&mut def.description);
-        }
-    }
-}
-
-/// Apply a flat name→text locale map to a spell list.
-/// Spell locale files use simple name keys (no "feature." prefix).
-pub fn apply_spell_locale(spells: &mut SpellMap, locale: &BTreeMap<Box<str>, LocaleText>) {
-    for (name, spell_def) in spells.0.iter_mut() {
-        if let Some(text) = locale.get(name) {
-            text.apply_label(&mut spell_def.label);
-            text.apply_description(&mut spell_def.description);
-        }
-    }
 }
 
 // --- Index and effects locale application ---
@@ -191,120 +350,5 @@ pub type IndexLocaleMap = BTreeMap<Box<str>, LocaleText>;
 /// Effects locale map: keys are effect names.
 pub type EffectsLocaleMap = BTreeMap<Box<str>, LocaleText>;
 
-/// Spell list locale map: keys are spell names.
-pub type SpellLocaleMap = BTreeMap<Box<str>, LocaleText>;
-
-/// Apply locale to an `Index`.
-pub(super) fn apply_index_locale(index: &mut Index, locale: &IndexLocaleMap) {
-    for (key, text) in locale {
-        let (prefix, name) = match key.find('.') {
-            Some(pos) => (&key[..pos], &key[pos + 1..]),
-            None => continue,
-        };
-        match prefix {
-            "class" => {
-                if let Some(entry) = index.classes.get_mut(name) {
-                    text.apply_label(&mut entry.label);
-                    text.apply_description(&mut entry.description);
-                }
-            }
-            "species" | "race" => {
-                if let Some(entry) = index.species.get_mut(name) {
-                    text.apply_label(&mut entry.label);
-                    text.apply_description(&mut entry.description);
-                }
-            }
-            "background" => {
-                if let Some(entry) = index.backgrounds.get_mut(name) {
-                    text.apply_label(&mut entry.label);
-                    text.apply_description(&mut entry.description);
-                }
-            }
-            "spell" => {
-                if let Some(entry) = index.spells.get_mut(name) {
-                    text.apply_label(&mut entry.label);
-                }
-            }
-            _ => {}
-        }
-    }
-}
-
-/// Apply locale to an `EffectsIndex`.
-pub fn apply_effects_locale(effects: &mut EffectsIndex, locale: &EffectsLocaleMap) {
-    for (name, text) in locale {
-        if let Some(effect) = effects.0.get_mut(name.as_ref()) {
-            text.apply_description(&mut effect.description);
-        }
-    }
-}
-
-/// Apply locale to a `FeaturesIndex`.
-/// Keys are flat: `"Rage"` for label/description, `"Rage.field.X"` for
-/// sub-paths.
-pub fn apply_features_locale(features: &mut FeaturesIndex, locale: &LocaleMap) {
-    // First pass: feature-level label/description (keys without dots = bare feature
-    // names)
-    for (key, text) in locale {
-        if !key.is_bare() {
-            continue;
-        }
-        if let Some(feat) = features.0.get_mut(key.as_str()) {
-            text.apply_label(&mut feat.label);
-            text.apply_description(&mut feat.description);
-        }
-    }
-    // Second pass: field/option/spell sub-keys
-    let feature_names: Vec<Box<str>> = features.0.keys().cloned().collect();
-    for feat_name in &feature_names {
-        if let Some(feat) = features.0.get_mut(feat_name.as_ref()) {
-            // Field labels/descriptions
-            for (field_name, field_def) in &mut feat.fields {
-                let field_key = LocaleKey::flat_field(feat_name, field_name);
-                if let Some(text) = locale.get(&field_key) {
-                    text.apply_label(&mut field_def.label);
-                    text.apply_description(&mut field_def.description);
-                }
-
-                // Choice option labels/descriptions
-                if let FieldKind::Choice {
-                    options: ChoiceOptions::List(opts),
-                    ..
-                } = &mut field_def.kind
-                {
-                    for opt in opts {
-                        let opt_key =
-                            LocaleKey::flat_field_option(feat_name, field_name, &opt.name);
-                        if let Some(text) = locale.get(&opt_key) {
-                            text.apply_label(&mut opt.label);
-                            text.apply_description(&mut opt.description);
-                        }
-                    }
-                }
-            }
-
-            // Inline spell labels/descriptions
-            if let Some(spells_def) = &mut feat.spells
-                && let super::spells::SpellList::Inline(spell_map) = &mut spells_def.list
-            {
-                for (spell_name, spell_def) in spell_map.0.iter_mut() {
-                    let spell_key = LocaleKey::flat_spell(feat_name, spell_name);
-                    if let Some(text) = locale.get(&spell_key) {
-                        text.apply_label(&mut spell_def.label);
-                        text.apply_description(&mut spell_def.description);
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Apply locale to a `SpellMap`.
-pub fn apply_spell_map_locale(spells: &mut SpellMap, locale: &SpellLocaleMap) {
-    for (name, text) in locale {
-        if let Some(spell_def) = spells.0.get_mut(name.as_ref()) {
-            text.apply_label(&mut spell_def.label);
-            text.apply_description(&mut spell_def.description);
-        }
-    }
-}
+/// Spells overlay map: keys are spell names.
+pub type SpellsLocaleMap = BTreeMap<Box<str>, LocaleText>;

@@ -25,6 +25,7 @@ use crate::{
         ApplyInputs, DefinitionStore, RulesRegistry,
         apply::{PendingFeature, apply_new_features, collect_pending_features},
         feature::FeatureDefinition,
+        spells::SpellDefinition,
     },
 };
 
@@ -53,11 +54,17 @@ pub fn QuickStart() -> impl IntoView {
         }
     };
 
-    let generation_options = Memo::new(move |_| {
+    let generation_options: Memo<Vec<(String, String)>> = Memo::new(move |_| {
         registry.with_features_index(|idx| {
             idx.values()
                 .filter(|feat| matches!(feat.category, FeatureCategory::Generation))
-                .map(|feat| (feat.name.clone(), feat.label().to_string()))
+                .map(|feat| {
+                    let label = registry
+                        .features()
+                        .lookup_untracked(&feat.name, |loc| loc.label().to_string())
+                        .unwrap_or_else(|| feat.name.to_string());
+                    (feat.name.to_string(), label)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -225,6 +232,7 @@ fn finalize_quick_start(
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
 ) {
     if !character.identity.species.is_empty() && !character.applied.species {
         character.applied.species = true;
@@ -254,6 +262,7 @@ fn finalize_quick_start(
 
     apply_new_features(
         features_index,
+        spells_index,
         character,
         pending,
         Some(&inputs.feature_inputs),
@@ -291,8 +300,15 @@ fn create_character(
         registry,
         all_pending,
         None,
-        move |character, pending, inputs, fi| {
-            finalize_quick_start(registry, character, pending, inputs, fi);
+        move |character, pending, inputs, feat_index, spell_index| {
+            finalize_quick_start(
+                registry,
+                character,
+                pending,
+                inputs,
+                feat_index,
+                spell_index,
+            );
         },
     );
 }
@@ -339,8 +355,15 @@ fn apply_ai_result(
         all_pending,
         prefilled,
         result.replacements,
-        move |character, pending, inputs, fi| {
-            finalize_quick_start(registry, character, pending, inputs, fi);
+        move |character, pending, inputs, feat_index, spell_index| {
+            finalize_quick_start(
+                registry,
+                character,
+                pending,
+                inputs,
+                feat_index,
+                spell_index,
+            );
         },
     );
 }

@@ -3,34 +3,36 @@ use crate::{
     rules::{
         ReplaceWith, RulesRegistry, WhenCondition,
         apply::{compute, pending::PendingInputs},
-        resolve::find_feature,
-        spells::SpellList,
+        spells::SpellsList,
     },
 };
 
 impl RulesRegistry {
     pub fn long_rest(&self, character: &mut Character) {
         character.long_rest();
-        self.with_features_index_untracked(|fi| {
-            crate::rules::apply::assign(character, fi, WhenCondition::OnLongRest);
+        self.with_features_index_untracked(|feat_index| {
+            crate::rules::apply::assign(character, feat_index, WhenCondition::OnLongRest);
         });
     }
 
     pub fn short_rest(&self, character: &mut Character) {
         character.short_rest();
-        self.with_features_index_untracked(|fi| {
-            crate::rules::apply::assign(character, fi, WhenCondition::OnShortRest);
+        self.with_features_index_untracked(|feat_index| {
+            crate::rules::apply::assign(character, feat_index, WhenCondition::OnShortRest);
         });
     }
 
-    /// Thin wrapper over the free `compute(character, fi)` for UI-side
-    /// callers that hold a registry but no direct features-index handle.
+    /// Thin wrapper over the free `compute(character, feat_index, spell_index)`
+    /// for UI-side callers that hold a registry but no direct index
+    /// handles.
     #[cfg_attr(
         feature = "perf-marks",
         tracing::instrument(name = "registry.compute", skip_all)
     )]
     pub fn compute(&self, character: &mut Character) {
-        self.with_features_index_untracked(|fi| compute(character, fi));
+        self.with_apply_indexes(|feat_index, spell_index| {
+            compute(character, feat_index, spell_index);
+        });
     }
 
     /// Check if a single feature (by name) needs user interaction for its
@@ -54,17 +56,17 @@ impl RulesRegistry {
         })
     }
 
-    /// Trigger spell list fetches for all feature data entries that reference
-    /// external spell lists. Used by `fill_from_registry` before acquiring
-    /// the spell list cache read guard.
+    /// Trigger per-class name list fetches for any feature whose spells block
+    /// is `Ref { from }`. Used by `fill_from_registry` before reading the
+    /// names cache.
     pub(in crate::rules) fn trigger_spell_list_fetches(&self, character: &Character) {
         self.with_features_index_untracked(|features_index| {
             for key in character.features.keys() {
-                if let Some(feat_def) = find_feature(key, features_index)
+                if let Some(feat_def) = features_index.get(key.as_str())
                     && let Some(spells_def) = &feat_def.spells
-                    && let SpellList::Ref { from } = &spells_def.list
+                    && let SpellsList::Ref { from } = &spells_def.list
                 {
-                    self.fetch_spell_list(from);
+                    self.fetch_spell_list_untracked(from);
                 }
             }
         });

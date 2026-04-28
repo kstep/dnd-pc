@@ -11,7 +11,7 @@ use crate::{
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, ClassLevel, MAX_CLASS_LEVEL,
     },
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 #[component]
@@ -25,12 +25,91 @@ pub fn ClassesSection() -> impl IntoView {
         classes.write().push(ClassLevel::default());
     };
 
+    // Locale-independent slice of `classes`: just `(class_name, level)`
+    // tuples. The body still subscribes to the whole `classes` Vec, but the
+    // Memo's `PartialEq` filters out label-only writes (from the
+    // `fill_from_registry` Effect on locale switch) — downstream Memos
+    // observing `class_specs.get()` don't re-evaluate when only labels
+    // changed, so their `Signal::derive`-owned scopes survive.
+    let class_specs: Memo<Vec<(String, u32)>> = Memo::new(move |_| {
+        classes
+            .read()
+            .iter()
+            .map(|cl| (cl.class.clone(), cl.level))
+            .collect()
+    });
+    // Subclass options per class slot. Subscribes only to `class_specs`,
+    // not to the raw `classes` Vec — so locale-induced label syncs don't
+    // re-evaluate this Memo and the per-row `Signal::derive`s outlive the
+    // store mutation, keeping the singleton modal's references valid.
+    let subclass_options_per_class: Memo<Vec<Vec<DatalistOption>>> = Memo::new(move |_| {
+        class_specs
+            .read()
+            .iter()
+            .map(|(class_key, level)| {
+                let class_key = class_key.clone();
+                let level = *level;
+                // Tracked-on-data only: subscribes to class definition arrival
+                // but NOT to its locale overlay, so locale switches don't fire
+                // this Memo (which would dispose the inner Signal::derive's).
+                let names = registry
+                    .classes()
+                    .with(&class_key, |def| {
+                        def.subclasses
+                            .values()
+                            .filter(|sub| sub.min_level() <= level)
+                            .map(|sub| sub.name.to_string())
+                            .collect::<Vec<_>>()
+                    })
+                    .unwrap_or_default();
+                names
+                    .into_iter()
+                    .map(|sub_name| {
+                        let label = Signal::derive({
+                            let class_key = class_key.clone();
+                            let sub_name = sub_name.clone();
+                            move || {
+                                registry
+                                    .classes()
+                                    .lookup(&class_key, |loc| {
+                                        loc.subclass(&sub_name).map(|sub| sub.label().to_string())
+                                    })
+                                    .flatten()
+                                    .unwrap_or_else(|| sub_name.clone())
+                            }
+                        });
+                        let description = Signal::derive({
+                            let class_key = class_key.clone();
+                            let sub_name = sub_name.clone();
+                            move || {
+                                registry
+                                    .classes()
+                                    .lookup(&class_key, |loc| {
+                                        loc.subclass(&sub_name)
+                                            .map(|sub| sub.description().to_string())
+                                    })
+                                    .flatten()
+                                    .unwrap_or_default()
+                            }
+                        });
+                        DatalistOption::with_signals(sub_name, label, description)
+                    })
+                    .collect()
+            })
+            .collect()
+    });
+
     // All classes (for first class — no prerequisites).
     let all_class_options = Memo::new(move |_| {
         registry.with_class_entries(|entries| {
             entries
                 .values()
-                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
+                .map(|entry| {
+                    let (label, description) = registry
+                        .index()
+                        .entry_label_desc(IndexEntry::Class(&entry.name));
+                    DatalistOption::with_signals(&*entry.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -42,7 +121,12 @@ pub fn ClassesSection() -> impl IntoView {
             entries
                 .values()
                 .filter(|entry| registry.can_multiclass(&character, &entry.name))
-                .map(|entry| DatalistOption::new(&entry.name, entry.label(), &entry.description))
+                .map(|entry| {
+                    let (label, description) = registry
+                        .index()
+                        .entry_label_desc(IndexEntry::Class(&entry.name));
+                    DatalistOption::with_signals(&*entry.name, label, description)
+                })
                 .collect::<Vec<_>>()
         })
     });
@@ -68,10 +152,10 @@ pub fn ClassesSection() -> impl IntoView {
 
                             // Trigger lazy fetch if definition not yet loaded
                             if !class_key.is_empty() {
-                                registry.classes().fetch(&class_key);
+                                registry.classes().fetch_untracked(&class_key);
                             }
 
-                            let class_loaded = registry.classes().has(&class_key);
+                            let class_loaded = registry.classes().has_untracked(&class_key);
 
                             let has_pending_level = if class_loaded {
                                 let applied = store.applied().read();
@@ -85,22 +169,12 @@ pub fn ClassesSection() -> impl IntoView {
                                 .with(&class_key, |def| def.max_level())
                                 .unwrap_or(MAX_CLASS_LEVEL);
 
-                            let subclass_options: Vec<DatalistOption> = registry
-                                .classes()
-                                .with(&class_key, |def| {
-                                    def.subclasses
-                                        .values()
-                                        .filter(|sc| sc.min_level() <= current_level)
-                                        .map(|sc| {
-                                            DatalistOption::new(
-                                                &sc.name,
-                                                sc.label(),
-                                                &sc.description,
-                                            )
-                                        })
-                                        .collect()
-                                })
-                                .unwrap_or_default();
+                            // Pull this slot's subclass list from the
+                            // component-scoped Memo (signals there outlive
+                            // iteration disposal).
+                            let subclass_options: Vec<DatalistOption> =
+                                subclass_options_per_class
+                                    .with(|all| all.get(i).cloned().unwrap_or_default());
                             let has_subclasses = !subclass_options.is_empty();
                             let hit_die_sides = Memo::new(move |_| {
                                 classes.read().get(i).map_or(8, |cl| cl.hit_die_sides)
@@ -136,7 +210,7 @@ pub fn ClassesSection() -> impl IntoView {
                                         on_input=move |input, resolved| {
                                             let (name, label) = split_resolved(input, resolved);
                                             let hit_die =
-                                                registry.classes().with(&name, |def| def.hit_die);
+                                                registry.classes().with_untracked(&name, |def| def.hit_die);
                                             {
                                                 let mut classes = classes.write();
                                                 classes[i].class.clone_from(&name);
@@ -145,7 +219,7 @@ pub fn ClassesSection() -> impl IntoView {
                                                     classes[i].hit_die_sides = hd;
                                                 }
                                             }
-                                            registry.classes().fetch(&name);
+                                            registry.classes().fetch_untracked(&name);
                                         }
                                     />
                                     {if has_subclasses {

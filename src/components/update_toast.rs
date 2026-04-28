@@ -134,34 +134,45 @@ pub fn UpdateToastTrigger() -> impl IntoView {
         return;
     };
 
+    // Build the toast once at component scope (App lifetime). The reload
+    // callback needs the `worker` resolved by the Effect, so we pass it into
+    // a `StoredValue` slot the callback reads at click time.
+    let pending_worker = StoredValue::<Option<ServiceWorker>>::new(None);
+    let toast = Toast::i18n("update-available").persist().with_action(
+        move_tr!("update-button-reload"),
+        Callback::new(move |_| {
+            let Some(worker) = pending_worker.try_update_value(Option::take).flatten() else {
+                return;
+            };
+            PENDING_RELOAD.with(|c| c.set(true));
+            let msg = js_sys::Object::new();
+            let _ = js_sys::Reflect::set(
+                &msg,
+                &JsValue::from_str("type"),
+                &JsValue::from_str("SKIP_WAITING"),
+            );
+            let _ = worker.post_message(&msg.into());
+            // Plan B: SW didn't fire controllerchange — force reload.
+            set_timeout(
+                || {
+                    if PENDING_RELOAD.with(Cell::get) {
+                        force_reload();
+                    }
+                },
+                RELOAD_FALLBACK,
+            );
+        }),
+    );
+    let toast = StoredValue::new(Some(toast));
+
     Effect::new(move |_| {
         let Some(worker) = signal.get() else {
             return;
         };
-        Toast::i18n("update-available")
-            .persist()
-            .with_action(
-                move_tr!("update-button-reload"),
-                Callback::new(move |_| {
-                    PENDING_RELOAD.with(|c| c.set(true));
-                    let msg = js_sys::Object::new();
-                    let _ = js_sys::Reflect::set(
-                        &msg,
-                        &JsValue::from_str("type"),
-                        &JsValue::from_str("SKIP_WAITING"),
-                    );
-                    let _ = worker.post_message(&msg.into());
-                    // Plan B: SW didn't fire controllerchange — force reload.
-                    set_timeout(
-                        || {
-                            if PENDING_RELOAD.with(Cell::get) {
-                                force_reload();
-                            }
-                        },
-                        RELOAD_FALLBACK,
-                    );
-                }),
-            )
-            .show();
+        pending_worker.set_value(Some(worker));
+        let Some(toast) = toast.try_update_value(Option::take).flatten() else {
+            return;
+        };
+        toast.show();
     });
 }

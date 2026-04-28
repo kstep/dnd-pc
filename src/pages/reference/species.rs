@@ -4,11 +4,11 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
+    components::{markdown::Markdown, spinner::Spinner},
     pages::reference::{
-        ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name,
+        RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
     },
-    rules::{DefinitionStore, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -27,11 +27,17 @@ pub fn SpeciesReference() -> impl IntoView {
     Effect::new(move || {
         let name = species_name();
         if !name.is_empty() {
-            registry.species().fetch_tracked(&name);
+            registry.species().fetch(&name);
         }
     });
 
-    let current_label = Signal::derive(move || registry.species_label_by_name(&species_name()));
+    let current_label = Signal::derive(move || {
+        registry
+            .index()
+            .entry_label_desc(IndexEntry::Species(&species_name()))
+            .0
+            .get()
+    });
 
     let detail = move || {
         let name = species_name();
@@ -47,14 +53,13 @@ pub fn SpeciesReference() -> impl IntoView {
             );
         }
 
-        let (title, description, feature_names) =
-            registry.species().with_tracked(&name, |def| {
-                (
-                    def.label().to_string(),
-                    def.description.clone(),
-                    def.features.clone(),
-                )
-            })?;
+        let (title, description, feature_names) = registry.species().lookup(&name, |loc| {
+            (
+                loc.label().to_string(),
+                loc.description().to_string(),
+                loc.data.features.clone(),
+            )
+        })?;
 
         let features = registry.with_features_index(|features_index| {
             let iter = feature_names
@@ -82,7 +87,7 @@ pub fn SpeciesReference() -> impl IntoView {
 
     let loading = Signal::derive(move || {
         let name = species_name();
-        !name.is_empty() && registry.species().with_tracked(&name, |_| ()).is_none()
+        !name.is_empty() && registry.species().with(&name, |_| ()).is_none()
     });
 
     view! {
@@ -91,18 +96,12 @@ pub fn SpeciesReference() -> impl IntoView {
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || registry.with_species_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            let href = format!("/r/species/{}", encode_name(&name));
-                            view! {
-                                <Ref href=href attr:class="reference-nav-item">
-                                    {label}
-                                </Ref>
-                            }
-                        }).collect_view()
-                    })}
+                    <RefSidebarEntries
+                        names=Signal::derive(move || registry.with_species_entries(|entries| {
+                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        }))
+                        kind=|n| IndexEntry::Species(n)
+                    />
                 </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}

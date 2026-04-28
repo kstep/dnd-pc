@@ -96,9 +96,10 @@ async fn run_ai_generation(
     let background_name = concept.background.clone();
 
     for _ in 0..DEFINITION_POLL_ATTEMPTS {
-        let all_loaded = (class_name.is_empty() || registry.classes().has(&class_name))
-            && (species_name.is_empty() || registry.species().has(&species_name))
-            && (background_name.is_empty() || registry.backgrounds().has(&background_name));
+        let all_loaded = (class_name.is_empty() || registry.classes().has_untracked(&class_name))
+            && (species_name.is_empty() || registry.species().has_untracked(&species_name))
+            && (background_name.is_empty()
+                || registry.backgrounds().has_untracked(&background_name));
         if all_loaded {
             break;
         }
@@ -149,12 +150,11 @@ async fn run_ai_generation(
             })
             .collect()
     });
-    let arg_descriptions: Vec<PendingArgDescription> =
-        store.with_untracked(|character| ai::describe_pending_args(&pending_inputs, character));
-    let replacement_descriptions = registry.with_features_index_untracked(|fi| {
-        store.with_untracked(|character| {
-            ai::describe_pending_replacements(&pending_inputs, fi, character)
-        })
+    let arg_descriptions: Vec<PendingArgDescription> = store.with_untracked(|character| {
+        ai::describe_pending_args(&pending_inputs, registry, character)
+    });
+    let replacement_descriptions = store.with_untracked(|character| {
+        ai::describe_pending_replacements(&pending_inputs, registry, character)
     });
 
     let mut feature_choices: BTreeMap<String, Vec<i32>> = BTreeMap::new();
@@ -216,7 +216,7 @@ async fn run_ai_generation(
                             )
                         })
                         .collect();
-                    let descriptions = ai::describe_pending_args(&inputs, &character);
+                    let descriptions = ai::describe_pending_args(&inputs, registry, &character);
                     (inputs, descriptions)
                 });
 
@@ -402,11 +402,11 @@ pub fn AiGenerateModal(
         let settings = settings.get_untracked();
 
         let species_list = registry.with_species_entries(|entries| {
-            join_iter(entries.values().map(|entry| entry.name.as_str()), ", ")
+            join_iter(entries.values().map(|entry| &*entry.name), ", ")
         });
 
         let backgrounds_list = registry.with_background_entries(|entries| {
-            join_iter(entries.values().map(|entry| entry.name.as_str()), ", ")
+            join_iter(entries.values().map(|entry| &*entry.name), ", ")
         });
 
         let classes_list = registry.with_class_entries(|entries| {
@@ -419,7 +419,7 @@ pub fn AiGenerateModal(
                         })
                         .unwrap_or_default();
                     if subclasses.is_empty() {
-                        entry.name.clone()
+                        entry.name.to_string()
                     } else {
                         format!("{} (subclasses: {subclasses})", entry.name)
                     }

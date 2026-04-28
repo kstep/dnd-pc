@@ -10,17 +10,17 @@ use std::collections::BTreeMap;
 
 use leptos::{either::EitherOf3, prelude::*};
 use leptos_fluent::{I18n, move_tr};
-pub use sidebar::ReferenceSidebar;
+pub use sidebar::{RefSidebarEntries, ReferenceSidebar};
 
 use crate::{
     components::{
         expr_view::ExprView, markdown::Markdown, ref_link::Ref, spell_info_bar::SpellInfoBar,
     },
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterStack, VarGroup},
-    model::{Attribute, AttributeGroup, Expr, Op, Translatable},
+    model::{Attribute, AttributeGroup, Expr, FeatureCategory, Op, Translatable},
     rules::{
         Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
-        SpellList, SpellMeta,
+        SpellDefinition, SpellEntry, SpellsList, locale::LocaleKey,
     },
 };
 
@@ -29,104 +29,93 @@ pub fn encode_name(name: &str) -> String {
     js_sys::encode_uri_component(name).into()
 }
 
-pub struct InlineSpell {
-    pub label: String,
-    pub level: u32,
-    pub min_level: u32,
-    pub sticky: bool,
-    pub description: String,
-    pub meta: SpellMeta,
-    pub effects: Vec<(String, Expr)>,
+/// One row in `FeatureSpells::Inline` — the per-feature override
+/// (`SpellEntry`) plus the spell name. The `SpellDefinition` and
+/// locale text are resolved by the row view from the registry on
+/// render, so locale switches only patch text instead of rebuilding
+/// the row.
+#[derive(Clone)]
+pub struct InlineSpellKey {
+    pub name: String,
+    pub entry: SpellEntry,
 }
 
+#[derive(Clone)]
 pub enum FeatureSpells {
     None,
     Link(String),
-    Inline(Vec<InlineSpell>),
+    Inline(Vec<InlineSpellKey>),
 }
 
 impl FeatureSpells {
-    pub fn from_spell_list(list: Option<&SpellList>) -> Self {
+    pub fn from_spell_list(list: Option<&SpellsList>) -> Self {
         match list {
-            Some(spell_list @ SpellList::Ref { from }) => {
+            Some(spell_list @ SpellsList::Ref { from }) => {
                 let list_name = spell_list.ref_name().unwrap_or(from);
                 Self::Link(list_name.to_string())
             }
-            Some(SpellList::Inline(spells)) if !spells.is_empty() => Self::Inline(
-                spells
-                    .values()
-                    .map(|s| InlineSpell {
-                        label: s.label().to_string(),
-                        level: s.level,
-                        min_level: s.min_level,
-                        sticky: s.sticky,
-                        description: s.description.clone(),
-                        meta: s.meta(),
-                        effects: s
-                            .effects
-                            .iter()
-                            .filter_map(|e| {
-                                e.expr.clone().map(|expr| (e.label().to_string(), expr))
-                            })
-                            .collect(),
+            Some(SpellsList::Inline(entries)) if !entries.is_empty() => {
+                let rows: Vec<InlineSpellKey> = entries
+                    .iter()
+                    .map(|entry| InlineSpellKey {
+                        name: entry.name.to_string(),
+                        entry: entry.clone(),
                     })
-                    .collect(),
-            ),
+                    .collect();
+                Self::Inline(rows)
+            }
             _ => Self::None,
         }
     }
 }
 
-pub struct InlineChoiceOption {
-    pub label: String,
-    pub level: u32,
-    pub cost: u32,
-    pub description: String,
-    pub effects: Vec<(String, Expr)>,
+/// Stable identity for one Choice option in a feature field. Locale
+/// text + structural fields (level/cost/effects) are resolved at
+/// render time from the feature's `FieldDefinition`.
+#[derive(Clone)]
+pub struct ChoiceOptionKey {
+    pub feat_name: String,
+    pub field_name: String,
+    pub name: String,
 }
 
-pub struct ChoiceFieldView {
-    pub label: String,
-    pub description: String,
-    pub cost_unit: Option<String>,
-    pub options: Vec<InlineChoiceOption>,
+#[derive(Clone)]
+pub struct ChoiceFieldKey {
+    pub feat_name: String,
+    pub field_name: String,
+    pub options: Vec<ChoiceOptionKey>,
 }
 
-pub fn feature_choices(
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "ref.feature_choices", skip(fields), fields(feat = feat_name))
+)]
+fn feature_choices(
+    feat_name: &str,
     fields: &BTreeMap<Box<str>, FieldDefinition>,
-) -> Option<Vec<ChoiceFieldView>> {
+) -> Option<Vec<ChoiceFieldKey>> {
     let values: Vec<_> = fields
         .values()
-        .filter_map(|fd| {
+        .filter_map(|field_def| {
             let FieldKind::Choice {
                 options: ChoiceOptions::List(list),
-                cost,
                 ..
-            } = &fd.kind
+            } = &field_def.kind
             else {
                 return None;
             };
             if list.is_empty() {
                 return None;
             }
-            Some(ChoiceFieldView {
-                label: fd.label().to_string(),
-                description: fd.description.clone(),
-                cost_unit: cost.clone(),
+            Some(ChoiceFieldKey {
+                feat_name: feat_name.to_string(),
+                field_name: field_def.name.to_string(),
                 options: list
                     .iter()
-                    .map(|opt| InlineChoiceOption {
-                        label: opt.label().to_string(),
-                        level: opt.level,
-                        cost: opt.cost,
-                        description: opt.description.clone(),
-                        effects: opt
-                            .effects
-                            .iter()
-                            .filter_map(|e| {
-                                e.expr.clone().map(|expr| (e.label().to_string(), expr))
-                            })
-                            .collect(),
+                    .map(|opt| ChoiceOptionKey {
+                        feat_name: feat_name.to_string(),
+                        field_name: field_def.name.to_string(),
+                        name: opt.name.to_string(),
                     })
                     .collect(),
             })
@@ -137,6 +126,36 @@ pub fn feature_choices(
     } else {
         Some(values)
     }
+}
+
+/// Extract `(label, expr)` pairs for a spell's effects (snapshot — `ExprView`
+/// renders the raw expression). Empty when the spell has no executable effects.
+pub fn extract_spell_effects(def: &SpellDefinition) -> Vec<(String, Expr)> {
+    def.effects
+        .iter()
+        .filter_map(|effect| {
+            effect
+                .expr
+                .clone()
+                .map(|expr| (effect.label().to_string(), expr))
+        })
+        .collect()
+}
+
+#[component]
+pub fn SpellEffectsView(effects: Vec<(String, Expr)>) -> impl IntoView {
+    (!effects.is_empty()).then(|| {
+        view! {
+            <div class="spell-effects">
+                {effects.into_iter().map(|(name, expr)| view! {
+                    <div class="spell-effect">
+                        <strong>{name}</strong>
+                        <ExprView expr />
+                    </div>
+                }).collect_view()}
+            </div>
+        }
+    })
 }
 
 /// Stack entry for [`AssignmentSummarizer`]: display text, optional numeric
@@ -201,7 +220,8 @@ impl AssignmentSummarizer {
 
     fn feature_label(&self, name: &str) -> String {
         self.registry
-            .with_feature(name, |feat| feat.label().to_string())
+            .features()
+            .lookup_untracked(name, |loc| loc.label().to_string())
             .unwrap_or_else(|| name.to_string())
     }
 
@@ -251,7 +271,7 @@ impl AssignmentSummarizer {
         let op_str = bin_op.symbol();
         let text = num.map_or_else(
             || format!("{} {op_str} {}", a.text, b.text),
-            |n| n.to_string(),
+            |value| value.to_string(),
         );
         // Track compound: if `a` is a plain variable, record raw key + op + rhs
         let compound = if let (Some(key), None) = (a.raw_key, &a.compound) {
@@ -526,49 +546,41 @@ pub(super) fn summarize_assignments(
         .join("; ")
 }
 
-/// Pre-collected data for rendering a feature in reference pages.
-pub struct FeatureViewData {
+/// Stable per-feature shape used by `<ReferenceFeaturesView>`. Locale
+/// text and Expr-derived strings (label, description, prerequisites,
+/// assignments) are resolved from the registry by the per-row view —
+/// keys remain valid across locale switches, so `<For>` keeps DOM
+/// nodes alive and only the text content updates.
+#[derive(Clone)]
+pub struct FeatureKey {
     pub name: String,
-    pub label: String,
-    pub category: String,
-    pub description: String,
-    pub prerequisites: String,
-    pub assignments: String,
+    pub category: FeatureCategory,
+    /// `true` when the feature definition has `prerequisites: Some(_)`.
+    /// The actual prerequisite text is resolved per-row via i18n.
+    pub has_prerequisites: bool,
+    /// `true` when the feature has `assign: Some(_)`.
+    pub has_assignments: bool,
     pub spells: FeatureSpells,
-    pub choices: Option<Vec<ChoiceFieldView>>,
+    pub choices: Option<Vec<ChoiceFieldKey>>,
 }
 
-/// Collect feature view data from an iterator of `FeatureDefinition`
-/// references.
+#[cfg_attr(
+    feature = "perf-marks",
+    tracing::instrument(name = "ref.collect_feature_views", skip_all)
+)]
 pub fn collect_feature_views<'a>(
     features: impl Iterator<Item = &'a FeatureDefinition>,
-) -> Vec<FeatureViewData> {
-    let i18n = expect_context::<leptos_fluent::I18n>();
-    let registry = expect_context::<RulesRegistry>();
+) -> Vec<FeatureKey> {
     features
-        .map(|feat| {
-            let prerequisites = feat
-                .prerequisites
-                .as_ref()
-                .and_then(|p| p.run(AssignmentSummarizer::new(i18n, registry)).ok())
-                .unwrap_or_default();
-            let assignments = feat
-                .assign
-                .as_deref()
-                .map(|a| summarize_assignments(a, i18n, registry))
-                .unwrap_or_default();
-            FeatureViewData {
-                name: feat.name.clone(),
-                label: feat.label().to_string(),
-                category: i18n.tr(feat.category.tr_key()),
-                description: feat.description.clone(),
-                prerequisites,
-                assignments,
-                spells: FeatureSpells::from_spell_list(
-                    feat.spells.as_ref().map(|spells_def| &spells_def.list),
-                ),
-                choices: feature_choices(&feat.fields),
-            }
+        .map(|feat| FeatureKey {
+            name: feat.name.to_string(),
+            category: feat.category,
+            has_prerequisites: feat.prerequisites.is_some(),
+            has_assignments: feat.assign.as_deref().is_some_and(|a| !a.is_empty()),
+            spells: FeatureSpells::from_spell_list(
+                feat.spells.as_ref().map(|spells_def| &spells_def.list),
+            ),
+            choices: feature_choices(&feat.name, &feat.fields),
         })
         .collect()
 }
@@ -576,7 +588,7 @@ pub fn collect_feature_views<'a>(
 /// Render a list of reference features.
 #[component]
 pub fn ReferenceFeaturesView(
-    features: Vec<FeatureViewData>,
+    features: Vec<FeatureKey>,
     #[prop(optional)] anchors: bool,
 ) -> impl IntoView {
     if features.is_empty() {
@@ -584,117 +596,189 @@ pub fn ReferenceFeaturesView(
     }
     Some(view! {
         <div class="reference-features">
-            {features
-                .into_iter()
-                .map(|feat| {
-                    let id = anchors.then(|| format!("feat-{}", feat.name));
-                    view! {
-                        <div class="reference-feature" id=id>
-                            <h3>{feat.label}</h3>
-                            <p class="feature-prerequisites">
-                                {feat.category}
-                                {(!feat.prerequisites.is_empty()).then(|| view! {
-                                    {" · "}{move_tr!("ref-prerequisites")}{": "}{feat.prerequisites}
-                                })}
-                            </p>
-                            <Markdown text=feat.description.clone() />
-                            {(!feat.assignments.is_empty()).then(|| view! {
-                                <p class="feature-assignments">{feat.assignments}</p>
-                            })}
-                            <FeatureSpellsView spells=feat.spells />
-                            <FeatureChoicesView choices=feat.choices />
-                        </div>
-                    }
-                })
-                .collect_view()}
+            <For
+                each=move || features.clone()
+                key=|key| key.name.clone()
+                children=move |key| view! { <FeatureRowView key anchors /> }
+            />
         </div>
     })
 }
 
+/// Per-feature row. All locale-dep text (label, description, category,
+/// prerequisites, assignments) is derived from the registry inside this
+/// child scope, so the row's DOM stays mounted across locale switches
+/// and only text/HTML content updates.
 #[component]
-pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldView>>) -> impl IntoView {
+fn FeatureRowView(key: FeatureKey, anchors: bool) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    let id = anchors.then(|| format!("feat-{}", key.name));
+    let category = key.category;
+    let has_prerequisites = key.has_prerequisites;
+    let has_assignments = key.has_assignments;
+    let name = key.name.clone();
+
+    let (label, description) = registry.features().label_desc(&name, &name);
+    let category_label = Signal::derive(move || i18n.tr(category.tr_key()));
+
+    let prerequisites = Signal::derive({
+        let name = name.clone();
+        move || {
+            registry
+                .features()
+                .lookup(&name, |loc| {
+                    loc.data
+                        .prerequisites
+                        .as_ref()
+                        .and_then(|p| p.run(AssignmentSummarizer::new(i18n, registry)).ok())
+                        .unwrap_or_default()
+                })
+                .unwrap_or_default()
+        }
+    });
+    let assignments = Signal::derive({
+        let name = name.clone();
+        move || {
+            registry
+                .features()
+                .lookup(&name, |loc| {
+                    loc.data
+                        .assign
+                        .as_deref()
+                        .map(|a| summarize_assignments(a, i18n, registry))
+                        .unwrap_or_default()
+                })
+                .unwrap_or_default()
+        }
+    });
+
+    view! {
+        <div class="reference-feature" id=id>
+            <h3>{move || label.get()}</h3>
+            <p class="feature-prerequisites">
+                {move || category_label.get()}
+                {has_prerequisites.then(|| view! {
+                    {" · "}{move_tr!("ref-prerequisites")}{": "}
+                    {move || prerequisites.get()}
+                })}
+            </p>
+            <Markdown text=description />
+            {has_assignments.then(|| view! {
+                <p class="feature-assignments">{move || assignments.get()}</p>
+            })}
+            <FeatureSpellsView spells=key.spells />
+            <FeatureChoicesView choices=key.choices />
+        </div>
+    }
+}
+
+#[component]
+pub fn FeatureChoicesView(choices: Option<Vec<ChoiceFieldKey>>) -> impl IntoView {
     choices.map(|fields| {
         view! {
             <div class="feature-choices-inline">
-                {fields
-                    .into_iter()
-                    .map(|field| {
-                        let label = field.label;
-                        let desc = field.description;
-                        let cost_unit = field.cost_unit;
-                        let options = field.options;
-                        view! {
-                            <div class="feature-choice-field">
-                                <strong>{label}</strong>
-                                {(!desc.is_empty()).then(|| view! { <Markdown text=desc.clone() /> })}
-                                <div class="feature-choice-options">
-                                    {options
-                                        .into_iter()
-                                        .map(|opt| {
-                                            let level = opt.level;
-                                            let cost = opt.cost;
-                                            let unit = cost_unit.clone();
-                                            let opt_label = opt.label;
-                                            let opt_desc = opt.description;
-                                            view! {
-                                                <div class="feature-choice-entry">
-                                                    <strong>{opt_label}</strong>
-                                                    {(level > 0 || (cost > 0 && unit.is_some()))
-                                                        .then(|| {
-                                                            view! {
-                                                                {" ("}
-                                                                {(level > 0).then(|| {
-                                                                    view! {
-                                                                        {move_tr!(
-                                                                            "ref-spell-min-level",
-                                                                            { "level" => level
-                                                                            .to_string() }
-                                                                        )}
-                                                                    }
-                                                                })}
-                                                                {(cost > 0).then(|| {
-                                                                    let u = unit
-                                                                        .clone()
-                                                                        .unwrap_or_default();
-                                                                    let sep = if level > 0 {
-                                                                        ", "
-                                                                    } else {
-                                                                        ""
-                                                                    };
-                                                                    view! {
-                                                                        {sep}
-                                                                        {cost.to_string()}
-                                                                        {" "}
-                                                                        {u}
-                                                                    }
-                                                                })}
-                                                                {")"}
-                                                            }
-                                                        })}
-                                                    {(!opt_desc.is_empty())
-                                                        .then(|| view! { <Markdown text=opt_desc.clone() /> })}
-                                                    {(!opt.effects.is_empty()).then(|| view! {
-                                                        <div class="spell-effects">
-                                                            {opt.effects.into_iter().map(|(name, expr)| view! {
-                                                                <div class="spell-effect">
-                                                                    <strong>{name}</strong>
-                                                                    <ExprView expr />
-                                                                </div>
-                                                            }).collect_view()}
-                                                        </div>
-                                                    })}
-                                                </div>
-                                            }
-                                        })
-                                        .collect_view()}
-                                </div>
-                            </div>
-                        }
-                    })
-                    .collect_view()}
+                <For
+                    each=move || fields.clone()
+                    key=|key| key.field_name.clone()
+                    children=move |key| view! { <ChoiceFieldRow key /> }
+                />
             </div>
         }
     })
+}
+
+#[component]
+fn ChoiceFieldRow(key: ChoiceFieldKey) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let field_key = LocaleKey::flat_field(&key.feat_name, &key.field_name)
+        .as_str()
+        .to_string();
+    let (field_label, field_description) = registry
+        .features()
+        .label_desc(field_key, key.field_name.clone());
+    let options = key.options;
+    view! {
+        <div class="feature-choice-field">
+            <strong>{move || field_label.get()}</strong>
+            {move || {
+                let desc = field_description.get();
+                (!desc.is_empty()).then(|| view! { <Markdown text=field_description /> })
+            }}
+            <div class="feature-choice-options">
+                <For
+                    each=move || options.clone()
+                    key=|key| key.name.clone()
+                    children=move |key| view! { <ChoiceOptionRow key /> }
+                />
+            </div>
+        </div>
+    }
+}
+
+#[component]
+fn ChoiceOptionRow(key: ChoiceOptionKey) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let opt_key = LocaleKey::flat_field_option(&key.feat_name, &key.field_name, &key.name)
+        .as_str()
+        .to_string();
+    let (opt_label, opt_description) = registry.features().label_desc(opt_key, key.name.clone());
+
+    let feat_name = key.feat_name.clone();
+    let field_name = key.field_name.clone();
+    let name = key.name.clone();
+
+    // Pull `level`, `cost`, `effects`, and the field's `cost_unit` from the
+    // feature definition on render — keeps the view-key small and lets
+    // structural changes (rare) flow through naturally.
+    view! {
+        <div class="feature-choice-entry">
+            <strong>{move || opt_label.get()}</strong>
+            {move || registry.features().lookup(&feat_name, |loc| {
+                let field_def = loc.data.fields.get(field_name.as_str())?;
+                let FieldKind::Choice { options: ChoiceOptions::List(list), cost: cost_unit, .. } = &field_def.kind else { return None; };
+                let opt = list.iter().find(|o| *o.name == name)?;
+                let level = opt.level;
+                let cost = opt.cost;
+                let unit = cost_unit.clone();
+                let effects: Vec<(String, Expr)> = opt
+                    .effects
+                    .iter()
+                    .filter_map(|effect| {
+                        effect.expr.clone().map(|expr| (effect.label().to_string(), expr))
+                    })
+                    .collect();
+                Some(view! {
+                    {(level > 0 || (cost > 0 && unit.is_some())).then(|| view! {
+                        {" ("}
+                        {(level > 0).then(|| view! {
+                            {move_tr!("ref-spell-min-level", { "level" => level.to_string() })}
+                        })}
+                        {(cost > 0).then(|| {
+                            let u = unit.clone().unwrap_or_default();
+                            let sep = if level > 0 { ", " } else { "" };
+                            view! { {sep}{cost.to_string()}{" "}{u} }
+                        })}
+                        {")"}
+                    })}
+                    {(!effects.is_empty()).then(|| view! {
+                        <div class="spell-effects">
+                            {effects.into_iter().map(|(name, expr)| view! {
+                                <div class="spell-effect">
+                                    <strong>{name}</strong>
+                                    <ExprView expr />
+                                </div>
+                            }).collect_view()}
+                        </div>
+                    })}
+                })
+            })}
+            {move || {
+                let desc = opt_description.get();
+                (!desc.is_empty()).then(|| view! { <Markdown text=opt_description /> })
+            }}
+        </div>
+    }
 }
 
 #[component]
@@ -707,46 +791,57 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
                 </Ref>
             </p>
         }),
-        FeatureSpells::Inline(spells) => EitherOf3::B(view! {
+        FeatureSpells::Inline(rows) => EitherOf3::B(view! {
             <div class="feature-spells-inline">
-                {spells.into_iter().map(|spell| {
-                    let level_text = if spell.level == 0 {
-                        move_tr!("ref-cantrips-level")
-                    } else {
-                        move_tr!("ref-spell-level", {"level" => spell.level})
-                    };
-                    let min_level = spell.min_level;
-                    let sticky = spell.sticky;
-                    view! {
-                        <div class="feature-spell-entry">
-                            <strong>{spell.label}</strong>
-                            {" ("}{level_text}
-                            {sticky.then(|| view! {
-                                {", "}{move_tr!("ref-spell-always-ready")}
-                            })}
-                            {(min_level > 0).then(|| view! {
-                                {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
-                            })}
-                            {")"}
-                            <SpellInfoBar meta=spell.meta />
-                            {(!spell.description.is_empty()).then(|| view! {
-                                <Markdown text=spell.description.clone() />
-                            })}
-                            {(!spell.effects.is_empty()).then(|| view! {
-                                <div class="spell-effects">
-                                    {spell.effects.into_iter().map(|(name, expr)| view! {
-                                        <div class="spell-effect">
-                                            <strong>{name}</strong>
-                                            <ExprView expr />
-                                        </div>
-                                    }).collect_view()}
-                                </div>
-                            })}
-                        </div>
-                    }
-                }).collect_view()}
+                <For
+                    each=move || rows.clone()
+                    key=|key| key.name.clone()
+                    children=move |key| view! { <InlineSpellRowView key /> }
+                />
             </div>
         }),
         FeatureSpells::None => EitherOf3::C(()),
+    }
+}
+
+#[component]
+fn InlineSpellRowView(key: InlineSpellKey) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let name = key.name.clone();
+    let entry = key.entry;
+    let min_level = entry.min_level;
+    let sticky = entry.sticky;
+
+    let (label, description) = registry.spells().label_desc(&name, &name);
+
+    view! {
+        <div class="feature-spell-entry">
+            <strong>{move || label.get()}</strong>
+            {move || {
+                let extracted = registry.spells().lookup(&name, |loc| {
+                    (loc.data.level, loc.data.meta(), extract_spell_effects(loc.data))
+                });
+                extracted.map(|(level, meta, effects)| {
+                    let level_text = if level == 0 {
+                        move_tr!("ref-cantrips-level")
+                    } else {
+                        move_tr!("ref-spell-level", {"level" => level})
+                    };
+                    view! {
+                        {" ("}{level_text}
+                        {sticky.then(|| view! {
+                            {", "}{move_tr!("ref-spell-always-ready")}
+                        })}
+                        {(min_level > 0).then(|| view! {
+                            {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
+                        })}
+                        {")"}
+                        <SpellInfoBar meta=meta />
+                        <SpellEffectsView effects />
+                    }
+                })
+            }}
+            <Markdown text=description />
+        </div>
     }
 }

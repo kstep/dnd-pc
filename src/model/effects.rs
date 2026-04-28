@@ -139,8 +139,27 @@ impl demap::Named for ActiveEffect {
     }
 }
 
+/// Catalog entry — locale-less template for predefined effects (loaded from
+/// `public/data/effects.json`). Runtime label/description come from the
+/// parallel `EffectsLocaleMap` overlay; user-edited fields live on
+/// `ActiveEffect` after the template is materialized.
+#[derive(Debug, Clone, Deserialize)]
+pub struct EffectTemplate {
+    pub name: Box<str>,
+    #[serde(default)]
+    pub expr: Option<Expr>,
+    #[serde(default)]
+    pub scope: Option<Box<str>>,
+}
+
+impl demap::Named for EffectTemplate {
+    fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 #[derive(Clone)]
-pub struct EffectsIndex(pub BTreeMap<Box<str>, ActiveEffect>);
+pub struct EffectsIndex(pub BTreeMap<Box<str>, EffectTemplate>);
 
 impl<'de> Deserialize<'de> for EffectsIndex {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {

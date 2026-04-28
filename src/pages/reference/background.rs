@@ -4,9 +4,11 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
-    pages::reference::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views},
-    rules::{DefinitionStore, RulesRegistry},
+    components::{markdown::Markdown, spinner::Spinner},
+    pages::reference::{
+        RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
+    },
+    rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -25,11 +27,17 @@ pub fn BackgroundReference() -> impl IntoView {
     Effect::new(move || {
         let name = bg_name();
         if !name.is_empty() {
-            registry.backgrounds().fetch_tracked(&name);
+            registry.backgrounds().fetch(&name);
         }
     });
 
-    let current_label = Signal::derive(move || registry.background_label_by_name(&bg_name()));
+    let current_label = Signal::derive(move || {
+        registry
+            .index()
+            .entry_label_desc(IndexEntry::Background(&bg_name()))
+            .0
+            .get()
+    });
 
     let detail = move || {
         let name = bg_name();
@@ -45,14 +53,13 @@ pub fn BackgroundReference() -> impl IntoView {
             );
         }
 
-        let (title, description, feature_names) =
-            registry.backgrounds().with_tracked(&name, |def| {
-                (
-                    def.label().to_string(),
-                    def.description.clone(),
-                    def.features.clone(),
-                )
-            })?;
+        let (title, description, feature_names) = registry.backgrounds().lookup(&name, |loc| {
+            (
+                loc.label().to_string(),
+                loc.description().to_string(),
+                loc.data.features.clone(),
+            )
+        })?;
 
         let features = registry.with_features_index(|features_index| {
             let iter = feature_names
@@ -80,7 +87,7 @@ pub fn BackgroundReference() -> impl IntoView {
 
     let loading = Signal::derive(move || {
         let name = bg_name();
-        !name.is_empty() && registry.backgrounds().with_tracked(&name, |_| ()).is_none()
+        !name.is_empty() && registry.backgrounds().with(&name, |_| ()).is_none()
     });
 
     view! {
@@ -89,17 +96,12 @@ pub fn BackgroundReference() -> impl IntoView {
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || registry.with_background_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            view! {
-                                <Ref href=format!("/r/background/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </Ref>
-                            }
-                        }).collect_view()
-                    })}
+                    <RefSidebarEntries
+                        names=Signal::derive(move || registry.with_background_entries(|entries| {
+                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        }))
+                        kind=|n| IndexEntry::Background(n)
+                    />
                 </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}

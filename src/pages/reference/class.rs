@@ -8,10 +8,10 @@ use crate::{
     hooks::use_hash_href,
     model::{format_bonus, proficiency_bonus_for_level},
     pages::reference::{
-        ReferenceFeaturesView, ReferenceSidebar, collect_feature_views, encode_name,
-        progression::preview_progression,
+        RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
+        encode_name, progression::preview_progression,
     },
-    rules::{DefinitionStore, FieldKind, RulesRegistry, ValueOrExpr},
+    rules::{DefinitionStore, FieldKind, IndexEntry, RulesRegistry, ValueOrExpr},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -32,11 +32,17 @@ pub fn ClassReference() -> impl IntoView {
     Effect::new(move || {
         let name = class_name();
         if !name.is_empty() {
-            registry.classes().fetch_tracked(&name);
+            registry.classes().fetch(&name);
         }
     });
 
-    let current_label = Signal::derive(move || registry.class_label_by_name(&class_name()));
+    let current_label = Signal::derive(move || {
+        registry
+            .index()
+            .entry_label_desc(IndexEntry::Class(&class_name()))
+            .0
+            .get()
+    });
     let hash_href = use_hash_href();
 
     let detail = move || {
@@ -53,7 +59,7 @@ pub fn ClassReference() -> impl IntoView {
         }
 
         // Track features_index at top level so we re-render when it loads
-        // (nested LocalResource reads inside with_tracked don't reliably track)
+        // (nested LocalResource reads inside with don't reliably track)
         registry.with_features_index(|_| {});
 
         let prerequisites = registry.with_class_entries(|entries| {
@@ -64,17 +70,21 @@ pub fn ClassReference() -> impl IntoView {
         });
 
         registry
-            .classes().with_tracked(&name, |def| {
+            .classes().lookup(&name, |loc| {
+                let def = loc.data;
                 let subclass_def =
                     subname.as_deref().and_then(|sn| def.subclasses.get(sn));
 
-                let class_label = def.label().to_string();
-                let subclass_label = subclass_def.map(|sc| sc.label().to_string());
+                let class_label = loc.label().to_string();
+                let subclass_label = subname
+                    .as_deref()
+                    .and_then(|sn| loc.subclass(sn))
+                    .map(|sub| sub.label().to_string());
                 let title = match &subclass_label {
-                    Some(sc_label) => format!("{class_label} \u{2014} {sc_label}"),
+                    Some(sub_label) => format!("{class_label} \u{2014} {sub_label}"),
                     None => class_label.clone(),
                 };
-                let description = def.description.clone();
+                let description = loc.description().to_string();
                 let hit_die = format!("d{}", def.hit_die);
 
                 // Resolve the class's primary caster feature from the
@@ -111,13 +121,28 @@ pub fn ClassReference() -> impl IntoView {
                 let field_columns: Vec<FieldColumn> = registry.with_features_index(|features_index| {
                     def.feature_names(subname.as_deref())
                         .flat_map(|feat_name| {
-                            features_index.get(feat_name).into_iter().flat_map(|f| {
-                                f.fields.values().filter(|fd| fd.kind.has_levels() && !matches!(fd.kind, FieldKind::FreeUses { .. })).map(
-                                    |fd| FieldColumn {
-                                        label: fd.label().to_string(),
-                                        kind: fd.kind.clone(),
-                                    },
-                                )
+                            features_index.get(feat_name).into_iter().flat_map(|feat_def| {
+                                feat_def
+                                    .fields
+                                    .values()
+                                    .filter(|field_def| {
+                                        field_def.kind.has_levels()
+                                            && !matches!(field_def.kind, FieldKind::FreeUses { .. })
+                                    })
+                                    .map(|field_def| {
+                                        let label = registry
+                                            .features()
+                                            .lookup_untracked(feat_name, |loc| {
+                                                loc.field(&field_def.name)
+                                                    .map(|f| f.label().to_string())
+                                            })
+                                            .flatten()
+                                            .unwrap_or_else(|| field_def.name.to_string());
+                                        FieldColumn {
+                                            label,
+                                            kind: field_def.kind.clone(),
+                                        }
+                                    })
                             })
                         })
                         .collect()
@@ -129,28 +154,30 @@ pub fn ClassReference() -> impl IntoView {
                         let prof_bonus = proficiency_bonus_for_level(level);
 
                         let mut features: Vec<(String, String)> = Vec::new();
-                        registry.with_features_index(|features_index| {
-                            if let Some(rules) = def.levels.get(&level) {
-                                for feat_name in &rules.features {
-                                    let label = features_index
-                                        .get(feat_name.as_str())
-                                        .map(|feat| feat.label().to_string())
-                                        .unwrap_or_else(|| feat_name.clone());
-                                    features.push((feat_name.clone(), label));
-                                }
+                        if let Some(rules) = def.levels.get(&level) {
+                            for feat_name in &rules.features {
+                                let label = registry
+                                    .features()
+                                    .lookup_untracked(feat_name.as_str(), |loc| {
+                                        loc.label().to_string()
+                                    })
+                                    .unwrap_or_else(|| feat_name.clone());
+                                features.push((feat_name.clone(), label));
                             }
-                            if let Some(sc) = subclass_def
-                                && let Some(sc_rules) = sc.levels.get(&level)
-                            {
-                                for feat_name in &sc_rules.features {
-                                    let label = features_index
-                                        .get(feat_name.as_str())
-                                        .map(|feat| feat.label().to_string())
-                                        .unwrap_or_else(|| feat_name.clone());
-                                    features.push((feat_name.clone(), label));
-                                }
+                        }
+                        if let Some(sc) = subclass_def
+                            && let Some(sc_rules) = sc.levels.get(&level)
+                        {
+                            for feat_name in &sc_rules.features {
+                                let label = registry
+                                    .features()
+                                    .lookup_untracked(feat_name.as_str(), |loc| {
+                                        loc.label().to_string()
+                                    })
+                                    .unwrap_or_else(|| feat_name.clone());
+                                features.push((feat_name.clone(), label));
                             }
-                        });
+                        }
 
                         let field_values: Vec<String> = field_columns
                             .iter()
@@ -225,11 +252,14 @@ pub fn ClassReference() -> impl IntoView {
                 let subclass_list: Vec<(String, String, String)> = if subclass_def.is_none() {
                     def.subclasses
                         .values()
-                        .map(|sc| {
+                        .map(|sub_def| {
+                            let sub_loc = loc
+                                .subclass(&sub_def.name)
+                                .expect("subclass lookup matches");
                             (
-                                sc.name.clone(),
-                                sc.label().to_string(),
-                                sc.description.clone(),
+                                sub_def.name.to_string(),
+                                sub_loc.label().to_string(),
+                                sub_loc.description().to_string(),
                             )
                         })
                         .collect()
@@ -237,8 +267,10 @@ pub fn ClassReference() -> impl IntoView {
                     Vec::new()
                 };
 
-                let subclass_desc = subclass_def
-                    .map(|sc| sc.description.clone())
+                let subclass_desc = subname
+                    .as_deref()
+                    .and_then(|sn| loc.subclass(sn))
+                    .map(|sub| sub.description().to_string())
                     .unwrap_or_default();
 
                 let name_for_link = name.clone();
@@ -379,7 +411,7 @@ pub fn ClassReference() -> impl IntoView {
 
     let loading = Signal::derive(move || {
         let name = class_name();
-        !name.is_empty() && registry.classes().with_tracked(&name, |_| ()).is_none()
+        !name.is_empty() && registry.classes().with(&name, |_| ()).is_none()
     });
 
     view! {
@@ -388,17 +420,12 @@ pub fn ClassReference() -> impl IntoView {
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || registry.with_class_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            view! {
-                                <Ref href=format!("/r/class/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </Ref>
-                            }
-                        }).collect_view()
-                    })}
+                    <RefSidebarEntries
+                        names=Signal::derive(move || registry.with_class_entries(|entries| {
+                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        }))
+                        kind=|n| IndexEntry::Class(n)
+                    />
                 </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}

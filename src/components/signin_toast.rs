@@ -14,6 +14,20 @@ pub fn SignInToastTrigger() -> impl IntoView {
     let should_prompt = storage::should_prompt_sign_in();
     let shown = StoredValue::new(false);
 
+    // Toast is built once at the component scope (App lifetime). All its
+    // captured signals and callbacks live with it — the Effect only triggers
+    // `.show()`, never re-creates the toast under its transient run scope.
+    let toast = Toast::i18n("toast-signin-prompt")
+        .persist()
+        .with_action(
+            move_tr!("toast-signin-action"),
+            Callback::new(|_| storage::sign_in_with_google()),
+        )
+        .on_dismiss(Callback::new(|_| {
+            let _ = LocalStorage::set(DISMISS_KEY, true);
+        }));
+    let toast = StoredValue::new(Some(toast));
+
     Effect::new(move |_| {
         if shown.get_value() || !should_prompt.get() {
             return;
@@ -26,18 +40,9 @@ pub fn SignInToastTrigger() -> impl IntoView {
             return;
         }
         shown.set_value(true);
-        // Build the toast synchronously in the Effect — tr!() and Toast::new
-        // both need the current owner. The Toast captures it so `.show()` can
-        // run later from the `set_timeout` callback where no owner is active.
-        let toast = Toast::i18n("toast-signin-prompt")
-            .persist()
-            .with_action(
-                move_tr!("toast-signin-action"),
-                Callback::new(|_| storage::sign_in_with_google()),
-            )
-            .on_dismiss(Callback::new(|_| {
-                let _ = LocalStorage::set(DISMISS_KEY, true);
-            }));
+        let Some(toast) = toast.try_update_value(Option::take).flatten() else {
+            return;
+        };
         set_timeout(move || toast.show(), SHOW_DELAY);
     });
 }

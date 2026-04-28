@@ -10,11 +10,7 @@ use crate::{
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     pub hit_die: u32,
     #[serde(default)]
     pub levels: LevelRules<ClassLevelRules>,
@@ -22,11 +18,13 @@ pub struct ClassDefinition {
     pub subclasses: BTreeMap<Box<str>, SubclassDefinition>,
 }
 
-impl ClassDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
+impl Named for ClassDefinition {
+    fn name(&self) -> &str {
+        &self.name
     }
+}
 
+impl ClassDefinition {
     /// Maximum class level declared in the progression table. Falls back to
     /// the D&D 5e standard cap of 20 for classes that haven't been fetched
     /// yet or provide no explicit level rules.
@@ -72,11 +70,7 @@ impl ClassDefinition {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SubclassDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub levels: LevelRules<ClassLevelRules>,
 }
@@ -88,10 +82,6 @@ impl Named for SubclassDefinition {
 }
 
 impl SubclassDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
     pub fn min_level(&self) -> u32 {
         self.levels.keys().next().copied().unwrap_or(1)
     }

@@ -57,19 +57,12 @@ pub fn SpellsBlock() -> impl IntoView {
             _ => spell_level,
         };
 
-        let effects = registry
-            .with_feature(fname, |feat| {
-                feat.spells.as_ref().map(|spells_def| {
-                    registry.with_spell_list(&spells_def.list, |spell_map| {
-                        spell_map
-                            .get(spell_name)
-                            .map(|sd| sd.effects.clone())
-                            .unwrap_or_default()
-                    })
-                })
-            })
-            .flatten()
-            .unwrap_or_default();
+        let effects = registry.with_spells_index(|index| {
+            index
+                .get(spell_name)
+                .map(|def| def.effects.clone())
+                .unwrap_or_default()
+        });
 
         if !effects.is_empty() {
             let character = store.read_untracked();
@@ -145,9 +138,11 @@ pub fn SpellsBlock() -> impl IntoView {
                 let spell_data = entry.spells.as_ref()?;
 
                 let (feature_label, cost_field_name, cost_short) = registry
-                    .with_feature(name, |feat| {
-                        let label = feat.label().to_string();
-                        let (cost_name, cost_short) = feat
+                    .features()
+                    .lookup_untracked(name, |loc| {
+                        let label = loc.label().to_string();
+                        let (cost_name, cost_short) = loc
+                            .data
                             .cost_info()
                             .map(|(name, short)| (name.to_string(), short))
                             .unwrap_or_default();
@@ -190,17 +185,11 @@ pub fn SpellsBlock() -> impl IntoView {
                             return true;
                         }
                         // Show ritual spells even without available slots
-                        fname.with_value(|key| {
-                            registry.with_feature(key, |feat| {
-                                feat.spells.as_ref().is_some_and(|spells_def| {
-                                    registry.with_spell_list(&spells_def.list, |spell_map| {
-                                        spell_map
-                                            .get(spell.name.as_str())
-                                            .is_some_and(|sd| sd.ritual)
-                                    })
-                                })
-                            })
-                        }).unwrap_or(false)
+                        registry.with_spells_index(|index| {
+                            index
+                                .get(spell.name.as_str())
+                                .is_some_and(|def| def.ritual)
+                        })
                     })
                     .map(|(spell_idx, spell)| {
                         let level_str = if spell.level == 0 {
@@ -209,11 +198,8 @@ pub fn SpellsBlock() -> impl IntoView {
                             tr!("slot-level", {"level" => spell.level})
                         };
 
-                        let meta_badges: Vec<AnyView> = fname.with_value(|key| {
-                            registry.with_feature(key, |feat| {
-                                feat.spells.as_ref().and_then(|spells_def| {
-                                    registry.with_spell_list(&spells_def.list, |spell_map| {
-                                        spell_map.get(spell.name.as_str()).map(|sd| {
+                        let meta_badges: Vec<AnyView> = registry.with_spells_index(|index| {
+                            index.get(spell.name.as_str()).map(|sd| {
                                             let mut badges: Vec<AnyView> = Vec::new();
                                             // Cast time (non-Action only)
                                             match sd.cast_time {
@@ -296,11 +282,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             //     }.into_any());
                                             // }
                                             badges
-                                        })
-                                    })
-                                })
                             })
-                            .flatten()
                             .unwrap_or_default()
                         });
 
@@ -375,24 +357,20 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         }
 
-                        // Ritual option (no slot consumed)
-                        if spell.level > 0 {
-                            let is_ritual = fname.with_value(|key| {
-                                registry.with_feature(key, |feat| {
-                                    feat.spells.as_ref().is_some_and(|spells_def| {
-                                        registry.with_spell_list(&spells_def.list, |spell_map| {
-                                            spell_map
-                                                .get(spell.name.as_str())
-                                                .is_some_and(|sd| sd.ritual)
-                                        })
-                                    })
-                                })
-                            }).unwrap_or(false);
-                            if is_ritual {
-                                cast_options.push(CastOption::Ritual {
-                                    level: spell.level,
-                                });
-                            }
+                        // Single registry lookup yields all flags this spell-row needs
+                        // (ritual gates the cast option below; concentration is read in
+                        // the cast handler that fires later).
+                        let (is_ritual, is_concentration) =
+                            registry.with_spells_index(|index| {
+                                index
+                                    .get(spell.name.as_str())
+                                    .map(|def| (def.ritual, def.concentration))
+                                    .unwrap_or_default()
+                            });
+                        if spell.level > 0 && is_ritual {
+                            cast_options.push(CastOption::Ritual {
+                                level: spell.level,
+                            });
                         }
 
                         let spell_name = StoredValue::new(spell.name.clone());
@@ -407,16 +385,6 @@ pub fn SpellsBlock() -> impl IntoView {
                                         fname.with_value(|key| {
                                             spell_name.with_value(|sname| {
                                                 open_calc(sname, spell_level, key, pool, casting_ability, &opt);
-                                                // Track concentration
-                                                let is_concentration = registry
-                                                    .with_feature(key, |feat| {
-                                                        feat.spells.as_ref().is_some_and(|spells_def| {
-                                                            registry.with_spell_list(&spells_def.list, |spell_map| {
-                                                                spell_map.get(sname.as_str()).is_some_and(|sd| sd.concentration)
-                                                            })
-                                                        })
-                                                    })
-                                                    .unwrap_or(false);
                                                 if is_concentration {
                                                     store.combat().concentrating().set(Some(sname.to_string()));
                                                 }

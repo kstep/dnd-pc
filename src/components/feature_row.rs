@@ -172,17 +172,18 @@ pub fn FeatureRow(
                                         // the registry key and pull canonical
                                         // label/description from the index.
                                         w.name = key.clone();
-                                        let (label, description) =
-                                            registry.with_features_index(|index| {
-                                                index.get(key.as_str())
-                                                    .map(|feat| {
-                                                        (
-                                                            feat.label.clone(),
-                                                            feat.description.clone(),
-                                                        )
+                                        let (label, description) = registry
+                                            .features()
+                                            .lookup_untracked(key.as_str(), |loc| {
+                                                let label = loc
+                                                    .locale
+                                                    .and_then(|map| {
+                                                        map.get(&*loc.data.name)
                                                     })
-                                                    .unwrap_or_default()
-                                            });
+                                                    .and_then(|text| text.label.clone());
+                                                (label, loc.description().to_string())
+                                            })
+                                            .unwrap_or_default();
                                         w.label = label;
                                         w.description = description;
                                         Some(key)
@@ -214,9 +215,10 @@ pub fn FeatureRow(
                                             registry,
                                             pending,
                                             None,
-                                            move |character, pending, inputs, fi| {
+                                            move |character, pending, inputs, feat_index, spell_index| {
                                                 apply_new_features(
-                                                    fi,
+                                                    feat_index,
+                                                    spell_index,
                                                     character,
                                                     pending,
                                                     Some(&inputs.feature_inputs),
@@ -259,8 +261,13 @@ pub fn FeatureRow(
                                 // submit just stash new inputs + mark dirty. Replay banner
                                 // picks it up and performs the full-character re-apply.
                                 let key = FeatureKey::new(name.clone(), source.clone());
-                                let clean = registry.with_features_index_untracked(|fi| {
-                                    build_cascade_base_before(fi, &store.read_untracked(), &key)
+                                let clean = registry.with_apply_indexes(|feat_index, spell_index| {
+                                    build_cascade_base_before(
+                                        feat_index,
+                                        spell_index,
+                                        &store.read_untracked(),
+                                        &key,
+                                    )
                                 });
                                 edit_inputs_modal(
                                     store,
@@ -277,9 +284,10 @@ pub fn FeatureRow(
                                     registry,
                                     pending,
                                     None,
-                                    move |character, pending, inputs, fi| {
+                                    move |character, pending, inputs, feat_index, spell_index| {
                                         apply_new_features(
-                                            fi,
+                                            feat_index,
+                                            spell_index,
                                             character,
                                             pending,
                                             Some(&inputs.feature_inputs),

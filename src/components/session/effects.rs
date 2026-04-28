@@ -67,12 +67,23 @@ pub fn EffectsBlock() -> impl IntoView {
     };
 
     let effect_options = Signal::derive(move || {
-        registry.with_effects_index(|index| {
-            index
-                .values()
-                .map(|eff| DatalistOption::new(&eff.name, eff.label(), &eff.description))
-                .collect::<Vec<_>>()
-        })
+        registry
+            .effects()
+            .with(|index, locale| {
+                index
+                    .0
+                    .values()
+                    .map(|template| {
+                        let text = locale.and_then(|map| map.get(&*template.name));
+                        let label = text
+                            .and_then(|t| t.label.as_deref())
+                            .unwrap_or(&template.name);
+                        let description = text.and_then(|t| t.description.as_deref()).unwrap_or("");
+                        DatalistOption::new(&*template.name, label, description)
+                    })
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default()
     });
 
     let effect_list_id = next_datalist_id();
@@ -136,14 +147,22 @@ pub fn EffectsBlock() -> impl IntoView {
                             effect_label.set(input);
                             effect_key.set(resolved.clone());
                             if let Some(name) = resolved {
-                                registry.with_effects_index(|index| {
-                                    if let Some(eff) = index.get(name.as_str()) {
+                                registry.effects().with(|index, locale| {
+                                    if let Some(template) = index.0.get(name.as_str()) {
                                         if let Some(el) = expr_input.get() {
-                                            let val = eff.expr.as_ref().map(ToString::to_string).unwrap_or_default();
+                                            let val = template
+                                                .expr
+                                                .as_ref()
+                                                .map(ToString::to_string)
+                                                .unwrap_or_default();
                                             el.set_value(&val);
                                         }
-                                        effect_desc.set(eff.description.clone());
-                                        effect_scope.set(eff.scope.clone());
+                                        let description = locale
+                                            .and_then(|map| map.get(name.as_str()))
+                                            .and_then(|text| text.description.clone())
+                                            .unwrap_or_default();
+                                        effect_desc.set(description);
+                                        effect_scope.set(template.scope.clone());
                                     }
                                 });
                             }

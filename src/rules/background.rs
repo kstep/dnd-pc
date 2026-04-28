@@ -1,20 +1,16 @@
 use serde::Deserialize;
 
-use crate::vecset::VecSet;
+use crate::{demap::Named, vecset::VecSet};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct BackgroundDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub features: VecSet<String>,
 }
 
-impl BackgroundDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
+impl Named for BackgroundDefinition {
+    fn name(&self) -> &str {
+        &self.name
     }
 }

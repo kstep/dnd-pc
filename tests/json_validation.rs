@@ -1,8 +1,8 @@
 use std::{fs, path::Path};
 
 use dnd_pc::rules::{
-    BackgroundDefinition, ClassDefinition, FeaturesIndex, Index, SpeciesDefinition, SpellMap,
-    locale::{IndexLocaleMap, LocaleMap, SpellLocaleMap},
+    BackgroundDefinition, ClassDefinition, FeaturesIndex, Index, SpeciesDefinition, SpellsIndex,
+    locale::{IndexLocaleMap, LocaleMap, SpellsLocaleMap},
 };
 use serde::de::DeserializeOwned;
 
@@ -68,12 +68,36 @@ fn data_backgrounds_valid() {
 }
 
 #[test]
+fn data_spells_index_valid() {
+    let _: SpellsIndex = parse_json(&public_dir().join("data/spells.json"));
+}
+
+#[test]
 fn data_spell_lists_valid() {
     let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for entry in index.spells.values() {
-        let path = public.join(format!("data/{}", entry.url));
-        let _: SpellMap = parse_json(&path);
+    let index: SpellsIndex = parse_json(&public.join("data/spells.json"));
+    let lists_dir = public.join("data/spells");
+    let classes = [
+        "artificer",
+        "bard",
+        "cleric",
+        "druid",
+        "paladin",
+        "ranger",
+        "sorcerer",
+        "warlock",
+        "wizard",
+    ];
+    for cls in classes {
+        let path = lists_dir.join(format!("{cls}.json"));
+        let names: Vec<String> = parse_json(&path);
+        assert!(!names.is_empty(), "{cls}.json should list spell names");
+        for spell_name in &names {
+            assert!(
+                index.0.contains_key(spell_name.as_str()),
+                "{cls}.json references unknown spell {spell_name:?}"
+            );
+        }
     }
 }
 
@@ -136,14 +160,11 @@ fn locale_backgrounds_valid() {
 }
 
 #[test]
-fn locale_spell_lists_valid() {
+fn locale_spells_overlay_valid() {
     let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
     for locale in LOCALES {
-        for entry in index.spells.values() {
-            let path = public.join(format!("{locale}/{}", entry.url));
-            let _: SpellLocaleMap = parse_json(&path);
-        }
+        let path = public.join(format!("{locale}/spells.json"));
+        let _: SpellsLocaleMap = parse_json(&path);
     }
 }
 
@@ -370,27 +391,22 @@ fn locale_features_complete() {
 #[test]
 fn locale_spells_complete() {
     let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
+    let index: SpellsIndex = parse_json(&public.join("data/spells.json"));
 
     for locale in LOCALES {
-        for (list_name, entry) in &index.spells {
-            let data_spells: SpellMap = parse_json(&public.join(format!("data/{}", entry.url)));
-            let locale_map: SpellLocaleMap =
-                parse_json(&public.join(format!("{locale}/{}", entry.url)));
-
-            let mut missing = Vec::new();
-            for name in data_spells.0.keys() {
-                if !locale_map.contains_key(name) {
-                    missing.push(name.as_ref());
-                }
+        let locale_map: SpellsLocaleMap = parse_json(&public.join(format!("{locale}/spells.json")));
+        let mut missing = Vec::new();
+        for name in index.0.keys() {
+            if !locale_map.contains_key(name) {
+                missing.push(name.as_ref());
             }
-            assert!(
-                missing.is_empty(),
-                "[{locale}] spell list '{list_name}' missing {} translations: {}",
-                missing.len(),
-                missing.join(", ")
-            );
         }
+        assert!(
+            missing.is_empty(),
+            "[{locale}] spells.json missing {} translations: {}",
+            missing.len(),
+            missing.join(", ")
+        );
     }
 }
 

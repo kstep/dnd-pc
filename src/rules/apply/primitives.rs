@@ -9,6 +9,7 @@ use crate::{
             pending::{ApplyInputs, FeatureKey, PendingFeature},
         },
         feature::FeatureDefinition,
+        spells::SpellDefinition,
     },
 };
 
@@ -52,6 +53,7 @@ pub fn resolve_replacements(
 )]
 pub fn apply_new_features(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending: &[PendingFeature],
     feature_inputs: Option<&BTreeMap<FeatureKey, Vec<AssignInputs>>>,
@@ -62,9 +64,15 @@ pub fn apply_new_features(
             .and_then(|map| map.get(&key))
             .map(Vec::as_slice)
             .unwrap_or_default();
-        apply_new_feature(features_index, character, pending_feature, inputs);
+        apply_new_feature(
+            features_index,
+            spells_index,
+            character,
+            pending_feature,
+            inputs,
+        );
     }
-    compute(character, features_index);
+    compute(character, features_index, spells_index);
 }
 
 /// Add a single feature to `character.features` and call
@@ -74,6 +82,7 @@ pub fn apply_new_features(
 /// inputs).
 pub fn apply_new_feature(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending_feature: &PendingFeature,
     inputs: &[AssignInputs],
@@ -88,7 +97,7 @@ pub fn apply_new_feature(
     {
         if !inputs.is_empty()
             && let Some(feature) = character.features.iter_mut().find(|feature| {
-                feature.name == feat_def.name
+                feature.name.as_str() == &*feat_def.name
                     && feature.applied
                     && (!feat_def.stackable || feature.source == pending_feature.source)
             })
@@ -99,8 +108,8 @@ pub fn apply_new_feature(
     }
     character.features.add(
         &pending_feature.name,
-        feat_def.label.clone(),
-        feat_def.description.clone(),
+        None,
+        String::new(),
         feat_def.category,
         pending_feature.source.clone(),
         inputs.to_vec(),
@@ -110,6 +119,7 @@ pub fn apply_new_feature(
         character,
         WhenCondition::OnFeatureAdd,
         inputs,
+        spells_index,
     );
 }
 
@@ -121,6 +131,7 @@ pub fn apply_new_feature(
 /// beforehand and call [`restore_user_state`] after replay returns.
 pub fn replay(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
@@ -154,6 +165,7 @@ pub fn replay(
             character,
             WhenCondition::OnFeatureAdd,
             feature_inputs,
+            spells_index,
         );
     }
 
@@ -168,7 +180,7 @@ pub fn replay(
         }
     }
 
-    compute(character, features_index);
+    compute(character, features_index, spells_index);
 }
 
 /// Re-apply user-driven state (Choice picks, Points/Die used, prepared
@@ -193,12 +205,13 @@ pub fn restore_user_state(
 /// (no truncation, no replay — cascade sees all applied features).
 pub fn build_cascade_base_before(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &Character,
     edited: &FeatureKey,
 ) -> Character {
     let mut clone = character.clone_lean();
     if !clone.features.truncate(&edited.name, &edited.source) {
-        return clone; // edited не найден в list — cascade видит весь lean-клон
+        return clone; // edited not in list — cascade sees the full lean clone
     }
     let pending: Vec<PendingFeature> = clone
         .features
@@ -211,6 +224,7 @@ pub fn build_cascade_base_before(
         .collect();
     replay(
         features_index,
+        spells_index,
         &mut clone,
         &pending,
         &ApplyInputs::default(),
@@ -298,8 +312,12 @@ pub fn restore_field_picks(
                 ) => {
                     // `zip` caps at the shorter length: extra fresh slots stay
                     // empty for the user, trailing original picks are dropped.
+                    // Free-text Choice fields (no catalog) write the value into
+                    // `label`, leaving `name` empty — so check both.
                     for (target_opt, orig_opt) in options.iter_mut().zip(orig_options) {
-                        if target_opt.name.is_empty() && !orig_opt.name.is_empty() {
+                        let target_empty = target_opt.name.is_empty() && target_opt.label.is_none();
+                        let orig_has_value = !orig_opt.name.is_empty() || orig_opt.label.is_some();
+                        if target_empty && orig_has_value {
                             *target_opt = orig_opt.clone();
                         }
                     }

@@ -1,6 +1,10 @@
 use leptos::prelude::*;
 
-use crate::components::icon::Icon;
+use crate::{
+    components::{icon::Icon, ref_link::Ref},
+    pages::reference::encode_name,
+    rules::{IndexEntry, RulesRegistry},
+};
 
 #[component]
 pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> impl IntoView {
@@ -20,7 +24,7 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
             {move || (!current_label.read().is_empty()).then(|| view! {
                 <button
                     class="reference-nav-toggle"
-                    on:click=move |_| manually_open.update(|v| *v = !*v)
+                    on:click=move |_| manually_open.update(|open| *open = !*open)
                 >
                     {move || current_label.get()}
                     <Icon name="chevron-down" />
@@ -28,5 +32,35 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
             })}
             {move || children()}
         </aside>
+    }
+}
+
+/// Keyed list of reference-sidebar entries. `kind` builds an
+/// `IndexEntry` from a borrowed name (typically `IndexEntry::Class` /
+/// `IndexEntry::Species` / etc., or a closure wrapping one); each row's
+/// label is a derived signal subscribed to the index locale resource,
+/// so locale switches patch text in place without re-creating DOM
+/// nodes.
+#[component]
+pub fn RefSidebarEntries<F>(#[prop(into)] names: Signal<Vec<String>>, kind: F) -> impl IntoView
+where
+    F: for<'a> Fn(&'a str) -> IndexEntry<'a> + Copy + Send + Sync + 'static,
+{
+    let registry = expect_context::<RulesRegistry>();
+    view! {
+        <For
+            each=move || names.get()
+            key=|name| name.clone()
+            children=move |name| {
+                let entry = kind(&name);
+                let (label, _) = registry.index().entry_label_desc(entry);
+                let href = format!("/r/{}/{}", entry.prefix(), encode_name(&name));
+                view! {
+                    <Ref href=href attr:class="reference-nav-item">
+                        {move || label.get()}
+                    </Ref>
+                }
+            }
+        />
     }
 }

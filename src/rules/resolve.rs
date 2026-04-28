@@ -2,16 +2,8 @@ use std::collections::BTreeMap;
 
 use crate::{
     model::{CharacterIdentity, ClassLevel},
-    rules::{class::ClassDefinition, feature::FeatureDefinition},
+    rules::class::ClassDefinition,
 };
-
-/// Find a feature definition by name in the global features index.
-pub(super) fn find_feature<'a>(
-    name: &str,
-    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-) -> Option<&'a FeatureDefinition> {
-    features_index.get(name)
-}
 
 /// Return the class level for the class that owns the given feature.
 pub(super) fn feature_class_level(

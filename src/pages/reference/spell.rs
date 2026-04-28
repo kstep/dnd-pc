@@ -7,14 +7,12 @@ use leptos_router::{hooks::use_params, params::Params};
 use wasm_bindgen::JsCast;
 
 use crate::{
-    components::{
-        expr_view::ExprView, markdown::Markdown, ref_link::Ref, spell_info_bar::SpellInfoBar,
-        spinner::Spinner,
-    },
+    components::{markdown::Markdown, spell_info_bar::SpellInfoBar, spinner::Spinner},
     hooks::use_hash_href,
-    model::Expr,
-    pages::reference::ReferenceSidebar,
-    rules::{RulesRegistry, SpellList, SpellMeta},
+    pages::reference::{
+        RefSidebarEntries, ReferenceSidebar, SpellEffectsView, extract_spell_effects,
+    },
+    rules::{IndexEntry, RulesRegistry, SpellsList},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -33,12 +31,18 @@ pub fn SpellReference() -> impl IntoView {
     Effect::new(move || {
         let name = list_name();
         if !name.is_empty() {
-            let path = SpellList::ref_path(&name);
-            registry.fetch_spell_list_tracked(&path);
+            let path = SpellsList::ref_path(&name);
+            registry.fetch_spell_list(&path);
         }
     });
 
-    let current_label = Signal::derive(move || registry.spell_label_by_name(&list_name()));
+    let current_label = Signal::derive(move || {
+        registry
+            .index()
+            .entry_label_desc(IndexEntry::Spell(&list_name()))
+            .0
+            .get()
+    });
 
     let detail = move || {
         let name = list_name();
@@ -52,132 +56,71 @@ pub fn SpellReference() -> impl IntoView {
             .into_any();
         }
 
-        let path = SpellList::ref_path(&name);
+        let path = SpellsList::ref_path(&name);
 
-        registry
-            .with_spell_list_tracked(&path, |spells| {
-                let title = registry.with_spell_entries(|entries| {
-                    entries
-                        .get(name.as_str())
-                        .map(|e| e.label().to_string())
-                        .unwrap_or_else(|| name.clone())
-                });
-
-                // Group spells by level
-                struct SpellEntry {
-                    name: String,
-                    label: String,
-                    description: String,
-                    min_level: u32,
-                    sticky: bool,
-                    meta: SpellMeta,
-                    effects: Vec<(String, Expr)>,
-                }
-                struct SpellGroup {
-                    level: u32,
-                    spells: Vec<SpellEntry>,
-                }
-                let mut by_level_map: BTreeMap<u32, Vec<SpellEntry>> =
-                    BTreeMap::new();
-                for spell in spells.values() {
-                    by_level_map
-                        .entry(spell.level)
+        // Pull only stable identity (level + name) out of the registry —
+        // labels, descriptions, meta, and effects are resolved per-row inside
+        // <For> children so locale switches patch text in place.
+        let by_level: Vec<(u32, Vec<String>)> = registry
+            .with_spell_list(&path, |iter| {
+                let mut map: BTreeMap<u32, Vec<String>> = BTreeMap::new();
+                for spell in iter {
+                    map.entry(spell.level)
                         .or_default()
-                        .push(SpellEntry {
-                            name: spell.name.clone(),
-                            label: spell.label().to_string(),
-                            description: spell.description.clone(),
-                            min_level: spell.min_level,
-                            sticky: spell.sticky,
-                            meta: spell.meta(),
-                            effects: spell
-                                .effects
-                                .iter()
-                                .filter_map(|e| {
-                                    e.expr.clone().map(|expr| (e.label().to_string(), expr))
-                                })
-                                .collect(),
-                        });
+                        .push(spell.name.to_string());
                 }
-                let by_level: Vec<SpellGroup> = by_level_map
-                    .into_iter()
-                    .map(|(level, spells)| SpellGroup { level, spells })
-                    .collect();
-
-                let levels: Vec<u32> =
-                    by_level.iter().map(|group| group.level).collect();
-                let title_for_heading = title.clone();
-                view! {
-                    <Title text=title />
-                    <div class="reference-detail">
-                        <h1>{title_for_heading}</h1>
-
-                        {by_level.into_iter().map(|group| {
-                            let level = group.level;
-                            let spells = group.spells;
-                            let section_id = format!("spell-level-{level}");
-                            let heading = if level == 0 {
-                                move_tr!("ref-cantrips")
-                            } else {
-                                move_tr!("ref-spell-level", {"level" => level})
-                            };
-                            view! {
-                                <h2 id=section_id>{heading}</h2>
-                                <div class="reference-features">
-                                    {spells.into_iter().map(|spell| {
-                                        let anchor_id = format!("spell-{}", spell.name);
-                                        let min_level = spell.min_level;
-                                        let sticky = spell.sticky;
-                                        view! {
-                                            <div class="reference-feature" id=anchor_id>
-                                                <h3>
-                                                    {spell.label}
-                                                    {(min_level > 0 || sticky).then(|| {
-                                                        let mut parts = Vec::new();
-                                                        if sticky {
-                                                            parts.push(move_tr!("ref-spell-always-ready"));
-                                                        }
-                                                        if min_level > 0 {
-                                                            parts.push(move_tr!("ref-spell-min-level", {"level" => min_level}));
-                                                        }
-                                                        view! {
-                                                            <span class="spell-prereq">
-                                                                {" ("}{move || parts.iter().map(|p| p.get()).collect::<Vec<_>>().join(", ")}{")"}
-                                                            </span>
-                                                        }
-                                                    })}
-                                                </h3>
-                                                <SpellInfoBar meta=spell.meta />
-                                                <Markdown text=spell.description.clone() />
-                                                {(!spell.effects.is_empty()).then(|| view! {
-                                                    <div class="spell-effects">
-                                                        {spell.effects.into_iter().map(|(name, expr)| view! {
-                                                            <div class="spell-effect">
-                                                                <strong>{name}</strong>
-                                                                <ExprView expr />
-                                                            </div>
-                                                        }).collect_view()}
-                                                    </div>
-                                                })}
-                                            </div>
-                                        }
-                                    }).collect_view()}
-                                </div>
-                            }
-                        }).collect_view()}
-                    </div>
-                    <SpellLevelNav levels />
-                }
-                .into_any()
+                map.into_iter().collect()
             })
-            .unwrap_or_else(|| ().into_any())
+            .unwrap_or_default();
+
+        if by_level.is_empty() {
+            return ().into_any();
+        }
+
+        let title = registry
+            .index()
+            .entry_label_desc(IndexEntry::Spell(&name))
+            .0;
+        let levels: Vec<u32> = by_level.iter().map(|(level, _)| *level).collect();
+        view! {
+            <Title text=title />
+            <div class="reference-detail">
+                <h1>{move || title.get()}</h1>
+                <For
+                    each=move || by_level.clone()
+                    key=|(level, _)| *level
+                    children=move |(level, spells)| {
+                        let section_id = format!("spell-level-{level}");
+                        let heading = if level == 0 {
+                            move_tr!("ref-cantrips")
+                        } else {
+                            move_tr!("ref-spell-level", {"level" => level})
+                        };
+                        view! {
+                            <h2 id=section_id>{heading}</h2>
+                            <div class="reference-features">
+                                <For
+                                    each=move || spells.clone()
+                                    key=|spell_name| spell_name.clone()
+                                    children=move |spell_name| view! {
+                                        <SpellRowView name=spell_name />
+                                    }
+                                />
+                            </div>
+                        }
+                    }
+                />
+            </div>
+            <SpellLevelNav levels />
+        }
+        .into_any()
     };
 
     let loading = Signal::derive(move || {
         let name = list_name();
         !name.is_empty()
             && registry
-                .with_spell_list_tracked(&SpellList::ref_path(&name), |_| ())
+                .with_spell_list(&SpellsList::ref_path(&name), |_| ())
                 .is_none()
     });
 
@@ -187,22 +130,39 @@ pub fn SpellReference() -> impl IntoView {
         <div class="reference-page">
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
-                    {move || registry.with_spell_entries(|entries| {
-                        entries.values().map(|entry| {
-                            let name = entry.name.clone();
-                            let label = entry.label().to_string();
-                            view! {
-                                <Ref href=format!("/r/spell/{name}") attr:class="reference-nav-item">
-                                    {label}
-                                </Ref>
-                            }
-                        }).collect_view()
-                    })}
+                    <RefSidebarEntries
+                        names=Signal::derive(move || registry.with_spell_entries(|entries| {
+                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        }))
+                        kind=|n| IndexEntry::Spell(n)
+                    />
                 </ReferenceSidebar>
                 <main class="reference-main">
                     {detail}
                 </main>
             </div>
+        </div>
+    }
+}
+
+#[component]
+fn SpellRowView(name: String) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let anchor_id = format!("spell-{name}");
+    let (label, description) = registry.spells().label_desc(&name, &name);
+
+    view! {
+        <div class="reference-feature" id=anchor_id>
+            <h3>{move || label.get()}</h3>
+            {move || registry.spells().lookup(&name, |loc| {
+                let meta = loc.data.meta();
+                let effects = extract_spell_effects(loc.data);
+                view! {
+                    <SpellInfoBar meta=meta />
+                    <SpellEffectsView effects />
+                }
+            })}
+            <Markdown text=description />
         </div>
     }
 }

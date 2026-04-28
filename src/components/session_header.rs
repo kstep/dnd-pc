@@ -8,7 +8,7 @@ use crate::{
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
     },
-    rules::RulesRegistry,
+    rules::{IndexEntry, RulesRegistry},
 };
 
 #[component]
@@ -25,12 +25,10 @@ pub fn SessionHeader() -> impl IntoView {
             return String::new();
         }
         registry
-            .with_species_entries(|entries| {
-                entries
-                    .get(species_name.as_str())
-                    .map(|e| e.label().to_string())
-            })
-            .unwrap_or(species_name)
+            .index()
+            .entry_label_desc(IndexEntry::Species(&species_name))
+            .0
+            .get()
     });
 
     let class_summary = Memo::new(move |_| store.read().class_summary());

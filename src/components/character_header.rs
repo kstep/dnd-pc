@@ -82,7 +82,10 @@ pub fn CharacterHeader() -> impl IntoView {
             character.identity.classes[class_idx].class.clone()
         };
 
-        let Some(max_level) = registry.classes().with(&class_key, |def| def.max_level()) else {
+        let Some(max_level) = registry
+            .classes()
+            .with_untracked(&class_key, |def| def.max_level())
+        else {
             log::warn!("level_up_class: class definition not loaded: {class_key}");
             return;
         };
@@ -283,7 +286,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 {move_tr!("species")}
                                 <Show when=move || {
                                     let species = store.identity().species().get();
-                                    registry.species().has_tracked(&species)
+                                    registry.species().has(&species)
                                         && !store.applied().species().get()
                                 }>
                                     <span class="pending-dot" />
@@ -298,7 +301,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 {move_tr!("background")}
                                 <Show when=move || {
                                     let background = store.identity().background().get();
-                                    registry.backgrounds().has_tracked(&background)
+                                    registry.backgrounds().has(&background)
                                         && !store.applied().background().get()
                                 }>
                                     <span class="pending-dot" />

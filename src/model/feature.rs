@@ -24,6 +24,7 @@ use crate::{
     Eq,
     PartialOrd,
     Ord,
+    Hash,
     EnumIter,
     Display,
     EnumString,

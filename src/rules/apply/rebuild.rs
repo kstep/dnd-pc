@@ -15,12 +15,14 @@ use crate::{
                 collect_background_features, collect_class_features, collect_pending_features,
                 collect_species_features,
             },
+            compute,
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
             primitives::{apply_new_feature, resolve_replacements, restore_user_state},
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
         feature::{FeatureDefinition, ReplaceWith},
+        spells::SpellDefinition,
     },
 };
 
@@ -63,6 +65,18 @@ pub struct RebuildOutcome {
 struct RebuildAccum {
     skipped: Vec<String>,
     removed: Vec<String>,
+}
+
+/// Bundled apply-pipeline context. Cuts argument lists from 7-9 down to
+/// `(ctx, clean, ...)` and locks the index/source/inputs/accum borrows
+/// behind named fields (vs four adjacent `&BTreeMap`/`&Character` positionals
+/// that were easy to swap by mistake).
+struct RebuildCtx<'a> {
+    feat_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    spell_index: &'a BTreeMap<Box<str>, SpellDefinition>,
+    original: &'a Character,
+    extra_inputs: &'a ApplyInputs,
+    accum: &'a mut RebuildAccum,
 }
 
 /// Output of `prepare_rebuild`: everything the rebuild caller needs to drive
@@ -122,9 +136,17 @@ pub fn build_clean(
     let mut clean = Character::from_identity(original.identity.clone());
     let mut accum = RebuildAccum::default();
 
-    registry.with_features_index_untracked(|fi| -> Result<(), RebuildError> {
+    registry.with_apply_indexes(|feat_index, spell_index| -> Result<(), RebuildError> {
+        let mut ctx = RebuildCtx {
+            feat_index,
+            spell_index,
+            original,
+            extra_inputs,
+            accum: &mut accum,
+        };
+
         // 1. User(0) features (e.g. Generation: * setting base abilities)
-        apply_user_features_at_level(original, &mut clean, fi, 0, extra_inputs, &mut accum);
+        apply_user_features_at_level(&mut ctx, &mut clean, 0);
 
         // 2. Species
         if !clean.identity.species.is_empty() {
@@ -136,8 +158,8 @@ pub fn build_clean(
                     name: clean.identity.species.clone(),
                 })?;
             let pending: Vec<PendingFeature> =
-                collect_species_features(&clean, species_def, fi).collect();
-            apply_pending(fi, &mut clean, &pending, original, extra_inputs, &mut accum);
+                collect_species_features(&clean, species_def, ctx.feat_index).collect();
+            apply_pending(&mut ctx, &mut clean, &pending);
             clean.applied.species = true;
         }
 
@@ -151,14 +173,20 @@ pub fn build_clean(
                     name: clean.identity.background.clone(),
                 })?;
             let pending: Vec<PendingFeature> =
-                collect_background_features(&clean, bg_def, fi).collect();
-            apply_pending(fi, &mut clean, &pending, original, extra_inputs, &mut accum);
+                collect_background_features(&clean, bg_def, ctx.feat_index).collect();
+            apply_pending(&mut ctx, &mut clean, &pending);
             clean.applied.background = true;
         }
 
         // 4. Classes — interleave class levels with per-step prereq filter for
         //    multiclasses (see `apply_classes_interleaved` for details).
-        apply_classes_interleaved(registry, fi, &mut clean, original, extra_inputs, &mut accum)?;
+        // Hold both class_index and class_entries for the whole pipeline:
+        // pick_next_class checks prereqs on every iteration, re-acquiring
+        // would thrash the locks.
+        let class_index = registry.classes().cache().read_untracked();
+        registry.with_class_entries(|class_entries| {
+            apply_classes_interleaved(&mut ctx, &class_index, class_entries, &mut clean)
+        })?;
 
         // 5. Legacy migration: characters built before the Generation-feature system
         //    have abilities edited directly. Convert those custom scores into a
@@ -166,12 +194,13 @@ pub fn build_clean(
         //    them intact.
         migrate_legacy_abilities(&mut clean, original);
 
+        // compute creates the empty SPELL.READY/KNOWN slots that
+        // restore_all_spell_selections fills from the original.
+        compute(&mut clean, ctx.feat_index, ctx.spell_index);
+
         Ok(())
     })?;
 
-    // compute creates the empty SPELL.READY/KNOWN slots that
-    // restore_all_spell_selections fills from the original.
-    registry.with_features_index_untracked(|fi| crate::rules::apply::compute(&mut clean, fi));
     merge_preserved(&mut clean, original);
     Ok(RebuildOutcome {
         character: clean,
@@ -189,7 +218,7 @@ fn collect_rebuild_pending_inputs(
     registry: &RulesRegistry,
 ) -> (Vec<PendingInputs>, bool, Character) {
     // Returns (pending, had_rejections, cascade_base).
-    registry.with_features_index_untracked(|fi| {
+    registry.with_apply_indexes(|feat_index, spell_index| {
         // Identity pending: what `collect_pending_features` would add if no
         // identity feature were yet applied. Snapshot keeps only User features
         // and resets applied flags so the collect functions see a clean slate.
@@ -202,7 +231,7 @@ fn collect_rebuild_pending_inputs(
             .list
             .retain(|feature| feature.source.is_user());
         snapshot.applied = Applied::default();
-        let identity_pending = collect_pending_features(&snapshot, registry, fi);
+        let identity_pending = collect_pending_features(&snapshot, registry, feat_index);
 
         let user_pending = original
             .features
@@ -245,7 +274,7 @@ fn collect_rebuild_pending_inputs(
         let mut state_idx_by_pending: Vec<Option<usize>> = Vec::with_capacity(all_pending.len());
         let mut had_rejections = false;
         for pending in &all_pending {
-            let Some(feat_def) = fi.get(pending.name.as_str()) else {
+            let Some(feat_def) = feat_index.get(pending.name.as_str()) else {
                 state_idx_by_pending.push(None);
                 continue;
             };
@@ -269,7 +298,13 @@ fn collect_rebuild_pending_inputs(
             }
             let stored = original.features.get_inputs(&pending.name, &pending.source);
             let effective = !has_interactive_onadd
-                || stored_inputs_effective(feat_def, pending.level, &validation_baseline, stored);
+                || stored_inputs_effective(
+                    feat_def,
+                    spell_index,
+                    pending.level,
+                    &validation_baseline,
+                    stored,
+                );
             if has_interactive_onadd && !effective && !stored.is_empty() {
                 // Corrupt stored (e.g. Expertise on now non-proficient skills).
                 // Silent-commit would replay it; caller opens the modal instead.
@@ -322,6 +357,7 @@ fn collect_rebuild_pending_inputs(
                     &mut validation_baseline,
                     WhenCondition::OnFeatureAdd,
                     stored,
+                    spell_index,
                 );
             }
         }
@@ -344,7 +380,7 @@ fn collect_rebuild_pending_inputs(
         let mut inputs: Vec<PendingInputs> = Vec::new();
         let mut emit_started = false;
         for (pending_idx, pending) in all_pending.iter().enumerate() {
-            let Some(feat_def) = fi.get(pending.name.as_str()) else {
+            let Some(feat_def) = feat_index.get(pending.name.as_str()) else {
                 continue;
             };
             if let Some(state_idx) = state_idx_by_pending[pending_idx] {
@@ -362,7 +398,7 @@ fn collect_rebuild_pending_inputs(
                     state.pending,
                     state.def,
                     original,
-                    fi,
+                    feat_index,
                     &pending_keys,
                     &emit_baseline,
                 );
@@ -372,6 +408,7 @@ fn collect_rebuild_pending_inputs(
                     &mut emit_baseline,
                     WhenCondition::OnFeatureAdd,
                     &inputs_vec,
+                    spell_index,
                 );
 
                 if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
@@ -383,7 +420,7 @@ fn collect_rebuild_pending_inputs(
             } else if feat_def.assign.is_some() {
                 // apply_new_feature (not bare feat_def.apply) so the row
                 // lands in features.list — caster_info reads it.
-                apply_new_feature(fi, &mut emit_baseline, pending, &[]);
+                apply_new_feature(feat_index, spell_index, &mut emit_baseline, pending, &[]);
                 if emit_started {
                     inputs.push(PendingInputs::hidden_for_cascade(
                         pending.name.clone(),
@@ -400,7 +437,7 @@ fn collect_rebuild_pending_inputs(
                     pending,
                     feat_def,
                     original,
-                    fi,
+                    feat_index,
                     &pending_keys,
                     &emit_baseline,
                 );
@@ -423,7 +460,7 @@ fn collect_rebuild_pending_inputs(
 ///    pending.source)` — if it does, F is present and wasn't replaced.
 /// 3. An original feature X exists with `X.source == pending.source`, `(X.name,
 ///    X.source) ∉ pending_keys` (X isn't a separate slot the identity already
-///    expects), `fi.get(X.name).replace_with_matches(F)`, and
+///    expects), `feat_index.get(X.name).replace_with_matches(F)`, and
 ///    `X_def.meets_prerequisites(baseline)`.
 ///
 /// First match wins — `original.features` preserves insertion order, and a
@@ -432,7 +469,7 @@ fn detect_replacement(
     pending: &PendingFeature,
     feat_def: &FeatureDefinition,
     original: &Character,
-    fi: &BTreeMap<Box<str>, FeatureDefinition>,
+    feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
     pending_keys: &BTreeSet<(&str, &FeatureSource)>,
     baseline: &Character,
 ) -> Option<String> {
@@ -455,7 +492,7 @@ fn detect_replacement(
         if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
             continue;
         }
-        let Some(candidate_def) = fi.get(feature.name.as_str()) else {
+        let Some(candidate_def) = feat_index.get(feature.name.as_str()) else {
             continue;
         };
         if feat_def.replace_with.matches(candidate_def)
@@ -477,6 +514,7 @@ fn detect_replacement(
 /// unsolved and lets the solver re-enumerate candidates.
 fn stored_inputs_effective(
     feat_def: &FeatureDefinition,
+    spell_index: &BTreeMap<Box<str>, SpellDefinition>,
     level: u32,
     baseline: &Character,
     stored: &[AssignInputs],
@@ -485,7 +523,13 @@ fn stored_inputs_effective(
         return false;
     }
     let mut trial = baseline.clone_lean();
-    feat_def.apply(level, &mut trial, WhenCondition::OnFeatureAdd, stored);
+    feat_def.apply(
+        level,
+        &mut trial,
+        WhenCondition::OnFeatureAdd,
+        stored,
+        spell_index,
+    );
     !baseline.eq_derived(&trial)
 }
 
@@ -580,14 +624,11 @@ fn is_fixed_preset(args: &[i32]) -> bool {
 /// level (preferring lower index); otherwise level classes[0]. Stops when
 /// all reachable targets are met or progress halts.
 fn apply_classes_interleaved(
-    registry: &RulesRegistry,
-    fi: &BTreeMap<Box<str>, FeatureDefinition>,
+    ctx: &mut RebuildCtx<'_>,
+    class_index: &BTreeMap<Box<str>, ClassDefinition>,
+    class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
     clean: &mut Character,
-    original: &Character,
-    extra_inputs: &ApplyInputs,
-    accum: &mut RebuildAccum,
 ) -> Result<(), RebuildError> {
-    let class_cache = registry.classes().cache().read_untracked();
     let n_classes = clean.identity.classes.len();
     if n_classes == 0 {
         return Ok(());
@@ -607,33 +648,19 @@ fn apply_classes_interleaved(
 
     // CL1: classes[0] at class level 1 — primary, no prereq check.
     if targets[0] > 0 && !clean.identity.classes[0].class.is_empty() {
-        apply_class_level(fi, &class_cache, clean, original, 0, 1, extra_inputs, accum)?;
+        apply_class_level(ctx, class_index, clean, 0, 1)?;
         applied[0] = 1;
         character_level = 1;
-        apply_user_features_at_level(original, clean, fi, character_level, extra_inputs, accum);
+        apply_user_features_at_level(ctx, clean, character_level);
     }
 
-    // Hold the class-index lock for the whole loop: pick_next_class checks
-    // prereqs on every iteration, acquiring it per step would thrash.
-    registry.with_class_entries(|entries| -> Result<(), RebuildError> {
-        while let Some(i) = pick_next_class(clean, &targets, &applied, entries) {
-            let next_class_lvl = applied[i] + 1;
-            apply_class_level(
-                fi,
-                &class_cache,
-                clean,
-                original,
-                i,
-                next_class_lvl,
-                extra_inputs,
-                accum,
-            )?;
-            applied[i] = next_class_lvl;
-            character_level += 1;
-            apply_user_features_at_level(original, clean, fi, character_level, extra_inputs, accum);
-        }
-        Ok(())
-    })?;
+    while let Some(i) = pick_next_class(clean, &targets, &applied, class_entries) {
+        let next_class_lvl = applied[i] + 1;
+        apply_class_level(ctx, class_index, clean, i, next_class_lvl)?;
+        applied[i] = next_class_lvl;
+        character_level += 1;
+        apply_user_features_at_level(ctx, clean, character_level);
+    }
 
     // After the loop exits: primary is maxed out, but if any multiclass still
     // has unapplied target levels, its prereq never passed during the build —
@@ -695,20 +722,16 @@ fn pick_next_class(
     (!cl.class.is_empty() && applied[idx] < targets[idx]).then_some(idx)
 }
 
-#[allow(clippy::too_many_arguments)] // private helper, args are unrelated context
 fn apply_class_level(
-    fi: &BTreeMap<Box<str>, FeatureDefinition>,
-    class_cache: &BTreeMap<Box<str>, ClassDefinition>,
+    ctx: &mut RebuildCtx<'_>,
+    class_index: &BTreeMap<Box<str>, ClassDefinition>,
     clean: &mut Character,
-    original: &Character,
     class_idx: usize,
     class_level: u32,
-    extra_inputs: &ApplyInputs,
-    accum: &mut RebuildAccum,
 ) -> Result<(), RebuildError> {
     let class_def = {
         let class_name = clean.identity.classes[class_idx].class.as_str();
-        class_cache
+        class_index
             .get(class_name)
             .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Class,
@@ -717,8 +740,8 @@ fn apply_class_level(
     };
     clean.identity.classes[class_idx].hit_die_sides = class_def.hit_die;
     let pending: Vec<PendingFeature> =
-        collect_class_features(clean, class_idx, class_level, class_def, fi).collect();
-    apply_pending(fi, clean, &pending, original, extra_inputs, accum);
+        collect_class_features(clean, class_idx, class_level, class_def, ctx.feat_index).collect();
+    apply_pending(ctx, clean, &pending);
     clean
         .applied
         .mark_level(&clean.identity.classes[class_idx].class, class_level);
@@ -731,27 +754,30 @@ fn apply_class_level(
 /// `apply_new_feature` with its own stored-or-modal inputs so stackable
 /// features with the same name don't collide.
 ///
-/// Pending features whose definition is missing from `fi` are routed by
+/// Pending features whose definition is missing from `feat_index` are routed by
 /// source: User-source ones are forwarded via `accum` for the caller (which
 /// preserves them in `clean.features` directly — see
 /// `apply_user_features_at_level`); identity-source ones (Class / Subclass /
 /// Species / Background) are dropped from the rebuild and recorded in
 /// `accum.removed`. Either way the rebuild keeps going — no `Err` path for
 /// missing per-feature definitions.
-fn apply_pending(
-    fi: &BTreeMap<Box<str>, FeatureDefinition>,
-    clean: &mut Character,
-    pending: &[PendingFeature],
-    original: &Character,
-    extra_inputs: &ApplyInputs,
-    accum: &mut RebuildAccum,
-) {
-    let resolved = resolve_replacements(pending, &extra_inputs.replacements, fi);
+fn apply_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: &[PendingFeature]) {
+    let resolved = resolve_replacements(pending, &ctx.extra_inputs.replacements, ctx.feat_index);
     for pending_feature in &resolved {
-        if let Some(feat_def) = fi.get(pending_feature.name.as_str()) {
-            let inputs =
-                inputs_for_pending(pending_feature, original, extra_inputs, feat_def.stackable);
-            apply_new_feature(fi, clean, pending_feature, &inputs);
+        if let Some(feat_def) = ctx.feat_index.get(pending_feature.name.as_str()) {
+            let inputs = inputs_for_pending(
+                pending_feature,
+                ctx.original,
+                ctx.extra_inputs,
+                feat_def.stackable,
+            );
+            apply_new_feature(
+                ctx.feat_index,
+                ctx.spell_index,
+                clean,
+                pending_feature,
+                &inputs,
+            );
         } else if pending_feature.source.is_user() {
             // User-source missing-def features are normally pre-handled by
             // `apply_user_features_at_level`. Reaching here means a different
@@ -759,10 +785,10 @@ fn apply_pending(
             log::warn!(
                 "apply_pending: unexpected User pending without pre-handle: {pending_feature:?}"
             );
-            accum.skipped.push(pending_feature.name.clone());
+            ctx.accum.skipped.push(pending_feature.name.clone());
         } else {
             log::warn!("rebuild: dropping obsolete identity feature {pending_feature:?}");
-            accum.removed.push(pending_feature.name.clone());
+            ctx.accum.removed.push(pending_feature.name.clone());
         }
     }
 }
@@ -803,14 +829,7 @@ fn inputs_for_pending(
         .unwrap_or_default()
 }
 
-fn apply_user_features_at_level(
-    original: &Character,
-    clean: &mut Character,
-    fi: &BTreeMap<Box<str>, FeatureDefinition>,
-    level: u32,
-    extra_inputs: &ApplyInputs,
-    accum: &mut RebuildAccum,
-) {
+fn apply_user_features_at_level(ctx: &mut RebuildCtx<'_>, clean: &mut Character, level: u32) {
     // Two passes over User(level) features in `original`:
     //   1. Missing-def → preserve the original `Feature` directly in
     //      `clean.features.list` so the user's pick / inputs / homebrew name
@@ -821,11 +840,11 @@ fn apply_user_features_at_level(
     //      a `find`-based path through `apply_pending` would not.
     //   2. Has-def → flow through `apply_pending` normally.
     let mut pending: Vec<PendingFeature> = Vec::new();
-    for feature in original.features.iter() {
+    for feature in ctx.original.features.iter() {
         if !matches!(&feature.source, FeatureSource::User(l) if *l == level) {
             continue;
         }
-        if fi.contains_key(feature.name.as_str()) {
+        if ctx.feat_index.contains_key(feature.name.as_str()) {
             pending.push(PendingFeature {
                 name: feature.name.clone(),
                 source: feature.source.clone(),
@@ -834,13 +853,13 @@ fn apply_user_features_at_level(
         } else {
             if !feature.name.is_empty() {
                 log::warn!("rebuild: preserving user feature with no definition: {feature:?}");
-                accum.skipped.push(feature.name.clone());
+                ctx.accum.skipped.push(feature.name.clone());
             }
             clean.features.list.push(feature.clone());
         }
     }
     if !pending.is_empty() {
-        apply_pending(fi, clean, &pending, original, extra_inputs, accum);
+        apply_pending(ctx, clean, &pending);
     }
 }
 
@@ -898,9 +917,12 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::model::{
-        AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
-        ProficiencyLevel, Skill,
+    use crate::{
+        model::{
+            AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
+            ProficiencyLevel, Skill,
+        },
+        rules::spells::EMPTY_SPELL_INDEX,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -1248,9 +1270,7 @@ mod tests {
         replace_with: ReplaceWith,
     ) -> FeatureDefinition {
         FeatureDefinition {
-            name: name.to_string(),
-            label: None,
-            description: String::new(),
+            name: name.into(),
             stackable: false,
             category,
             replace_with,
@@ -1271,9 +1291,9 @@ mod tests {
             ReplaceWith::None,
         );
 
-        let mut fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-        fi.insert(slot_def.name.clone().into(), slot_def.clone());
-        fi.insert(swap_def.name.clone().into(), swap_def.clone());
+        let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        feat_index.insert(slot_def.name.clone().into(), slot_def.clone());
+        feat_index.insert(swap_def.name.clone().into(), swap_def.clone());
 
         let mut original = Character::default();
         original
@@ -1296,7 +1316,7 @@ mod tests {
             &pending,
             &slot_def,
             &original,
-            &fi,
+            &feat_index,
             &pending_keys,
             &baseline,
         );
@@ -1307,7 +1327,7 @@ mod tests {
     fn detect_replacement_skips_when_slot_already_present() {
         let slot_source = FeatureSource::Class("Rogue".into(), 3);
         let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
-        let fi: BTreeMap<Box<str>, FeatureDefinition> =
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
             std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
 
         let mut original = Character::default();
@@ -1332,7 +1352,7 @@ mod tests {
             &pending,
             &slot_def,
             &original,
-            &fi,
+            &feat_index,
             &pending_keys,
             &baseline,
         );
@@ -1361,6 +1381,7 @@ mod tests {
         let baseline = Character::default();
         assert!(!stored_inputs_effective(
             &expertise_def,
+            &EMPTY_SPELL_INDEX,
             1,
             &baseline,
             &stored
@@ -1377,6 +1398,7 @@ mod tests {
             .set(Skill::Religion, ProficiencyLevel::Proficient);
         assert!(stored_inputs_effective(
             &expertise_def,
+            &EMPTY_SPELL_INDEX,
             1,
             &baseline_prof,
             &stored
@@ -1404,10 +1426,17 @@ mod tests {
         });
         let mut clean = Character::from_identity(original.identity.clone());
         let mut accum = RebuildAccum::default();
-        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
         let extra = ApplyInputs::default();
 
-        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+        let mut ctx = RebuildCtx {
+            feat_index: &feat_index,
+            spell_index: &EMPTY_SPELL_INDEX,
+            original: &original,
+            extra_inputs: &extra,
+            accum: &mut accum,
+        };
+        apply_user_features_at_level(&mut ctx, &mut clean, 0);
 
         let empty_user_count = clean
             .features
@@ -1446,10 +1475,17 @@ mod tests {
         });
         let mut clean = Character::from_identity(original.identity.clone());
         let mut accum = RebuildAccum::default();
-        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
         let extra = ApplyInputs::default();
 
-        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+        let mut ctx = RebuildCtx {
+            feat_index: &feat_index,
+            spell_index: &EMPTY_SPELL_INDEX,
+            original: &original,
+            extra_inputs: &extra,
+            accum: &mut accum,
+        };
+        apply_user_features_at_level(&mut ctx, &mut clean, 0);
 
         let preserved = clean
             .features
@@ -1471,7 +1507,7 @@ mod tests {
         let mut clean = Character::default();
         let original = Character::default();
         let mut accum = RebuildAccum::default();
-        let fi: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
         let extra = ApplyInputs::default();
         let pending = vec![PendingFeature {
             name: "Old Class Feat".into(),
@@ -1479,7 +1515,14 @@ mod tests {
             level: 1,
         }];
 
-        apply_pending(&fi, &mut clean, &pending, &original, &extra, &mut accum);
+        let mut ctx = RebuildCtx {
+            feat_index: &feat_index,
+            spell_index: &EMPTY_SPELL_INDEX,
+            original: &original,
+            extra_inputs: &extra,
+            accum: &mut accum,
+        };
+        apply_pending(&mut ctx, &mut clean, &pending);
 
         assert!(
             !clean
@@ -1499,8 +1542,8 @@ mod tests {
         // known feature that has a definition (applied normally). Each lands
         // in the right bucket.
         let known_def = feat_def("Known Feat", FeatureCategory::General, ReplaceWith::None);
-        let fi: BTreeMap<Box<str>, FeatureDefinition> =
-            std::iter::once((known_def.name.clone().into_boxed_str(), known_def.clone())).collect();
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((known_def.name.clone(), known_def.clone())).collect();
 
         let mut original = Character::default();
         original.features.list.push(Feature {
@@ -1525,7 +1568,14 @@ mod tests {
         let mut accum = RebuildAccum::default();
         let extra = ApplyInputs::default();
 
-        apply_user_features_at_level(&original, &mut clean, &fi, 0, &extra, &mut accum);
+        let mut ctx = RebuildCtx {
+            feat_index: &feat_index,
+            spell_index: &EMPTY_SPELL_INDEX,
+            original: &original,
+            extra_inputs: &extra,
+            accum: &mut accum,
+        };
+        apply_user_features_at_level(&mut ctx, &mut clean, 0);
 
         assert_eq!(accum.skipped, vec!["Homebrew Smite".to_string()]);
         assert!(accum.removed.is_empty());
@@ -1556,7 +1606,7 @@ mod tests {
     fn detect_replacement_returns_none_when_not_replaceable() {
         let slot_source = FeatureSource::Class("Rogue".into(), 3);
         let slot_def = feat_def("Cunning Action", FeatureCategory::Class, ReplaceWith::None);
-        let fi: BTreeMap<Box<str>, FeatureDefinition> =
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
             std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
 
         let original = Character::default();
@@ -1576,7 +1626,7 @@ mod tests {
                 &pending,
                 &slot_def,
                 &original,
-                &fi,
+                &feat_index,
                 &pending_keys,
                 &baseline
             )

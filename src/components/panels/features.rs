@@ -89,7 +89,13 @@ pub fn FeaturesPanel() -> impl IntoView {
                 .values()
                 .filter(|feat| feat.is_selectable())
                 .map(|feat| {
-                    let opt = DatalistOption::new(&feat.name, feat.label(), &feat.description);
+                    let (label, description) = registry
+                        .features()
+                        .lookup(&feat.name, |loc| {
+                            (loc.label().to_string(), loc.description().to_string())
+                        })
+                        .unwrap_or_else(|| (feat.name.to_string(), String::new()));
+                    let opt = DatalistOption::new(&*feat.name, label, description);
                     if let Some(expr) = &feat.prerequisites
                         && !feat.meets_prerequisites(&character)
                     {

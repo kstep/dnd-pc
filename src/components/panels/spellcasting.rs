@@ -21,25 +21,11 @@ use crate::{
     rules::{RulesRegistry, SpellMeta},
 };
 
-fn lookup_spell_meta(
-    registry: RulesRegistry,
-    feat_name: StoredValue<String>,
-    spell_name: &str,
-) -> Option<SpellMeta> {
+fn lookup_spell_meta(registry: RulesRegistry, spell_name: &str) -> Option<SpellMeta> {
     if spell_name.is_empty() {
         return None;
     }
-    feat_name.with_value(|key| {
-        registry
-            .with_feature(key, |feat| {
-                feat.spells.as_ref().and_then(|spells_def| {
-                    registry.with_spell_list(&spells_def.list, |spell_map| {
-                        spell_map.get(spell_name).map(|sd| sd.meta())
-                    })
-                })
-            })
-            .flatten()
-    })
+    registry.with_spells_index(|index| index.get(spell_name).map(|def| def.meta()))
 }
 
 fn update_spells(
@@ -112,7 +98,7 @@ fn lookup_pick(
             options.with(|opts| {
                 opts.iter()
                     .find(|opt| opt.name == name)
-                    .map(|opt| (opt.description.clone(), opt.count))
+                    .map(|opt| (opt.description.get_untracked(), opt.count))
             })
         })
         .unwrap_or_default()
@@ -168,7 +154,8 @@ fn FeatureSpellcastingSection(
 
     // Resolve feature name → label and cost suffix for display
     let panel_title = registry
-        .with_feature(&feature_name, |f| f.label().to_string())
+        .features()
+        .lookup_untracked(&feature_name, |loc| loc.label().to_string())
         .unwrap_or_else(|| feature_name.clone());
     let cost_short: String = registry
         .with_feature(&feature_name, |feat| {
@@ -489,7 +476,7 @@ fn FeatureSpellcastingSection(
                                             </Show>
                                         </div>
                                         {
-                                            let meta = lookup_spell_meta(registry, feat_name, &spell_name);
+                                            let meta = lookup_spell_meta(registry, &spell_name);
                                             view! {
                                                 {meta.map(|meta| view! { <SpellInfoBar meta /> })}
                                                 {if meta.is_some() {
@@ -690,7 +677,7 @@ fn FeatureSpellcastingSection(
                                         </div>
                                     </Show>
                                         {
-                                            let meta = lookup_spell_meta(registry, feat_name, &spell_name);
+                                            let meta = lookup_spell_meta(registry, &spell_name);
                                             view! {
                                                 {meta.map(|meta| view! { <SpellInfoBar meta /> })}
                                                 {if meta.is_some() {
@@ -740,18 +727,18 @@ fn resolve_feature_spell_list(
     registry
         .with_feature(feature_name, |feat| {
             let spells_def = feat.spells.as_ref()?;
-            Some(registry.with_spell_list(&spells_def.list, |spells| {
-                let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
-                for spell in spells.values() {
+            let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
+            registry.with_spell_list_untracked(&spells_def.list, |iter| {
+                for spell in iter {
                     if let Some(bucket) = by_level.get_mut(spell.level as usize) {
                         bucket.push(
-                            DatalistOption::new(&spell.name, spell.label(), &spell.description)
+                            DatalistOption::new(&*spell.name, spell.label(), spell.description())
                                 .with_count(spell.level),
                         );
                     }
                 }
-                by_level
-            }))
+            });
+            Some(by_level)
         })
         .flatten()
         .unwrap_or_default()

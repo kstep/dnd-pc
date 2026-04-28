@@ -55,8 +55,6 @@ impl ApplyInputs {
 #[derive(Clone, PartialEq)]
 pub struct PendingInputs {
     pub feature_name: String,
-    pub feature_label: String,
-    pub feature_description: String,
     pub exprs: Vec<Expr>,
     /// Existing stored inputs aligned with `exprs` (by index). Empty when the
     /// feature is being applied for the first time. Used by the modal to
@@ -115,8 +113,6 @@ impl PendingInputs {
         }
         Some(Self {
             feature_name: name,
-            feature_label: feat_def.label().to_string(),
-            feature_description: feat_def.description.clone(),
             exprs,
             prefill,
             replace_with,
@@ -139,8 +135,6 @@ impl PendingInputs {
     ) -> Self {
         Self {
             feature_name: name,
-            feature_label: feat_def.label().to_string(),
-            feature_description: feat_def.description.clone(),
             exprs: Vec::new(),
             prefill: Vec::new(),
             replace_with: feat_def.replace_with,

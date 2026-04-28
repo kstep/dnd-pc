@@ -5,7 +5,7 @@ use serde::Deserialize;
 use crate::{
     demap::{self, Named},
     model::{Character, EffectDefinition, EffectDuration, EffectRange, FreeUses, Spell, SpellData},
-    rules::feature::ActionType,
+    rules::feature::{ActionType, FeatureDefinition},
 };
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -23,19 +23,9 @@ impl Default for CastTime {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpellDefinition {
-    pub name: String,
-    #[serde(default)]
-    pub label: Option<String>,
-    #[serde(default)]
-    pub description: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub level: u32,
-    #[serde(default)]
-    pub sticky: bool,
-    #[serde(default)]
-    pub min_level: u32,
-    #[serde(default)]
-    pub cost: u32,
     #[serde(default)]
     pub ritual: bool,
     #[serde(default)]
@@ -56,16 +46,12 @@ pub struct SpellMeta {
 }
 
 impl SpellDefinition {
-    pub fn label(&self) -> &str {
-        self.label.as_deref().unwrap_or(&self.name)
-    }
-
     pub fn effect_range(&self) -> Option<EffectRange> {
-        self.effects.iter().map(|e| e.range).max()
+        self.effects.iter().map(|effect| effect.range).max()
     }
 
     pub fn effect_duration(&self) -> Option<EffectDuration> {
-        self.effects.iter().map(|e| e.duration).max()
+        self.effects.iter().map(|effect| effect.duration).max()
     }
 
     pub fn meta(&self) -> SpellMeta {
@@ -85,24 +71,144 @@ impl Named for SpellDefinition {
     }
 }
 
+/// Global spells index — all spell definitions keyed by name. Mirrors
+/// `FeaturesIndex`. Loaded once from `public/data/spells.json`.
+#[derive(Clone, Default)]
+pub struct SpellsIndex(pub BTreeMap<Box<str>, SpellDefinition>);
+
+/// Empty fallback for callers that need a stable reference when the index
+/// hasn't loaded yet (registry's `with_spells_index*`) or when running
+/// dry-runs that don't care about sticky imports (solver, rebuild tests).
+pub static EMPTY_SPELL_INDEX: BTreeMap<Box<str>, SpellDefinition> = BTreeMap::new();
+
+impl<'de> Deserialize<'de> for SpellsIndex {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        demap::named_map(deserializer).map(Self)
+    }
+}
+
+impl std::ops::Deref for SpellsIndex {
+    type Target = BTreeMap<Box<str>, SpellDefinition>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// Per-feature spell block. Either an explicit list of entries (with optional
+/// per-class metadata) or a reference to a curated per-class name list.
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct SpellsDefinition {
     #[serde(default)]
-    pub list: SpellList,
+    pub list: SpellsList,
+    /// Name of a field (`Points` or `FreeUses`) backing the per-cast cost,
+    /// looked up by name across the character's features — not necessarily on
+    /// the same feature.
     #[serde(default)]
     pub cost: Option<String>,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+#[serde(untagged)]
+pub enum SpellsList {
+    Inline(Vec<SpellEntry>),
+    Ref { from: String },
+}
+
+impl Default for SpellsList {
+    fn default() -> Self {
+        Self::Inline(Vec::new())
+    }
+}
+
+impl SpellsList {
+    /// Extract the short list name from a `Ref` path
+    /// (`"spells/wizard.json"` → `"wizard"`).
+    pub fn ref_name(&self) -> Option<&str> {
+        match self {
+            Self::Ref { from } => from
+                .strip_prefix("spells/")
+                .and_then(|rest| rest.strip_suffix(".json")),
+            _ => None,
+        }
+    }
+
+    /// Build a ref path from a short list name
+    /// (`"wizard"` → `"spells/wizard.json"`).
+    pub fn ref_path(name: &str) -> String {
+        format!("spells/{name}.json")
+    }
+
+    /// Inline entries from a feature's spell block. Empty for `Ref` lists.
+    pub fn inline_entries(&self) -> &[SpellEntry] {
+        match self {
+            Self::Inline(entries) => entries,
+            Self::Ref { .. } => &[],
+        }
+    }
+}
+
+/// One spell entry inside a feature's inline list. JSON accepts both a bare
+/// string (`"Magic Missile"`) and an object (`{"name": "...", "sticky": true,
+/// "min_level": 3, "cost": 1}`); fields default to zero/false when omitted.
+#[derive(Debug, Clone, Default)]
+pub struct SpellEntry {
+    pub name: Box<str>,
+    pub sticky: bool,
+    pub min_level: u32,
+    pub cost: u32,
+}
+
+impl<'de> Deserialize<'de> for SpellEntry {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Repr {
+            Bare(Box<str>),
+            Detailed {
+                name: Box<str>,
+                #[serde(default)]
+                sticky: bool,
+                #[serde(default)]
+                min_level: u32,
+                #[serde(default)]
+                cost: u32,
+            },
+        }
+        match Repr::deserialize(deserializer)? {
+            Repr::Bare(name) => Ok(SpellEntry {
+                name,
+                ..SpellEntry::default()
+            }),
+            Repr::Detailed {
+                name,
+                sticky,
+                min_level,
+                cost,
+            } => Ok(SpellEntry {
+                name,
+                sticky,
+                min_level,
+                cost,
+            }),
+        }
+    }
+}
+
 impl SpellsDefinition {
-    /// Structural bootstrap: SpellData skeleton + sticky import + free_uses
-    /// backfill. Numeric scaling lives in feature `assign` expressions.
+    /// Per-feature SpellData bootstrap: ensures `SpellData` exists, imports
+    /// sticky entries (looking up their full definition in `spells_index`),
+    /// and refreshes `free_uses.max` after a level-up. `Ref` blocks have no
+    /// per-entry sticky info, so they only ensure the skeleton.
     pub fn apply(
         &self,
+        feat_def: &FeatureDefinition,
         level: u32,
         character: &mut Character,
-        feature_name: &str,
-        free_uses_max: u32,
+        spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     ) {
+        let feature_name: &str = &feat_def.name;
+        let free_uses_max = feat_def.free_uses_max(level, character);
         let entry = character
             .features
             .entry(feature_name.to_string())
@@ -113,29 +219,35 @@ impl SpellsDefinition {
             return;
         };
 
-        if let SpellList::Inline(list) = &self.list {
-            for source in list.values().filter(|s| s.sticky && s.min_level <= level) {
-                if spell_data
-                    .spells
-                    .iter()
-                    .any(|existing| existing.name == source.name)
-                {
-                    continue;
-                }
-                let free_uses = (source.cost > 0 && free_uses_max > 0).then_some(FreeUses {
-                    used: 0,
-                    max: free_uses_max,
-                });
-                spell_data.spells.push(Spell {
-                    name: source.name.clone(),
-                    label: source.label.clone(),
-                    description: source.description.clone(),
-                    level: source.level,
-                    sticky: true,
-                    cost: source.cost,
-                    free_uses,
-                });
+        for entry in self
+            .list
+            .inline_entries()
+            .iter()
+            .filter(|entry| entry.sticky && entry.min_level <= level)
+        {
+            if spell_data
+                .spells
+                .iter()
+                .any(|existing| existing.name.as_str() == &*entry.name)
+            {
+                continue;
             }
+            let Some(def) = spells_index.get(&*entry.name) else {
+                continue;
+            };
+            let free_uses = (entry.cost > 0 && free_uses_max > 0).then_some(FreeUses {
+                used: 0,
+                max: free_uses_max,
+            });
+            spell_data.spells.push(Spell {
+                name: def.name.to_string(),
+                label: None,
+                description: String::new(),
+                level: def.level,
+                sticky: true,
+                cost: entry.cost,
+                free_uses,
+            });
         }
 
         // Update free_uses.max on existing prepared spells (level-up).
@@ -155,72 +267,18 @@ impl SpellsDefinition {
     }
 }
 
-/// A map of spell definitions keyed by name. Deserializes from a JSON array
-/// `[{"name": ...}, ...]` into `BTreeMap<Box<str>, SpellDefinition>` via
-/// `named_map`.
-#[derive(Debug, Clone, Default)]
-pub struct SpellMap(pub BTreeMap<Box<str>, SpellDefinition>);
-
-impl<'de> Deserialize<'de> for SpellMap {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        demap::named_map(deserializer).map(Self)
-    }
-}
-
-impl std::ops::Deref for SpellMap {
-    type Target = BTreeMap<Box<str>, SpellDefinition>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(untagged)]
-pub enum SpellList {
-    Ref { from: String },
-    Inline(SpellMap),
-}
-
-impl SpellList {
-    /// Extract the short list name from a `Ref` path (e.g.
-    /// `"spells/wizard.json"` → `"wizard"`).
-    pub fn ref_name(&self) -> Option<&str> {
-        match self {
-            Self::Ref { from } => from
-                .strip_prefix("spells/")
-                .and_then(|s| s.strip_suffix(".json")),
-            _ => None,
-        }
-    }
-
-    /// Build a ref path from a short list name (e.g. `"wizard"` →
-    /// `"spells/wizard.json"`).
-    pub fn ref_path(name: &str) -> String {
-        format!("spells/{name}.json")
-    }
-}
-
-impl Default for SpellList {
-    fn default() -> Self {
-        Self::Inline(SpellMap::default())
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    use std::path::Path;
+
     use super::*;
 
-    fn parse_spell_list(name: &str) -> SpellMap {
-        let path = format!("../../public/data/spells/{name}.json");
-        let data = std::fs::read_to_string(
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("public/data/spells")
-                .join(format!("{name}.json")),
-        )
-        .unwrap_or_else(|error| panic!("failed to read {path}: {error}"));
-        serde_json::from_str::<SpellMap>(&data)
-            .unwrap_or_else(|error| panic!("failed to parse {path}: {error}"))
+    fn parse_spells_index() -> SpellsIndex {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/data/spells.json");
+        let data = std::fs::read_to_string(&path)
+            .unwrap_or_else(|error| panic!("failed to read {}: {error}", path.display()));
+        serde_json::from_str::<SpellsIndex>(&data)
+            .unwrap_or_else(|error| panic!("failed to parse spells.json: {error}"))
     }
 
     #[test]
@@ -250,8 +308,20 @@ mod tests {
     }
 
     #[test]
-    fn deserialize_all_spell_lists() {
-        let lists = [
+    fn deserialize_spells_json() {
+        let index = parse_spells_index();
+        assert!(
+            index.0.len() > 500,
+            "expected 500+ spells in index, got {}",
+            index.0.len()
+        );
+    }
+
+    #[test]
+    fn per_class_spell_lists_resolve_into_index() {
+        let index = parse_spells_index();
+        let lists_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/data/spells");
+        let classes = [
             "artificer",
             "bard",
             "cleric",
@@ -262,46 +332,41 @@ mod tests {
             "warlock",
             "wizard",
         ];
-        for name in lists {
-            let map = parse_spell_list(name);
-            assert!(!map.0.is_empty(), "{name}.json should have spells");
+        for name in classes {
+            let path = lists_dir.join(format!("{name}.json"));
+            let data = std::fs::read_to_string(&path).expect("read class list");
+            let names: Vec<String> =
+                serde_json::from_str(&data).expect("class list is array of names");
+            assert!(!names.is_empty(), "{name}.json should have spell names");
+            for spell_name in &names {
+                assert!(
+                    index.0.contains_key(spell_name.as_str()),
+                    "{name}.json references unknown spell {spell_name:?}"
+                );
+            }
         }
     }
 
     #[test]
     fn all_spell_effects_have_valid_expressions() {
-        let lists = [
-            "artificer",
-            "bard",
-            "cleric",
-            "druid",
-            "paladin",
-            "ranger",
-            "sorcerer",
-            "warlock",
-            "wizard",
-        ];
+        let index = parse_spells_index();
         let mut total_effects = 0;
-        for name in lists {
-            let map = parse_spell_list(name);
-            for (spell_name, spell) in map.0.iter() {
-                for effect in &spell.effects {
-                    total_effects += 1;
-                    if let Some(ref expr) = effect.expr {
-                        // Verify the expression can be displayed (round-trip check)
-                        let display = format!("{expr}");
-                        assert!(
-                            !display.is_empty(),
-                            "{name}/{spell_name}: effect '{}' has empty expression display",
-                            effect.name
-                        );
-                    }
+        for (spell_name, spell) in index.0.iter() {
+            for effect in &spell.effects {
+                total_effects += 1;
+                if let Some(ref expr) = effect.expr {
+                    let display = expr.to_string();
+                    assert!(
+                        !display.is_empty(),
+                        "{spell_name}: effect '{}' has empty expression display",
+                        effect.name
+                    );
                 }
             }
         }
         assert!(
             total_effects > 100,
-            "expected 100+ spell effects across all lists, got {total_effects}"
+            "expected 100+ spell effects in index, got {total_effects}"
         );
     }
 }
