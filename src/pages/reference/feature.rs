@@ -92,7 +92,6 @@ pub fn FeatureReference() -> impl IntoView {
         })
     };
 
-    let categories = || FeatureCategory::iter();
     let render_category = move |category: FeatureCategory| {
         let name = category.to_string();
         let label = Signal::derive(move || i18n.tr(category.tr_key()));
@@ -111,7 +110,7 @@ pub fn FeatureReference() -> impl IntoView {
                     <Ref href="/r/feature" attr:class="reference-nav-item" exact=true>
                         {move_tr!("feat-cat-all")}
                     </Ref>
-                    <For each=categories key=|c| *c children=render_category />
+                    <For each=FeatureCategory::iter key=|c| *c children=render_category />
                 </ReferenceSidebar>
                 <div class="reference-feature-page">
                     <div class="reference-feature-header">

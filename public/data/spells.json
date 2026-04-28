@@ -2,6 +2,7 @@
   {
     "name": "Abi-Dalzim's Horrid Wilting",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -15,6 +16,7 @@
   {
     "name": "Absorb Elements",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Damage",
@@ -30,6 +32,7 @@
   {
     "name": "Acid Splash",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Acid Damage",
@@ -44,6 +47,7 @@
   {
     "name": "Aganazzar's Scorcher",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -57,6 +61,7 @@
   {
     "name": "Aid",
     "level": 2,
+    "category": "Healing",
     "effects": [
       {
         "name": "HP Boost",
@@ -73,6 +78,7 @@
   {
     "name": "Air Bubble",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Air Bubble",
@@ -88,6 +94,7 @@
   {
     "name": "Alarm",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -105,6 +112,7 @@
   {
     "name": "Alter Self",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Alter Self",
@@ -119,6 +127,7 @@
   {
     "name": "Alustriel's Mooncloak",
     "level": 5,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -136,6 +145,7 @@
   {
     "name": "Animal Friendship",
     "level": 1,
+    "category": "Social",
     "effects": [
       {
         "name": "Animal Friendship",
@@ -151,6 +161,7 @@
   {
     "name": "Animal Messenger",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -167,6 +178,7 @@
   {
     "name": "Animal Shapes",
     "level": 8,
+    "category": "Buff",
     "effects": [
       {
         "name": "Animal Shapes",
@@ -182,6 +194,7 @@
   {
     "name": "Animate Dead",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Animate Dead",
@@ -196,6 +209,7 @@
   {
     "name": "Animate Objects",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Animate Objects",
@@ -212,6 +226,7 @@
   {
     "name": "Antagonize",
     "level": 3,
+    "category": "Social",
     "effects": [
       {
         "name": "Antagonize",
@@ -224,6 +239,7 @@
   {
     "name": "Antilife Shell",
     "level": 5,
+    "category": "Defense",
     "effects": [
       {
         "name": "Antilife Shell",
@@ -240,6 +256,7 @@
   {
     "name": "Antimagic Field",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Antimagic Field",
@@ -256,6 +273,7 @@
   {
     "name": "Antipathy/Sympathy",
     "level": 8,
+    "category": "Social",
     "effects": [
       {
         "name": "Antipathy/Sympathy",
@@ -272,6 +290,7 @@
   {
     "name": "Arcane Eye",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Arcane Eye",
@@ -288,6 +307,7 @@
   {
     "name": "Arcane Gate",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Arcane Gate",
@@ -304,6 +324,7 @@
   {
     "name": "Arcane Lock",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Arcane Lock",
@@ -315,6 +336,7 @@
   {
     "name": "Arcane Vigor",
     "level": 2,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -328,6 +350,7 @@
   {
     "name": "Armor of Agathys",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Temp HP",
@@ -341,6 +364,7 @@
   {
     "name": "Arms of Hadar",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -355,6 +379,7 @@
   {
     "name": "Ashardalon's Stride",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -381,6 +406,7 @@
   {
     "name": "Astral Projection",
     "level": 9,
+    "category": "Control",
     "effects": [
       {
         "name": "Astral Projection",
@@ -395,6 +421,7 @@
   {
     "name": "Augury",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -408,6 +435,7 @@
   {
     "name": "Aura of Life",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Aura of Life",
@@ -424,6 +452,7 @@
   {
     "name": "Aura of Purity",
     "level": 4,
+    "category": "Social",
     "effects": [
       {
         "name": "Aura of Purity",
@@ -440,6 +469,7 @@
   {
     "name": "Aura of Vitality",
     "level": 3,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -457,6 +487,7 @@
   {
     "name": "Awaken",
     "level": 5,
+    "category": "Social",
     "effects": [
       {
         "name": "Awaken",
@@ -469,6 +500,7 @@
   {
     "name": "Backlash",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Backlash",
@@ -484,6 +516,7 @@
   {
     "name": "Bane",
     "level": 1,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Bane",
@@ -501,6 +534,7 @@
   {
     "name": "Banishing Smite",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -517,6 +551,7 @@
   {
     "name": "Banishment",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Banishment",
@@ -533,6 +568,7 @@
   {
     "name": "Barkskin",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -548,6 +584,7 @@
   {
     "name": "Beacon of Hope",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Beacon of Hope",
@@ -565,6 +602,7 @@
   {
     "name": "Beast Bond",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Beast Bond",
@@ -579,6 +617,7 @@
   {
     "name": "Beast Sense",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -594,6 +633,7 @@
   {
     "name": "Befuddlement",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Befuddlement",
@@ -608,6 +648,7 @@
   {
     "name": "Bestow Curse",
     "level": 3,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Bestow Curse",
@@ -623,6 +664,7 @@
   {
     "name": "Bigby's Hand",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Clenched Fist",
@@ -650,6 +692,7 @@
   {
     "name": "Blade Barrier",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Slashing Damage",
@@ -667,6 +710,7 @@
   {
     "name": "Blade Ward",
     "level": 0,
+    "category": "Defense",
     "effects": [
       {
         "name": "Penalty",
@@ -682,6 +726,7 @@
   {
     "name": "Blade of Disaster",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -700,6 +745,7 @@
   {
     "name": "Bless",
     "level": 1,
+    "category": "Buff",
     "effects": [
       {
         "name": "Bless",
@@ -717,6 +763,7 @@
   {
     "name": "Blight",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -731,6 +778,7 @@
   {
     "name": "Blinding Smite",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -746,6 +794,7 @@
   {
     "name": "Blindness/Deafness",
     "level": 2,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Blindness/Deafness",
@@ -761,6 +810,7 @@
   {
     "name": "Blink",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Blink",
@@ -775,6 +825,7 @@
   {
     "name": "Blur",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Blur",
@@ -789,6 +840,7 @@
   {
     "name": "Bones of the Earth",
     "level": 6,
+    "category": "Control",
     "effects": [
       {
         "name": "Bones of the Earth",
@@ -802,6 +854,7 @@
   {
     "name": "Booming Blade",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -812,6 +865,7 @@
   {
     "name": "Borrowed Knowledge",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Borrowed Knowledge",
@@ -825,6 +879,7 @@
   {
     "name": "Burning Hands",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -839,6 +894,7 @@
   {
     "name": "Cacophonic Shield",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Cacophonic Shield",
@@ -856,6 +912,7 @@
   {
     "name": "Call Lightning",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -873,6 +930,7 @@
   {
     "name": "Calm Emotions",
     "level": 2,
+    "category": "Social",
     "effects": [
       {
         "name": "Calm Emotions",
@@ -889,6 +947,7 @@
   {
     "name": "Catapult",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -903,6 +962,7 @@
   {
     "name": "Catnap",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Catnap",
@@ -918,6 +978,7 @@
   {
     "name": "Cause Fear",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Cause Fear",
@@ -934,6 +995,7 @@
   {
     "name": "Ceremony",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -948,6 +1010,7 @@
   {
     "name": "Chain Lightning",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -962,6 +1025,7 @@
   {
     "name": "Chaos Bolt",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -975,6 +1039,7 @@
   {
     "name": "Charm Monster",
     "level": 4,
+    "category": "Social",
     "effects": [
       {
         "name": "Charm Monster",
@@ -990,6 +1055,7 @@
   {
     "name": "Charm Person",
     "level": 1,
+    "category": "Social",
     "effects": [
       {
         "name": "Charm Person",
@@ -1005,6 +1071,7 @@
   {
     "name": "Chill Touch",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -1017,6 +1084,7 @@
   {
     "name": "Chromatic Orb",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -1031,6 +1099,7 @@
   {
     "name": "Circle of Death",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -1045,6 +1114,7 @@
   {
     "name": "Circle of Power",
     "level": 5,
+    "category": "Buff",
     "effects": [
       {
         "name": "Circle of Power",
@@ -1062,6 +1132,7 @@
   {
     "name": "Clairvoyance",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Clairvoyance",
@@ -1076,6 +1147,7 @@
   {
     "name": "Clone",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Clone",
@@ -1088,6 +1160,7 @@
   {
     "name": "Cloud of Daggers",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Slashing Damage",
@@ -1105,6 +1178,7 @@
   {
     "name": "Cloudkill",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Poison Damage",
@@ -1122,6 +1196,7 @@
   {
     "name": "Color Spray",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Color Spray",
@@ -1135,6 +1210,7 @@
   {
     "name": "Command",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Command",
@@ -1148,6 +1224,7 @@
   {
     "name": "Commune",
     "level": 5,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -1163,6 +1240,7 @@
   {
     "name": "Commune with Nature",
     "level": 5,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -1176,6 +1254,7 @@
   {
     "name": "Compelled Duel",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Compelled Duel",
@@ -1193,6 +1272,7 @@
   {
     "name": "Comprehend Languages",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -1207,6 +1287,7 @@
   {
     "name": "Compulsion",
     "level": 4,
+    "category": "Social",
     "effects": [
       {
         "name": "Compulsion",
@@ -1223,6 +1304,7 @@
   {
     "name": "Cone of Cold",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -1237,6 +1319,7 @@
   {
     "name": "Confusion",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Confusion",
@@ -1254,6 +1337,7 @@
   {
     "name": "Conjure Animals",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Animals",
@@ -1271,6 +1355,7 @@
   {
     "name": "Conjure Barrage",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -1285,6 +1370,7 @@
   {
     "name": "Conjure Celestial",
     "level": 7,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Celestial",
@@ -1302,6 +1388,7 @@
   {
     "name": "Conjure Constructs",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Constructs",
@@ -1319,6 +1406,7 @@
   {
     "name": "Conjure Elemental",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Elemental",
@@ -1336,6 +1424,7 @@
   {
     "name": "Conjure Fey",
     "level": 6,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Fey",
@@ -1353,6 +1442,7 @@
   {
     "name": "Conjure Minor Elementals",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Minor Elementals",
@@ -1370,6 +1460,7 @@
   {
     "name": "Conjure Volley",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -1384,6 +1475,7 @@
   {
     "name": "Conjure Woodland Beings",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Conjure Woodland Beings",
@@ -1401,6 +1493,7 @@
   {
     "name": "Contact Other Plane",
     "level": 5,
+    "category": "Control",
     "ritual": true,
     "effects": [
       {
@@ -1417,6 +1510,7 @@
   {
     "name": "Contagion",
     "level": 5,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Contagion",
@@ -1431,6 +1525,7 @@
   {
     "name": "Contingency",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Contingency",
@@ -1445,6 +1540,7 @@
   {
     "name": "Continual Flame",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Continual Flame",
@@ -1456,6 +1552,7 @@
   {
     "name": "Control Flames",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Control Flames",
@@ -1471,6 +1568,7 @@
   {
     "name": "Control Water",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Control Water",
@@ -1488,6 +1586,7 @@
   {
     "name": "Control Weather",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Duration (minutes)",
@@ -1506,6 +1605,7 @@
   {
     "name": "Control Winds",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Control Winds",
@@ -1522,6 +1622,7 @@
   {
     "name": "Cordon of Arrows",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Cordon of Arrows",
@@ -1536,6 +1637,7 @@
   {
     "name": "Counterspell",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Counterspell",
@@ -1550,6 +1652,7 @@
   {
     "name": "Create Bonfire",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -1567,6 +1670,7 @@
   {
     "name": "Create Food and Water",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Create Food and Water",
@@ -1580,6 +1684,7 @@
   {
     "name": "Create Homunculus",
     "level": 6,
+    "category": "Summon",
     "effects": [
       {
         "name": "Create Homunculus",
@@ -1593,6 +1698,7 @@
   {
     "name": "Create Magen",
     "level": 7,
+    "category": "Summon",
     "effects": [
       {
         "name": "Create Magen",
@@ -1605,6 +1711,7 @@
   {
     "name": "Create Spelljamming Helm",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Create Spelljamming Helm",
@@ -1616,6 +1723,7 @@
   {
     "name": "Create Undead",
     "level": 6,
+    "category": "Summon",
     "effects": [
       {
         "name": "Create Undead",
@@ -1630,6 +1738,7 @@
   {
     "name": "Create or Destroy Water",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Create or Destroy Water",
@@ -1643,6 +1752,7 @@
   {
     "name": "Creation",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Creation",
@@ -1656,6 +1766,7 @@
   {
     "name": "Crown of Madness",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Crown of Madness",
@@ -1672,6 +1783,7 @@
   {
     "name": "Crown of Stars",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -1685,6 +1797,7 @@
   {
     "name": "Crusader's Mantle",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -1702,6 +1815,7 @@
   {
     "name": "Cure Wounds",
     "level": 1,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -1714,6 +1828,7 @@
   {
     "name": "Dancing Lights",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Dancing Lights",
@@ -1730,6 +1845,7 @@
   {
     "name": "Danse Macabre",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Danse Macabre",
@@ -1746,6 +1862,7 @@
   {
     "name": "Dark Star",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -1757,6 +1874,7 @@
   {
     "name": "Darkness",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Darkness",
@@ -1773,6 +1891,7 @@
   {
     "name": "Darkvision",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Darkvision",
@@ -1786,6 +1905,7 @@
   {
     "name": "Dawn",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -1797,6 +1917,7 @@
   {
     "name": "Daylight",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Daylight",
@@ -1812,6 +1933,7 @@
   {
     "name": "Death Armor",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -1826,6 +1948,7 @@
   {
     "name": "Death Ward",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Death Ward",
@@ -1839,6 +1962,7 @@
   {
     "name": "Delayed Blast Fireball",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -1856,6 +1980,7 @@
   {
     "name": "Demiplane",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Demiplane",
@@ -1871,6 +1996,7 @@
   {
     "name": "Deryan's Helpful Homunculi",
     "level": 2,
+    "category": "Summon",
     "effects": [
       {
         "name": "Deryan's Helpful Homunculi",
@@ -1884,6 +2010,7 @@
   {
     "name": "Destructive Wave",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -1906,6 +2033,7 @@
   {
     "name": "Detect Evil and Good",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Detect Evil and Good",
@@ -1920,6 +2048,7 @@
   {
     "name": "Detect Magic",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -1935,6 +2064,7 @@
   {
     "name": "Detect Poison and Disease",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -1950,6 +2080,7 @@
   {
     "name": "Detect Thoughts",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Detect Thoughts",
@@ -1964,6 +2095,7 @@
   {
     "name": "Dimension Door",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Dimension Door",
@@ -1978,6 +2110,7 @@
   {
     "name": "Dirge",
     "level": 6,
+    "category": "Control",
     "effects": [
       {
         "name": "Dirge",
@@ -1995,6 +2128,7 @@
   {
     "name": "Disguise Self",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Disguise Self",
@@ -2008,6 +2142,7 @@
   {
     "name": "Disintegrate",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -2022,6 +2157,7 @@
   {
     "name": "Dispel Evil and Good",
     "level": 5,
+    "category": "Social",
     "effects": [
       {
         "name": "Dispel Evil and Good",
@@ -2036,6 +2172,7 @@
   {
     "name": "Dispel Magic",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Dispel Magic",
@@ -2049,6 +2186,7 @@
   {
     "name": "Dissonant Whispers",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -2063,6 +2201,7 @@
   {
     "name": "Distort Value",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Distort Value",
@@ -2077,6 +2216,7 @@
   {
     "name": "Divination",
     "level": 4,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -2089,6 +2229,7 @@
   {
     "name": "Divine Favor",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -2104,6 +2245,7 @@
   {
     "name": "Divine Smite",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -2117,6 +2259,7 @@
   {
     "name": "Divine Word",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Divine Word",
@@ -2131,6 +2274,7 @@
   {
     "name": "Dominate Beast",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Dominate Beast",
@@ -2147,6 +2291,7 @@
   {
     "name": "Dominate Monster",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Dominate Monster",
@@ -2163,6 +2308,7 @@
   {
     "name": "Dominate Person",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Dominate Person",
@@ -2179,6 +2325,7 @@
   {
     "name": "Doomtide",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Doomtide",
@@ -2196,6 +2343,7 @@
   {
     "name": "Draconic Transformation",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Draconic Transformation",
@@ -2212,6 +2360,7 @@
   {
     "name": "Dragon's Breath",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -2228,6 +2377,7 @@
   {
     "name": "Drawmij's Instant Summons",
     "level": 6,
+    "category": "Summon",
     "ritual": true,
     "effects": [
       {
@@ -2241,6 +2391,7 @@
   {
     "name": "Dream",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Dream",
@@ -2255,6 +2406,7 @@
   {
     "name": "Dream of the Blue Veil",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Dream of the Blue Veil",
@@ -2271,6 +2423,7 @@
   {
     "name": "Druid Grove",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Druid Grove",
@@ -2285,6 +2438,7 @@
   {
     "name": "Druidcraft",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Druidcraft",
@@ -2298,6 +2452,7 @@
   {
     "name": "Dust Devil",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -2315,6 +2470,7 @@
   {
     "name": "Earth Tremor",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -2331,6 +2487,7 @@
   {
     "name": "Earthbind",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Earthbind",
@@ -2347,6 +2504,7 @@
   {
     "name": "Earthquake",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Earthquake",
@@ -2364,6 +2522,7 @@
   {
     "name": "Eldritch Blast",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -2378,6 +2537,7 @@
   {
     "name": "Elemental Bane",
     "level": 4,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Damage Bonus",
@@ -2395,6 +2555,7 @@
   {
     "name": "Elemental Weapon",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Damage Bonus",
@@ -2418,6 +2579,7 @@
   {
     "name": "Elementalism",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Elementalism",
@@ -2431,6 +2593,7 @@
   {
     "name": "Elminster's Effulgent Spheres",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -2447,6 +2610,7 @@
   {
     "name": "Elminster's Elusion",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Elminster's Elusion",
@@ -2462,6 +2626,7 @@
   {
     "name": "Enemies Abound",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Enemies Abound",
@@ -2478,6 +2643,7 @@
   {
     "name": "Enervation",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -2492,6 +2658,7 @@
   {
     "name": "Enhance Ability",
     "level": 2,
+    "category": "Buff",
     "effects": [
       {
         "name": "Enhance Ability",
@@ -2506,6 +2673,7 @@
   {
     "name": "Enlarge/Reduce",
     "level": 2,
+    "category": "Buff",
     "effects": [
       {
         "name": "Damage Bonus",
@@ -2523,6 +2691,7 @@
   {
     "name": "Ensnaring Strike",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -2539,6 +2708,7 @@
   {
     "name": "Entangle",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Entangle",
@@ -2555,6 +2725,7 @@
   {
     "name": "Enthrall",
     "level": 2,
+    "category": "Social",
     "effects": [
       {
         "name": "Enthrall",
@@ -2571,6 +2742,7 @@
   {
     "name": "Erupting Earth",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -2587,6 +2759,7 @@
   {
     "name": "Etherealness",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Etherealness",
@@ -2600,6 +2773,7 @@
   {
     "name": "Evard's Black Tentacles",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -2617,6 +2791,7 @@
   {
     "name": "Expeditious Retreat",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Expeditious Retreat",
@@ -2632,6 +2807,7 @@
   {
     "name": "Eyebite",
     "level": 6,
+    "category": "Control",
     "effects": [
       {
         "name": "Eyebite",
@@ -2646,6 +2822,7 @@
   {
     "name": "Fabricate",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Fabricate",
@@ -2660,6 +2837,7 @@
   {
     "name": "Faerie Fire",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Faerie Fire",
@@ -2676,6 +2854,7 @@
   {
     "name": "False Life",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Temp HP",
@@ -2688,6 +2867,7 @@
   {
     "name": "Far Step",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Far Step",
@@ -2700,6 +2880,7 @@
   {
     "name": "Fast Friends",
     "level": 3,
+    "category": "Social",
     "effects": [
       {
         "name": "Fast Friends",
@@ -2716,6 +2897,7 @@
   {
     "name": "Fear",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Fear",
@@ -2732,6 +2914,7 @@
   {
     "name": "Feather Fall",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Feather Fall",
@@ -2748,6 +2931,7 @@
   {
     "name": "Feign Death",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Feign Death",
@@ -2763,6 +2947,7 @@
   {
     "name": "Find Familiar",
     "level": 1,
+    "category": "Summon",
     "ritual": true,
     "effects": [
       {
@@ -2778,6 +2963,7 @@
   {
     "name": "Find Greater Steed",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Find Greater Steed",
@@ -2792,6 +2978,7 @@
   {
     "name": "Find Steed",
     "level": 2,
+    "category": "Summon",
     "effects": [
       {
         "name": "Find Steed",
@@ -2805,6 +2992,7 @@
   {
     "name": "Find Traps",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Find Traps",
@@ -2818,6 +3006,7 @@
   {
     "name": "Find the Path",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Find the Path",
@@ -2833,6 +3022,7 @@
   {
     "name": "Finger of Death",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -2847,6 +3037,7 @@
   {
     "name": "Fire Bolt",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2861,6 +3052,7 @@
   {
     "name": "Fire Shield",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Fire/Cold Damage",
@@ -2877,6 +3069,7 @@
   {
     "name": "Fire Storm",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2891,6 +3084,7 @@
   {
     "name": "Fireball",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2905,6 +3099,7 @@
   {
     "name": "Fizban's Platinum Shield",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -2921,6 +3116,7 @@
   {
     "name": "Flame Arrows",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Flame Arrows",
@@ -2936,6 +3132,7 @@
   {
     "name": "Flame Blade",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2952,6 +3149,7 @@
   {
     "name": "Flame Strike",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2974,6 +3172,7 @@
   {
     "name": "Flaming Sphere",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -2991,6 +3190,7 @@
   {
     "name": "Flesh to Stone",
     "level": 6,
+    "category": "Control",
     "effects": [
       {
         "name": "Flesh to Stone",
@@ -3007,6 +3207,7 @@
   {
     "name": "Flock of Familiars",
     "level": 2,
+    "category": "Summon",
     "effects": [
       {
         "name": "Flock of Familiars",
@@ -3022,6 +3223,7 @@
   {
     "name": "Fly",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Fly",
@@ -3036,6 +3238,7 @@
   {
     "name": "Fog Cloud",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Fog Cloud",
@@ -3052,6 +3255,7 @@
   {
     "name": "Forbiddance",
     "level": 6,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -3068,6 +3272,7 @@
   {
     "name": "Forcecage",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Forcecage",
@@ -3084,6 +3289,7 @@
   {
     "name": "Foresight",
     "level": 9,
+    "category": "Buff",
     "effects": [
       {
         "name": "Foresight",
@@ -3099,6 +3305,7 @@
   {
     "name": "Fortune's Favor",
     "level": 2,
+    "category": "Buff",
     "effects": [
       {
         "name": "Fortune's Favor",
@@ -3115,6 +3322,7 @@
   {
     "name": "Fount of Moonlight",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -3132,6 +3340,7 @@
   {
     "name": "Freedom of Movement",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Freedom of Movement",
@@ -3145,6 +3354,7 @@
   {
     "name": "Friends",
     "level": 0,
+    "category": "Social",
     "effects": [
       {
         "name": "Friends",
@@ -3161,6 +3371,7 @@
   {
     "name": "Frost Fingers",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -3171,6 +3382,7 @@
   {
     "name": "Frostbite",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -3184,6 +3396,7 @@
   {
     "name": "Galder's Speedy Courier",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Galder's Speedy Courier",
@@ -3199,6 +3412,7 @@
   {
     "name": "Galder's Tower",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Galder's Tower",
@@ -3215,6 +3429,7 @@
   {
     "name": "Gaseous Form",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Gaseous Form",
@@ -3229,6 +3444,7 @@
   {
     "name": "Gate",
     "level": 9,
+    "category": "Utility",
     "effects": [
       {
         "name": "Gate",
@@ -3245,6 +3461,7 @@
   {
     "name": "Gate Seal",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Gate Seal",
@@ -3255,6 +3472,7 @@
   {
     "name": "Geas",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -3272,6 +3490,7 @@
   {
     "name": "Gentle Repose",
     "level": 2,
+    "category": "Social",
     "ritual": true,
     "effects": [
       {
@@ -3286,6 +3505,7 @@
   {
     "name": "Giant Insect",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Giant Insect",
@@ -3303,6 +3523,7 @@
   {
     "name": "Gift of Gab",
     "level": 2,
+    "category": "Social",
     "effects": [
       {
         "name": "Gift of Gab",
@@ -3317,6 +3538,7 @@
   {
     "name": "Glibness",
     "level": 8,
+    "category": "Social",
     "effects": [
       {
         "name": "Glibness",
@@ -3330,6 +3552,7 @@
   {
     "name": "Globe of Invulnerability",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Globe of Invulnerability",
@@ -3346,6 +3569,7 @@
   {
     "name": "Glyph of Warding",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -3359,6 +3583,7 @@
   {
     "name": "Goodberry",
     "level": 1,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -3373,6 +3598,7 @@
   {
     "name": "Grasping Vine",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Grasping Vine",
@@ -3391,6 +3617,7 @@
   {
     "name": "Gravity Fissure",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -3404,6 +3631,7 @@
   {
     "name": "Gravity Sinkhole",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -3414,6 +3642,7 @@
   {
     "name": "Grease",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Grease",
@@ -3429,6 +3658,7 @@
   {
     "name": "Greater Invisibility",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Greater Invisibility",
@@ -3443,6 +3673,7 @@
   {
     "name": "Greater Restoration",
     "level": 5,
+    "category": "Healing",
     "effects": [
       {
         "name": "Greater Restoration",
@@ -3454,6 +3685,7 @@
   {
     "name": "Green-Flame Blade",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -3464,6 +3696,7 @@
   {
     "name": "Guardian of Faith",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -3480,6 +3713,7 @@
   {
     "name": "Guardian of Nature",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Guardian of Nature",
@@ -3496,6 +3730,7 @@
   {
     "name": "Guards and Wards",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Guards and Wards",
@@ -3510,6 +3745,7 @@
   {
     "name": "Guidance",
     "level": 0,
+    "category": "Buff",
     "effects": [
       {
         "name": "Guidance",
@@ -3525,6 +3761,7 @@
   {
     "name": "Guiding Bolt",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -3541,6 +3778,7 @@
   {
     "name": "Gust",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Gust",
@@ -3553,6 +3791,7 @@
   {
     "name": "Gust of Wind",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Gust of Wind",
@@ -3569,6 +3808,7 @@
   {
     "name": "Hail of Thorns",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -3582,6 +3822,7 @@
   {
     "name": "Hallow",
     "level": 5,
+    "category": "Social",
     "effects": [
       {
         "name": "Hallow",
@@ -3594,6 +3835,7 @@
   {
     "name": "Hallucinatory Terrain",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Hallucinatory Terrain",
@@ -3610,6 +3852,7 @@
   {
     "name": "Harm",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -3624,6 +3867,7 @@
   {
     "name": "Haste",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Haste",
@@ -3639,6 +3883,7 @@
   {
     "name": "Heal",
     "level": 6,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -3653,6 +3898,7 @@
   {
     "name": "Healing Spirit",
     "level": 2,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -3671,6 +3917,7 @@
   {
     "name": "Healing Word",
     "level": 1,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -3686,6 +3933,7 @@
   {
     "name": "Heat Metal",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -3703,6 +3951,7 @@
   {
     "name": "Hellish Rebuke",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -3718,6 +3967,7 @@
   {
     "name": "Heroes' Feast",
     "level": 6,
+    "category": "Buff",
     "effects": [
       {
         "name": "Heroes' Feast",
@@ -3735,6 +3985,7 @@
   {
     "name": "Heroism",
     "level": 1,
+    "category": "Buff",
     "effects": [
       {
         "name": "Temp HP",
@@ -3750,6 +4001,7 @@
   {
     "name": "Hex",
     "level": 1,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -3768,6 +4020,7 @@
   {
     "name": "Hold Monster",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Hold Monster",
@@ -3784,6 +4037,7 @@
   {
     "name": "Hold Person",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Hold Person",
@@ -3800,6 +4054,7 @@
   {
     "name": "Holy Aura",
     "level": 8,
+    "category": "Defense",
     "effects": [
       {
         "name": "Holy Aura",
@@ -3817,6 +4072,7 @@
   {
     "name": "Holy Star of Mystra",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Holy Star of Mystra",
@@ -3834,6 +4090,7 @@
   {
     "name": "Holy Weapon",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Radiant Damage (Hit)",
@@ -3856,6 +4113,7 @@
   {
     "name": "Homunculus Servant",
     "level": 2,
+    "category": "Summon",
     "effects": [
       {
         "name": "Homunculus HP",
@@ -3871,6 +4129,7 @@
   {
     "name": "Hunger of Hadar",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -3898,6 +4157,7 @@
   {
     "name": "Hunter's Mark",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -3916,6 +4176,7 @@
   {
     "name": "Hypnotic Pattern",
     "level": 3,
+    "category": "Social",
     "effects": [
       {
         "name": "Hypnotic Pattern",
@@ -3932,6 +4193,7 @@
   {
     "name": "Ice Knife",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -3954,6 +4216,7 @@
   {
     "name": "Ice Storm",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -3976,6 +4239,7 @@
   {
     "name": "Icingdeath's Frost",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -3989,6 +4253,7 @@
   {
     "name": "Identify",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -4002,6 +4267,7 @@
   {
     "name": "Illusory Dragon",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Illusory Dragon",
@@ -4018,6 +4284,7 @@
   {
     "name": "Illusory Script",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -4033,6 +4300,7 @@
   {
     "name": "Immolation",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -4047,6 +4315,7 @@
   {
     "name": "Immovable Object",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Immovable Object",
@@ -4060,6 +4329,7 @@
   {
     "name": "Imprisonment",
     "level": 9,
+    "category": "Control",
     "effects": [
       {
         "name": "Imprisonment",
@@ -4074,6 +4344,7 @@
   {
     "name": "Incendiary Cloud",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -4091,6 +4362,7 @@
   {
     "name": "Incite Greed",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Incite Greed",
@@ -4107,6 +4379,7 @@
   {
     "name": "Infernal Calling",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Infernal Calling",
@@ -4124,6 +4397,7 @@
   {
     "name": "Infestation",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Poison Damage",
@@ -4137,6 +4411,7 @@
   {
     "name": "Inflict Wounds",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -4149,6 +4424,7 @@
   {
     "name": "Insect Plague",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -4166,6 +4442,7 @@
   {
     "name": "Intellect Fortress",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Intellect Fortress",
@@ -4181,6 +4458,7 @@
   {
     "name": "Investiture of Flame",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Investiture of Flame",
@@ -4198,6 +4476,7 @@
   {
     "name": "Investiture of Ice",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Investiture of Ice",
@@ -4215,6 +4494,7 @@
   {
     "name": "Investiture of Stone",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Investiture of Stone",
@@ -4231,6 +4511,7 @@
   {
     "name": "Investiture of Wind",
     "level": 6,
+    "category": "Buff",
     "effects": [
       {
         "name": "Investiture of Wind",
@@ -4248,6 +4529,7 @@
   {
     "name": "Invisibility",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Invisibility",
@@ -4262,6 +4544,7 @@
   {
     "name": "Invulnerability",
     "level": 9,
+    "category": "Defense",
     "effects": [
       {
         "name": "Invulnerability",
@@ -4276,6 +4559,7 @@
   {
     "name": "Jallarzi's Storm of Radiance",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -4293,6 +4577,7 @@
   {
     "name": "Jim's Glowing Coin",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Jim's Glowing Coin",
@@ -4308,6 +4593,7 @@
   {
     "name": "Jim's Magic Missile",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -4318,6 +4604,7 @@
   {
     "name": "Jump",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Jump",
@@ -4332,6 +4619,7 @@
   {
     "name": "Kinetic Jaunt",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Speed",
@@ -4348,6 +4636,7 @@
   {
     "name": "Knock",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Knock",
@@ -4361,6 +4650,7 @@
   {
     "name": "Laeral's Silver Lance",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -4375,6 +4665,7 @@
   {
     "name": "Legend Lore",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Legend Lore",
@@ -4387,6 +4678,7 @@
   {
     "name": "Leomund's Secret Chest",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Leomund's Secret Chest",
@@ -4398,6 +4690,7 @@
   {
     "name": "Leomund's Tiny Hut",
     "level": 3,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -4415,6 +4708,7 @@
   {
     "name": "Lesser Restoration",
     "level": 2,
+    "category": "Healing",
     "effects": [
       {
         "name": "Lesser Restoration",
@@ -4427,6 +4721,7 @@
   {
     "name": "Levitate",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Levitate",
@@ -4443,6 +4738,7 @@
   {
     "name": "Life Transference",
     "level": 3,
+    "category": "Healing",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -4453,6 +4749,7 @@
   {
     "name": "Light",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Light",
@@ -4466,6 +4763,7 @@
   {
     "name": "Lightning Arrow",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -4479,6 +4777,7 @@
   {
     "name": "Lightning Bolt",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -4493,6 +4792,7 @@
   {
     "name": "Lightning Lure",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -4507,6 +4807,7 @@
   {
     "name": "Linked Glyphs",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Linked Glyphs",
@@ -4521,6 +4822,7 @@
   {
     "name": "Locate Animals or Plants",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -4533,6 +4835,7 @@
   {
     "name": "Locate Creature",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Locate Creature",
@@ -4547,6 +4850,7 @@
   {
     "name": "Locate Object",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Locate Object",
@@ -4561,6 +4865,7 @@
   {
     "name": "Longstrider",
     "level": 1,
+    "category": "Buff",
     "effects": [
       {
         "name": "Speed",
@@ -4575,6 +4880,7 @@
   {
     "name": "Maddening Darkness",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -4592,6 +4898,7 @@
   {
     "name": "Maelstrom",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Maelstrom",
@@ -4609,6 +4916,7 @@
   {
     "name": "Mage Armor",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -4623,6 +4931,7 @@
   {
     "name": "Mage Hand",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mage Hand",
@@ -4638,6 +4947,7 @@
   {
     "name": "Magic Circle",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Magic Circle",
@@ -4654,6 +4964,7 @@
   {
     "name": "Magic Jar",
     "level": 6,
+    "category": "Control",
     "effects": [
       {
         "name": "Magic Jar",
@@ -4668,6 +4979,7 @@
   {
     "name": "Magic Missile",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -4682,6 +4994,7 @@
   {
     "name": "Magic Mouth",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -4697,6 +5010,7 @@
   {
     "name": "Magic Stone",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -4712,6 +5026,7 @@
   {
     "name": "Magic Weapon",
     "level": 2,
+    "category": "Buff",
     "effects": [
       {
         "name": "Attack Bonus",
@@ -4727,6 +5042,7 @@
   {
     "name": "Magnify Gravity",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -4737,6 +5053,7 @@
   {
     "name": "Major Image",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Major Image",
@@ -4753,6 +5070,7 @@
   {
     "name": "Mass Cure Wounds",
     "level": 5,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -4767,6 +5085,7 @@
   {
     "name": "Mass Heal",
     "level": 9,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -4781,6 +5100,7 @@
   {
     "name": "Mass Healing Word",
     "level": 3,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -4796,6 +5116,7 @@
   {
     "name": "Mass Polymorph",
     "level": 9,
+    "category": "Control",
     "effects": [
       {
         "name": "Mass Polymorph",
@@ -4812,6 +5133,7 @@
   {
     "name": "Mass Suggestion",
     "level": 6,
+    "category": "Social",
     "effects": [
       {
         "name": "Mass Suggestion",
@@ -4827,6 +5149,7 @@
   {
     "name": "Maximillian's Earthen Grasp",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -4841,6 +5164,7 @@
   {
     "name": "Maze",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Maze",
@@ -4857,6 +5181,7 @@
   {
     "name": "Meld into Stone",
     "level": 3,
+    "category": "Control",
     "ritual": true,
     "effects": [
       {
@@ -4872,6 +5197,7 @@
   {
     "name": "Melf's Acid Arrow",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Acid Damage",
@@ -4886,6 +5212,7 @@
   {
     "name": "Melf's Minute Meteors",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -4900,6 +5227,7 @@
   {
     "name": "Mending",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mending",
@@ -4912,6 +5240,7 @@
   {
     "name": "Mental Prison",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -4926,6 +5255,7 @@
   {
     "name": "Message",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Message",
@@ -4941,6 +5271,7 @@
   {
     "name": "Meteor Swarm",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -4957,6 +5288,7 @@
   {
     "name": "Mighty Fortress",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mighty Fortress",
@@ -4970,6 +5302,7 @@
   {
     "name": "Mind Blank",
     "level": 8,
+    "category": "Social",
     "effects": [
       {
         "name": "Mind Blank",
@@ -4983,6 +5316,7 @@
   {
     "name": "Mind Sliver",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -4999,6 +5333,7 @@
   {
     "name": "Mind Spike",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5016,6 +5351,7 @@
   {
     "name": "Minor Illusion",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Minor Illusion",
@@ -5031,6 +5367,7 @@
   {
     "name": "Mirage Arcane",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mirage Arcane",
@@ -5044,6 +5381,7 @@
   {
     "name": "Mirror Image",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Mirror Image",
@@ -5057,6 +5395,7 @@
   {
     "name": "Mislead",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mislead",
@@ -5071,6 +5410,7 @@
   {
     "name": "Misty Step",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Misty Step",
@@ -5083,6 +5423,7 @@
   {
     "name": "Modify Memory",
     "level": 5,
+    "category": "Social",
     "effects": [
       {
         "name": "Modify Memory",
@@ -5099,6 +5440,7 @@
   {
     "name": "Mold Earth",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mold Earth",
@@ -5114,6 +5456,7 @@
   {
     "name": "Moonbeam",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -5131,6 +5474,7 @@
   {
     "name": "Mordenkainen's Faithful Hound",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Mordenkainen's Faithful Hound",
@@ -5147,6 +5491,7 @@
   {
     "name": "Mordenkainen's Magnificent Mansion",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mordenkainen's Magnificent Mansion",
@@ -5163,6 +5508,7 @@
   {
     "name": "Mordenkainen's Private Sanctum",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Mordenkainen's Private Sanctum",
@@ -5179,6 +5525,7 @@
   {
     "name": "Mordenkainen's Sword",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -5196,6 +5543,7 @@
   {
     "name": "Motivational Speech",
     "level": 3,
+    "category": "Buff",
     "effects": [
       {
         "name": "Motivational Speech",
@@ -5213,6 +5561,7 @@
   {
     "name": "Move Earth",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Move Earth",
@@ -5229,6 +5578,7 @@
   {
     "name": "Nathair's Mischief",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Nathair's Mischief",
@@ -5246,6 +5596,7 @@
   {
     "name": "Negative Energy Flood",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -5259,6 +5610,7 @@
   {
     "name": "Nondetection",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Nondetection",
@@ -5272,6 +5624,7 @@
   {
     "name": "Nystul's Magic Aura",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Nystul's Magic Aura",
@@ -5285,6 +5638,7 @@
   {
     "name": "Otiluke's Freezing Sphere",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -5299,6 +5653,7 @@
   {
     "name": "Otiluke's Resilient Sphere",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Otiluke's Resilient Sphere",
@@ -5315,6 +5670,7 @@
   {
     "name": "Otto's Irresistible Dance",
     "level": 6,
+    "category": "Buff",
     "effects": [
       {
         "name": "Otto's Irresistible Dance",
@@ -5331,6 +5687,7 @@
   {
     "name": "Pass without Trace",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Stealth",
@@ -5348,6 +5705,7 @@
   {
     "name": "Passwall",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Passwall",
@@ -5363,6 +5721,7 @@
   {
     "name": "Phantasmal Force",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5380,6 +5739,7 @@
   {
     "name": "Phantasmal Killer",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5397,6 +5757,7 @@
   {
     "name": "Phantom Steed",
     "level": 3,
+    "category": "Summon",
     "ritual": true,
     "effects": [
       {
@@ -5414,6 +5775,7 @@
   {
     "name": "Planar Ally",
     "level": 6,
+    "category": "Summon",
     "effects": [
       {
         "name": "Planar Ally",
@@ -5428,6 +5790,7 @@
   {
     "name": "Planar Binding",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Planar Binding",
@@ -5444,6 +5807,7 @@
   {
     "name": "Plane Shift",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Plane Shift",
@@ -5455,6 +5819,7 @@
   {
     "name": "Plant Growth",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Plant Growth",
@@ -5468,6 +5833,7 @@
   {
     "name": "Poison Spray",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Poison Damage",
@@ -5482,6 +5848,7 @@
   {
     "name": "Polymorph",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Polymorph",
@@ -5498,6 +5865,7 @@
   {
     "name": "Power Word Fortify",
     "level": 7,
+    "category": "Defense",
     "effects": [
       {
         "name": "Temp HP",
@@ -5510,6 +5878,7 @@
   {
     "name": "Power Word Heal",
     "level": 9,
+    "category": "Healing",
     "effects": [
       {
         "name": "Power Word Heal",
@@ -5523,6 +5892,7 @@
   {
     "name": "Power Word Kill",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5537,6 +5907,7 @@
   {
     "name": "Power Word Pain",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Power Word Pain",
@@ -5549,6 +5920,7 @@
   {
     "name": "Power Word Stun",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Power Word Stun",
@@ -5562,6 +5934,7 @@
   {
     "name": "Prayer of Healing",
     "level": 2,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -5577,6 +5950,7 @@
   {
     "name": "Prestidigitation",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Prestidigitation",
@@ -5592,6 +5966,7 @@
   {
     "name": "Primal Savagery",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Acid Damage",
@@ -5603,6 +5978,7 @@
   {
     "name": "Primordial Ward",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Primordial Ward",
@@ -5617,6 +5993,7 @@
   {
     "name": "Prismatic Spray",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -5631,6 +6008,7 @@
   {
     "name": "Prismatic Wall",
     "level": 9,
+    "category": "Control",
     "effects": [
       {
         "name": "Prismatic Wall",
@@ -5647,6 +6025,7 @@
   {
     "name": "Produce Flame",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -5662,6 +6041,7 @@
   {
     "name": "Programmed Illusion",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Programmed Illusion",
@@ -5675,6 +6055,7 @@
   {
     "name": "Project Image",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Project Image",
@@ -5688,6 +6069,7 @@
   {
     "name": "Protection from Energy",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Protection from Energy",
@@ -5702,6 +6084,7 @@
   {
     "name": "Protection from Evil and Good",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Protection from Evil and Good",
@@ -5716,6 +6099,7 @@
   {
     "name": "Protection from Poison",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Protection from Poison",
@@ -5729,6 +6113,7 @@
   {
     "name": "Psychic Scream",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5742,6 +6127,7 @@
   {
     "name": "Purify Food and Drink",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -5756,6 +6142,7 @@
   {
     "name": "Pyrotechnics",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Pyrotechnics",
@@ -5771,6 +6158,7 @@
   {
     "name": "Raise Dead",
     "level": 5,
+    "category": "Healing",
     "effects": [
       {
         "name": "Raise Dead",
@@ -5783,6 +6171,7 @@
   {
     "name": "Rary's Telepathic Bond",
     "level": 5,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -5799,6 +6188,7 @@
   {
     "name": "Raulothim's Psychic Lance",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -5812,6 +6202,7 @@
   {
     "name": "Ravenous Void",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -5823,6 +6214,7 @@
   {
     "name": "Ray of Enfeeblement",
     "level": 2,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Ray of Enfeeblement",
@@ -5839,6 +6231,7 @@
   {
     "name": "Ray of Frost",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -5853,6 +6246,7 @@
   {
     "name": "Ray of Sickness",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Poison Damage",
@@ -5867,6 +6261,7 @@
   {
     "name": "Reality Break",
     "level": 8,
+    "category": "Control",
     "effects": [
       {
         "name": "Reality Break",
@@ -5883,6 +6278,7 @@
   {
     "name": "Regenerate",
     "level": 7,
+    "category": "Healing",
     "effects": [
       {
         "name": "Healing",
@@ -5898,6 +6294,7 @@
   {
     "name": "Reincarnate",
     "level": 5,
+    "category": "Healing",
     "effects": [
       {
         "name": "Reincarnate",
@@ -5911,6 +6308,7 @@
   {
     "name": "Remove Curse",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Remove Curse",
@@ -5922,6 +6320,7 @@
   {
     "name": "Resistance",
     "level": 0,
+    "category": "Buff",
     "effects": [
       {
         "name": "Resistance",
@@ -5937,6 +6336,7 @@
   {
     "name": "Resurrection",
     "level": 7,
+    "category": "Healing",
     "effects": [
       {
         "name": "Resurrection",
@@ -5949,6 +6349,7 @@
   {
     "name": "Reverse Gravity",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Reverse Gravity",
@@ -5965,6 +6366,7 @@
   {
     "name": "Revivify",
     "level": 3,
+    "category": "Healing",
     "effects": [
       {
         "name": "Revivify",
@@ -5976,6 +6378,7 @@
   {
     "name": "Rime's Binding Ice",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -5989,6 +6392,7 @@
   {
     "name": "Rope Trick",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Rope Trick",
@@ -6002,6 +6406,7 @@
   {
     "name": "Sacred Flame",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -6016,6 +6421,7 @@
   {
     "name": "Sanctuary",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Sanctuary",
@@ -6032,6 +6438,7 @@
   {
     "name": "Sapping Sting",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -6042,6 +6449,7 @@
   {
     "name": "Scatter",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Scatter",
@@ -6054,6 +6462,7 @@
   {
     "name": "Scorching Ray",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -6068,6 +6477,7 @@
   {
     "name": "Scrying",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Scrying",
@@ -6083,6 +6493,7 @@
   {
     "name": "Searing Smite",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -6098,6 +6509,7 @@
   {
     "name": "See Invisibility",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "See Invisibility",
@@ -6111,6 +6523,7 @@
   {
     "name": "Seeming",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Seeming",
@@ -6126,6 +6539,7 @@
   {
     "name": "Sending",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Sending",
@@ -6136,6 +6550,7 @@
   {
     "name": "Sequester",
     "level": 7,
+    "category": "Control",
     "effects": [
       {
         "name": "Sequester",
@@ -6147,6 +6562,7 @@
   {
     "name": "Shadow Blade",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -6160,6 +6576,7 @@
   {
     "name": "Shadow of Moil",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Shadow of Moil",
@@ -6177,6 +6594,7 @@
   {
     "name": "Shape Water",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Shape Water",
@@ -6192,6 +6610,7 @@
   {
     "name": "Shapechange",
     "level": 9,
+    "category": "Utility",
     "effects": [
       {
         "name": "Shapechange",
@@ -6206,6 +6625,7 @@
   {
     "name": "Shatter",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -6220,6 +6640,7 @@
   {
     "name": "Shield",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -6235,6 +6656,7 @@
   {
     "name": "Shield of Faith",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -6253,6 +6675,7 @@
   {
     "name": "Shillelagh",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -6268,6 +6691,7 @@
   {
     "name": "Shining Smite",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -6284,6 +6708,7 @@
   {
     "name": "Shocking Grasp",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -6296,6 +6721,7 @@
   {
     "name": "Sickening Radiance",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -6310,6 +6736,7 @@
   {
     "name": "Silence",
     "level": 2,
+    "category": "Control",
     "ritual": true,
     "effects": [
       {
@@ -6327,6 +6754,7 @@
   {
     "name": "Silent Image",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Silent Image",
@@ -6343,6 +6771,7 @@
   {
     "name": "Silvery Barbs",
     "level": 1,
+    "category": "Defense",
     "effects": [
       {
         "name": "Silvery Barbs",
@@ -6356,6 +6785,7 @@
   {
     "name": "Simbul's Synostodweomer",
     "level": 7,
+    "category": "Healing",
     "effects": [
       {
         "name": "Simbul's Synostodweomer",
@@ -6369,6 +6799,7 @@
   {
     "name": "Simulacrum",
     "level": 7,
+    "category": "Social",
     "effects": [
       {
         "name": "Simulacrum",
@@ -6381,6 +6812,7 @@
   {
     "name": "Skill Empowerment",
     "level": 5,
+    "category": "Buff",
     "effects": [
       {
         "name": "Skill Empowerment",
@@ -6395,6 +6827,7 @@
   {
     "name": "Skywrite",
     "level": 2,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -6409,6 +6842,7 @@
   {
     "name": "Sleep",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Sleep",
@@ -6425,6 +6859,7 @@
   {
     "name": "Sleet Storm",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Sleet Storm",
@@ -6441,6 +6876,7 @@
   {
     "name": "Slow",
     "level": 3,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Slow",
@@ -6458,6 +6894,7 @@
   {
     "name": "Snare",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Snare",
@@ -6471,6 +6908,7 @@
   {
     "name": "Snilloc's Snowball Swarm",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -6484,6 +6922,7 @@
   {
     "name": "Songal's Elemental Suffusion",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -6501,6 +6940,7 @@
   {
     "name": "Sorcerous Burst",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -6515,6 +6955,7 @@
   {
     "name": "Soul Cage",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Soul Cage",
@@ -6530,6 +6971,7 @@
   {
     "name": "Spare the Dying",
     "level": 0,
+    "category": "Healing",
     "effects": [
       {
         "name": "Spare the Dying",
@@ -6543,6 +6985,7 @@
   {
     "name": "Speak with Animals",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -6557,6 +7000,7 @@
   {
     "name": "Speak with Dead",
     "level": 3,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -6573,6 +7017,7 @@
   {
     "name": "Speak with Plants",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Speak with Plants",
@@ -6586,6 +7031,7 @@
   {
     "name": "Spellfire Flare",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Spellfire Flare",
@@ -6600,6 +7046,7 @@
   {
     "name": "Spellfire Storm",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Spellfire Storm",
@@ -6617,6 +7064,7 @@
   {
     "name": "Spider Climb",
     "level": 2,
+    "category": "Buff",
     "effects": [
       {
         "name": "Spider Climb",
@@ -6631,6 +7079,7 @@
   {
     "name": "Spike Growth",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Spike Growth",
@@ -6648,6 +7097,7 @@
   {
     "name": "Spirit Guardians",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant/Necrotic Damage",
@@ -6665,6 +7115,7 @@
   {
     "name": "Spirit Shroud",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Damage",
@@ -6677,6 +7128,7 @@
   {
     "name": "Spirit of Death",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Spirit of Death",
@@ -6691,6 +7143,7 @@
   {
     "name": "Spiritual Weapon",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -6709,6 +7162,7 @@
   {
     "name": "Spray of Cards",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Spray of Cards",
@@ -6722,6 +7176,7 @@
   {
     "name": "Staggering Smite",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -6735,6 +7190,7 @@
   {
     "name": "Starry Wisp",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -6749,6 +7205,7 @@
   {
     "name": "Steel Wind Strike",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -6763,6 +7220,7 @@
   {
     "name": "Stinking Cloud",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Stinking Cloud",
@@ -6779,6 +7237,7 @@
   {
     "name": "Stone Shape",
     "level": 4,
+    "category": "Utility",
     "effects": [
       {
         "name": "Stone Shape",
@@ -6790,6 +7249,7 @@
   {
     "name": "Stoneskin",
     "level": 4,
+    "category": "Defense",
     "effects": [
       {
         "name": "Stoneskin",
@@ -6805,6 +7265,7 @@
   {
     "name": "Storm Sphere",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -6819,6 +7280,7 @@
   {
     "name": "Storm of Vengeance",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -6833,6 +7295,7 @@
   {
     "name": "Suggestion",
     "level": 2,
+    "category": "Social",
     "effects": [
       {
         "name": "Suggestion",
@@ -6849,6 +7312,7 @@
   {
     "name": "Summon Aberration",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Aberration",
@@ -6866,6 +7330,7 @@
   {
     "name": "Summon Beast",
     "level": 2,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Beast",
@@ -6882,6 +7347,7 @@
   {
     "name": "Summon Celestial",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Celestial",
@@ -6898,6 +7364,7 @@
   {
     "name": "Summon Construct",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Construct",
@@ -6915,6 +7382,7 @@
   {
     "name": "Summon Draconic Spirit",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Draconic Spirit",
@@ -6931,6 +7399,7 @@
   {
     "name": "Summon Dragon",
     "level": 5,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Dragon",
@@ -6947,6 +7416,7 @@
   {
     "name": "Summon Elemental",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Elemental",
@@ -6963,6 +7433,7 @@
   {
     "name": "Summon Fey",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Fey",
@@ -6979,6 +7450,7 @@
   {
     "name": "Summon Fiend",
     "level": 6,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Fiend",
@@ -6995,6 +7467,7 @@
   {
     "name": "Summon Greater Demon",
     "level": 4,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Greater Demon",
@@ -7011,6 +7484,7 @@
   {
     "name": "Summon Lesser Demons",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Lesser Demons",
@@ -7027,6 +7501,7 @@
   {
     "name": "Summon Shadowspawn",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Shadowspawn",
@@ -7043,6 +7518,7 @@
   {
     "name": "Summon Undead",
     "level": 3,
+    "category": "Summon",
     "effects": [
       {
         "name": "Summon Undead",
@@ -7060,6 +7536,7 @@
   {
     "name": "Sunbeam",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -7077,6 +7554,7 @@
   {
     "name": "Sunburst",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -7091,6 +7569,7 @@
   {
     "name": "Swift Quiver",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Swift Quiver",
@@ -7106,6 +7585,7 @@
   {
     "name": "Sword Burst",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -7116,6 +7596,7 @@
   {
     "name": "Syluné's Viper",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Temp HP",
@@ -7132,6 +7613,7 @@
   {
     "name": "Symbol",
     "level": 7,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Necrotic Damage (Death)",
@@ -7145,6 +7627,7 @@
   {
     "name": "Synaptic Static",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -7159,6 +7642,7 @@
   {
     "name": "Tasha's Bubbling Cauldron",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Tasha's Bubbling Cauldron",
@@ -7174,6 +7658,7 @@
   {
     "name": "Tasha's Caustic Brew",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Acid Damage",
@@ -7191,6 +7676,7 @@
   {
     "name": "Tasha's Hideous Laughter",
     "level": 1,
+    "category": "Control",
     "effects": [
       {
         "name": "Tasha's Hideous Laughter",
@@ -7207,6 +7693,7 @@
   {
     "name": "Tasha's Mind Whip",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -7220,6 +7707,7 @@
   {
     "name": "Tasha's Otherworldly Guise",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "AC",
@@ -7236,6 +7724,7 @@
   {
     "name": "Telekinesis",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Telekinesis",
@@ -7252,6 +7741,7 @@
   {
     "name": "Telepathy",
     "level": 8,
+    "category": "Utility",
     "effects": [
       {
         "name": "Telepathy",
@@ -7264,6 +7754,7 @@
   {
     "name": "Teleport",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Teleport",
@@ -7278,6 +7769,7 @@
   {
     "name": "Teleportation Circle",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Teleportation Circle",
@@ -7294,6 +7786,7 @@
   {
     "name": "Temple of the Gods",
     "level": 7,
+    "category": "Utility",
     "effects": [
       {
         "name": "Temple of the Gods",
@@ -7307,6 +7800,7 @@
   {
     "name": "Temporal Shunt",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Temporal Shunt",
@@ -7322,6 +7816,7 @@
   {
     "name": "Tenser's Floating Disk",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -7338,6 +7833,7 @@
   {
     "name": "Tenser's Transformation",
     "level": 6,
+    "category": "Buff",
     "effects": [
       {
         "name": "Tenser's Transformation",
@@ -7353,6 +7849,7 @@
   {
     "name": "Tether Essence",
     "level": 7,
+    "category": "Debuff",
     "effects": [
       {
         "name": "Tether Essence",
@@ -7369,6 +7866,7 @@
   {
     "name": "Thaumaturgy",
     "level": 0,
+    "category": "Utility",
     "effects": [
       {
         "name": "Thaumaturgy",
@@ -7384,6 +7882,7 @@
   {
     "name": "Thorn Whip",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -7398,6 +7897,7 @@
   {
     "name": "Thunder Step",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -7411,6 +7911,7 @@
   {
     "name": "Thunderclap",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -7425,6 +7926,7 @@
   {
     "name": "Thunderous Smite",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -7438,6 +7940,7 @@
   {
     "name": "Thunderwave",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Thunder Damage",
@@ -7452,6 +7955,7 @@
   {
     "name": "Tidal Wave",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -7465,6 +7969,7 @@
   {
     "name": "Time Ravage",
     "level": 9,
+    "category": "Damage",
     "effects": [
       {
         "name": "Time Ravage",
@@ -7478,6 +7983,7 @@
   {
     "name": "Time Stop",
     "level": 9,
+    "category": "Buff",
     "effects": [
       {
         "name": "Time Stop",
@@ -7490,6 +7996,7 @@
   {
     "name": "Tiny Servant",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Tiny Servant",
@@ -7503,6 +8010,7 @@
   {
     "name": "Toll the Dead",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -7517,6 +8025,7 @@
   {
     "name": "Tongues",
     "level": 3,
+    "category": "Utility",
     "effects": [
       {
         "name": "Tongues",
@@ -7530,6 +8039,7 @@
   {
     "name": "Transmute Rock",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Transmute Rock",
@@ -7542,6 +8052,7 @@
   {
     "name": "Transport via Plants",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Transport via Plants",
@@ -7557,6 +8068,7 @@
   {
     "name": "Tree Stride",
     "level": 5,
+    "category": "Utility",
     "effects": [
       {
         "name": "Tree Stride",
@@ -7571,6 +8083,7 @@
   {
     "name": "True Polymorph",
     "level": 9,
+    "category": "Social",
     "effects": [
       {
         "name": "True Polymorph",
@@ -7587,6 +8100,7 @@
   {
     "name": "True Resurrection",
     "level": 9,
+    "category": "Healing",
     "effects": [
       {
         "name": "True Resurrection",
@@ -7599,6 +8113,7 @@
   {
     "name": "True Seeing",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "True Seeing",
@@ -7612,6 +8127,7 @@
   {
     "name": "True Strike",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -7624,6 +8140,7 @@
   {
     "name": "Tsunami",
     "level": 8,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -7639,6 +8156,7 @@
   {
     "name": "Unseen Servant",
     "level": 1,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -7655,6 +8173,7 @@
   {
     "name": "Vampiric Touch",
     "level": 3,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -7670,6 +8189,7 @@
   {
     "name": "Vicious Mockery",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Psychic Damage",
@@ -7684,6 +8204,7 @@
   {
     "name": "Vitriolic Sphere",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Acid Damage",
@@ -7698,6 +8219,7 @@
   {
     "name": "Vortex Warp",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Vortex Warp",
@@ -7711,6 +8233,7 @@
   {
     "name": "Wall of Fire",
     "level": 4,
+    "category": "Damage",
     "effects": [
       {
         "name": "Fire Damage",
@@ -7728,6 +8251,7 @@
   {
     "name": "Wall of Force",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Wall of Force",
@@ -7744,6 +8268,7 @@
   {
     "name": "Wall of Ice",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Cold Damage",
@@ -7761,6 +8286,7 @@
   {
     "name": "Wall of Light",
     "level": 5,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -7775,6 +8301,7 @@
   {
     "name": "Wall of Sand",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Wall of Sand",
@@ -7791,6 +8318,7 @@
   {
     "name": "Wall of Stone",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Wall of Stone",
@@ -7807,6 +8335,7 @@
   {
     "name": "Wall of Thorns",
     "level": 6,
+    "category": "Damage",
     "effects": [
       {
         "name": "Piercing Damage",
@@ -7824,6 +8353,7 @@
   {
     "name": "Wall of Water",
     "level": 3,
+    "category": "Control",
     "effects": [
       {
         "name": "Wall of Water",
@@ -7840,6 +8370,7 @@
   {
     "name": "Wardaway",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Force Damage",
@@ -7854,6 +8385,7 @@
   {
     "name": "Warding Bond",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Warding Bond",
@@ -7868,6 +8400,7 @@
   {
     "name": "Warding Wind",
     "level": 2,
+    "category": "Defense",
     "effects": [
       {
         "name": "Warding Wind",
@@ -7884,6 +8417,7 @@
   {
     "name": "Warp Sense",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Warp Sense",
@@ -7898,6 +8432,7 @@
   {
     "name": "Water Breathing",
     "level": 3,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -7914,6 +8449,7 @@
   {
     "name": "Water Walk",
     "level": 3,
+    "category": "Utility",
     "ritual": true,
     "effects": [
       {
@@ -7930,6 +8466,7 @@
   {
     "name": "Watery Sphere",
     "level": 4,
+    "category": "Control",
     "effects": [
       {
         "name": "Watery Sphere",
@@ -7946,6 +8483,7 @@
   {
     "name": "Web",
     "level": 2,
+    "category": "Control",
     "effects": [
       {
         "name": "Web",
@@ -7963,6 +8501,7 @@
   {
     "name": "Weird",
     "level": 9,
+    "category": "Control",
     "effects": [
       {
         "name": "Weird",
@@ -7980,6 +8519,7 @@
   {
     "name": "Whirlwind",
     "level": 7,
+    "category": "Damage",
     "effects": [
       {
         "name": "Bludgeoning Damage",
@@ -7997,6 +8537,7 @@
   {
     "name": "Wind Walk",
     "level": 6,
+    "category": "Defense",
     "effects": [
       {
         "name": "Wind Walk",
@@ -8013,6 +8554,7 @@
   {
     "name": "Wind Wall",
     "level": 3,
+    "category": "Defense",
     "effects": [
       {
         "name": "Wind Wall",
@@ -8030,6 +8572,7 @@
   {
     "name": "Wish",
     "level": 9,
+    "category": "Defense",
     "effects": [
       {
         "name": "Wish",
@@ -8042,6 +8585,7 @@
   {
     "name": "Witch Bolt",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Lightning Damage",
@@ -8059,6 +8603,7 @@
   {
     "name": "Wither and Bloom",
     "level": 2,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -8069,6 +8614,7 @@
   {
     "name": "Word of Radiance",
     "level": 0,
+    "category": "Damage",
     "effects": [
       {
         "name": "Radiant Damage",
@@ -8083,6 +8629,7 @@
   {
     "name": "Word of Recall",
     "level": 6,
+    "category": "Utility",
     "effects": [
       {
         "name": "Word of Recall",
@@ -8096,6 +8643,7 @@
   {
     "name": "Wrath of Nature",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Wrath of Nature",
@@ -8113,6 +8661,7 @@
   {
     "name": "Wrathful Smite",
     "level": 1,
+    "category": "Damage",
     "effects": [
       {
         "name": "Necrotic Damage",
@@ -8128,6 +8677,7 @@
   {
     "name": "Yolande's Regal Presence",
     "level": 5,
+    "category": "Control",
     "effects": [
       {
         "name": "Yolande's Regal Presence",
@@ -8145,6 +8695,7 @@
   {
     "name": "Zephyr Strike",
     "level": 1,
+    "category": "Utility",
     "effects": [
       {
         "name": "Speed",
@@ -8161,6 +8712,7 @@
   {
     "name": "Zone of Truth",
     "level": 2,
+    "category": "Utility",
     "effects": [
       {
         "name": "Zone of Truth",

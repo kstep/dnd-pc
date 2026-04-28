@@ -3343,6 +3343,32 @@ dialog.modal.closing::backdrop {
   gap: var(--size-3);
 }
 
+.spell-cat-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-1);
+  margin: 0 0 var(--size-3);
+}
+
+.spell-cat-chip {
+  cursor: pointer;
+  border: 1px solid var(--panel-border);
+  background: transparent;
+  padding: 0 var(--size-2);
+  border-radius: var(--radius-1);
+
+  &.is-active {
+    background: var(--panel-border);
+    color: var(--text-primary);
+  }
+
+  .spell-cat-count {
+    margin-left: 0.4em;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+  }
+}
+
 .reference-feature {
   scroll-margin-top: 3.5rem;
 

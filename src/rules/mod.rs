@@ -26,6 +26,7 @@ pub use index::{
 pub use registry::RulesRegistry;
 pub use species::SpeciesDefinition;
 pub use spells::{
-    CastTime, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex, SpellsList,
+    CastTime, SpellCategory, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex,
+    SpellsList,
 };
 pub use utils::LevelRules;

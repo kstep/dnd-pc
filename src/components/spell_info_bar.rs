@@ -2,7 +2,7 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
-    model::{EffectDuration, EffectRange},
+    model::{EffectDuration, EffectRange, Translatable},
     rules::{ActionType, CastTime, SpellMeta},
 };
 
@@ -59,8 +59,15 @@ fn format_duration(duration: EffectDuration) -> impl IntoView {
 
 #[component]
 pub fn SpellInfoBar(meta: SpellMeta) -> impl IntoView {
+    let i18n = expect_context::<leptos_fluent::I18n>();
+    let category_key = meta.category.tr_key();
+    let category_label = Signal::derive(move || i18n.tr(category_key));
     view! {
         <div class="reference-info-bar spell-info-bar entry-sublabel">
+            <div class="info-item">
+                <span class="info-label">{move_tr!("ref-spell-category")}</span>
+                <span class="info-value">{category_label}</span>
+            </div>
             <div class="info-item">
                 <span class="info-label">{move_tr!("ref-spell-cast-time")}</span>
                 <span class="info-value">{format_cast_time(meta.cast_time, meta.ritual)}</span>

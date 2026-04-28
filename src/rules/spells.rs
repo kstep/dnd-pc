@@ -1,10 +1,14 @@
 use std::collections::BTreeMap;
 
 use serde::Deserialize;
+use strum::{Display, EnumIter, EnumString, VariantArray};
 
 use crate::{
     demap::{self, Named},
-    model::{Character, EffectDefinition, EffectDuration, EffectRange, FreeUses, Spell, SpellData},
+    model::{
+        Character, EffectDefinition, EffectDuration, EffectRange, FreeUses, Spell, SpellData,
+        Translatable,
+    },
     rules::feature::{ActionType, FeatureDefinition},
 };
 
@@ -21,6 +25,50 @@ impl Default for CastTime {
     }
 }
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    Default,
+    Deserialize,
+    Display,
+    EnumIter,
+    EnumString,
+    VariantArray
+)]
+#[repr(u8)]
+pub enum SpellCategory {
+    Damage,
+    Healing,
+    Buff,
+    Debuff,
+    Control,
+    Defense,
+    #[default]
+    Utility,
+    Summon,
+    Social,
+}
+
+impl Translatable for SpellCategory {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Damage => "spell-cat-damage",
+            Self::Healing => "spell-cat-healing",
+            Self::Buff => "spell-cat-buff",
+            Self::Debuff => "spell-cat-debuff",
+            Self::Control => "spell-cat-control",
+            Self::Defense => "spell-cat-defense",
+            Self::Utility => "spell-cat-utility",
+            Self::Summon => "spell-cat-summon",
+            Self::Social => "spell-cat-social",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpellDefinition {
     pub name: Box<str>,
@@ -33,6 +81,8 @@ pub struct SpellDefinition {
     #[serde(default)]
     pub cast_time: CastTime,
     #[serde(default)]
+    pub category: SpellCategory,
+    #[serde(default)]
     pub effects: Vec<EffectDefinition>,
 }
 
@@ -41,6 +91,7 @@ pub struct SpellMeta {
     pub cast_time: CastTime,
     pub ritual: bool,
     pub concentration: bool,
+    pub category: SpellCategory,
     pub range: Option<EffectRange>,
     pub duration: Option<EffectDuration>,
 }
@@ -59,6 +110,7 @@ impl SpellDefinition {
             cast_time: self.cast_time,
             ritual: self.ritual,
             concentration: self.concentration,
+            category: self.category,
             range: self.effect_range(),
             duration: self.effect_duration(),
         }
@@ -314,6 +366,28 @@ mod tests {
             index.0.len() > 500,
             "expected 500+ spells in index, got {}",
             index.0.len()
+        );
+    }
+
+    #[test]
+    fn deserialize_spells_json_has_categories() {
+        let index = parse_spells_index();
+        let fireball = index.get("Fireball").expect("Fireball present");
+        assert_eq!(fireball.category, SpellCategory::Damage);
+        let cure_wounds = index.get("Cure Wounds").expect("Cure Wounds present");
+        assert_eq!(cure_wounds.category, SpellCategory::Healing);
+    }
+
+    #[test]
+    fn no_unintended_utility_default() {
+        let index = parse_spells_index();
+        let utility = index
+            .values()
+            .filter(|sp| sp.category == SpellCategory::Utility)
+            .count();
+        assert!(
+            utility <= 170,
+            "Too many spells defaulted to Utility ({utility}); markup likely broken"
         );
     }
 
