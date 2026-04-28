@@ -300,8 +300,10 @@ fn FeatureSpellcastingSection(
             for spell in known.iter().filter(|s| !s.name.is_empty()) {
                 let level = spell.level.min(9);
                 if let Some(bucket) = by_level.get_mut(level as usize) {
+                    let (label, description) =
+                        registry.spells().label_desc(&*spell.name, &*spell.name);
                     bucket.push(
-                        DatalistOption::new(&spell.name, spell.label(), &spell.description)
+                        DatalistOption::with_signals(&spell.name, label, description)
                             .with_count(level),
                     );
                 }
@@ -731,8 +733,10 @@ fn resolve_feature_spell_list(
             registry.with_spell_list_untracked(&spells_def.list, |iter| {
                 for spell in iter {
                     if let Some(bucket) = by_level.get_mut(spell.level as usize) {
+                        let (label, description) =
+                            registry.spells().label_desc(&*spell.name, &*spell.name);
                         bucket.push(
-                            DatalistOption::new(&*spell.name, spell.label(), spell.description())
+                            DatalistOption::with_signals(&*spell.name, label, description)
                                 .with_count(spell.level),
                         );
                     }

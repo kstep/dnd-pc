@@ -276,13 +276,9 @@ fn ReplacementPicker(
                 .values()
                 .filter(|feat| replace_with.matches(feat) && feat.meets_prerequisites(&character))
                 .map(|feat| {
-                    let (label, description) = registry
-                        .features()
-                        .lookup(&feat.name, |loc| {
-                            (loc.label().to_string(), loc.description().to_string())
-                        })
-                        .unwrap_or_else(|| (feat.name.to_string(), String::new()));
-                    DatalistOption::new(&*feat.name, label, description)
+                    let (label, description) =
+                        registry.features().label_desc(&*feat.name, &*feat.name);
+                    DatalistOption::with_signals(&*feat.name, label, description)
                 })
                 .collect::<Vec<_>>()
         })

@@ -230,7 +230,14 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 let suggestions: Signal<Vec<DatalistOption>> = Signal::stored(
                     all_options
                         .iter()
-                        .map(|opt| DatalistOption::new(&*opt.name, opt.label(), &opt.description))
+                        .map(|opt| {
+                            let key = feature_name.with_value(|feat_key| {
+                                format!("{feat_key}.field.{field_name}.option.{}", opt.name)
+                            });
+                            let (label, description) =
+                                registry.features().label_desc(key, &*opt.name);
+                            DatalistOption::with_signals(&*opt.name, label, description)
+                        })
                         .collect(),
                 );
                 let choice_list_id = next_datalist_id();

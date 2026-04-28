@@ -1,5 +1,5 @@
 use leptos::prelude::*;
-use leptos_fluent::{I18n, move_tr, tr};
+use leptos_fluent::{I18n, move_tr};
 use reactive_stores::{Field, Store, StoreFieldIterator};
 
 use crate::{
@@ -81,25 +81,25 @@ pub fn FeaturesPanel() -> impl IntoView {
             .collect::<Vec<_>>()
     });
 
+    let prereq_prefix = move_tr!("prerequisites-label");
     let feature_options = Memo::new(move |_| {
         let character = store.read();
-        let prereq_prefix = tr!(i18n, "prerequisites-label");
         registry.with_features_index(|features_index| {
             features_index
                 .values()
                 .filter(|feat| feat.is_selectable())
                 .map(|feat| {
-                    let (label, description) = registry
-                        .features()
-                        .lookup(&feat.name, |loc| {
-                            (loc.label().to_string(), loc.description().to_string())
-                        })
-                        .unwrap_or_else(|| (feat.name.to_string(), String::new()));
-                    let opt = DatalistOption::new(&*feat.name, label, description);
+                    let (label, description) =
+                        registry.features().label_desc(&*feat.name, &*feat.name);
+                    let opt = DatalistOption::with_signals(&*feat.name, label, description);
                     if let Some(expr) = &feat.prerequisites
                         && !feat.meets_prerequisites(&character)
                     {
-                        opt.with_blocked_reason(format!("{prereq_prefix}: {expr}"))
+                        let expr_string = expr.to_string();
+                        let reason = Signal::derive(move || {
+                            prereq_prefix.with(|prefix| format!("{prefix}: {expr_string}"))
+                        });
+                        opt.with_blocked_reason(reason)
                     } else {
                         opt
                     }

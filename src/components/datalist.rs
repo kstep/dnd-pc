@@ -32,40 +32,26 @@ pub struct DatalistOption {
     pub description: Signal<String>,
     pub count: Option<u32>,
     /// When set, the option is shown but not selectable in the modal list,
-    /// with this string as the reason.
-    pub blocked_reason: Option<String>,
+    /// with the signal value as the reason.
+    pub blocked_reason: Option<Signal<String>>,
 }
 
 // `name` is the stable identity (locale-stable). Reactive `label`/
-// `description` propagate updates through their own subscriptions, so
-// equality on `name` is enough for `Memo<Vec<DatalistOption>>` change
-// detection — the structural composition (which entries exist) is what
-// the Memo tracks; per-entry text changes are handled by signal subs.
+// `description`/`blocked_reason` propagate updates through their own
+// subscriptions, so equality on `name` + structure (count, blockedness)
+// is enough for `Memo<Vec<DatalistOption>>` change detection — per-entry
+// text changes are handled by the signal subscriptions inside the modal.
 impl PartialEq for DatalistOption {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name
             && self.count == other.count
-            && self.blocked_reason == other.blocked_reason
+            && self.blocked_reason.is_some() == other.blocked_reason.is_some()
     }
 }
 
 impl DatalistOption {
-    /// Static-text constructor. Wraps `label`/`description` in stored signals
-    /// (no reactivity). Use [`Self::with_signals`] for locale-driven entries.
-    pub fn new(
-        name: impl Into<String>,
-        label: impl Into<String>,
-        description: impl Into<String>,
-    ) -> Self {
-        Self::with_signals(
-            name,
-            Signal::stored(label.into()),
-            Signal::stored(description.into()),
-        )
-    }
-
-    /// Reactive constructor. Pass `Signal<String>`s that subscribe to whatever
-    /// underlying source (locale resource, etc.) so children update in place.
+    /// Pass `Signal<String>`s that subscribe to whatever underlying source
+    /// (locale resource, etc.) so the modal updates text in place.
     pub fn with_signals(
         name: impl Into<String>,
         label: Signal<String>,
@@ -85,8 +71,8 @@ impl DatalistOption {
         self
     }
 
-    pub fn with_blocked_reason(mut self, reason: impl Into<String>) -> Self {
-        self.blocked_reason = Some(reason.into());
+    pub fn with_blocked_reason(mut self, reason: Signal<String>) -> Self {
+        self.blocked_reason = Some(reason);
         self
     }
 }
@@ -376,7 +362,9 @@ pub fn DatalistModal() -> impl IntoView {
                                     <Markdown text=description />
                                 </div>
                                 {blocked_reason.map(|reason| view! {
-                                    <span class="datalist-option-blocked-reason">{reason}</span>
+                                    <span class="datalist-option-blocked-reason">
+                                        {move || reason.get()}
+                                    </span>
                                 })}
                             </button>
                         }
