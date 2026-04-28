@@ -263,7 +263,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                         on_input=move |input, resolved| {
                                             feature_name.with_value(|key| {
                                                 fld_name.with_value(|fld| {
-                                                    let (cost, opt_label, opt_description) = resolved
+                                                    let (cost, opt_description) = resolved
                                                         .as_ref()
                                                         .map(|name| {
                                                             let classes = store.identity().classes().read();
@@ -275,8 +275,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                                 .get_choice_options(&classes, key, fld, char_fields)
                                                                 .into_iter()
                                                                 .find(|opt| &*opt.name == name)
-                                                                .map(|opt| (opt.cost, opt.label, opt.description))
-                                                                .map(|(c, l, d)| (Some(c), Some(l), Some(d)))
+                                                                .map(|opt| (Some(opt.cost), Some(opt.description)))
                                                                 .unwrap_or_default()
                                                         })
                                                         .unwrap_or_default();
@@ -288,7 +287,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                         {
                                                             if let Some(key) = resolved {
                                                                 opt.name = key;
-                                                                opt.label = opt_label.flatten();
+                                                                opt.label = Some(input);
                                                             } else {
                                                                 opt.set_label(input);
                                                             }

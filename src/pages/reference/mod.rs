@@ -697,13 +697,14 @@ fn ChoiceFieldRow(key: ChoiceFieldKey) -> impl IntoView {
     let (field_label, field_description) = registry
         .features()
         .label_desc(field_key, key.field_name.clone());
+    let field_description_for_md = field_description.clone();
     let options = key.options;
     view! {
         <div class="feature-choice-field">
             <strong>{move || field_label.get()}</strong>
             {move || {
                 let desc = field_description.get();
-                (!desc.is_empty()).then(|| view! { <Markdown text=field_description /> })
+                (!desc.is_empty()).then(|| view! { <Markdown text=field_description_for_md.clone() /> })
             }}
             <div class="feature-choice-options">
                 <For
@@ -723,6 +724,7 @@ fn ChoiceOptionRow(key: ChoiceOptionKey) -> impl IntoView {
         .as_str()
         .to_string();
     let (opt_label, opt_description) = registry.features().label_desc(opt_key, key.name.clone());
+    let opt_description_for_md = opt_description.clone();
 
     let feat_name = key.feat_name.clone();
     let field_name = key.field_name.clone();
@@ -775,7 +777,7 @@ fn ChoiceOptionRow(key: ChoiceOptionKey) -> impl IntoView {
             })}
             {move || {
                 let desc = opt_description.get();
-                (!desc.is_empty()).then(|| view! { <Markdown text=opt_description /> })
+                (!desc.is_empty()).then(|| view! { <Markdown text=opt_description_for_md.clone() /> })
             }}
         </div>
     }

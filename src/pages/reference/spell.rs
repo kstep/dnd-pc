@@ -23,6 +23,7 @@ use crate::{
 
 const CATEGORY_COUNT: usize = SpellCategory::VARIANTS.len();
 type CategoryCounts = [u32; CATEGORY_COUNT];
+type SpellEntries = Vec<(u32, String, SpellCategory)>;
 
 /// URL-serialisable wrapper around the chip-filter set.
 /// Renders as comma-separated variant names (`?cat=Damage,Control`).
@@ -92,27 +93,26 @@ pub fn SpellReference() -> impl IntoView {
 
     // Counts depend only on the spell list (path), not on the filter; recomputing
     // on every chip toggle would clone Strings for nothing.
-    let entries_counts: Memo<Option<(Vec<(u32, String, SpellCategory)>, CategoryCounts)>> =
-        Memo::new(move |_| {
-            let name = list_name();
-            if name.is_empty() {
-                return None;
-            }
-            let path = SpellsList::ref_path(&name);
-            registry.with_spell_list(&path, |iter| {
-                let entries: Vec<(u32, String, SpellCategory)> = iter
-                    .map(|spell| (spell.level, spell.name.to_string(), spell.category))
-                    .collect();
-                let counts =
-                    entries
-                        .iter()
-                        .fold([0u32; CATEGORY_COUNT], |mut acc, (_, _, category)| {
-                            acc[*category as usize] += 1;
-                            acc
-                        });
-                (entries, counts)
-            })
-        });
+    let entries_counts: Memo<Option<(SpellEntries, CategoryCounts)>> = Memo::new(move |_| {
+        let name = list_name();
+        if name.is_empty() {
+            return None;
+        }
+        let path = SpellsList::ref_path(&name);
+        registry.with_spell_list(&path, |iter| {
+            let entries: SpellEntries = iter
+                .map(|spell| (spell.level, spell.name.to_string(), spell.category))
+                .collect();
+            let counts =
+                entries
+                    .iter()
+                    .fold([0u32; CATEGORY_COUNT], |mut acc, (_, _, category)| {
+                        acc[*category as usize] += 1;
+                        acc
+                    });
+            (entries, counts)
+        })
+    });
 
     let detail = move || {
         if list_name().is_empty() {

@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::{Field, Store, StoreFieldIterator};
 
@@ -96,7 +96,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                         && !feat.meets_prerequisites(&character)
                     {
                         let expr_string = expr.to_string();
-                        let reason = Signal::derive(move || {
+                        let reason = ArcSignal::derive(move || {
                             prereq_prefix.with(|prefix| format!("{prefix}: {expr_string}"))
                         });
                         opt.with_blocked_reason(reason)

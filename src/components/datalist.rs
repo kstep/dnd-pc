@@ -3,7 +3,7 @@ use std::sync::{
     atomic::{AtomicUsize, Ordering},
 };
 
-use leptos::prelude::*;
+use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
 use leptos_fluent::{I18n, move_tr};
 
 use crate::components::{icon::Icon, markdown::Markdown, modal::Modal, ref_link::Ref};
@@ -21,19 +21,20 @@ pub fn next_datalist_id() -> String {
 /// An entry shown in the `DatalistInput` suggestions list and the shared
 /// `DatalistModal` browse view.
 ///
-/// `name` is the stable key. `label` and `description` are reactive so that
-/// locale switches update text in place — children of `<For>` (which is keyed
-/// by the stable `name`) subscribe via `move || opt.label.get()` instead of
-/// being pinned to a value snapshot.
+/// `name` is the stable key. `label`, `description`, and `blocked_reason` are
+/// `ArcSignal<String>` (Arc-counted, owner-independent) so the modal — an
+/// App-root singleton that holds a snapshot of options across opens — can
+/// keep reading them after the producing scope (caller's Memo / render
+/// closure) re-runs and disposes its arena slots.
 #[derive(Clone, Debug)]
 pub struct DatalistOption {
     pub name: String,
-    pub label: Signal<String>,
-    pub description: Signal<String>,
+    pub label: ArcSignal<String>,
+    pub description: ArcSignal<String>,
     pub count: Option<u32>,
     /// When set, the option is shown but not selectable in the modal list,
     /// with the signal value as the reason.
-    pub blocked_reason: Option<Signal<String>>,
+    pub blocked_reason: Option<ArcSignal<String>>,
 }
 
 // `name` is the stable identity (locale-stable). Reactive `label`/
@@ -50,12 +51,14 @@ impl PartialEq for DatalistOption {
 }
 
 impl DatalistOption {
-    /// Pass `Signal<String>`s that subscribe to whatever underlying source
-    /// (locale resource, etc.) so the modal updates text in place.
+    /// Pass `ArcSignal<String>`s subscribing to a long-lived source (locale
+    /// resource, etc.). The handles are Arc-counted, so consumers in the
+    /// modal scope keep reading them after the producing closure has been
+    /// disposed.
     pub fn with_signals(
         name: impl Into<String>,
-        label: Signal<String>,
-        description: Signal<String>,
+        label: ArcSignal<String>,
+        description: ArcSignal<String>,
     ) -> Self {
         Self {
             name: name.into(),
@@ -71,7 +74,7 @@ impl DatalistOption {
         self
     }
 
-    pub fn with_blocked_reason(mut self, reason: Signal<String>) -> Self {
+    pub fn with_blocked_reason(mut self, reason: ArcSignal<String>) -> Self {
         self.blocked_reason = Some(reason);
         self
     }
@@ -91,6 +94,8 @@ fn render_badge(i18n: I18n, key: &'static str, count: u32) -> String {
     i18n.tr_with_args(key, &args)
 }
 
+type OnPickCallback = Arc<dyn Fn(String, String) + Send + Sync>;
+
 /// Shared state for the singleton `DatalistModal`. Each `DatalistInput`'s
 /// Browse button calls `open()` with a snapshot of options + pick callback.
 /// One modal instance lives in the DOM at a time — set up once at App root
@@ -105,7 +110,7 @@ pub struct DatalistModalCtx {
     options: RwSignal<Vec<DatalistOption>>,
     title: RwSignal<String>,
     badge_key: RwSignal<Option<&'static str>>,
-    on_pick: StoredValue<Option<Arc<dyn Fn(String, String) + Send + Sync>>>,
+    on_pick: StoredValue<Option<OnPickCallback>>,
 }
 
 impl DatalistModalCtx {
@@ -257,8 +262,8 @@ pub fn SharedDatalist(
         <datalist id=move || id.get()>
             {move || options.with(|opts| {
                 opts.iter().map(|opt| {
-                    let label = opt.label;
-                    let description = opt.description;
+                    let label = opt.label.clone();
+                    let description = opt.description.clone();
                     view! {
                         <option value=move || label.get()>
                             {move || description.with(|d| (!d.is_empty()).then(|| d.clone()))}
@@ -329,6 +334,7 @@ pub fn DatalistModal() -> impl IntoView {
                             blocked_reason,
                         } = opt;
                         let selected_name = name.clone();
+                        let label_for_click = label.clone();
                         let badge = ctx.badge_key.get_untracked().zip(count).map(|(key, n)| {
                             view! {
                                 <span class="datalist-option-badge">
@@ -337,6 +343,13 @@ pub fn DatalistModal() -> impl IntoView {
                             }
                         });
                         let is_blocked = blocked_reason.is_some();
+                        let blocked_reason_view = blocked_reason.map(|reason| {
+                            view! {
+                                <span class="datalist-option-blocked-reason">
+                                    {move || reason.get()}
+                                </span>
+                            }
+                        });
                         view! {
                             <button
                                 type="button"
@@ -347,7 +360,7 @@ pub fn DatalistModal() -> impl IntoView {
                                     if let Some(callback) = ctx.on_pick.get_value() {
                                         // `label` may change with locale; pick
                                         // the current value at click time.
-                                        callback(label.get_untracked(), selected_name.clone());
+                                        callback(label_for_click.get_untracked(), selected_name.clone());
                                     }
                                     ctx.show.set(false);
                                 }
@@ -361,11 +374,7 @@ pub fn DatalistModal() -> impl IntoView {
                                 <div class="datalist-option-label">
                                     <Markdown text=description />
                                 </div>
-                                {blocked_reason.map(|reason| view! {
-                                    <span class="datalist-option-blocked-reason">
-                                        {move || reason.get()}
-                                    </span>
-                                })}
+                                {blocked_reason_view}
                             </button>
                         }
                     }

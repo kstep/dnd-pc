@@ -1,6 +1,6 @@
 use std::{borrow::Borrow, collections::BTreeMap};
 
-use leptos::prelude::*;
+use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
 use leptos_fluent::tr;
 
 use crate::{
@@ -911,7 +911,10 @@ impl LocalizedIndex<Index, IndexLocaleMap> {
     /// Reactive (label, description) for an entry. Composes the locale
     /// key from `entry`'s `Display` impl (`"class.wizard"`, …); falls
     /// back to the bare name when no locale entry is present.
-    pub fn entry_label_desc(&self, entry: IndexEntry<'_>) -> (Signal<String>, Signal<String>) {
+    pub fn entry_label_desc(
+        &self,
+        entry: IndexEntry<'_>,
+    ) -> (ArcSignal<String>, ArcSignal<String>) {
         self.label_desc(entry.to_string(), entry.name())
     }
 }
@@ -930,11 +933,11 @@ where
         &self,
         key: impl Into<String>,
         fallback: impl Into<String>,
-    ) -> (Signal<String>, Signal<String>) {
+    ) -> (ArcSignal<String>, ArcSignal<String>) {
         let locale = self.locale;
         let key: String = key.into();
         let fallback: String = fallback.into();
-        let label = Signal::derive({
+        let label = ArcSignal::derive({
             let key = key.clone();
             let fallback = fallback.clone();
             move || {
@@ -947,7 +950,7 @@ where
                     .unwrap_or_else(|| fallback.clone())
             }
         });
-        let description = Signal::derive(move || {
+        let description = ArcSignal::derive(move || {
             locale
                 .read()
                 .as_ref()

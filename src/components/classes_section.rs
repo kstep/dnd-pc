@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
@@ -65,7 +65,7 @@ pub fn ClassesSection() -> impl IntoView {
                 names
                     .into_iter()
                     .map(|sub_name| {
-                        let label = Signal::derive({
+                        let label = ArcSignal::derive({
                             let class_key = class_key.clone();
                             let sub_name = sub_name.clone();
                             move || {
@@ -78,7 +78,7 @@ pub fn ClassesSection() -> impl IntoView {
                                     .unwrap_or_else(|| sub_name.clone())
                             }
                         });
-                        let description = Signal::derive({
+                        let description = ArcSignal::derive({
                             let class_key = class_key.clone();
                             let sub_name = sub_name.clone();
                             move || {
