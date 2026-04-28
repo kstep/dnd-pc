@@ -7380,23 +7380,6 @@
     "concentration": true
   },
   {
-    "name": "Summon Draconic Spirit",
-    "level": 5,
-    "category": "Summon",
-    "effects": [
-      {
-        "name": "Summon Draconic Spirit",
-        "range": {
-          "Feet": 60
-        },
-        "duration": {
-          "Rounds": 600
-        }
-      }
-    ],
-    "concentration": true
-  },
-  {
     "name": "Summon Dragon",
     "level": 5,
     "category": "Summon",
