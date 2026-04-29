@@ -401,6 +401,12 @@ impl Features {
         &mut self.data
     }
 
+    /// Split-borrow `list` and `data` simultaneously so callers can read a
+    /// feature name from `list` while mutating its `data` entry.
+    pub fn split_mut(&mut self) -> (&[Feature], &mut BTreeMap<String, FeatureData>) {
+        (&self.list, &mut self.data)
+    }
+
     // Per-feature data helpers.
 
     /// Shorthand for `data.get(name).and_then(|e| e.spells.as_ref())`.

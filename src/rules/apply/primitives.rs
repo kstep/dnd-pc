@@ -1,17 +1,38 @@
 use std::collections::{BTreeMap, VecDeque};
 
 use crate::{
-    model::{AssignInputs, Character, FeatureData, FeatureValue, Spell, SpellData},
+    model::{AssignInputs, Character, Feature, FeatureData, FeatureValue, Spell, SpellData},
     rules::{
         WhenCondition,
         apply::{
-            compute,
+            apply_feature, compute,
             pending::{ApplyInputs, FeatureKey, PendingFeature},
         },
         feature::FeatureDefinition,
-        spells::SpellDefinition,
     },
 };
+
+/// Dry-run helper: push a synthetic feature row into `character.features.list`
+/// reflecting `pending` + `inputs`, then run the full apply lifecycle. Used by
+/// solver / rebuild dry-run paths that mutate a clone'd character.
+pub fn dry_run_apply_feature(
+    feat_def: &FeatureDefinition,
+    character: &mut Character,
+    pending: &PendingFeature,
+    inputs: &[AssignInputs],
+    when: WhenCondition,
+) {
+    character.features.list.push(Feature {
+        name: pending.name.clone(),
+        source: pending.source.clone(),
+        applied: true,
+        category: feat_def.category,
+        inputs: inputs.to_vec(),
+        ..Feature::default()
+    });
+    let feature_index = character.features.list.len() - 1;
+    apply_feature(feat_def, character, feature_index, when);
+}
 
 /// Resolve replacement choices from modal inputs. For each pending feature
 /// that has a replacement mapping, swap it with the replacement feature.
@@ -53,7 +74,6 @@ pub fn resolve_replacements(
 )]
 pub fn apply_new_features(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending: &[PendingFeature],
     feature_inputs: Option<&BTreeMap<FeatureKey, Vec<AssignInputs>>>,
@@ -64,25 +84,18 @@ pub fn apply_new_features(
             .and_then(|map| map.get(&key))
             .map(Vec::as_slice)
             .unwrap_or_default();
-        apply_new_feature(
-            features_index,
-            spells_index,
-            character,
-            pending_feature,
-            inputs,
-        );
+        apply_new_feature(features_index, character, pending_feature, inputs);
     }
-    compute(character, features_index, spells_index);
+    compute(character, features_index);
 }
 
 /// Add a single feature to `character.features` and call
 /// `feat.apply(OnFeatureAdd)`. If the feature is already applied, re-apply only
 /// updates stored inputs — assignments don't re-run (non-idempotent exprs like
-/// `MAX_HP += 5` would double-apply; user triggers Replay to recompute with new
+/// `HP.MAX += 5` would double-apply; user triggers Replay to recompute with new
 /// inputs).
 pub fn apply_new_feature(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending_feature: &PendingFeature,
     inputs: &[AssignInputs],
@@ -114,12 +127,12 @@ pub fn apply_new_feature(
         pending_feature.source.clone(),
         inputs.to_vec(),
     );
-    feat_def.apply(
-        pending_feature.level,
+    let feature_index = character.features.list.len() - 1;
+    apply_feature(
+        feat_def,
         character,
+        feature_index,
         WhenCondition::OnFeatureAdd,
-        inputs,
-        spells_index,
     );
 }
 
@@ -131,7 +144,6 @@ pub fn apply_new_feature(
 /// beforehand and call [`restore_user_state`] after replay returns.
 pub fn replay(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &mut Character,
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
@@ -160,12 +172,24 @@ pub fn replay(
         } else {
             stored.as_slice()
         };
-        feat_def.apply(
-            pending_feature.level,
+        // Look up the feature's slot in the surviving `features.list`. The
+        // pending vector mirrors that list 1:1, but we re-find by (name,
+        // source) so out-of-order or missing entries fall through cleanly.
+        let Some(feature_index) = character.features.list.iter().position(|feature| {
+            feature.name == pending_feature.name && feature.source == pending_feature.source
+        }) else {
+            log::warn!("replay: pending feature missing from list: {pending_feature:?}");
+            continue;
+        };
+        // Refresh stored inputs in-place so ApplyContext sees them.
+        if !feature_inputs.is_empty() {
+            character.features.list[feature_index].inputs = feature_inputs.to_vec();
+        }
+        apply_feature(
+            feat_def,
             character,
+            feature_index,
             WhenCondition::OnFeatureAdd,
-            feature_inputs,
-            spells_index,
         );
     }
 
@@ -180,7 +204,7 @@ pub fn replay(
         }
     }
 
-    compute(character, features_index, spells_index);
+    compute(character, features_index);
 }
 
 /// Re-apply user-driven state (Choice picks, Points/Die used, prepared
@@ -205,7 +229,6 @@ pub fn restore_user_state(
 /// (no truncation, no replay — cascade sees all applied features).
 pub fn build_cascade_base_before(
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
     character: &Character,
     edited: &FeatureKey,
 ) -> Character {
@@ -224,7 +247,6 @@ pub fn build_cascade_base_before(
         .collect();
     replay(
         features_index,
-        spells_index,
         &mut clone,
         &pending,
         &ApplyInputs::default(),

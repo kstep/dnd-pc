@@ -7,6 +7,23 @@ use crate::model::{
     Ability, DamageType, FeatureCategory, Proficiency, Skill, SpellSlotPool, Translatable,
 };
 
+/// Identifies a named or scope-implicit pool/die/bonus/choice.
+///
+/// `Scoped` is the bare form (`POINTS`, `FREE_USES`) — resolves through the
+/// current feature scope. `Named("X")` is the backtick-quoted explicit form
+/// (`POINTS.\`X\``, `FREE_USES.\`X\``) — addresses a specific entry by name.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AttrKey {
+    Scoped,
+    Named(&'static str),
+}
+
+impl AttrKey {
+    pub fn named(name: &str) -> Self {
+        Self::Named(intern(name))
+    }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Attribute {
     Ability(Ability),
@@ -38,8 +55,16 @@ pub enum Attribute {
     SpellAttack,
     SpellAttackAdvantage,
     SlotLevel,
-    Points(u8),
-    PointsMax(u8),
+    Points(AttrKey),
+    PointsMax(AttrKey),
+    DieSides(AttrKey),
+    DieCount(AttrKey),
+    DieUsed(AttrKey),
+    Bonus(AttrKey),
+    ChoiceCount(AttrKey),
+    Sticky(AttrKey),
+    FreeUses(AttrKey),
+    FreeUsesUsed(AttrKey),
     Cost,
     Resistance(DamageType),
     Vulnerability(DamageType),
@@ -116,6 +141,56 @@ impl Attribute {
                 | Self::SpellKnown
                 | Self::SpellReady
         )
+    }
+}
+
+/// Parse an `AttrKey` segment.
+/// - `""` → `Scoped`
+/// - `` `<name>` `` → `Named(intern(name))`
+/// - anything else → `Err`
+#[allow(dead_code)]
+pub fn parse_attr_key(input: &str) -> Result<AttrKey, &'static str> {
+    if input.is_empty() {
+        return Ok(AttrKey::Scoped);
+    }
+    let stripped = input
+        .strip_prefix('`')
+        .and_then(|rest| rest.strip_suffix('`'))
+        .ok_or("expected backtick-quoted name")?;
+    if stripped.is_empty() {
+        return Err("empty backtick name");
+    }
+    Ok(AttrKey::Named(intern(stripped)))
+}
+
+/// Split a leading backtick segment from `input`. Returns `(name, remaining)`
+/// where `remaining` starts at the character after the closing backtick.
+fn parse_backtick_name(input: &str) -> Result<(&str, &str), &'static str> {
+    let after_open = input.strip_prefix('`').ok_or("expected backtick")?;
+    let close_at = after_open.find('`').ok_or("unterminated backtick name")?;
+    let name = &after_open[..close_at];
+    if name.is_empty() {
+        return Err("empty backtick name");
+    }
+    let remaining = &after_open[close_at + 1..];
+    Ok((name, remaining))
+}
+
+/// Write an `AttrKey` rendering: `<PREFIX>` for Scoped,
+/// `<PREFIX>.\`<name>\`<SUFFIX>` for Named. `suffix` is `""` for plain forms or
+/// e.g. `".MAX"` / `".SIDES"`.
+fn fmt_attr_key(
+    key: &AttrKey,
+    prefix: &str,
+    suffix: &str,
+    f: &mut fmt::Formatter<'_>,
+) -> fmt::Result {
+    match key {
+        AttrKey::Scoped => {
+            f.write_str(prefix)?;
+            f.write_str(suffix)
+        }
+        AttrKey::Named(name) => write!(f, "{prefix}.`{name}`{suffix}"),
     }
 }
 
@@ -285,26 +360,17 @@ impl FromStr for Attribute {
         // SKILL.ACRO, SKILL.ACRO.ADV, ATK.ADV
         let Some((prefix, rest)) = s.split_once('.') else {
             return match s {
-                "MAX_HP" => Ok(Self::MaxHp),
                 "HP" => Ok(Self::Hp),
-                "TEMP_HP" => Ok(Self::TempHp),
                 "LEVEL" => Ok(Self::Level),
                 "AC" => Ok(Self::Ac),
                 "SPEED" => Ok(Self::Speed),
-                "CLASS_LEVEL" => Ok(Self::ClassLevel),
-                "CASTER_LEVEL" => Ok(Self::CasterLevel(None)),
-                "CASTER_MODIFIER" => Ok(Self::CasterModifier),
-                "PROF_BONUS" => Ok(Self::ProfBonus),
                 "ATK" => Ok(Self::AttackBonus),
-                "INITIATIVE" => Ok(Self::Initiative),
+                "INIT" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
                 "ATTACKS" => Ok(Self::Attacks),
-                "SLOT_LEVEL" => Ok(Self::SlotLevel),
-                "POINTS" => Ok(Self::Points(0)),
-                "POINTS_MAX" => Ok(Self::PointsMax(0)),
+                "POINTS" => Ok(Self::Points(AttrKey::Scoped)),
+                "FREE_USES" => Ok(Self::FreeUses(AttrKey::Scoped)),
                 "COST" => Ok(Self::Cost),
-                "CASTER_ABILITY" => Ok(Self::CasterAbility),
-                "CASTER_COEF" => Ok(Self::CasterCoef),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -330,9 +396,30 @@ impl FromStr for Attribute {
                     _ => Err("unknown skill suffix (expected ADV or PROF)"),
                 }
             }
-            "PROF" => parse_proficiency(rest)
-                .map(Self::EquipmentProficiency)
-                .ok_or("unknown proficiency"),
+            "PROF" => match rest {
+                "BONUS" => Ok(Self::ProfBonus),
+                _ => parse_proficiency(rest)
+                    .map(Self::EquipmentProficiency)
+                    .ok_or("unknown proficiency"),
+            },
+            "HP" => match rest {
+                "MAX" => Ok(Self::MaxHp),
+                "TEMP" => Ok(Self::TempHp),
+                _ => Err("unknown HP suffix (expected MAX or TEMP)"),
+            },
+            "CLASS" => match rest {
+                "LEVEL" => Ok(Self::ClassLevel),
+                _ => Err("unknown CLASS suffix (expected LEVEL)"),
+            },
+            "CASTER" => match rest {
+                "LEVEL" => Ok(Self::CasterLevel(None)),
+                "LEVEL.ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
+                "LEVEL.PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
+                "MOD" => Ok(Self::CasterModifier),
+                "ABILITY" => Ok(Self::CasterAbility),
+                "COEF" => Ok(Self::CasterCoef),
+                _ => Err("unknown CASTER suffix"),
+            },
             "RESIST" => parse_damage_type(rest)
                 .map(Self::Resistance)
                 .ok_or("unknown damage type"),
@@ -345,17 +432,65 @@ impl FromStr for Attribute {
             "DR" => parse_damage_type(rest)
                 .map(Self::DamageReduction)
                 .ok_or("unknown damage type"),
-            "POINTS" => rest
-                .parse::<u8>()
-                .map(Self::Points)
-                .map_err(|_| "invalid POINTS index (expected integer 0-255)"),
-            "POINTS_MAX" => rest
-                .parse::<u8>()
-                .map(Self::PointsMax)
-                .map_err(|_| "invalid POINTS_MAX index (expected integer 0-255)"),
-            "INITIATIVE" => match rest {
+            "POINTS" => match rest {
+                "MAX" => Ok(Self::PointsMax(AttrKey::Scoped)),
+                _ => {
+                    let (name, remaining) = parse_backtick_name(rest)?;
+                    let key = AttrKey::Named(intern(name));
+                    match remaining {
+                        "" => Ok(Self::Points(key)),
+                        ".MAX" => Ok(Self::PointsMax(key)),
+                        _ => Err("unknown POINTS suffix"),
+                    }
+                }
+            },
+            "DIE" => {
+                let (name, remaining) = parse_backtick_name(rest)?;
+                let key = AttrKey::Named(intern(name));
+                match remaining {
+                    ".SIDES" => Ok(Self::DieSides(key)),
+                    ".COUNT" => Ok(Self::DieCount(key)),
+                    ".USED" => Ok(Self::DieUsed(key)),
+                    _ => Err("unknown DIE suffix (expected SIDES/COUNT/USED)"),
+                }
+            }
+            "BONUS" => {
+                let (name, remaining) = parse_backtick_name(rest)?;
+                if !remaining.is_empty() {
+                    return Err("unknown BONUS suffix");
+                }
+                Ok(Self::Bonus(AttrKey::Named(intern(name))))
+            }
+            "CHOICE" => {
+                let (name, remaining) = parse_backtick_name(rest)?;
+                let key = AttrKey::Named(intern(name));
+                match remaining {
+                    ".COUNT" => Ok(Self::ChoiceCount(key)),
+                    _ => Err("unknown CHOICE suffix (expected COUNT)"),
+                }
+            }
+            "STICKY" => {
+                let (name, remaining) = parse_backtick_name(rest)?;
+                if !remaining.is_empty() {
+                    return Err("unknown STICKY suffix");
+                }
+                Ok(Self::Sticky(AttrKey::Named(intern(name))))
+            }
+            "FREE_USES" => match rest {
+                "USED" => Ok(Self::FreeUsesUsed(AttrKey::Scoped)),
+                _ => {
+                    let (name, remaining) = parse_backtick_name(rest)?;
+                    let key = AttrKey::Named(intern(name));
+                    match remaining {
+                        "" => Ok(Self::FreeUses(key)),
+                        ".USED" => Ok(Self::FreeUsesUsed(key)),
+                        _ => Err("unknown FREE_USES suffix"),
+                    }
+                }
+            },
+            "INIT" => match rest {
                 "BONUS" => Ok(Self::InitiativeBonus),
-                _ => Err("unknown INITIATIVE suffix (expected BONUS)"),
+                _ => Err("unknown INIT suffix (expected BONUS)"),
             },
             "ARG" => rest
                 .parse::<u8>()
@@ -374,12 +509,10 @@ impl FromStr for Attribute {
                 "READY" => Ok(Self::SpellReady),
                 _ => Err("unknown SPELL suffix"),
             },
-            "CASTER_LEVEL" => match rest {
-                "ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
-                "PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
-                _ => Err("unknown CASTER_LEVEL suffix (expected ARCANE or PACT)"),
+            "SLOT" => match rest {
+                "LEVEL" => Ok(Self::SlotLevel),
+                _ => parse_slot_suffix(rest),
             },
-            "SLOT" => parse_slot_suffix(rest),
             "FEAT" => {
                 let name = rest.trim_matches('`');
                 Ok(Self::Feature(intern(name)))
@@ -429,21 +562,21 @@ impl fmt::Display for Attribute {
             Self::SkillProficiency(skill) => write!(f, "SKILL.{}.PROF", skill.abbr()),
             Self::SaveProficiency(ability) => write!(f, "{}.SAVE.PROF", ability.abbr()),
             Self::EquipmentProficiency(prof) => write!(f, "PROF.{}", prof.abbr()),
-            Self::MaxHp => f.write_str("MAX_HP"),
+            Self::MaxHp => f.write_str("HP.MAX"),
             Self::Hp => f.write_str("HP"),
-            Self::TempHp => f.write_str("TEMP_HP"),
+            Self::TempHp => f.write_str("HP.TEMP"),
             Self::Level => f.write_str("LEVEL"),
             Self::Ac => f.write_str("AC"),
             Self::Speed => f.write_str("SPEED"),
-            Self::ClassLevel => f.write_str("CLASS_LEVEL"),
-            Self::CasterLevel(None) => f.write_str("CASTER_LEVEL"),
-            Self::CasterLevel(Some(SpellSlotPool::Arcane)) => f.write_str("CASTER_LEVEL.ARCANE"),
-            Self::CasterLevel(Some(SpellSlotPool::Pact)) => f.write_str("CASTER_LEVEL.PACT"),
-            Self::CasterModifier => f.write_str("CASTER_MODIFIER"),
-            Self::ProfBonus => f.write_str("PROF_BONUS"),
+            Self::ClassLevel => f.write_str("CLASS.LEVEL"),
+            Self::CasterLevel(None) => f.write_str("CASTER.LEVEL"),
+            Self::CasterLevel(Some(SpellSlotPool::Arcane)) => f.write_str("CASTER.LEVEL.ARCANE"),
+            Self::CasterLevel(Some(SpellSlotPool::Pact)) => f.write_str("CASTER.LEVEL.PACT"),
+            Self::CasterModifier => f.write_str("CASTER.MOD"),
+            Self::ProfBonus => f.write_str("PROF.BONUS"),
             Self::AttackBonus => f.write_str("ATK"),
-            Self::Initiative => f.write_str("INITIATIVE"),
-            Self::InitiativeBonus => f.write_str("INITIATIVE.BONUS"),
+            Self::Initiative => f.write_str("INIT"),
+            Self::InitiativeBonus => f.write_str("INIT.BONUS"),
             Self::Inspiration => f.write_str("INSPIRATION"),
             Self::AbilityAdvantage(ability) => write!(f, "{}.ADV", ability.abbr()),
             Self::SkillAdvantage(skill) => write!(f, "SKILL.{}.ADV", skill.abbr()),
@@ -452,11 +585,17 @@ impl fmt::Display for Attribute {
             Self::SpellDc => f.write_str("SPELL.DC"),
             Self::SpellAttack => f.write_str("SPELL.ATK"),
             Self::SpellAttackAdvantage => f.write_str("SPELL.ATK.ADV"),
-            Self::SlotLevel => f.write_str("SLOT_LEVEL"),
-            Self::Points(0) => f.write_str("POINTS"),
-            Self::Points(n) => write!(f, "POINTS.{n}"),
-            Self::PointsMax(0) => f.write_str("POINTS_MAX"),
-            Self::PointsMax(n) => write!(f, "POINTS_MAX.{n}"),
+            Self::SlotLevel => f.write_str("SLOT.LEVEL"),
+            Self::Points(key) => fmt_attr_key(key, "POINTS", "", f),
+            Self::PointsMax(key) => fmt_attr_key(key, "POINTS", ".MAX", f),
+            Self::DieSides(key) => fmt_attr_key(key, "DIE", ".SIDES", f),
+            Self::DieCount(key) => fmt_attr_key(key, "DIE", ".COUNT", f),
+            Self::DieUsed(key) => fmt_attr_key(key, "DIE", ".USED", f),
+            Self::Bonus(key) => fmt_attr_key(key, "BONUS", "", f),
+            Self::ChoiceCount(key) => fmt_attr_key(key, "CHOICE", ".COUNT", f),
+            Self::Sticky(key) => fmt_attr_key(key, "STICKY", "", f),
+            Self::FreeUses(key) => fmt_attr_key(key, "FREE_USES", "", f),
+            Self::FreeUsesUsed(key) => fmt_attr_key(key, "FREE_USES", ".USED", f),
             Self::Cost => f.write_str("COST"),
             Self::Resistance(dt) => write!(f, "RESIST.{}", dt.abbr()),
             Self::Vulnerability(dt) => write!(f, "VULN.{}", dt.abbr()),
@@ -470,8 +609,8 @@ impl fmt::Display for Attribute {
             Self::SlotUsed(Some(SpellSlotPool::Arcane), n) => write!(f, "SLOT.ARCANE.{n}.USED"),
             Self::SlotUsed(Some(SpellSlotPool::Pact), n) => write!(f, "SLOT.PACT.{n}.USED"),
             Self::SlotPool => f.write_str("SLOT.POOL"),
-            Self::CasterAbility => f.write_str("CASTER_ABILITY"),
-            Self::CasterCoef => f.write_str("CASTER_COEF"),
+            Self::CasterAbility => f.write_str("CASTER.ABILITY"),
+            Self::CasterCoef => f.write_str("CASTER.COEF"),
             Self::SpellCantrips => f.write_str("SPELL.CANTRIPS"),
             Self::SpellKnown => f.write_str("SPELL.KNOWN"),
             Self::SpellReady => f.write_str("SPELL.READY"),
@@ -550,8 +689,40 @@ impl Attribute {
             Self::CasterLevel(Some(pool)) => {
                 format!("{} ({})", tr!(i18n, "caster-level"), i18n.tr(pool.tr_key()))
             }
-            Self::Points(_) => tr!(i18n, "points"),
-            Self::PointsMax(_) => tr!(i18n, "points-max"),
+            Self::Points(AttrKey::Scoped) => tr!(i18n, "points"),
+            Self::Points(AttrKey::Named(name)) => format!("{} ({name})", tr!(i18n, "points")),
+            Self::PointsMax(AttrKey::Scoped) => tr!(i18n, "points-max"),
+            Self::PointsMax(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "points-max"))
+            }
+            Self::DieSides(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "die-sides"))
+            }
+            Self::DieCount(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "die-count"))
+            }
+            Self::DieUsed(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "die-used"))
+            }
+            Self::DieSides(AttrKey::Scoped) => tr!(i18n, "die-sides"),
+            Self::DieCount(AttrKey::Scoped) => tr!(i18n, "die-count"),
+            Self::DieUsed(AttrKey::Scoped) => tr!(i18n, "die-used"),
+            Self::Bonus(AttrKey::Named(name)) => format!("{} ({name})", tr!(i18n, "bonus")),
+            Self::Bonus(AttrKey::Scoped) => tr!(i18n, "bonus"),
+            Self::ChoiceCount(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "choice-count"))
+            }
+            Self::ChoiceCount(AttrKey::Scoped) => tr!(i18n, "choice-count"),
+            Self::Sticky(AttrKey::Named(spell)) => format!("{} ({spell})", tr!(i18n, "sticky")),
+            Self::Sticky(AttrKey::Scoped) => tr!(i18n, "sticky"),
+            Self::FreeUses(AttrKey::Scoped) => tr!(i18n, "free-uses"),
+            Self::FreeUses(AttrKey::Named(spell)) => {
+                format!("{} ({spell})", tr!(i18n, "free-uses"))
+            }
+            Self::FreeUsesUsed(AttrKey::Scoped) => tr!(i18n, "free-uses-used"),
+            Self::FreeUsesUsed(AttrKey::Named(spell)) => {
+                format!("{} ({spell})", tr!(i18n, "free-uses-used"))
+            }
             Self::Cost => tr!(i18n, "cost"),
             Self::Resistance(dt) => {
                 format!(
@@ -614,7 +785,7 @@ impl Attribute {
     pub fn format_value(&self, value: i32, i18n: I18n) -> String {
         match self {
             Self::CasterAbility => Ability::try_from(value.max(0) as u8)
-                .map(|ability| i18n.tr(ability.tr_key()))
+                .map(|ability| i18n.tr(ability.tr_abbr_key()))
                 .unwrap_or_else(|_| value.to_string()),
             Self::SlotPool => SpellSlotPool::try_from(value.max(0) as u8)
                 .map(|pool| i18n.tr(pool.tr_key()))
@@ -761,37 +932,159 @@ mod tests {
     #[wasm_bindgen_test]
     fn parse_slot_level() {
         assert_eq!(
-            "SLOT_LEVEL".parse::<Attribute>().unwrap(),
+            "SLOT.LEVEL".parse::<Attribute>().unwrap(),
             Attribute::SlotLevel
         );
         // Round-trip
-        assert_eq!(Attribute::SlotLevel.to_string(), "SLOT_LEVEL");
+        assert_eq!(Attribute::SlotLevel.to_string(), "SLOT.LEVEL");
     }
 
     #[wasm_bindgen_test]
     fn parse_points_attributes() {
-        assert_eq!("POINTS".parse::<Attribute>().unwrap(), Attribute::Points(0));
         assert_eq!(
-            "POINTS.2".parse::<Attribute>().unwrap(),
-            Attribute::Points(2)
+            "POINTS".parse::<Attribute>().unwrap(),
+            Attribute::Points(AttrKey::Scoped)
         );
         assert_eq!(
-            "POINTS_MAX".parse::<Attribute>().unwrap(),
-            Attribute::PointsMax(0)
+            "POINTS.MAX".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(AttrKey::Scoped)
         );
         assert_eq!(
-            "POINTS_MAX.1".parse::<Attribute>().unwrap(),
-            Attribute::PointsMax(1)
+            "POINTS.`Ki`".parse::<Attribute>().unwrap(),
+            Attribute::Points(AttrKey::named("Ki"))
         );
+        assert_eq!(
+            "POINTS.`Ki`.MAX".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(AttrKey::named("Ki"))
+        );
+        // Indexed POINTS.<n> is no longer accepted
+        assert!("POINTS.2".parse::<Attribute>().is_err());
+        // Bare-name (unquoted) is not accepted; backticks required
+        assert!("POINTS.Ki".parse::<Attribute>().is_err());
     }
 
     #[wasm_bindgen_test]
     fn display_points_round_trip() {
         let cases = [
-            Attribute::Points(0),
-            Attribute::Points(3),
-            Attribute::PointsMax(0),
-            Attribute::PointsMax(2),
+            Attribute::Points(AttrKey::Scoped),
+            Attribute::PointsMax(AttrKey::Scoped),
+            Attribute::Points(AttrKey::named("Ki")),
+            Attribute::PointsMax(AttrKey::named("Ki")),
+            Attribute::Points(AttrKey::named("Bardic Inspiration")),
+            Attribute::PointsMax(AttrKey::named("Bardic Inspiration")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_die_attributes() {
+        assert_eq!(
+            "DIE.`Sneak Attack`.SIDES".parse::<Attribute>().unwrap(),
+            Attribute::DieSides(AttrKey::named("Sneak Attack"))
+        );
+        assert_eq!(
+            "DIE.`Sneak Attack`.COUNT".parse::<Attribute>().unwrap(),
+            Attribute::DieCount(AttrKey::named("Sneak Attack"))
+        );
+        assert_eq!(
+            "DIE.`Sneak Attack`.USED".parse::<Attribute>().unwrap(),
+            Attribute::DieUsed(AttrKey::named("Sneak Attack"))
+        );
+        assert!("DIE.`X`".parse::<Attribute>().is_err());
+        assert!("DIE.`X`.BAD".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_die_round_trip() {
+        let cases = [
+            Attribute::DieSides(AttrKey::named("Sneak Attack")),
+            Attribute::DieCount(AttrKey::named("Sneak Attack")),
+            Attribute::DieUsed(AttrKey::named("Sneak Attack")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_bonus_attributes() {
+        assert_eq!(
+            "BONUS.`Fighting Style`".parse::<Attribute>().unwrap(),
+            Attribute::Bonus(AttrKey::named("Fighting Style"))
+        );
+        assert!("BONUS.X".parse::<Attribute>().is_err());
+        assert!("BONUS.`X`.MAX".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_bonus_round_trip() {
+        let attr = Attribute::Bonus(AttrKey::named("Fighting Style"));
+        let s = attr.to_string();
+        let parsed: Attribute = s.parse().unwrap();
+        assert_eq!(parsed, attr, "round-trip failed for {s}");
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_choice_attributes() {
+        assert_eq!(
+            "CHOICE.`ASI`.COUNT".parse::<Attribute>().unwrap(),
+            Attribute::ChoiceCount(AttrKey::named("ASI"))
+        );
+        assert!("CHOICE.`ASI`".parse::<Attribute>().is_err());
+        assert!("CHOICE.`ASI`.PICK".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_choice_round_trip() {
+        let attr = Attribute::ChoiceCount(AttrKey::named("ASI"));
+        let s = attr.to_string();
+        let parsed: Attribute = s.parse().unwrap();
+        assert_eq!(parsed, attr, "round-trip failed for {s}");
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_sticky_attributes() {
+        assert_eq!(
+            "STICKY.`Mage Hand`".parse::<Attribute>().unwrap(),
+            Attribute::Sticky(AttrKey::named("Mage Hand"))
+        );
+        assert!("STICKY.MageHand".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_free_uses_attributes() {
+        assert_eq!(
+            "FREE_USES".parse::<Attribute>().unwrap(),
+            Attribute::FreeUses(AttrKey::Scoped)
+        );
+        assert_eq!(
+            "FREE_USES.USED".parse::<Attribute>().unwrap(),
+            Attribute::FreeUsesUsed(AttrKey::Scoped)
+        );
+        assert_eq!(
+            "FREE_USES.`Mage Hand`".parse::<Attribute>().unwrap(),
+            Attribute::FreeUses(AttrKey::named("Mage Hand"))
+        );
+        assert_eq!(
+            "FREE_USES.`Mage Hand`.USED".parse::<Attribute>().unwrap(),
+            Attribute::FreeUsesUsed(AttrKey::named("Mage Hand"))
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_sticky_free_uses_round_trip() {
+        let cases = [
+            Attribute::Sticky(AttrKey::named("Mage Hand")),
+            Attribute::FreeUses(AttrKey::Scoped),
+            Attribute::FreeUses(AttrKey::named("Mage Hand")),
+            Attribute::FreeUsesUsed(AttrKey::Scoped),
+            Attribute::FreeUsesUsed(AttrKey::named("Mage Hand")),
         ];
         for attr in cases {
             let s = attr.to_string();
@@ -970,11 +1263,11 @@ mod tests {
     #[wasm_bindgen_test]
     fn parse_caster_meta_attributes() {
         assert_eq!(
-            "CASTER_ABILITY".parse::<Attribute>().unwrap(),
+            "CASTER.ABILITY".parse::<Attribute>().unwrap(),
             Attribute::CasterAbility
         );
         assert_eq!(
-            "CASTER_COEF".parse::<Attribute>().unwrap(),
+            "CASTER.COEF".parse::<Attribute>().unwrap(),
             Attribute::CasterCoef
         );
     }

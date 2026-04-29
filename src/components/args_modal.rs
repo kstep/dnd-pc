@@ -13,8 +13,11 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    model::{AssignInputs, Character, Expr, FeatureSource},
-    rules::{ApplyInputs, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition},
+    model::{AssignInputs, Character, Expr, Feature, FeatureSource},
+    rules::{
+        ApplyInputs, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
+        apply::apply_feature,
+    },
 };
 
 type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
@@ -583,25 +586,37 @@ pub fn ArgsModal() -> impl IntoView {
                         });
                         registry.with_features_index_untracked(|idx| {
                             if let Some(def) = idx.get(effective_key.name.as_str()) {
-                                // `assign_silent`: cascade is a preview; inputs
-                                // may be empty mid-interaction, so `@ARG`
-                                // resolution failures / guard-failures are
-                                // expected. Real apply uses `assign` which logs.
-                                def.assign_silent(
+                                // Push synthetic feature row so ApplyContext
+                                // resolves `@ARG` from `feature.inputs` and
+                                // scoped lookups land in this row's data.
+                                ch.features.list.push(Feature {
+                                    name: effective_key.name.clone(),
+                                    source: effective_key.source.clone(),
+                                    applied: true,
+                                    category: def.category,
+                                    inputs: inputs.clone(),
+                                    ..Feature::default()
+                                });
+                                let feature_index = ch.features.list.len() - 1;
+                                // Cascade is a preview; mid-typing inputs may
+                                // legitimately fail `@ARG` resolution. Errors
+                                // log at debug level so the per-keystroke spam
+                                // doesn't reach the production console.
+                                apply_feature(
+                                    def,
                                     &mut ch,
+                                    feature_index,
                                     WhenCondition::OnFeatureAdd,
-                                    &inputs,
                                 );
-                                // OnCompute picks up derived state (AC, initiative,
-                                // spell DC, etc.) so downstream features' analysis
-                                // sees current snapshot's computed values.
-                                // Idempotent within a single snapshot — safe to
-                                // run per-feature as a stand-in for a global
-                                // `registry.compute()` pass. OnCompute assigns
-                                // don't use `@ARG` (they read derived state from
-                                // character fields), so empty inputs mirror
-                                // `registry.assign(OnCompute)` semantics.
-                                def.assign_silent(&mut ch, WhenCondition::OnCompute, &[]);
+                                // OnCompute picks up derived state for the
+                                // downstream cascade snapshot. Stand-in for a
+                                // global `registry.compute()`.
+                                apply_feature(
+                                    def,
+                                    &mut ch,
+                                    feature_index,
+                                    WhenCondition::OnCompute,
+                                );
                             }
                         });
                         next_sig.set(Arc::new(ch));

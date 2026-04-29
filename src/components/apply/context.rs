@@ -28,12 +28,12 @@ impl expr::Context<Attribute, i32> for ArgsContext<'_> {
 
 /// Mutating context that simulates applying an assignment to a character
 /// while also capturing every assign call (var, value) for display.
-pub struct PreviewContext<'a> {
+pub struct CaptureContext<'a> {
     pub character: &'a mut Character,
     pub captured: Vec<(Attribute, i32)>,
 }
 
-impl expr::Context<Attribute, i32> for PreviewContext<'_> {
+impl expr::Context<Attribute, i32> for CaptureContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         self.character.resolve(var)
     }

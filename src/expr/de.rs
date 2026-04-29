@@ -25,8 +25,17 @@ where
                 f.write_str("an expression string or a sequence of ops")
             }
 
+            // Lenient: stale stored exprs (e.g. legacy attribute names from
+            // pre-rename data) shouldn't take down the whole character.
+            // Log the failure and fall back to an empty expression.
             fn visit_str<E: de::Error>(self, s: &str) -> Result<Expr<Var, Val, Grp>, E> {
-                s.parse().map_err(de::Error::custom)
+                match s.parse() {
+                    Ok(expr) => Ok(expr),
+                    Err(error) => {
+                        log::warn!("Expr parse failed for '{s}': {error}; using default");
+                        Ok(Expr::default())
+                    }
+                }
             }
 
             fn visit_seq<A: de::SeqAccess<'de>>(

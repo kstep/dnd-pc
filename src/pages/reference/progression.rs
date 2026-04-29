@@ -1,63 +1,86 @@
 //! Read-only preview of per-class-level scaling for the `/r/class/:name`
 //! reference page. Builds a `ProgressionPreview` by evaluating a feature's
 //! `OnFeatureAdd` + `OnCompute` `assign` expressions for each class level
-//! 1..=20 against an in-memory `BTreeMap<Attribute, i32>` — no real
-//! `Character` is needed because the table only shows numeric counts and
-//! slot totals, not actual `Spell` objects.
-
-use std::collections::BTreeMap;
+//! 1..=20 through `rules::PreviewContext` — no real `Character` is needed
+//! because the table only shows numeric counts and slot totals, not
+//! actual `Spell` objects.
 
 use crate::{
-    expr::{self, Context as _},
-    model::{Attribute, SpellData, SpellSlotPool},
-    rules::{FeatureDefinition, WhenCondition},
+    model::{AttrKey, Attribute, SpellData, format_bonus},
+    rules::{
+        FeatureDefinition, PoolKind, PoolSummary, PreviewContext, WhenCondition, eval_at_levels,
+    },
 };
 
-/// Stand-in for `Character`-backed `Context` when previewing scaling
-/// expressions for a single feature (no real character involved).
-pub struct PreviewContext {
-    values: BTreeMap<Attribute, i32>,
-    pool: SpellSlotPool,
+/// Per-level value snapshots for each pool of a feature's assigns,
+/// indexed `[level_index][pool_index]`. Level index is `level - 1`.
+pub fn preview_pool_values(
+    feat_def: &FeatureDefinition,
+    pools: &[PoolSummary],
+) -> Vec<Vec<String>> {
+    let mut rows = Vec::with_capacity(20);
+    eval_at_levels(feat_def, |_level, ctx| {
+        let row = pools
+            .iter()
+            .map(|pool| format_pool_value(ctx, pool.name, pool.kind))
+            .collect();
+        rows.push(row);
+    });
+    rows
 }
 
-impl PreviewContext {
-    fn new() -> Self {
-        Self {
-            values: BTreeMap::new(),
-            pool: SpellSlotPool::Arcane,
+fn format_pool_value(ctx: &PreviewContext, name: &str, kind: PoolKind) -> String {
+    let key = AttrKey::named(name);
+    match kind {
+        PoolKind::Points => {
+            let max = ctx
+                .values
+                .get(&Attribute::PointsMax(key))
+                .copied()
+                .unwrap_or(0);
+            if max > 0 {
+                max.to_string()
+            } else {
+                "\u{2014}".into()
+            }
         }
-    }
-
-    fn read_count(&self, var: Attribute) -> u32 {
-        self.resolve(var).unwrap_or(0).max(0) as u32
-    }
-}
-
-impl expr::Context<Attribute, i32> for PreviewContext {
-    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        let key = match var {
-            Attribute::Slot(None, n) => Attribute::Slot(Some(self.pool), n),
-            Attribute::SlotUsed(None, n) => Attribute::SlotUsed(Some(self.pool), n),
-            Attribute::CasterLevel(None) => Attribute::CasterLevel(Some(self.pool)),
-            other => other,
-        };
-        Ok(self.values.get(&key).copied().unwrap_or(0))
-    }
-
-    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-        if matches!(var, Attribute::SlotPool)
-            && let Ok(pool) = SpellSlotPool::try_from(value.max(0) as u8)
-        {
-            self.pool = pool;
+        PoolKind::Die => {
+            let sides = ctx
+                .values
+                .get(&Attribute::DieSides(key))
+                .copied()
+                .unwrap_or(0);
+            let count = ctx
+                .values
+                .get(&Attribute::DieCount(key))
+                .copied()
+                .unwrap_or(0);
+            if count > 0 && sides > 0 {
+                format!("{count}d{sides}")
+            } else {
+                "\u{2014}".into()
+            }
         }
-        let key = match var {
-            Attribute::Slot(None, n) => Attribute::Slot(Some(self.pool), n),
-            Attribute::SlotUsed(None, n) => Attribute::SlotUsed(Some(self.pool), n),
-            Attribute::CasterLevel(None) => Attribute::CasterLevel(Some(self.pool)),
-            other => other,
-        };
-        self.values.insert(key, value);
-        Ok(())
+        PoolKind::Bonus => {
+            let value = ctx.values.get(&Attribute::Bonus(key)).copied().unwrap_or(0);
+            if value != 0 {
+                format_bonus(value)
+            } else {
+                "\u{2014}".into()
+            }
+        }
+        PoolKind::Choice => {
+            let value = ctx
+                .values
+                .get(&Attribute::ChoiceCount(key))
+                .copied()
+                .unwrap_or(0);
+            if value > 0 {
+                value.to_string()
+            } else {
+                "\u{2014}".into()
+            }
+        }
     }
 }
 
@@ -79,7 +102,10 @@ pub struct ProgressionPreview {
 }
 
 /// Per-class-level scaling preview (cantrips / slots / ready / known) for
-/// a single caster feature, used by the `/r/class` reference page.
+/// a single caster feature, used by the `/r/class` reference page. Stays
+/// inline rather than going through `eval_at_levels` because `CasterLevel`
+/// has to be re-bound per level *before* `OnCompute` runs (the helper
+/// only exposes a post-eval callback).
 pub fn preview_progression(feat_def: &FeatureDefinition) -> ProgressionPreview {
     let mut ctx = PreviewContext::new();
 
@@ -90,8 +116,8 @@ pub fn preview_progression(feat_def: &FeatureDefinition) -> ProgressionPreview {
         .filter(|assignment| assignment.when == WhenCondition::OnFeatureAdd)
     {
         if let Err(error) = assign.expr.apply(&mut ctx) {
-            log::warn!(
-                "preview_progression: OnFeatureAdd expr failed for {}: {error:?}",
+            log::debug!(
+                "preview_progression: OnFeatureAdd failed for '{}': {error:?}",
                 feat_def.name
             );
         }
@@ -118,8 +144,8 @@ pub fn preview_progression(feat_def: &FeatureDefinition) -> ProgressionPreview {
             .filter(|assignment| assignment.when == WhenCondition::OnCompute)
         {
             if let Err(error) = assign.expr.apply(&mut ctx) {
-                log::warn!(
-                    "preview_progression: OnCompute expr at L{level} failed for {}: {error:?}",
+                log::debug!(
+                    "preview_progression: OnCompute at L{level} failed for '{}': {error:?}",
                     feat_def.name
                 );
             }

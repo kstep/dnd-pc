@@ -215,10 +215,9 @@ pub fn FeatureRow(
                                             registry,
                                             pending,
                                             None,
-                                            move |character, pending, inputs, feat_index, spell_index| {
+                                            move |character, pending, inputs, feat_index| {
                                                 apply_new_features(
                                                     feat_index,
-                                                    spell_index,
                                                     character,
                                                     pending,
                                                     Some(&inputs.feature_inputs),
@@ -261,10 +260,9 @@ pub fn FeatureRow(
                                 // submit just stash new inputs + mark dirty. Replay banner
                                 // picks it up and performs the full-character re-apply.
                                 let key = FeatureKey::new(name.clone(), source.clone());
-                                let clean = registry.with_apply_indexes(|feat_index, spell_index| {
+                                let clean = registry.with_features_index_untracked(|feat_index| {
                                     build_cascade_base_before(
                                         feat_index,
-                                        spell_index,
                                         &store.read_untracked(),
                                         &key,
                                     )
@@ -284,10 +282,9 @@ pub fn FeatureRow(
                                     registry,
                                     pending,
                                     None,
-                                    move |character, pending, inputs, feat_index, spell_index| {
+                                    move |character, pending, inputs, feat_index| {
                                         apply_new_features(
                                             feat_index,
-                                            spell_index,
                                             character,
                                             pending,
                                             Some(&inputs.feature_inputs),

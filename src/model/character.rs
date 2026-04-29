@@ -9,8 +9,8 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
-        Equipment, Feature, FeatureData, FeatureSource, FeatureValue, Features, Note, Personality,
-        Skills, Spell, SpellData, SpellSlots, Weapon, enums::*,
+        Equipment, Feature, FeatureSource, Features, Note, Personality, Skills, SpellData,
+        SpellSlots, Weapon, enums::*,
     },
     vecset::VecSet,
 };
@@ -765,380 +765,14 @@ impl expr::Context<Attribute, i32> for Character {
     }
 }
 
-pub struct Context<'a> {
-    pub character: &'a mut Character,
-    pub class_level: i32,
-    /// Scope target — the feature whose `SpellData` is consulted by
-    /// resolvers for `SLOT.N` (when pool is None), `CASTER_LEVEL` /
-    /// `CASTER_MODIFIER`, and the per-feature spell-count attributes.
-    pub feature: Option<String>,
-    /// Extracted Points/Die field values: (field_index, available, max).
-    /// Populated from FeatureData before expression evaluation, written back
-    /// after.
-    pub points: Vec<(u8, i32, i32)>,
-}
-
-impl<'a> From<&'a mut Character> for Context<'a> {
-    fn from(character: &'a mut Character) -> Self {
-        Self {
-            character,
-            class_level: 0,
-            feature: None,
-            points: Vec::new(),
-        }
-    }
-}
-
-impl Context<'_> {
-    /// Extract (available, max) from Points/Die fields at their actual indices.
-    pub fn extract_points(feature_data: &FeatureData) -> Vec<(u8, i32, i32)> {
-        feature_data
-            .fields
-            .iter()
-            .enumerate()
-            .filter_map(|(idx, field)| match &field.value {
-                FeatureValue::Points { used, max } => {
-                    Some((idx as u8, (*max - *used) as i32, *max as i32))
-                }
-                FeatureValue::Die { die, used } => {
-                    Some((idx as u8, (die.amount - *used) as i32, die.amount as i32))
-                }
-                _ => None,
-            })
-            .collect()
-    }
-
-    /// Write back modified points values into the feature data fields.
-    pub fn writeback_points(feature_data: &mut FeatureData, points: &[(u8, i32, i32)]) {
-        for &(idx, available, max) in points {
-            let Some(field) = feature_data.fields.get_mut(idx as usize) else {
-                continue;
-            };
-            match &mut field.value {
-                FeatureValue::Points { used, .. } => {
-                    *used = (max - available).max(0) as u32;
-                }
-                FeatureValue::Die { used, .. } => {
-                    *used = (max - available).max(0) as u32;
-                }
-                _ => {}
-            }
-        }
-    }
-
-    fn resolve_points(&self, idx: u8) -> Result<i32, expr::Error> {
-        self.points
-            .iter()
-            .find(|(i, _, _)| *i == idx)
-            .map(|(_, available, _)| *available)
-            .ok_or(expr::Error::unsupported_var(Attribute::Points(idx)))
-    }
-
-    fn resolve_points_max(&self, idx: u8) -> Result<i32, expr::Error> {
-        self.points
-            .iter()
-            .find(|(i, _, _)| *i == idx)
-            .map(|(_, _, max)| *max)
-            .ok_or(expr::Error::unsupported_var(Attribute::PointsMax(idx)))
-    }
-
-    fn assign_points(&mut self, idx: u8, value: i32) -> Result<(), expr::Error> {
-        let entry = self
-            .points
-            .iter_mut()
-            .find(|(i, _, _)| *i == idx)
-            .ok_or(expr::Error::unsupported_var(Attribute::Points(idx)))?;
-        entry.1 = value.clamp(0, entry.2);
-        Ok(())
-    }
-
-    fn assign_points_max(&mut self, idx: u8, value: i32) -> Result<(), expr::Error> {
-        let entry = self
-            .points
-            .iter_mut()
-            .find(|(i, _, _)| *i == idx)
-            .ok_or(expr::Error::unsupported_var(Attribute::PointsMax(idx)))?;
-        entry.2 = value.max(0);
-        Ok(())
-    }
-
-    fn feature_spell_data(&self) -> Option<&SpellData> {
-        let name = self.feature.as_deref()?;
-        self.character.features.spell_data(name)
-    }
-
-    fn feature_spell_data_mut(&mut self) -> Option<&mut SpellData> {
-        let name = self.feature.clone()?;
-        self.character.features.spell_data_mut(&name)
-    }
-
-    fn feature_pool(&self) -> Result<SpellSlotPool, expr::Error> {
-        self.feature_spell_data()
-            .map(|data| data.pool)
-            .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))
-    }
-
-    fn feature_ability(&self) -> Result<Ability, expr::Error> {
-        self.feature_spell_data()
-            .map(|data| data.casting_ability)
-            .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))
-    }
-
-    /// `highest_slot_level` — наибольший N where `spell_slots[pool][N-1].total
-    /// > 0`. Default 1 if all zero. Used as the level for new placeholder
-    /// spells when growing `SPELL.READY` / `SPELL.KNOWN`.
-    fn highest_slot_level_for(character: &Character, pool: SpellSlotPool) -> u32 {
-        character
-            .spell_slots
-            .get(&pool)
-            .and_then(|levels| {
-                levels
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find(|(_, slot)| slot.total > 0)
-                    .map(|(index, _)| (index + 1) as u32)
-            })
-            .unwrap_or(1)
-    }
-
-    /// Trim non-sticky entries from `target` so that those passing
-    /// `keep` end up at exactly `desired_count`. Removes empty
-    /// (default-name) entries first, then filled non-sticky entries
-    /// in iteration order. Sticky entries are never removed.
-    fn fit_spells_to_count(
-        list: &mut Vec<Spell>,
-        keep: impl Fn(&Spell) -> bool,
-        desired_count: u32,
-        new_entry: impl Fn() -> Spell,
-    ) {
-        let current = list
-            .iter()
-            .filter(|spell| !spell.sticky && keep(spell))
-            .count() as u32;
-        if desired_count > current {
-            for _ in 0..(desired_count - current) {
-                list.push(new_entry());
-            }
-            return;
-        }
-        if desired_count == current {
-            return;
-        }
-        let mut to_remove = (current - desired_count) as usize;
-        // Pass 1: remove empty placeholders.
-        list.retain(|spell| {
-            if to_remove > 0 && !spell.sticky && keep(spell) && spell.name.is_empty() {
-                to_remove -= 1;
-                false
-            } else {
-                true
-            }
-        });
-        if to_remove == 0 {
-            return;
-        }
-        // Pass 2: remove filled non-sticky entries in order.
-        list.retain(|spell| {
-            if to_remove > 0 && !spell.sticky && keep(spell) {
-                to_remove -= 1;
-                false
-            } else {
-                true
-            }
-        });
-    }
-}
-
-impl expr::Context<Attribute, i32> for Context<'_> {
-    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-        match var {
-            Attribute::Points(n) => self.assign_points(n, value),
-            Attribute::PointsMax(n) => self.assign_points_max(n, value),
-            Attribute::Slot(pool, n) => {
-                let pool = match pool {
-                    Some(p) => p,
-                    None => self.feature_pool()?,
-                };
-                let total = value.max(0) as u32;
-                let levels = self.character.spell_slots.entry(pool).or_default();
-                let slot = &mut levels[(n - 1) as usize];
-                slot.total = total;
-                if slot.used > total {
-                    slot.used = total;
-                }
-                Ok(())
-            }
-            Attribute::SlotUsed(pool, n) => {
-                let pool = match pool {
-                    Some(p) => p,
-                    None => self.feature_pool()?,
-                };
-                let levels = self.character.spell_slots.entry(pool).or_default();
-                let slot = &mut levels[(n - 1) as usize];
-                slot.used = value.clamp(0, slot.total as i32) as u32;
-                Ok(())
-            }
-            Attribute::SlotPool => {
-                let new_pool = SpellSlotPool::try_from(value.max(0) as u8)
-                    .map_err(|_| expr::Error::unsupported_var(Attribute::SlotPool))?;
-                let sd = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))?;
-                sd.pool = new_pool;
-                Ok(())
-            }
-            Attribute::CasterAbility => {
-                let new_ability = Ability::try_from(value.max(0) as u8)
-                    .map_err(|_| expr::Error::unsupported_var(Attribute::CasterAbility))?;
-                let sd = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))?;
-                sd.casting_ability = new_ability;
-                Ok(())
-            }
-            Attribute::CasterCoef => {
-                let sd = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterCoef))?;
-                sd.caster_coef = value.max(0) as u32;
-                Ok(())
-            }
-            Attribute::SpellCantrips => {
-                let data = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellCantrips))?;
-                Self::fit_spells_to_count(
-                    &mut data.spells,
-                    |spell| spell.level == 0,
-                    value.max(0) as u32,
-                    || Spell {
-                        level: 0,
-                        ..Default::default()
-                    },
-                );
-                Ok(())
-            }
-            Attribute::SpellReady => {
-                let pool = self.feature_pool()?;
-                let highest = Self::highest_slot_level_for(self.character, pool);
-                let data = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellReady))?;
-                Self::fit_spells_to_count(
-                    &mut data.spells,
-                    |spell| spell.level > 0,
-                    value.max(0) as u32,
-                    || Spell {
-                        level: highest,
-                        ..Default::default()
-                    },
-                );
-                Ok(())
-            }
-            Attribute::SpellKnown => {
-                let pool = self.feature_pool()?;
-                let highest = Self::highest_slot_level_for(self.character, pool);
-                let data = self
-                    .feature_spell_data_mut()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellKnown))?;
-                let known = data.known.get_or_insert_with(Vec::new);
-                Self::fit_spells_to_count(
-                    known,
-                    |_| true,
-                    value.max(0) as u32,
-                    || Spell {
-                        level: highest,
-                        ..Default::default()
-                    },
-                );
-                Ok(())
-            }
-            _ => self.character.assign(var, value),
-        }
-    }
-
-    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        match var {
-            Attribute::ClassLevel => Ok(self.class_level),
-            Attribute::CasterLevel(None) => {
-                let pool = self.feature_pool()?;
-                Ok(self.character.caster_level(pool) as i32)
-            }
-            Attribute::CasterLevel(Some(pool)) => Ok(self.character.caster_level(pool) as i32),
-            Attribute::CasterModifier => {
-                let ability = self.feature_ability()?;
-                Ok(self.character.ability_modifier(ability))
-            }
-            Attribute::Points(n) => self.resolve_points(n),
-            Attribute::PointsMax(n) => self.resolve_points_max(n),
-            Attribute::Slot(pool, n) => {
-                let pool = match pool {
-                    Some(p) => p,
-                    None => self.feature_pool()?,
-                };
-                Ok(self.character.spell_slots.get_slot(pool, n as u32).total as i32)
-            }
-            Attribute::SlotUsed(pool, n) => {
-                let pool = match pool {
-                    Some(p) => p,
-                    None => self.feature_pool()?,
-                };
-                Ok(self.character.spell_slots.get_slot(pool, n as u32).used as i32)
-            }
-            Attribute::SlotPool => Ok(self
-                .feature_spell_data()
-                .ok_or_else(|| expr::Error::unsupported_var(Attribute::SlotPool))?
-                .pool as i32),
-            Attribute::CasterAbility => Ok(self
-                .feature_spell_data()
-                .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterAbility))?
-                .casting_ability as i32),
-            Attribute::CasterCoef => Ok(self
-                .feature_spell_data()
-                .ok_or_else(|| expr::Error::unsupported_var(Attribute::CasterCoef))?
-                .caster_coef as i32),
-            Attribute::SpellCantrips => {
-                let data = self
-                    .feature_spell_data()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellCantrips))?;
-                Ok(data
-                    .spells
-                    .iter()
-                    .filter(|spell| !spell.sticky && spell.level == 0)
-                    .count() as i32)
-            }
-            Attribute::SpellReady => {
-                let data = self
-                    .feature_spell_data()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellReady))?;
-                Ok(data
-                    .spells
-                    .iter()
-                    .filter(|spell| !spell.sticky && spell.level > 0)
-                    .count() as i32)
-            }
-            Attribute::SpellKnown => {
-                let data = self
-                    .feature_spell_data()
-                    .ok_or_else(|| expr::Error::unsupported_var(Attribute::SpellKnown))?;
-                Ok(data
-                    .known
-                    .as_deref()
-                    .map(|known: &[Spell]| known.iter().filter(|spell| !spell.sticky).count())
-                    .unwrap_or(0) as i32)
-            }
-            _ => self.character.resolve(var),
-        }
-    }
-}
-
 #[cfg(test)]
 impl Character {
     pub fn test_character() -> Character {
         use std::collections::BTreeMap;
 
-        use crate::model::{ClassLevel, FeatureCategory, FeatureSource, Spell, SpellData};
+        use crate::model::{
+            ClassLevel, FeatureCategory, FeatureData, FeatureSource, Spell, SpellData,
+        };
 
         let mut ch = Character {
             id: Uuid::nil(),
@@ -1245,9 +879,10 @@ pub mod tests {
     use super::*;
     use crate::{
         model::{
-            Armor, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureSource, Money,
-            SpellData,
+            Armor, AttrKey, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureData,
+            FeatureField, FeatureSource, FeatureValue, FreeUses, Money, Spell, SpellData,
         },
+        rules::apply::ApplyContext,
         vecset::VecSet,
     };
 
@@ -2224,13 +1859,14 @@ pub mod tests {
         ch
     }
 
-    fn caster_ctx(ch: &mut Character) -> Context<'_> {
-        Context {
-            character: ch,
-            class_level: 5,
-            feature: Some("Spellcasting (Wizard)".to_string()),
-            points: Vec::new(),
-        }
+    fn caster_ctx(ch: &mut Character) -> ApplyContext<'_> {
+        let feature_index = ch
+            .features
+            .list
+            .iter()
+            .position(|f| f.name == "Spellcasting (Wizard)")
+            .expect("caster feature");
+        ApplyContext::new(ch, feature_index)
     }
 
     #[wasm_bindgen_test]
@@ -2316,7 +1952,10 @@ pub mod tests {
             .features
             .spell_data("Spellcasting (Wizard)")
             .unwrap();
-        assert_eq!(data.spells.iter().filter(|s| s.level == 0).count(), 3);
+        assert_eq!(
+            data.spells.iter().filter(|spell| spell.level == 0).count(),
+            3
+        );
 
         // Shrink to 1; empty placeholders removed first.
         let mut ctx = caster_ctx(&mut ch);
@@ -2326,7 +1965,10 @@ pub mod tests {
             .features
             .spell_data("Spellcasting (Wizard)")
             .unwrap();
-        assert_eq!(data.spells.iter().filter(|s| s.level == 0).count(), 1);
+        assert_eq!(
+            data.spells.iter().filter(|spell| spell.level == 0).count(),
+            1
+        );
     }
 
     #[wasm_bindgen_test]
@@ -2345,8 +1987,11 @@ pub mod tests {
             .features
             .spell_data("Spellcasting (Wizard)")
             .unwrap();
-        assert_eq!(data.spells.iter().filter(|s| s.level > 0).count(), 4);
-        for spell in data.spells.iter().filter(|s| s.level > 0) {
+        assert_eq!(
+            data.spells.iter().filter(|spell| spell.level > 0).count(),
+            4
+        );
+        for spell in data.spells.iter().filter(|spell| spell.level > 0) {
             assert_eq!(spell.level, 3);
         }
     }
@@ -2384,14 +2029,16 @@ pub mod tests {
     fn slot_no_feature_errors() {
         use expr::Context as _;
 
+        // ApplyContext requires a real feature row; without spell data on
+        // that feature, implicit-pool resolution must error.
         let mut ch = test_character();
-        let mut ctx = Context {
-            character: &mut ch,
-            class_level: 5,
-            feature: None,
-            points: Vec::new(),
-        };
-        // Implicit pool should error when ctx.feature is None.
+        ch.features.list.push(Feature {
+            name: "Bare".to_string(),
+            applied: true,
+            source: FeatureSource::User(0),
+            ..Default::default()
+        });
+        let mut ctx = ApplyContext::new(&mut ch, 0);
         assert!(ctx.assign(Attribute::Slot(None, 1), 4).is_err());
     }
 
@@ -2401,8 +2048,535 @@ pub mod tests {
 
         let mut ch = caster_character();
         let ctx = caster_ctx(&mut ch);
-        // Wizard L5, full caster (coef=1) → CASTER_LEVEL.ARCANE = 5
+        // Wizard L5, full caster (coef=1) → CASTER.LEVEL.ARCANE = 5
         let level = ctx.resolve(Attribute::CasterLevel(None)).unwrap();
         assert_eq!(level, 5);
+    }
+
+    // --- Named-pool assign/resolve via Context (Stage I Task 4) ---
+
+    /// Build a feature-scoped Context anchored on a single applied feature
+    /// with no fields. Used for Named-pool tests so lazy-creation lands in
+    /// a known feature data entry.
+    fn named_pool_ctx_setup(feature_name: &str) -> Character {
+        let mut ch = test_character();
+        ch.features.list.push(Feature {
+            name: feature_name.to_string(),
+            applied: true,
+            source: FeatureSource::User(0),
+            ..Default::default()
+        });
+        ch.features
+            .data_mut()
+            .insert(feature_name.to_string(), FeatureData::default());
+        ch
+    }
+
+    fn named_pool_ctx<'a>(ch: &'a mut Character, feature_name: &str) -> ApplyContext<'a> {
+        let feature_index = ch
+            .features
+            .list
+            .iter()
+            .position(|f| f.name == feature_name)
+            .expect("feature in list");
+        ApplyContext::new(ch, feature_index)
+    }
+
+    #[wasm_bindgen_test]
+    fn points_named_lazy_creates_field() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Rage");
+        let mut ctx = named_pool_ctx(&mut ch, "Rage");
+        ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 4)
+            .unwrap();
+        let data = ctx.character.features.get("Rage").unwrap();
+        assert_eq!(data.fields.len(), 1);
+        assert_eq!(data.fields[0].name, "Charges");
+        match &data.fields[0].value {
+            FeatureValue::Points { used, max } => {
+                assert_eq!(*used, 0);
+                assert_eq!(*max, 4);
+            }
+            other => panic!("expected Points, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn points_named_resolve_reads_back() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Rage");
+        let mut ctx = named_pool_ctx(&mut ch, "Rage");
+        ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 5)
+            .unwrap();
+        ctx.assign(Attribute::Points(AttrKey::Named("Charges")), 3)
+            .unwrap();
+        // Available = max(5) - used(2) = 3
+        let available = ctx
+            .resolve(Attribute::Points(AttrKey::Named("Charges")))
+            .unwrap();
+        assert_eq!(available, 3);
+        let max = ctx
+            .resolve(Attribute::PointsMax(AttrKey::Named("Charges")))
+            .unwrap();
+        assert_eq!(max, 5);
+    }
+
+    #[wasm_bindgen_test]
+    fn points_named_subsequent_assign_updates_existing() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Rage");
+        let mut ctx = named_pool_ctx(&mut ch, "Rage");
+        ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 4)
+            .unwrap();
+        ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 6)
+            .unwrap();
+        let data = ctx.character.features.get("Rage").unwrap();
+        // Single field, no duplicates.
+        assert_eq!(data.fields.len(), 1);
+        match &data.fields[0].value {
+            FeatureValue::Points { max, .. } => assert_eq!(*max, 6),
+            other => panic!("expected Points, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn die_named_lazy_creates_and_reads_back() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Bardic Inspiration");
+        let mut ctx = named_pool_ctx(&mut ch, "Bardic Inspiration");
+        ctx.assign(Attribute::DieSides(AttrKey::Named("Inspiration Die")), 8)
+            .unwrap();
+        ctx.assign(Attribute::DieCount(AttrKey::Named("Inspiration Die")), 3)
+            .unwrap();
+        let sides = ctx
+            .resolve(Attribute::DieSides(AttrKey::Named("Inspiration Die")))
+            .unwrap();
+        let count = ctx
+            .resolve(Attribute::DieCount(AttrKey::Named("Inspiration Die")))
+            .unwrap();
+        assert_eq!(sides, 8);
+        assert_eq!(count, 3);
+        // Single Die field present, not duplicated.
+        let data = ctx.character.features.get("Bardic Inspiration").unwrap();
+        assert_eq!(data.fields.len(), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn bonus_named_lazy_creates_and_reads_back() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Custom Lineage");
+        let mut ctx = named_pool_ctx(&mut ch, "Custom Lineage");
+        ctx.assign(Attribute::Bonus(AttrKey::Named("AC Bonus")), 2)
+            .unwrap();
+        let value = ctx
+            .resolve(Attribute::Bonus(AttrKey::Named("AC Bonus")))
+            .unwrap();
+        assert_eq!(value, 2);
+        // Replace with new value — no duplicate.
+        ctx.assign(Attribute::Bonus(AttrKey::Named("AC Bonus")), -1)
+            .unwrap();
+        let data = ctx.character.features.get("Custom Lineage").unwrap();
+        assert_eq!(data.fields.len(), 1);
+        match &data.fields[0].value {
+            FeatureValue::Bonus(value) => assert_eq!(*value, -1),
+            other => panic!("expected Bonus, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn choice_count_named_resizes_options() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Skill Picks");
+        let mut ctx = named_pool_ctx(&mut ch, "Skill Picks");
+        ctx.assign(Attribute::ChoiceCount(AttrKey::Named("Skills")), 3)
+            .unwrap();
+        let count = ctx
+            .resolve(Attribute::ChoiceCount(AttrKey::Named("Skills")))
+            .unwrap();
+        assert_eq!(count, 3);
+        let data = ctx.character.features.get("Skill Picks").unwrap();
+        match &data.fields[0].value {
+            FeatureValue::Choice { options } => assert_eq!(options.len(), 3),
+            other => panic!("expected Choice, got {other:?}"),
+        }
+        // Shrink.
+        ctx.assign(Attribute::ChoiceCount(AttrKey::Named("Skills")), 1)
+            .unwrap();
+        let data = ctx.character.features.get("Skill Picks").unwrap();
+        match &data.fields[0].value {
+            FeatureValue::Choice { options } => assert_eq!(options.len(), 1),
+            other => panic!("expected Choice, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn cross_feature_named_lookup_writes_existing() {
+        use expr::Context as _;
+
+        // Two features in pipeline order: A (scope), B (already has the field).
+        let mut ch = test_character();
+        ch.features.list.push(Feature {
+            name: "Feature A".to_string(),
+            applied: true,
+            source: FeatureSource::User(0),
+            ..Default::default()
+        });
+        ch.features.list.push(Feature {
+            name: "Feature B".to_string(),
+            applied: true,
+            source: FeatureSource::User(1),
+            ..Default::default()
+        });
+        ch.features
+            .data_mut()
+            .insert("Feature A".to_string(), FeatureData::default());
+        ch.features.data_mut().insert(
+            "Feature B".to_string(),
+            FeatureData {
+                fields: vec![FeatureField {
+                    name: "Shared".to_string(),
+                    label: None,
+                    description: String::new(),
+                    value: FeatureValue::Bonus(1),
+                }],
+                spells: None,
+            },
+        );
+        let mut ctx = named_pool_ctx(&mut ch, "Feature A");
+        ctx.assign(Attribute::Bonus(AttrKey::Named("Shared")), 7)
+            .unwrap();
+        // B's field mutated; A's data did not gain a new field.
+        let data_a = ctx.character.features.get("Feature A").unwrap();
+        let data_b = ctx.character.features.get("Feature B").unwrap();
+        assert!(data_a.fields.is_empty());
+        assert_eq!(data_b.fields.len(), 1);
+        match &data_b.fields[0].value {
+            FeatureValue::Bonus(value) => assert_eq!(*value, 7),
+            other => panic!("expected Bonus, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn die_used_lazy_create_clamps_to_zero() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Bardic Inspiration");
+        let mut ctx = named_pool_ctx(&mut ch, "Bardic Inspiration");
+        // No die exists yet; DieUsed lazy-creates `Die{sides:0, amount:0}`
+        // and clamps the assigned value to 0 (matches Points used-clamp on
+        // out-of-order writes). Subsequent SIDES/COUNT writes will fill in
+        // the rest of the structure without resetting `used`.
+        ctx.assign(Attribute::DieUsed(AttrKey::Named("Inspiration Die")), 5)
+            .unwrap();
+        let entry = ctx.character.features.get("Bardic Inspiration").unwrap();
+        assert_eq!(entry.fields.len(), 1);
+        match &entry.fields[0].value {
+            FeatureValue::Die { die, used } => {
+                assert_eq!(die.sides, 0);
+                assert_eq!(die.amount, 0);
+                assert_eq!(*used, 0);
+            }
+            other => panic!("expected Die, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn named_mismatched_value_type_errors() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Mixed");
+        // Pre-create a Bonus field, then try Points-typed write to same name.
+        ch.features
+            .data_mut()
+            .get_mut("Mixed")
+            .unwrap()
+            .fields
+            .push(FeatureField {
+                name: "X".to_string(),
+                label: None,
+                description: String::new(),
+                value: FeatureValue::Bonus(0),
+            });
+        let mut ctx = named_pool_ctx(&mut ch, "Mixed");
+        let outcome = ctx.assign(Attribute::PointsMax(AttrKey::Named("X")), 4);
+        assert!(outcome.is_err());
+        // Read of mismatched-type also errors.
+        let read = ctx.resolve(Attribute::Points(AttrKey::Named("X")));
+        assert!(read.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn die_used_and_die_sides_scoped_read_errors() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Anything");
+        let ctx = named_pool_ctx(&mut ch, "Anything");
+        // Scoped form is write-only-or-error for new variants.
+        assert!(ctx.resolve(Attribute::DieSides(AttrKey::Scoped)).is_err());
+        assert!(ctx.resolve(Attribute::DieCount(AttrKey::Scoped)).is_err());
+        assert!(ctx.resolve(Attribute::DieUsed(AttrKey::Scoped)).is_err());
+        assert!(ctx.resolve(Attribute::Bonus(AttrKey::Scoped)).is_err());
+        assert!(
+            ctx.resolve(Attribute::ChoiceCount(AttrKey::Scoped))
+                .is_err()
+        );
+    }
+
+    // --- STICKY / FREE_USES handlers (Stage II Task 6) ---
+
+    #[wasm_bindgen_test]
+    fn sticky_creates_spell_row() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Warlock Cantrips");
+        let mut ctx = named_pool_ctx(&mut ch, "Warlock Cantrips");
+        ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
+            .unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Warlock Cantrips")
+            .expect("SpellData lazy-created");
+        assert_eq!(data.spells.len(), 1);
+        let spell = &data.spells[0];
+        assert_eq!(spell.name, "Misty Step");
+        assert!(spell.sticky);
+        assert_eq!(spell.level, 0);
+        assert_eq!(spell.cost, 0);
+        assert!(spell.free_uses.is_none());
+        // Read: STICKY is 1 for present sticky row.
+        let read = ctx
+            .resolve(Attribute::Sticky(AttrKey::named("Misty Step")))
+            .unwrap();
+        assert_eq!(read, 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn sticky_idempotent_reapply() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Some Feature");
+        let mut ctx = named_pool_ctx(&mut ch, "Some Feature");
+        ctx.assign(Attribute::Sticky(AttrKey::named("Mage Hand")), 1)
+            .unwrap();
+        ctx.assign(Attribute::Sticky(AttrKey::named("Mage Hand")), 1)
+            .unwrap();
+        let data = ctx.character.features.spell_data("Some Feature").unwrap();
+        assert_eq!(data.spells.len(), 1, "expected single sticky row");
+    }
+
+    #[wasm_bindgen_test]
+    fn sticky_drop_only_sticky_rows() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Drop Test");
+        // Pre-populate SpellData with one sticky + one user-prepared row, same
+        // name, simulating the "user manually prepared a sticky-also spell"
+        // edge case.
+        let entry = ch.features.data_mut().get_mut("Drop Test").unwrap();
+        let spell_data = entry.spells.get_or_insert_with(SpellData::default);
+        spell_data.spells.push(Spell {
+            name: "Bless".to_string(),
+            sticky: true,
+            ..Default::default()
+        });
+        spell_data.spells.push(Spell {
+            name: "Bless".to_string(),
+            sticky: false,
+            level: 1,
+            ..Default::default()
+        });
+        let mut ctx = named_pool_ctx(&mut ch, "Drop Test");
+        ctx.assign(Attribute::Sticky(AttrKey::named("Bless")), 0)
+            .unwrap();
+        let data = ctx.character.features.spell_data("Drop Test").unwrap();
+        assert_eq!(data.spells.len(), 1);
+        assert!(!data.spells[0].sticky, "non-sticky row preserved");
+        assert_eq!(data.spells[0].level, 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn free_uses_per_spell_set_max() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Pact Magic");
+        let mut ctx = named_pool_ctx(&mut ch, "Pact Magic");
+        ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
+            .unwrap();
+        ctx.assign(Attribute::FreeUses(AttrKey::named("Misty Step")), 3)
+            .unwrap();
+        let data = ctx.character.features.spell_data("Pact Magic").unwrap();
+        let spell = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Misty Step")
+            .unwrap();
+        let fu = spell.free_uses.as_ref().expect("free_uses populated");
+        assert_eq!(fu.max, 3);
+        assert_eq!(fu.used, 0);
+        // Read back via Context.
+        let max_read = ctx
+            .resolve(Attribute::FreeUses(AttrKey::named("Misty Step")))
+            .unwrap();
+        assert_eq!(max_read, 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn free_uses_scoped_broadcast() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Channel Divinity");
+        // Two cost>0 spells + one cost=0 spell. Scoped FREE_USES write
+        // should touch only the cost-bearing rows.
+        let entry = ch.features.data_mut().get_mut("Channel Divinity").unwrap();
+        let spell_data = entry.spells.get_or_insert_with(SpellData::default);
+        spell_data.spells.push(Spell {
+            name: "Sacred Flame".to_string(),
+            sticky: true,
+            cost: 1,
+            ..Default::default()
+        });
+        spell_data.spells.push(Spell {
+            name: "Bless".to_string(),
+            sticky: true,
+            cost: 1,
+            ..Default::default()
+        });
+        spell_data.spells.push(Spell {
+            name: "Light".to_string(),
+            sticky: true,
+            cost: 0,
+            ..Default::default()
+        });
+        let mut ctx = named_pool_ctx(&mut ch, "Channel Divinity");
+        ctx.assign(Attribute::FreeUses(AttrKey::Scoped), 5).unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("Channel Divinity")
+            .unwrap();
+        let sacred = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Sacred Flame")
+            .unwrap();
+        let bless = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Bless")
+            .unwrap();
+        let light = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Light")
+            .unwrap();
+        assert_eq!(sacred.free_uses.as_ref().unwrap().max, 5);
+        assert_eq!(bless.free_uses.as_ref().unwrap().max, 5);
+        assert!(light.free_uses.is_none(), "cost=0 spells left untouched");
+    }
+
+    #[wasm_bindgen_test]
+    fn free_uses_used_scoped_resets() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Reset Pool");
+        let entry = ch.features.data_mut().get_mut("Reset Pool").unwrap();
+        let spell_data = entry.spells.get_or_insert_with(SpellData::default);
+        spell_data.spells.push(Spell {
+            name: "A".to_string(),
+            cost: 1,
+            free_uses: Some(FreeUses { used: 2, max: 3 }),
+            ..Default::default()
+        });
+        spell_data.spells.push(Spell {
+            name: "B".to_string(),
+            cost: 1,
+            free_uses: Some(FreeUses { used: 1, max: 3 }),
+            ..Default::default()
+        });
+        let mut ctx = named_pool_ctx(&mut ch, "Reset Pool");
+        ctx.assign(Attribute::FreeUsesUsed(AttrKey::Scoped), 0)
+            .unwrap();
+        let data = ctx.character.features.spell_data("Reset Pool").unwrap();
+        for spell in &data.spells {
+            assert_eq!(spell.free_uses.as_ref().unwrap().used, 0);
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn sticky_scoped_write_errors() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Anything");
+        let mut ctx = named_pool_ctx(&mut ch, "Anything");
+        let outcome = ctx.assign(Attribute::Sticky(AttrKey::Scoped), 1);
+        assert!(outcome.is_err(), "Scoped Sticky write must error");
+        let read = ctx.resolve(Attribute::Sticky(AttrKey::Scoped));
+        assert!(read.is_err(), "Scoped Sticky read must error");
+    }
+
+    #[wasm_bindgen_test]
+    fn free_uses_named_without_spell_errors() {
+        use expr::Context as _;
+
+        let mut ch = named_pool_ctx_setup("Empty Feature");
+        let mut ctx = named_pool_ctx(&mut ch, "Empty Feature");
+        // No matching spell row — must error (do not lazy-create).
+        let outcome = ctx.assign(Attribute::FreeUses(AttrKey::named("Nonexistent")), 5);
+        assert!(outcome.is_err());
+        let used = ctx.assign(Attribute::FreeUsesUsed(AttrKey::named("Nonexistent")), 0);
+        assert!(used.is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn idempotent_sticky_doesnt_drop_user_prepared() {
+        use expr::Context as _;
+
+        // Setup: one sticky row "Misty Step" + one user-prepared "Bless" of
+        // different names. Re-evaluating STICKY = 1 for "Misty Step" must
+        // leave both rows intact and not duplicate.
+        let mut ch = named_pool_ctx_setup("OnCompute Reeval");
+        let mut ctx = named_pool_ctx(&mut ch, "OnCompute Reeval");
+        ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
+            .unwrap();
+        // Manually add a user-prepared spell of a different name.
+        let data = ctx
+            .character
+            .features
+            .spell_data_mut("OnCompute Reeval")
+            .unwrap();
+        data.spells.push(Spell {
+            name: "Bless".to_string(),
+            sticky: false,
+            level: 1,
+            ..Default::default()
+        });
+        // Re-evaluate (OnCompute pass).
+        ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
+            .unwrap();
+        let data = ctx
+            .character
+            .features
+            .spell_data("OnCompute Reeval")
+            .unwrap();
+        assert_eq!(data.spells.len(), 2);
+        let misty = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Misty Step")
+            .unwrap();
+        let bless = data
+            .spells
+            .iter()
+            .find(|spell| spell.name == "Bless")
+            .unwrap();
+        assert!(misty.sticky);
+        assert!(!bless.sticky);
     }
 }

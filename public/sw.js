@@ -91,38 +91,69 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Trunk-emitted bundles carry a content hash in the filename, so the URL is
+// already immutable — caching them in the SW only opens a window for the cache
+// to disagree with the SRI digest in index.html (e.g. when a 404 falls through
+// to the SPA index.html and gets stored under a JS URL).
+const HASHED_ASSET_RE = /-[a-f0-9]{8,}\.(?:js|wasm|css|map)(?:\?|$)/;
+
+function isCacheable(response) {
+  return (
+    response.ok &&
+    response.type !== 'opaque' &&
+    response.type !== 'opaqueredirect'
+  );
+}
+
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  const isSameOrigin = event.request.url.startsWith(self.location.origin);
-  const isPrecached = FIREBASE_URLS.some((url) => event.request.url.startsWith(url));
+  const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isPrecached = FIREBASE_URLS.some((u) => event.request.url.startsWith(u));
 
-  // Only handle same-origin and precached cross-origin requests
   if (!isSameOrigin && !isPrecached) return;
+
+  if (isSameOrigin && HASHED_ASSET_RE.test(url.pathname)) return;
+
+  const isNavigation =
+    event.request.mode === 'navigate' ||
+    event.request.destination === 'document';
+
+  if (isNavigation) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (isCacheable(response) && response.type === 'basic') {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() =>
+          caches.match(event.request).then((cached) => cached || caches.match(BASE))
+        )
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
+      const networkUpdate = fetch(event.request)
+        .then((response) => {
+          if (isCacheable(response)) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => null);
+
       if (cached) {
-        // Return cached, but also update cache in background
-        fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone();
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-            }
-          })
-          .catch(() => {});
+        networkUpdate.catch(() => {});
         return cached;
       }
-
-      return fetch(event.request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
+      return networkUpdate.then((response) => response || Response.error());
     })
   );
 });

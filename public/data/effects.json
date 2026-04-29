@@ -37,46 +37,46 @@
   },
   {
     "name": "Fighting Spirit",
-    "expr": "TEMP_HP = max(TEMP_HP, 5); ATK.ADV = 1"
+    "expr": "HP.TEMP = max(HP.TEMP, 5); ATK.ADV = 1"
   },
   {
     "name": "Guardian of Nature: Great Tree",
-    "expr": "TEMP_HP = max(TEMP_HP, 10); CON.SAVE.ADV = 1"
+    "expr": "HP.TEMP = max(HP.TEMP, 10); CON.SAVE.ADV = 1"
   },
   {
     "name": "Vitality of the Tree",
-    "expr": "TEMP_HP = max(TEMP_HP, LEVEL)"
+    "expr": "HP.TEMP = max(HP.TEMP, LEVEL)"
   },
   {
     "name": "Dark One's Blessing",
-    "expr": "TEMP_HP = max(TEMP_HP, CHA.MOD + CLASS_LEVEL)"
+    "expr": "HP.TEMP = max(HP.TEMP, CHA.MOD + CLASS.LEVEL)"
   },
   {
     "name": "Celestial Resilience",
-    "expr": "TEMP_HP = max(TEMP_HP, CLASS_LEVEL + CHA.MOD)"
+    "expr": "HP.TEMP = max(HP.TEMP, CLASS.LEVEL + CHA.MOD)"
   },
   {
     "name": "Touch of Death",
-    "expr": "TEMP_HP = max(TEMP_HP, WIS.MOD + CLASS_LEVEL)"
+    "expr": "HP.TEMP = max(HP.TEMP, WIS.MOD + CLASS.LEVEL)"
   },
   {
     "name": "Adrenaline Rush",
-    "expr": "TEMP_HP = max(TEMP_HP, PROF_BONUS)"
+    "expr": "HP.TEMP = max(HP.TEMP, PROF.BONUS)"
   },
   {
     "name": "Armor of Agathys",
-    "expr": "TEMP_HP = max(TEMP_HP, 5)"
+    "expr": "HP.TEMP = max(HP.TEMP, 5)"
   },
   {
     "name": "False Life",
-    "expr": "TEMP_HP = max(TEMP_HP, 1d4 + 4)"
+    "expr": "HP.TEMP = max(HP.TEMP, 1d4 + 4)"
   },
   {
     "name": "Heroism"
   },
   {
     "name": "Aid",
-    "expr": "MAX_HP += 5; HP += 5"
+    "expr": "HP.MAX += 5; HP += 5"
   },
   {
     "name": "Longstrider",
@@ -265,7 +265,7 @@
   },
   {
     "name": "Form of Dread",
-    "expr": "TEMP_HP = max(TEMP_HP, 1d10 + CLASS_LEVEL)"
+    "expr": "HP.TEMP = max(HP.TEMP, 1d10 + CLASS.LEVEL)"
   },
   {
     "name": "Enhance Ability: Bull's Strength",
@@ -312,19 +312,19 @@
   },
   {
     "name": "Tenser's Transformation",
-    "expr": "TEMP_HP = max(TEMP_HP, 50); ATK.ADV = 1"
+    "expr": "HP.TEMP = max(HP.TEMP, 50); ATK.ADV = 1"
   },
   {
     "name": "Syluné's Viper",
-    "expr": "TEMP_HP = max(TEMP_HP, 15)"
+    "expr": "HP.TEMP = max(HP.TEMP, 15)"
   },
   {
     "name": "Motivational Speech",
-    "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1"
+    "expr": "HP.TEMP = max(HP.TEMP, 5); WIS.SAVE.ADV = 1"
   },
   {
     "name": "Power Word Fortify",
-    "expr": "TEMP_HP = max(TEMP_HP, 20)"
+    "expr": "HP.TEMP = max(HP.TEMP, 20)"
   },
   {
     "name": "Kinetic Jaunt",
@@ -739,10 +739,10 @@
   },
   {
     "name": "Exhaustion 4",
-    "expr": "SPEED /= 2; MAX_HP /= 2; ATK.ADV = -1; with(@ABILITY, each(@, @ABILITY.ADV = -1; @ABILITY.SAVE.ADV = -1))"
+    "expr": "SPEED /= 2; HP.MAX /= 2; ATK.ADV = -1; with(@ABILITY, each(@, @ABILITY.ADV = -1; @ABILITY.SAVE.ADV = -1))"
   },
   {
     "name": "Exhaustion 5",
-    "expr": "SPEED = 0; MAX_HP /= 2; ATK.ADV = -1; with(@ABILITY, each(@, @ABILITY.ADV = -1; @ABILITY.SAVE.ADV = -1))"
+    "expr": "SPEED = 0; HP.MAX /= 2; ATK.ADV = -1; with(@ABILITY, each(@, @ABILITY.ADV = -1; @ABILITY.SAVE.ADV = -1))"
   }
 ]

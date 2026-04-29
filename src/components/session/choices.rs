@@ -12,21 +12,18 @@ use crate::{
             inject_resource_vars, open_calc_modal,
         },
         icon::Icon,
-        session::FreeUsesBadge,
         session_list::{SessionList, SessionListItem},
     },
     model::{
         Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
         FeaturesStoreFields, Translatable, short_name,
     },
-    rules::{ActionType, ChoiceOption, ChoiceOptions, FieldKind, RulesRegistry},
+    rules::{ActionType, ChoiceOption, ChoiceOptions, RulesRegistry},
 };
 
-/// Info extracted from the registry for a single Choice field.
+/// Info extracted from the registry for a single action.
 struct ChoiceFieldInfo {
     points: u32,
-    max_points: u32,
-    is_free_uses: bool,
     from: Option<String>,
     cost: Option<String>,
     /// Definition options that have `action` set (action menu items).
@@ -47,8 +44,6 @@ struct ChoiceItemInput {
 fn build_choice_items(
     items: impl Iterator<Item = ChoiceItemInput>,
     points: u32,
-    max_points: u32,
-    is_free_uses: bool,
     spend_cost: Option<Callback<u32>>,
     open_effects: Callback<(String, String, Vec<EffectDefinition>)>,
     i18n: &I18n,
@@ -69,15 +64,8 @@ fn build_choice_items(
             let show_button = item.cost > 0 || has_effects;
 
             let cost_badge = (item.cost > 0).then(|| {
-                if is_free_uses {
-                    let avail = points / item.cost;
-                    let max = max_points / item.cost;
-                    view! { <FreeUsesBadge available=avail max=max /> }.into_any()
-                } else {
-                    view! {
-                        <span class="entry-badge session-choice-cost">{item.cost}</span>
-                    }
-                    .into_any()
+                view! {
+                    <span class="entry-badge session-choice-cost">{item.cost}</span>
                 }
             });
 
@@ -209,52 +197,41 @@ pub fn ChoicesBlock() -> impl IntoView {
         let mut ref_views: Vec<AnyView> = Vec::new();
 
         for (feat_name, entry) in features.iter() {
-            let Some(fields) = registry.with_feature(feat_name, |feat| {
-                feat.fields
+            let Some(actions) = registry.with_feature(feat_name, |feat| {
+                feat.actions
                     .iter()
-                    .filter_map(|(name, def)| {
-                        let FieldKind::Choice { options, cost, .. } = &def.kind else {
-                            return None;
-                        };
-
-                        let from = if let ChoiceOptions::Ref { from } = options {
+                    .map(|(name, action_def)| {
+                        let from = if let ChoiceOptions::Ref { from } = &action_def.options {
                             Some(from.clone())
                         } else {
                             None
                         };
 
-                        let (points, max_points) = cost
+                        let (points, _max_points) = action_def
+                            .cost
                             .as_deref()
                             .and_then(|cost| remaining_points.get(cost))
                             .copied()
                             .unwrap_or_default();
 
-                        let is_free_uses = cost.as_deref().is_some_and(|cost_name| {
-                            feat.fields
-                                .get(cost_name)
-                                .is_some_and(|f| matches!(f.kind, FieldKind::FreeUses { .. }))
-                        });
-
-                        let action_options = match options {
+                        let action_options = match &action_def.options {
                             ChoiceOptions::List(list) => list
                                 .iter()
-                                .filter(|o| o.action.is_some() && o.level <= char_level)
+                                .filter(|opt| opt.action.is_some() && opt.level <= char_level)
                                 .cloned()
                                 .collect(),
                             _ => Vec::new(),
                         };
 
-                        Some((
+                        (
                             name.to_string(),
                             ChoiceFieldInfo {
                                 points,
-                                max_points,
-                                is_free_uses,
                                 from,
-                                cost: cost.clone(),
+                                cost: action_def.cost.clone(),
                                 action_options,
                             },
-                        ))
+                        )
                     })
                     .collect::<BTreeMap<_, _>>()
             }) else {
@@ -262,15 +239,11 @@ pub fn ChoicesBlock() -> impl IntoView {
             };
 
             for (field_index, field) in entry.fields.iter().enumerate() {
-                let Some(info) = fields.get(&field.name) else {
+                let Some(info) = actions.get(&field.name) else {
                     continue;
                 };
-                let short = (!info.is_free_uses)
-                    .then(|| info.cost.as_deref().map(short_name))
-                    .flatten();
+                let short = info.cost.as_deref().map(short_name);
                 let points = info.points;
-                let max_points = info.max_points;
-                let is_free_uses = info.is_free_uses;
 
                 let spend_cost =
                     info.cost
@@ -322,8 +295,6 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
-                            max_points,
-                            is_free_uses,
                             spend_cost,
                             open_effects,
                             &i18n,
@@ -345,8 +316,6 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 feature_name: feat_name.clone(),
                             }),
                             points,
-                            max_points,
-                            is_free_uses,
                             spend_cost,
                             open_effects,
                             &i18n,

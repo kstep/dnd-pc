@@ -116,7 +116,7 @@ impl Weapon {
             WeaponCategory::Simple => "PROF.SIMPLE_WEAPONS",
             WeaponCategory::Martial => "PROF.MARTIAL_WEAPONS",
         };
-        let mut s = format!("{ab}.MOD + if({prof}, PROF_BONUS, 0) + ATK");
+        let mut s = format!("{ab}.MOD + if({prof}, PROF.BONUS, 0) + ATK");
         if magic != 0 {
             s = format!("{s} {magic:+}");
         }

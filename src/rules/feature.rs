@@ -1,19 +1,15 @@
 use std::{collections::BTreeMap, fmt};
 
-use serde::{Deserialize, Deserializer, de};
+use serde::Deserialize;
 
 use crate::{
     demap::{self, Named},
     expr::{self, Eval as _},
     model::{
-        Armor, ArmorType, AssignInputs, Attribute, Character, Context, Die, EffectDefinition, Expr,
-        FeatureCategory, FeatureField, FeatureValue, Translatable, short_name,
+        Attribute, Character, EffectDefinition, Expr, FeatureCategory, FeatureField, Translatable,
+        short_name,
     },
-    rules::{
-        apply::args_ctx::WithArgs,
-        spells::{SpellDefinition, SpellsDefinition},
-        utils::LevelRules,
-    },
+    rules::spells::SpellsDefinition,
 };
 
 /// A field value that is either a static number or an expression evaluated
@@ -53,92 +49,6 @@ impl expr::Eval<Attribute, i32> for ValueOrExpr {
 
     fn is_dynamic(&self) -> bool {
         matches!(self, Self::Expr(_))
-    }
-}
-
-/// A die pool definition that accepts either a static die string (`"2d6"`)
-/// or an object with expression-based amount (`{"sides": 6, "amount":
-/// "CHA.MOD"}`).
-#[derive(Debug, Clone)]
-pub struct DieOrExpr {
-    pub sides: u32,
-    pub amount: ValueOrExpr,
-}
-
-impl Default for DieOrExpr {
-    fn default() -> Self {
-        Self {
-            sides: 0,
-            amount: ValueOrExpr::Value(0),
-        }
-    }
-}
-
-impl fmt::Display for DieOrExpr {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match &self.amount {
-            ValueOrExpr::Value(n) => write!(
-                f,
-                "{}",
-                Die {
-                    amount: *n,
-                    sides: self.sides
-                }
-            ),
-            ValueOrExpr::Expr(expr) => write!(f, "({expr})d{}", self.sides),
-        }
-    }
-}
-
-impl expr::Eval<Attribute, i32> for DieOrExpr {
-    type Output = Die;
-
-    fn eval(&self, ctx: &impl expr::Context<Attribute, i32>) -> Die {
-        Die {
-            amount: self.amount.eval(ctx),
-            sides: self.sides,
-        }
-    }
-
-    fn is_dynamic(&self) -> bool {
-        self.amount.is_dynamic()
-    }
-}
-
-impl<'de> Deserialize<'de> for DieOrExpr {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        struct DieOrExprVisitor;
-
-        impl<'de> de::Visitor<'de> for DieOrExprVisitor {
-            type Value = DieOrExpr;
-
-            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                f.write_str("a die string like \"2d6\" or an object {sides, amount}")
-            }
-
-            fn visit_str<E: de::Error>(self, s: &str) -> Result<DieOrExpr, E> {
-                let die: Die = s.parse().map_err(de::Error::custom)?;
-                Ok(DieOrExpr {
-                    sides: die.sides,
-                    amount: ValueOrExpr::Value(die.amount),
-                })
-            }
-
-            fn visit_map<A: de::MapAccess<'de>>(self, map: A) -> Result<DieOrExpr, A::Error> {
-                #[derive(Deserialize)]
-                struct Fields {
-                    sides: u32,
-                    amount: ValueOrExpr,
-                }
-                let f = Fields::deserialize(de::value::MapAccessDeserializer::new(map))?;
-                Ok(DieOrExpr {
-                    sides: f.sides,
-                    amount: f.amount,
-                })
-            }
-        }
-
-        deserializer.deserialize_any(DieOrExprVisitor)
     }
 }
 
@@ -198,7 +108,7 @@ pub struct FeatureDefinition {
     pub replace_with: ReplaceWith,
     pub spells: Option<SpellsDefinition>,
     #[serde(default, deserialize_with = "demap::named_map")]
-    pub fields: BTreeMap<Box<str>, FieldDefinition>,
+    pub actions: BTreeMap<Box<str>, ActionDefinition>,
     #[serde(default)]
     pub assign: Option<Vec<Assignment>>,
     #[serde(default)]
@@ -209,8 +119,6 @@ pub struct FeatureDefinition {
 pub struct Assignment {
     pub expr: Expr,
     pub when: WhenCondition,
-    #[serde(default)]
-    pub scope: Option<String>,
 }
 
 impl Assignment {
@@ -273,46 +181,24 @@ impl FeatureDefinition {
                 .is_some_and(|assignments| assignments.iter().any(|assign| assign.is_interactive()))
     }
 
-    /// Returns the single `OnCompute` assignment that writes to `AC`, if
-    /// exactly one such assignment exists. Used to auto-create a Natural
-    /// armor entry for display.
-    fn single_ac_assignment(&self) -> Option<&Assignment> {
-        let assignments = self.assign.as_ref()?;
-        let mut ac_iter = assignments.iter().filter(|a| {
-            a.when == WhenCondition::OnCompute && a.expr.assigns_to(|v| matches!(v, Attribute::Ac))
-        });
-        let first = ac_iter.next()?;
-        if ac_iter.next().is_some() {
-            return None; // more than one AC assignment
-        }
-        Some(first)
-    }
-
     /// Returns `(cost_field_name, short_suffix)` if this feature has a
-    /// spells cost backed by a Points field (e.g. Sorcery Points → "SP").
+    /// spells cost referencing a named pool (e.g. Sorcery Points → "SP").
     pub fn cost_info(&self) -> Option<(&str, String)> {
         let cost_name = self.spells.as_ref()?.cost.as_deref()?;
-        let field_def = self.fields.get(cost_name)?;
-        if !matches!(field_def.kind, FieldKind::Points { .. }) {
-            return None;
-        }
         let short = short_name(cost_name);
         Some((cost_name, short))
     }
 
     /// Resolve `ChoiceOptions` to definition options, following `Ref` links
-    /// within this feature's fields.
+    /// within this feature's actions.
     pub fn resolve_def_options<'a>(&'a self, options: &'a ChoiceOptions) -> &'a [ChoiceOption] {
         match options {
             ChoiceOptions::List(list) => list.as_slice(),
             ChoiceOptions::Ref { from } => self
-                .fields
+                .actions
                 .get(from.as_str())
-                .and_then(|ref_fd| match &ref_fd.kind {
-                    FieldKind::Choice {
-                        options: ChoiceOptions::List(list),
-                        ..
-                    } => Some(list.as_slice()),
+                .and_then(|ref_action| match &ref_action.options {
+                    ChoiceOptions::List(list) => Some(list.as_slice()),
                     _ => None,
                 })
                 .unwrap_or(&[]),
@@ -355,288 +241,40 @@ impl FeatureDefinition {
             .map(|assignment| assignment.expr.clone())
             .collect()
     }
-
-    pub fn assign(
-        &self,
-        context: &mut impl expr::Context<Attribute, i32>,
-        when: WhenCondition,
-        inputs: &[AssignInputs],
-    ) {
-        self.assign_inner(context, when, inputs, true);
-    }
-
-    /// Like [`assign`], but silently swallows evaluation errors. Used by the
-    /// args-modal cascade where `inputs` may be empty mid-interaction (user
-    /// hasn't typed yet) and `@ARG` refs failing is expected — the logged
-    /// errors otherwise flood the console per keystroke.
-    #[cfg_attr(
-        feature = "perf-marks",
-        tracing::instrument(name = "feature.assign_silent", skip_all, fields(name = %self.name, ?when))
-    )]
-    pub fn assign_silent(
-        &self,
-        context: &mut impl expr::Context<Attribute, i32>,
-        when: WhenCondition,
-        inputs: &[AssignInputs],
-    ) {
-        self.assign_inner(context, when, inputs, false);
-    }
-
-    fn assign_inner(
-        &self,
-        context: &mut impl expr::Context<Attribute, i32>,
-        when: WhenCondition,
-        inputs: &[AssignInputs],
-        log_errors: bool,
-    ) {
-        let Some(assign) = &self.assign else { return };
-
-        // `inputs` is aligned with INTERACTIVE assignments only (those with
-        // `@ARG` or dice — see `interactive_exprs`). Non-interactive assigns
-        // have no matching input and must not consume one. Align by taking
-        // inputs only for interactive assignments.
-        //
-        // Classify by structural presence of ARGs/dice, not by re-analyzing
-        // on the mutable context: during replay/reapply the character is
-        // already mutated by prior assignments, and context-aware analyze()
-        // can wrongly report "no active ARGs" for an expression whose ARGs
-        // were resolved at original-apply time (e.g. Expertise after the
-        // target skills were bumped from Proficient to Expertise).
-        let mut input_iter = inputs.iter();
-        for assignment in assign.iter().filter(|assignment| assignment.when == when) {
-            let input = assignment
-                .is_interactive()
-                .then(|| input_iter.next())
-                .flatten();
-
-            let result = if let Some(input) = input
-                && !input.is_empty()
-            {
-                let mut ctx = WithArgs {
-                    inner: context,
-                    args: &input.args,
-                };
-                if input.dice.is_empty() {
-                    assignment.expr.apply(&mut ctx)
-                } else {
-                    assignment.expr.apply_with_dice(&mut ctx, &input.dice)
-                }
-            } else {
-                assignment.expr.apply(context)
-            };
-
-            if log_errors && let Err(error) = result {
-                log::error!(
-                    "Failed to apply assignment for feature '{}': {error:?}",
-                    self.name,
-                );
-            }
-        }
-    }
-
-    #[cfg_attr(
-        feature = "perf-marks",
-        tracing::instrument(name = "feature.apply", skip_all, fields(name = %self.name, level, ?when))
-    )]
-    pub fn apply(
-        &self,
-        level: u32,
-        character: &mut Character,
-        when: WhenCondition,
-        inputs: &[AssignInputs],
-        spells_index: &BTreeMap<Box<str>, SpellDefinition>,
-    ) {
-        if let Some(spells_def) = &self.spells {
-            spells_def.apply(self, level, character, spells_index);
-        }
-
-        let mut context = Context {
-            character,
-            class_level: level as i32,
-            feature: Some(self.name.to_string()),
-            points: Vec::new(),
-        };
-        self.assign(&mut context, when, inputs);
-
-        self.apply_fields(level, character);
-
-        // Create Natural armor entry for display if the feature has exactly one
-        // OnCompute assignment that writes to AC.
-        if let Some(ac_assign) = self.single_ac_assignment() {
-            let already_exists = character.equipment.armors.iter().any(|armor| {
-                armor.armor_type == ArmorType::Natural && armor.name.as_str() == &*self.name
-            });
-            if !already_exists {
-                character.equipment.armors.push(Armor {
-                    name: self.name.to_string(),
-                    armor_type: ArmorType::Natural,
-                    ac_expr: Some(ac_assign.expr.clone()),
-                    ..Default::default()
-                });
-            }
-        }
-    }
-
-    pub(super) fn free_uses_max(&self, level: u32, character: &Character) -> u32 {
-        self.fields
-            .values()
-            .find_map(|field_def| match &field_def.kind {
-                FieldKind::FreeUses { levels } => Some(levels.eval_for_level(level, character)),
-                _ => None,
-            })
-            .unwrap_or_default()
-    }
-
-    fn apply_fields(&self, level: u32, character: &mut Character) {
-        // Always ensure feature_data entry exists, even for field-less features
-        character.features.entry(self.name.to_string()).or_default();
-
-        if self.fields.is_empty() {
-            return;
-        }
-
-        let is_new = character
-            .features
-            .get(&*self.name)
-            .is_none_or(|entry| entry.fields.is_empty());
-
-        if is_new {
-            // Pre-compute values before mutating feature_data
-            let new_fields: Vec<_> = self
-                .fields
-                .values()
-                .filter(|field_def| {
-                    !(self.spells.is_some() && matches!(field_def.kind, FieldKind::FreeUses { .. }))
-                })
-                .map(|field_def| FeatureField {
-                    name: field_def.name.to_string(),
-                    label: None,
-                    description: String::new(),
-                    value: field_def.kind.to_value(level, character),
-                })
-                .collect();
-            let entry = character.features.entry(self.name.to_string()).or_default();
-            entry.fields = new_fields;
-        } else {
-            // Pre-compute expression-based values (needs &character before mutation)
-            let evaluated: Vec<_> = character
-                .features
-                .get(&*self.name)
-                .into_iter()
-                .flat_map(|entry| entry.fields.iter())
-                .filter_map(|field| {
-                    let def = self.fields.get(field.name.as_str())?;
-                    match &def.kind {
-                        FieldKind::Points { .. }
-                        | FieldKind::Die { .. }
-                        | FieldKind::FreeUses { .. } => {
-                            Some((field.name.clone(), def.kind.to_value(level, character)))
-                        }
-                        _ => None,
-                    }
-                })
-                .collect();
-
-            let entry = character.features.entry(self.name.to_string()).or_default();
-            for field in entry.fields.iter_mut() {
-                if let Some(def) = self.fields.get(field.name.as_str()) {
-                    match (&def.kind, &mut field.value) {
-                        (FieldKind::Die { .. }, FeatureValue::Die { die, .. }) => {
-                            if let Some((_, FeatureValue::Die { die: new_die, .. })) =
-                                evaluated.iter().find(|(n, _)| n == &field.name)
-                            {
-                                *die = *new_die;
-                            }
-                        }
-                        (FieldKind::Choice { levels, .. }, FeatureValue::Choice { options }) => {
-                            let new_len = levels.get_for_level(level) as usize;
-                            if options.len() < new_len {
-                                options.resize(new_len, Default::default());
-                            }
-                        }
-                        (FieldKind::Bonus { levels }, FeatureValue::Bonus(b)) => {
-                            *b = levels.get_for_level(level);
-                        }
-                        (FieldKind::Points { .. }, FeatureValue::Points { max, .. }) => {
-                            if let Some((_, FeatureValue::Points { max: new_max, .. })) =
-                                evaluated.iter().find(|(n, _)| n == &field.name)
-                            {
-                                *max = *new_max;
-                            }
-                        }
-                        (FieldKind::FreeUses { .. }, FeatureValue::Points { max, .. }) => {
-                            if let Some((_, FeatureValue::Points { max: new_max, .. })) =
-                                evaluated.iter().find(|(n, _)| n == &field.name)
-                            {
-                                *max = *new_max;
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-
-            // Add fields from definition that are missing from stored data
-            // (e.g. new fields added to a definition after the feature was
-            // first applied). Pre-compute before mutating feature_data.
-            let missing_fields: Vec<_> = self
-                .fields
-                .values()
-                .filter(|fd| {
-                    !(self.spells.is_some() && matches!(fd.kind, FieldKind::FreeUses { .. }))
-                })
-                .filter(|field_def| {
-                    !character.features.get(&*self.name).is_some_and(|entry| {
-                        entry
-                            .fields
-                            .iter()
-                            .any(|field| field.name.as_str() == &*field_def.name)
-                    })
-                })
-                .map(|field_def| FeatureField {
-                    name: field_def.name.to_string(),
-                    label: None,
-                    description: String::new(),
-                    value: field_def.kind.to_value(level, character),
-                })
-                .collect();
-            if !missing_fields.is_empty() {
-                let entry = character.features.entry(self.name.to_string()).or_default();
-                entry.fields.extend(missing_fields);
-            }
-        }
-    }
 }
 
+/// A user-facing Choice slot on a feature: named action with selectable
+/// options and optional cost-pool linkage. Per-level option counts are
+/// driven by `CHOICE.<name>.COUNT` assignments, not the definition.
 #[derive(Debug, Clone, Deserialize)]
-pub struct FieldDefinition {
+pub struct ActionDefinition {
     pub name: Box<str>,
-    #[serde(flatten)]
-    pub kind: FieldKind,
+    #[serde(default)]
+    pub options: ChoiceOptions,
+    #[serde(default)]
+    pub cost: Option<String>,
 }
 
-impl FieldDefinition {
+impl ActionDefinition {
+    /// Resolve `ChoiceOptions` to the concrete options visible at the given
+    /// class level. `Ref { from }` follows another action's stored selections.
     pub fn resolve_choice_options(
         &self,
         character_fields: &[FeatureField],
         class_level: u32,
     ) -> Vec<ChoiceOption> {
-        let FieldKind::Choice { options, .. } = &self.kind else {
-            return Vec::new();
-        };
-
-        match options {
+        match &self.options {
             ChoiceOptions::List(list) => list
                 .iter()
-                .filter(|o| o.level <= class_level)
+                .filter(|opt| opt.level <= class_level)
                 .cloned()
                 .collect(),
             ChoiceOptions::Ref { from } => character_fields
                 .iter()
-                .find(|cf| cf.name == *from)
+                .find(|field| field.name == *from)
                 .into_iter()
-                .flat_map(|cf| cf.value.choices())
-                .filter(|o| !o.name.is_empty())
+                .flat_map(|field| field.value.choices())
+                .filter(|opt| !opt.name.is_empty())
                 .map(|opt| ChoiceOption {
                     name: opt.name.clone().into_boxed_str(),
                     label: opt.label.clone(),
@@ -651,89 +289,9 @@ impl FieldDefinition {
     }
 }
 
-impl Named for FieldDefinition {
+impl Named for ActionDefinition {
     fn name(&self) -> &str {
         &self.name
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "kind")]
-pub enum FieldKind {
-    Points {
-        #[serde(default)]
-        levels: LevelRules<ValueOrExpr>,
-    },
-    Choice {
-        #[serde(default)]
-        options: ChoiceOptions,
-        #[serde(default)]
-        cost: Option<String>,
-        #[serde(default)]
-        levels: LevelRules<u32>,
-    },
-    Die {
-        #[serde(default)]
-        levels: LevelRules<DieOrExpr>,
-    },
-    Bonus {
-        #[serde(default)]
-        levels: LevelRules<i32>,
-    },
-    FreeUses {
-        #[serde(default)]
-        levels: LevelRules<ValueOrExpr>,
-    },
-}
-
-impl FieldKind {
-    pub fn has_levels(&self) -> bool {
-        match self {
-            Self::Points { levels, .. } => !levels.is_empty(),
-            Self::Choice { levels, .. } => !levels.is_empty(),
-            Self::Die { levels } => !levels.is_empty(),
-            Self::Bonus { levels } => !levels.is_empty(),
-            Self::FreeUses { levels } => !levels.is_empty(),
-        }
-    }
-
-    pub fn to_value(&self, level: u32, character: &Character) -> FeatureValue {
-        match self {
-            Self::Die { levels } => FeatureValue::Die {
-                die: levels.eval_for_level(level, character),
-                used: 0,
-            },
-            Self::Choice { levels, .. } => FeatureValue::Choice {
-                options: vec![Default::default(); levels.get_for_level(level) as usize],
-            },
-            Self::Bonus { levels } => FeatureValue::Bonus(levels.get_for_level(level)),
-            Self::Points { levels, .. } => FeatureValue::Points {
-                used: 0,
-                max: levels.eval_for_level(level, character),
-            },
-            Self::FreeUses { levels } => FeatureValue::Points {
-                used: 0,
-                max: levels.eval_for_level(level, character),
-            },
-        }
-    }
-
-    /// Re-evaluate dynamic field values (expressions that depend on
-    /// character state like CHA.MOD). Returns a new `FeatureValue` if the
-    /// field has expression-based values that need updating.
-    pub fn recompute_dynamic(&self, level: u32, character: &Character) -> Option<FeatureValue> {
-        match self {
-            Self::Points { levels, .. } => levels
-                .is_dynamic(level)
-                .then(|| self.to_value(level, character)),
-            Self::Die { levels } => levels
-                .is_dynamic(level)
-                .then(|| self.to_value(level, character)),
-            Self::FreeUses { levels } => levels
-                .is_dynamic(level)
-                .then(|| self.to_value(level, character)),
-            _ => None,
-        }
     }
 }
 

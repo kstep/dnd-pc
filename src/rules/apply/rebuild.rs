@@ -15,14 +15,13 @@ use crate::{
                 collect_background_features, collect_class_features, collect_pending_features,
                 collect_species_features,
             },
-            compute,
+            compute, dry_run_apply_feature,
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
             primitives::{apply_new_feature, resolve_replacements, restore_user_state},
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
         feature::{FeatureDefinition, ReplaceWith},
-        spells::SpellDefinition,
     },
 };
 
@@ -73,7 +72,6 @@ struct RebuildAccum {
 /// that were easy to swap by mistake).
 struct RebuildCtx<'a> {
     feat_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-    spell_index: &'a BTreeMap<Box<str>, SpellDefinition>,
     original: &'a Character,
     extra_inputs: &'a ApplyInputs,
     accum: &'a mut RebuildAccum,
@@ -136,10 +134,9 @@ pub fn build_clean(
     let mut clean = Character::from_identity(original.identity.clone());
     let mut accum = RebuildAccum::default();
 
-    registry.with_apply_indexes(|feat_index, spell_index| -> Result<(), RebuildError> {
+    registry.with_features_index_untracked(|feat_index| -> Result<(), RebuildError> {
         let mut ctx = RebuildCtx {
             feat_index,
-            spell_index,
             original,
             extra_inputs,
             accum: &mut accum,
@@ -196,7 +193,7 @@ pub fn build_clean(
 
         // compute creates the empty SPELL.READY/KNOWN slots that
         // restore_all_spell_selections fills from the original.
-        compute(&mut clean, ctx.feat_index, ctx.spell_index);
+        compute(&mut clean, ctx.feat_index);
 
         Ok(())
     })?;
@@ -218,7 +215,7 @@ fn collect_rebuild_pending_inputs(
     registry: &RulesRegistry,
 ) -> (Vec<PendingInputs>, bool, Character) {
     // Returns (pending, had_rejections, cascade_base).
-    registry.with_apply_indexes(|feat_index, spell_index| {
+    registry.with_features_index_untracked(|feat_index| {
         // Identity pending: what `collect_pending_features` would add if no
         // identity feature were yet applied. Snapshot keeps only User features
         // and resets applied flags so the collect functions see a clean slate.
@@ -298,13 +295,7 @@ fn collect_rebuild_pending_inputs(
             }
             let stored = original.features.get_inputs(&pending.name, &pending.source);
             let effective = !has_interactive_onadd
-                || stored_inputs_effective(
-                    feat_def,
-                    spell_index,
-                    pending.level,
-                    &validation_baseline,
-                    stored,
-                );
+                || stored_inputs_effective(feat_def, pending.level, &validation_baseline, stored);
             if has_interactive_onadd && !effective && !stored.is_empty() {
                 // Corrupt stored (e.g. Expertise on now non-proficient skills).
                 // Silent-commit would replay it; caller opens the modal instead.
@@ -352,12 +343,12 @@ fn collect_rebuild_pending_inputs(
             }
 
             if effective {
-                feat_def.apply(
-                    pending.level,
+                dry_run_apply_feature(
+                    feat_def,
                     &mut validation_baseline,
-                    WhenCondition::OnFeatureAdd,
+                    pending,
                     stored,
-                    spell_index,
+                    WhenCondition::OnFeatureAdd,
                 );
             }
         }
@@ -403,12 +394,12 @@ fn collect_rebuild_pending_inputs(
                     &emit_baseline,
                 );
 
-                state.def.apply(
-                    state.pending.level,
+                dry_run_apply_feature(
+                    state.def,
                     &mut emit_baseline,
-                    WhenCondition::OnFeatureAdd,
+                    state.pending,
                     &inputs_vec,
-                    spell_index,
+                    WhenCondition::OnFeatureAdd,
                 );
 
                 if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
@@ -420,7 +411,7 @@ fn collect_rebuild_pending_inputs(
             } else if feat_def.assign.is_some() {
                 // apply_new_feature (not bare feat_def.apply) so the row
                 // lands in features.list — caster_info reads it.
-                apply_new_feature(feat_index, spell_index, &mut emit_baseline, pending, &[]);
+                apply_new_feature(feat_index, &mut emit_baseline, pending, &[]);
                 if emit_started {
                     inputs.push(PendingInputs::hidden_for_cascade(
                         pending.name.clone(),
@@ -514,7 +505,6 @@ fn detect_replacement(
 /// unsolved and lets the solver re-enumerate candidates.
 fn stored_inputs_effective(
     feat_def: &FeatureDefinition,
-    spell_index: &BTreeMap<Box<str>, SpellDefinition>,
     level: u32,
     baseline: &Character,
     stored: &[AssignInputs],
@@ -523,12 +513,17 @@ fn stored_inputs_effective(
         return false;
     }
     let mut trial = baseline.clone_lean();
-    feat_def.apply(
+    let pending = PendingFeature {
+        name: feat_def.name.to_string(),
+        source: FeatureSource::User(level),
         level,
+    };
+    dry_run_apply_feature(
+        feat_def,
         &mut trial,
-        WhenCondition::OnFeatureAdd,
+        &pending,
         stored,
-        spell_index,
+        WhenCondition::OnFeatureAdd,
     );
     !baseline.eq_derived(&trial)
 }
@@ -771,13 +766,7 @@ fn apply_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: &[Pen
                 ctx.extra_inputs,
                 feat_def.stackable,
             );
-            apply_new_feature(
-                ctx.feat_index,
-                ctx.spell_index,
-                clean,
-                pending_feature,
-                &inputs,
-            );
+            apply_new_feature(ctx.feat_index, clean, pending_feature, &inputs);
         } else if pending_feature.source.is_user() {
             // User-source missing-def features are normally pre-handled by
             // `apply_user_features_at_level`. Reaching here means a different
@@ -917,12 +906,9 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::{
-        model::{
-            AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
-            ProficiencyLevel, Skill,
-        },
-        rules::spells::EMPTY_SPELL_INDEX,
+    use crate::model::{
+        AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue, Note,
+        ProficiencyLevel, Skill,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -1275,7 +1261,7 @@ mod tests {
             category,
             replace_with,
             spells: None,
-            fields: BTreeMap::new(),
+            actions: BTreeMap::new(),
             assign: None,
             prerequisites: None,
         }
@@ -1381,7 +1367,6 @@ mod tests {
         let baseline = Character::default();
         assert!(!stored_inputs_effective(
             &expertise_def,
-            &EMPTY_SPELL_INDEX,
             1,
             &baseline,
             &stored
@@ -1398,7 +1383,6 @@ mod tests {
             .set(Skill::Religion, ProficiencyLevel::Proficient);
         assert!(stored_inputs_effective(
             &expertise_def,
-            &EMPTY_SPELL_INDEX,
             1,
             &baseline_prof,
             &stored
@@ -1431,7 +1415,6 @@ mod tests {
 
         let mut ctx = RebuildCtx {
             feat_index: &feat_index,
-            spell_index: &EMPTY_SPELL_INDEX,
             original: &original,
             extra_inputs: &extra,
             accum: &mut accum,
@@ -1480,7 +1463,6 @@ mod tests {
 
         let mut ctx = RebuildCtx {
             feat_index: &feat_index,
-            spell_index: &EMPTY_SPELL_INDEX,
             original: &original,
             extra_inputs: &extra,
             accum: &mut accum,
@@ -1517,7 +1499,6 @@ mod tests {
 
         let mut ctx = RebuildCtx {
             feat_index: &feat_index,
-            spell_index: &EMPTY_SPELL_INDEX,
             original: &original,
             extra_inputs: &extra,
             accum: &mut accum,
@@ -1570,7 +1551,6 @@ mod tests {
 
         let mut ctx = RebuildCtx {
             feat_index: &feat_index,
-            spell_index: &EMPTY_SPELL_INDEX,
             original: &original,
             extra_inputs: &extra,
             accum: &mut accum,

@@ -12,6 +12,12 @@ impl<T> Deref for Stack<T> {
     }
 }
 
+impl<T> Default for Stack<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> Stack<T> {
     const DEFAULT_CAPACITY: usize = 16;
 

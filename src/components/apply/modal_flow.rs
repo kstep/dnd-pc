@@ -10,7 +10,6 @@ use crate::{
         ApplyInputs, PendingInputs, RulesRegistry, WhenCondition,
         apply::{FeatureKey, PendingFeature, replay, resolve_replacements, restore_user_state},
         feature::FeatureDefinition,
-        spells::SpellDefinition,
     },
 };
 
@@ -50,7 +49,6 @@ pub fn apply_with_modal(
         &[PendingFeature],
         &ApplyInputs,
         &BTreeMap<Box<str>, FeatureDefinition>,
-        &BTreeMap<Box<str>, SpellDefinition>,
     ) + Send
     + Sync
     + 'static,
@@ -61,9 +59,9 @@ pub fn apply_with_modal(
         let empty = ApplyInputs::default();
         let inputs = inputs.unwrap_or(&empty);
         store.update(|character| {
-            registry.with_apply_indexes(|feat_index, spell_index| {
+            registry.with_features_index_untracked(|feat_index| {
                 let resolved = resolve_replacements(&pending, &inputs.replacements, feat_index);
-                callback(character, &resolved, inputs, feat_index, spell_index);
+                callback(character, &resolved, inputs, feat_index);
             });
         });
     };
@@ -221,8 +219,8 @@ pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
         store.update(|character| {
             let original_feature_data = character.features.data().clone();
             *character = clone;
-            registry.with_apply_indexes(|feat_index, spell_index| {
-                replay(feat_index, spell_index, character, &pending, inputs);
+            registry.with_features_index_untracked(|feat_index| {
+                replay(feat_index, character, &pending, inputs);
             });
             restore_user_state(&original_feature_data, character.features.data_mut());
         });
@@ -251,7 +249,6 @@ pub fn apply_with_prefilled_args(
         &[PendingFeature],
         &ApplyInputs,
         &BTreeMap<Box<str>, FeatureDefinition>,
-        &BTreeMap<Box<str>, SpellDefinition>,
     ) + Send
     + Sync
     + 'static,
@@ -327,13 +324,12 @@ fn apply_batch(
         &[PendingFeature],
         &ApplyInputs,
         &BTreeMap<Box<str>, FeatureDefinition>,
-        &BTreeMap<Box<str>, SpellDefinition>,
     ),
 ) {
     store.update(|character| {
-        registry.with_apply_indexes(|feat_index, spell_index| {
+        registry.with_features_index_untracked(|feat_index| {
             let resolved = resolve_replacements(pending, &inputs.replacements, feat_index);
-            callback(character, &resolved, inputs, feat_index, spell_index);
+            callback(character, &resolved, inputs, feat_index);
         });
         registry.compute(character);
     });

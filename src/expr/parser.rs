@@ -689,7 +689,7 @@ impl<
                     // Not an assignment — push var, finish expr from
                     // atom level up: dice → term → expr → cmp → bool
                     ops.push(Op::PushVar(var));
-                    // dice tail: var may be followed by 'd' (e.g. SLOT_LEVEL d6)
+                    // dice tail: var may be followed by 'd' (e.g. SLOT.LEVEL d6)
                     if let Some(Token::D) = self.peek() {
                         self.next()?;
                         self.parse_atom(ops)?;

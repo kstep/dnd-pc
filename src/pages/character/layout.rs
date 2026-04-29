@@ -111,17 +111,18 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         });
     });
 
-    // Fill labels from cached definitions. Separate effect so index changes
-    // (which only trigger fetches) don't cause expensive store updates.
+    // Fill labels from cached definitions. `store.track()` subscribes to
+    // every character mutation (rebuild, level-up, edits) so the refill
+    // catches structural changes; `update_untracked` mutates labels without
+    // firing the subscription back at us. Locale switches and registry
+    // resource arrivals are covered via `track()` calls inside
+    // `fill_from_registry`.
     Effect::new(move || {
-        store.update(|c| {
+        store.track();
+        store.update_untracked(|c| {
             registry.fill_from_registry(c);
         });
     });
-
-    // No separate locale-change effect needed — fill_from_registry always
-    // overwrites labels/descriptions, so when caches update with new locale
-    // data, fill re-runs and applies the new labels directly.
 
     let name = Memo::new(move |_| store.identity().name().get());
     let class_summary = Memo::new(move |_| store.read().class_summary());

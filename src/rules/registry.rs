@@ -8,13 +8,13 @@ use crate::{
     demap::Named,
     model::{
         Character, CharacterIdentity, ClassLevel, EffectTemplate, EffectsIndex, FeatureField,
-        FeatureSource, FreeUses,
+        FeatureSource,
     },
     rules::{
         background::BackgroundDefinition,
         cache::{DefinitionStore, FetchCache, LocalizedCache},
         class::ClassDefinition,
-        feature::{ChoiceOption, FeatureDefinition, FeaturesIndex, FieldKind},
+        feature::{ChoiceOption, FeatureDefinition, FeaturesIndex},
         index::{
             BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry,
             SpellIndexEntry,
@@ -420,20 +420,6 @@ impl RulesRegistry {
         f(index.map_or(&EMPTY, |idx| &idx.0))
     }
 
-    /// Nested helper for the apply pipeline — both indexes available in one
-    /// closure. Saves the verbose double-nesting pattern at every call site.
-    pub fn with_apply_indexes<R>(
-        &self,
-        f: impl FnOnce(
-            &BTreeMap<Box<str>, FeatureDefinition>,
-            &BTreeMap<Box<str>, SpellDefinition>,
-        ) -> R,
-    ) -> R {
-        self.with_features_index_untracked(|feat_index| {
-            self.with_spells_index_untracked(|spell_index| f(feat_index, spell_index))
-        })
-    }
-
     // ---- Spells index ----
 
     pub fn with_spells_index<R>(
@@ -576,10 +562,10 @@ impl RulesRegistry {
     ) -> Vec<ChoiceOption> {
         self.with_features_index_untracked(|features_index| {
             if let Some(feat) = features_index.get(feature_name)
-                && let Some(field_def) = feat.fields.get(field_name)
+                && let Some(action_def) = feat.actions.get(field_name)
             {
                 let level = self.feature_class_level_for(classes, feature_name);
-                return field_def.resolve_choice_options(character_fields, level);
+                return action_def.resolve_choice_options(character_fields, level);
             }
             Vec::new()
         })
@@ -588,11 +574,8 @@ impl RulesRegistry {
     pub fn get_choice_cost_label(&self, feature_name: &str, field_name: &str) -> Option<String> {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(feature_name)?;
-            let fd = feat.fields.get(field_name)?;
-            let FieldKind::Choice { cost, .. } = &fd.kind else {
-                return None;
-            };
-            let cost_name = cost.as_ref()?;
+            let action_def = feat.actions.get(field_name)?;
+            let cost_name = action_def.cost.as_ref()?;
             Some(crate::model::short_name(cost_name))
         })
     }
@@ -656,21 +639,13 @@ impl RulesRegistry {
                     source.clone_into(target);
                 }
             },
-            // Fill: copy cost from the feature's spell entry; create
-            // free_uses tracker if the spell has cost and a FreeUses
-            // pool exists on the feature.
+            // Fill: copy cost from the feature's spell entry; overwrite
+            // level from catalog. Per-spell free_uses pools are managed
+            // by the FREE_USES assign Context handler now.
             |spell, extras| {
                 spell.cost = extras.cost;
-                if extras.cost > 0 && extras.free_uses_max > 0 {
-                    match &mut spell.free_uses {
-                        Some(fu) => fu.max = extras.free_uses_max,
-                        None => {
-                            spell.free_uses = Some(FreeUses {
-                                used: 0,
-                                max: extras.free_uses_max,
-                            });
-                        }
-                    }
+                if let Some(level) = extras.level {
+                    spell.level = level;
                 }
             },
         );

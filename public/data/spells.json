@@ -20,7 +20,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 1
@@ -51,7 +51,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 30
         }
@@ -65,7 +65,7 @@
     "effects": [
       {
         "name": "HP Boost",
-        "expr": "MAX_HP += 5 * (SLOT_LEVEL - 1); HP += 5 * (SLOT_LEVEL - 1)",
+        "expr": "HP.MAX += 5 * (SLOT.LEVEL - 1); HP += 5 * (SLOT.LEVEL - 1)",
         "range": {
           "Feet": 30
         },
@@ -340,7 +340,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL)d12 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL)d12 + CASTER.MOD",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -354,7 +354,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "TEMP_HP = max(TEMP_HP, SLOT_LEVEL * 5)",
+        "expr": "HP.TEMP = max(HP.TEMP, SLOT.LEVEL * 5)",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -368,7 +368,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 1)d6",
+        "expr": "(SLOT.LEVEL + 1)d6",
         "range": {
           "Feet": 10
         },
@@ -383,7 +383,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL - 2)d6",
+        "expr": "(SLOT.LEVEL - 2)d6",
         "range": {
           "Feet": 5
         },
@@ -668,7 +668,7 @@
     "effects": [
       {
         "name": "Clenched Fist",
-        "expr": "(SLOT_LEVEL * 2 - 6)d8",
+        "expr": "(SLOT.LEVEL * 2 - 6)d8",
         "range": {
           "Feet": 120
         },
@@ -678,7 +678,7 @@
       },
       {
         "name": "Grasping Hand",
-        "expr": "(SLOT_LEVEL * 2 - 8)d6 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL * 2 - 8)d6 + CASTER.MOD",
         "range": {
           "Feet": 120
         },
@@ -767,7 +767,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 4)d8",
+        "expr": "(SLOT.LEVEL + 4)d8",
         "range": {
           "Feet": 30
         },
@@ -782,7 +782,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL)d8",
+        "expr": "(SLOT.LEVEL)d8",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -883,7 +883,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 2)d6",
+        "expr": "(SLOT.LEVEL + 2)d6",
         "range": {
           "Feet": 15
         },
@@ -916,7 +916,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": {
           "Feet": 120
         },
@@ -951,7 +951,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL + 2)d8",
+        "expr": "(SLOT.LEVEL + 2)d8",
         "range": {
           "Feet": 60
         },
@@ -1029,7 +1029,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "2d8 + (SLOT_LEVEL)d6",
+        "expr": "2d8 + (SLOT.LEVEL)d6",
         "range": {
           "Feet": 120
         }
@@ -1088,7 +1088,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL + 2)d8",
+        "expr": "(SLOT.LEVEL + 2)d8",
         "range": {
           "Feet": 90
         },
@@ -1103,7 +1103,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(2 * SLOT_LEVEL - 4)d8",
+        "expr": "(2 * SLOT.LEVEL - 4)d8",
         "range": {
           "Feet": 150
         },
@@ -1164,7 +1164,7 @@
     "effects": [
       {
         "name": "Slashing Damage",
-        "expr": "(SLOT_LEVEL * 2)d4",
+        "expr": "(SLOT.LEVEL * 2)d4",
         "range": {
           "Feet": 60
         },
@@ -1182,7 +1182,7 @@
     "effects": [
       {
         "name": "Poison Damage",
-        "expr": "(SLOT_LEVEL)d8",
+        "expr": "(SLOT.LEVEL)d8",
         "range": {
           "Feet": 120
         },
@@ -1308,7 +1308,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 3)d8",
+        "expr": "(SLOT.LEVEL + 3)d8",
         "range": {
           "Feet": 60
         },
@@ -1359,7 +1359,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL + 2)d8",
+        "expr": "(SLOT.LEVEL + 2)d8",
         "range": {
           "Feet": 60
         },
@@ -1416,7 +1416,7 @@
         "duration": {
           "Rounds": 100
         },
-        "expr": "(SLOT_LEVEL + 3)d8"
+        "expr": "(SLOT.LEVEL + 3)d8"
       }
     ],
     "concentration": true
@@ -1434,7 +1434,7 @@
         "duration": {
           "Rounds": 100
         },
-        "expr": "(SLOT_LEVEL + 2)d12"
+        "expr": "(SLOT.LEVEL + 2)d12"
       }
     ],
     "concentration": true
@@ -1819,7 +1819,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL * 2)d8 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL * 2)d8 + CASTER.MOD",
         "range": "Touch",
         "duration": "Instant"
       }
@@ -1909,7 +1909,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL - 1)d10"
+        "expr": "(SLOT.LEVEL - 1)d10"
       }
     ],
     "concentration": true
@@ -1966,7 +1966,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 5)d6",
+        "expr": "(SLOT.LEVEL + 5)d6",
         "range": {
           "Feet": 150
         },
@@ -2146,7 +2146,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(3 * SLOT_LEVEL - 8)d6 + 40",
+        "expr": "(3 * SLOT.LEVEL - 8)d6 + 40",
         "range": {
           "Feet": 60
         },
@@ -2190,7 +2190,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 2)d6",
+        "expr": "(SLOT.LEVEL + 2)d6",
         "range": {
           "Feet": 60
         },
@@ -2249,7 +2249,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -2364,7 +2364,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL + 1)d6",
+        "expr": "(SLOT.LEVEL + 1)d6",
         "range": "Touch",
         "duration": {
           "Rounds": 10
@@ -2456,7 +2456,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL - 1)d8",
+        "expr": "(SLOT.LEVEL - 1)d8",
         "range": {
           "Feet": 60
         },
@@ -2474,7 +2474,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": {
           "Feet": 10
         },
@@ -2559,7 +2559,7 @@
     "effects": [
       {
         "name": "Damage Bonus",
-        "expr": "if(SLOT_LEVEL >= 7, 3, if(SLOT_LEVEL >= 5, 2, 1))d4",
+        "expr": "if(SLOT.LEVEL >= 7, 3, if(SLOT.LEVEL >= 5, 2, 1))d4",
         "range": "Touch",
         "duration": {
           "Rounds": 600
@@ -2567,7 +2567,7 @@
       },
       {
         "name": "Attack Bonus",
-        "expr": "ATK += if(SLOT_LEVEL >= 6, 3, if(SLOT_LEVEL >= 3, 2, 1))",
+        "expr": "ATK += if(SLOT.LEVEL >= 6, 3, if(SLOT.LEVEL >= 3, 2, 1))",
         "range": "Caster",
         "duration": {
           "Rounds": 600
@@ -2647,7 +2647,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL - 1)d8",
+        "expr": "(SLOT.LEVEL - 1)d8",
         "range": {
           "Feet": 60
         }
@@ -2695,7 +2695,7 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -2746,7 +2746,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "(SLOT_LEVEL)d12",
+        "expr": "(SLOT.LEVEL)d12",
         "range": {
           "Feet": 120
         },
@@ -2858,7 +2858,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "TEMP_HP = max(TEMP_HP, 2d4 + 4 + 5 * (SLOT_LEVEL - 1))",
+        "expr": "HP.TEMP = max(HP.TEMP, 2d4 + 4 + 5 * (SLOT.LEVEL - 1))",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -3088,7 +3088,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 5)d6",
+        "expr": "(SLOT.LEVEL + 5)d6",
         "range": {
           "Feet": 150
         },
@@ -3136,7 +3136,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL / 2 + 2)d6 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL / 2 + 2)d6 + CASTER.MOD",
         "range": "Caster",
         "duration": {
           "Rounds": 100
@@ -3153,7 +3153,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "SLOT_LEVEL d6",
+        "expr": "SLOT.LEVEL d6",
         "range": {
           "Feet": 60
         },
@@ -3161,7 +3161,7 @@
       },
       {
         "name": "Radiant Damage",
-        "expr": "SLOT_LEVEL d6",
+        "expr": "SLOT.LEVEL d6",
         "range": {
           "Feet": 60
         },
@@ -3176,7 +3176,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": {
           "Feet": 60
         },
@@ -3375,7 +3375,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT.LEVEL + 1)d8"
       }
     ]
   },
@@ -3573,7 +3573,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(SLOT_LEVEL + 2)d8",
+        "expr": "(SLOT.LEVEL + 2)d8",
         "range": "Touch",
         "duration": "Forever"
       }
@@ -3621,7 +3621,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL + 2)d8",
+        "expr": "(SLOT.LEVEL + 2)d8",
         "range": {
           "Feet": 100
         }
@@ -3635,7 +3635,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL + 1)d10"
+        "expr": "(SLOT.LEVEL + 1)d10"
       }
     ]
   },
@@ -3689,7 +3689,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8 + tier(LEVEL, 1:0, 5:CASTER_MODIFIER)"
+        "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8 + tier(LEVEL, 1:0, 5:CASTER.MOD)"
       }
     ]
   },
@@ -3765,7 +3765,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL + 3)d6",
+        "expr": "(SLOT.LEVEL + 3)d6",
         "range": {
           "Feet": 120
         },
@@ -3812,7 +3812,7 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -3887,7 +3887,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL - 5) * 70",
+        "expr": "(SLOT.LEVEL - 5) * 70",
         "range": {
           "Feet": 60
         },
@@ -3902,7 +3902,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL - 1)d6",
+        "expr": "(SLOT.LEVEL - 1)d6",
         "range": {
           "Feet": 60
         },
@@ -3921,7 +3921,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL * 2)d4 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL * 2)d4 + CASTER.MOD",
         "range": {
           "Feet": 60
         },
@@ -3955,7 +3955,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 1)d10",
+        "expr": "(SLOT.LEVEL + 1)d10",
         "range": {
           "Feet": 60
         },
@@ -3989,7 +3989,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "CASTER_MODIFIER",
+        "expr": "CASTER.MOD",
         "range": "Touch",
         "duration": {
           "Rounds": 10
@@ -4117,7 +4117,7 @@
     "effects": [
       {
         "name": "Homunculus HP",
-        "expr": "5 + SLOT_LEVEL * 5",
+        "expr": "5 + SLOT.LEVEL * 5",
         "range": {
           "Feet": 10
         },
@@ -4205,7 +4205,7 @@
       },
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 1)d6",
+        "expr": "(SLOT.LEVEL + 1)d6",
         "range": {
           "Feet": 60
         },
@@ -4243,7 +4243,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 15
         }
@@ -4304,7 +4304,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL + 3)d6",
+        "expr": "(SLOT.LEVEL + 3)d6",
         "range": {
           "Feet": 90
         }
@@ -4415,7 +4415,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 1)d10",
+        "expr": "(SLOT.LEVEL + 1)d10",
         "range": "Touch",
         "duration": "Instant"
       }
@@ -4428,7 +4428,7 @@
     "effects": [
       {
         "name": "Piercing Damage",
-        "expr": "(SLOT_LEVEL - 1)d10",
+        "expr": "(SLOT.LEVEL - 1)d10",
         "range": {
           "Feet": 300
         },
@@ -4597,7 +4597,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL + 2)d4 + SLOT_LEVEL + 2"
+        "expr": "(SLOT.LEVEL + 2)d4 + SLOT.LEVEL + 2"
       }
     ]
   },
@@ -4654,7 +4654,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": {
           "Feet": 120
         },
@@ -4742,7 +4742,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT.LEVEL + 1)d8"
       }
     ]
   },
@@ -4767,7 +4767,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -4781,7 +4781,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL + 5)d6",
+        "expr": "(SLOT.LEVEL + 5)d6",
         "range": {
           "Feet": 100
         },
@@ -4983,7 +4983,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL + 2)d4 + SLOT_LEVEL + 2",
+        "expr": "(SLOT.LEVEL + 2)d4 + SLOT.LEVEL + 2",
         "range": {
           "Feet": 120
         },
@@ -5014,7 +5014,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "1d6 + CASTER_MODIFIER",
+        "expr": "1d6 + CASTER.MOD",
         "range": "Touch",
         "duration": {
           "Rounds": 10
@@ -5030,7 +5030,7 @@
     "effects": [
       {
         "name": "Attack Bonus",
-        "expr": "ATK += SLOT_LEVEL / 2",
+        "expr": "ATK += SLOT.LEVEL / 2",
         "range": "Caster",
         "duration": {
           "Rounds": 600
@@ -5046,7 +5046,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL + 1)d8"
+        "expr": "(SLOT.LEVEL + 1)d8"
       }
     ]
   },
@@ -5074,7 +5074,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8 + CASTER_MODIFIER",
+        "expr": "SLOT.LEVEL d8 + CASTER.MOD",
         "range": {
           "Feet": 60
         },
@@ -5104,7 +5104,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "(SLOT_LEVEL - 1)d4 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL - 1)d4 + CASTER.MOD",
         "range": {
           "Feet": 60
         },
@@ -5201,7 +5201,7 @@
     "effects": [
       {
         "name": "Acid Damage",
-        "expr": "(SLOT_LEVEL + 2)d4",
+        "expr": "(SLOT.LEVEL + 2)d4",
         "range": {
           "Feet": 90
         },
@@ -5337,7 +5337,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 120
         },
@@ -5460,7 +5460,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": {
           "Feet": 120
         },
@@ -5529,7 +5529,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "4d12 + CASTER_MODIFIER",
+        "expr": "4d12 + CASTER.MOD",
         "range": {
           "Feet": 90
         },
@@ -5547,7 +5547,7 @@
     "effects": [
       {
         "name": "Motivational Speech",
-        "expr": "TEMP_HP = max(TEMP_HP, 5); WIS.SAVE.ADV = 1",
+        "expr": "HP.TEMP = max(HP.TEMP, 5); WIS.SAVE.ADV = 1",
         "range": {
           "Feet": 60
         },
@@ -5642,7 +5642,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 4)d6",
+        "expr": "(SLOT.LEVEL + 4)d6",
         "range": {
           "Feet": 300
         },
@@ -5743,7 +5743,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": {
           "Feet": 120
         },
@@ -5869,7 +5869,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "TEMP_HP = max(TEMP_HP, 20)",
+        "expr": "HP.TEMP = max(HP.TEMP, 20)",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -5938,7 +5938,7 @@
     "effects": [
       {
         "name": "Healing",
-        "expr": "SLOT_LEVEL d8",
+        "expr": "SLOT.LEVEL d8",
         "range": {
           "Feet": 30
         },
@@ -6192,7 +6192,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL + 3)d6",
+        "expr": "(SLOT.LEVEL + 3)d6",
         "range": {
           "Feet": 120
         }
@@ -6250,7 +6250,7 @@
     "effects": [
       {
         "name": "Poison Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 60
         },
@@ -6382,7 +6382,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 30
         }
@@ -6497,7 +6497,7 @@
     "effects": [
       {
         "name": "Fire Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -6566,7 +6566,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "if(SLOT_LEVEL >= 7, 5, if(SLOT_LEVEL >= 5, 4, if(SLOT_LEVEL >= 3, 3, 2)))d8",
+        "expr": "if(SLOT.LEVEL >= 7, 5, if(SLOT.LEVEL >= 5, 4, if(SLOT.LEVEL >= 3, 3, 2)))d8",
         "range": "Caster"
       }
     ],
@@ -6629,7 +6629,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 60
         },
@@ -6679,7 +6679,7 @@
     "effects": [
       {
         "name": "Bludgeoning Damage",
-        "expr": "1d8 + CASTER_MODIFIER",
+        "expr": "1d8 + CASTER.MOD",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -6695,7 +6695,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -6912,7 +6912,7 @@
     "effects": [
       {
         "name": "Cold Damage",
-        "expr": "(SLOT_LEVEL + 1)d6",
+        "expr": "(SLOT.LEVEL + 1)d6",
         "range": {
           "Feet": 90
         }
@@ -6944,7 +6944,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "(1 + max(0, CASTER_MODIFIER))d8! + tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8",
+        "expr": "(1 + max(0, CASTER.MOD))d8! + tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8",
         "range": {
           "Feet": 120
         },
@@ -7101,7 +7101,7 @@
     "effects": [
       {
         "name": "Radiant/Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d8",
+        "expr": "(SLOT.LEVEL)d8",
         "range": {
           "Feet": 15
         },
@@ -7119,7 +7119,7 @@
     "effects": [
       {
         "name": "Damage",
-        "expr": "((SLOT_LEVEL - 1) / 2)d8"
+        "expr": "((SLOT.LEVEL - 1) / 2)d8"
       }
     ],
     "concentration": true,
@@ -7135,7 +7135,7 @@
         "range": {
           "Feet": 60
         },
-        "expr": "1d8 + 3 + SLOT_LEVEL"
+        "expr": "1d8 + 3 + SLOT.LEVEL"
       }
     ],
     "concentration": true
@@ -7147,7 +7147,7 @@
     "effects": [
       {
         "name": "Force Damage",
-        "expr": "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER",
+        "expr": "(SLOT.LEVEL / 2)d8 + CASTER.MOD",
         "range": {
           "Feet": 60
         },
@@ -7180,7 +7180,7 @@
     "effects": [
       {
         "name": "Psychic Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -7269,7 +7269,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": {
           "Feet": 150
         }
@@ -7583,7 +7583,7 @@
     "effects": [
       {
         "name": "Temp HP",
-        "expr": "TEMP_HP = max(TEMP_HP, 15)",
+        "expr": "HP.TEMP = max(HP.TEMP, 15)",
         "range": {
           "Feet": 50
         },
@@ -7645,7 +7645,7 @@
     "effects": [
       {
         "name": "Acid Damage",
-        "expr": "(SLOT_LEVEL * 2)d4",
+        "expr": "(SLOT.LEVEL * 2)d4",
         "range": {
           "Feet": 30
         },
@@ -7820,7 +7820,7 @@
     "effects": [
       {
         "name": "Tenser's Transformation",
-        "expr": "TEMP_HP = max(TEMP_HP, 50); ATK.ADV = 1",
+        "expr": "HP.TEMP = max(HP.TEMP, 50); ATK.ADV = 1",
         "range": "Caster",
         "duration": {
           "Rounds": 100
@@ -7884,7 +7884,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL)d10",
+        "expr": "(SLOT.LEVEL)d10",
         "range": {
           "Feet": 90
         }
@@ -7913,7 +7913,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL + 1)d6",
+        "expr": "(SLOT.LEVEL + 1)d6",
         "range": "Caster",
         "duration": "Instant"
       }
@@ -7927,7 +7927,7 @@
     "effects": [
       {
         "name": "Thunder Damage",
-        "expr": "(SLOT_LEVEL + 1)d8",
+        "expr": "(SLOT.LEVEL + 1)d8",
         "range": {
           "Feet": 15
         },
@@ -8160,7 +8160,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 10
@@ -8191,7 +8191,7 @@
     "effects": [
       {
         "name": "Acid Damage",
-        "expr": "(2 * SLOT_LEVEL + 2)d4",
+        "expr": "(2 * SLOT.LEVEL + 2)d4",
         "range": {
           "Feet": 150
         },
@@ -8273,7 +8273,7 @@
     "effects": [
       {
         "name": "Radiant Damage",
-        "expr": "(SLOT_LEVEL - 1)d8",
+        "expr": "(SLOT.LEVEL - 1)d8",
         "range": {
           "Feet": 120
         }
@@ -8572,7 +8572,7 @@
     "effects": [
       {
         "name": "Lightning Damage",
-        "expr": "(SLOT_LEVEL + 1)d12",
+        "expr": "(SLOT.LEVEL + 1)d12",
         "range": {
           "Feet": 60
         },
@@ -8590,7 +8590,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d6"
+        "expr": "(SLOT.LEVEL)d6"
       }
     ]
   },
@@ -8648,7 +8648,7 @@
     "effects": [
       {
         "name": "Necrotic Damage",
-        "expr": "(SLOT_LEVEL)d6",
+        "expr": "(SLOT.LEVEL)d6",
         "range": "Caster",
         "duration": {
           "Rounds": 10

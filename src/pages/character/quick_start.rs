@@ -25,7 +25,6 @@ use crate::{
         ApplyInputs, DefinitionStore, RulesRegistry,
         apply::{PendingFeature, apply_new_features, collect_pending_features},
         feature::FeatureDefinition,
-        spells::SpellDefinition,
     },
 };
 
@@ -232,7 +231,6 @@ fn finalize_quick_start(
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
     features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    spells_index: &BTreeMap<Box<str>, SpellDefinition>,
 ) {
     if !character.identity.species.is_empty() && !character.applied.species {
         character.applied.species = true;
@@ -262,7 +260,6 @@ fn finalize_quick_start(
 
     apply_new_features(
         features_index,
-        spells_index,
         character,
         pending,
         Some(&inputs.feature_inputs),
@@ -300,15 +297,8 @@ fn create_character(
         registry,
         all_pending,
         None,
-        move |character, pending, inputs, feat_index, spell_index| {
-            finalize_quick_start(
-                registry,
-                character,
-                pending,
-                inputs,
-                feat_index,
-                spell_index,
-            );
+        move |character, pending, inputs, feat_index| {
+            finalize_quick_start(registry, character, pending, inputs, feat_index);
         },
     );
 }
@@ -355,15 +345,8 @@ fn apply_ai_result(
         all_pending,
         prefilled,
         result.replacements,
-        move |character, pending, inputs, feat_index, spell_index| {
-            finalize_quick_start(
-                registry,
-                character,
-                pending,
-                inputs,
-                feat_index,
-                spell_index,
-            );
+        move |character, pending, inputs, feat_index| {
+            finalize_quick_start(registry, character, pending, inputs, feat_index);
         },
     );
 }

@@ -19,8 +19,8 @@ use crate::{
     expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterStack, VarGroup},
     model::{Attribute, AttributeGroup, Expr, FeatureCategory, Op, Translatable},
     rules::{
-        Assignment, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind, RulesRegistry,
-        SpellDefinition, SpellEntry, SpellsList, locale::LocaleKey,
+        ActionDefinition, Assignment, ChoiceOptions, FeatureDefinition, PoolSummarizer,
+        RulesRegistry, SpellDefinition, SpellEntry, SpellsList, locale::LocaleKey,
     },
 };
 
@@ -48,30 +48,53 @@ pub enum FeatureSpells {
 }
 
 impl FeatureSpells {
-    pub fn from_spell_list(list: Option<&SpellsList>) -> Self {
-        match list {
-            Some(spell_list @ SpellsList::Ref { from }) => {
-                let list_name = spell_list.ref_name().unwrap_or(from);
-                Self::Link(list_name.to_string())
+    pub fn from_feature(feat_def: &FeatureDefinition) -> Self {
+        let list = feat_def.spells.as_ref().map(|spells_def| &spells_def.list);
+        // Sticky grants are expressed as `STICKY.<name> = 1` assigns; recover
+        // them so the reference page still shows prepared spells. min_level
+        // is back-derived by evaluating OnCompute assigns at LEVEL 1..=20 and
+        // capturing the first level where each Sticky var becomes 1.
+        let sticky_grants = PoolSummarizer::new(feat_def).sticky_grants();
+
+        if let Some(spell_list @ SpellsList::Ref { from }) = list {
+            let list_name = spell_list.ref_name().unwrap_or(from);
+            return Self::Link(list_name.to_string());
+        }
+
+        let mut rows: Vec<InlineSpellKey> = Vec::new();
+        for grant in &sticky_grants {
+            rows.push(InlineSpellKey {
+                name: grant.name.to_string(),
+                entry: SpellEntry {
+                    name: grant.name.into(),
+                    sticky: true,
+                    min_level: grant.min_level,
+                    cost: 0,
+                },
+            });
+        }
+        if let Some(SpellsList::Inline(entries)) = list {
+            for entry in entries {
+                if rows.iter().any(|row| row.name == *entry.name) {
+                    continue;
+                }
+                rows.push(InlineSpellKey {
+                    name: entry.name.to_string(),
+                    entry: entry.clone(),
+                });
             }
-            Some(SpellsList::Inline(entries)) if !entries.is_empty() => {
-                let rows: Vec<InlineSpellKey> = entries
-                    .iter()
-                    .map(|entry| InlineSpellKey {
-                        name: entry.name.to_string(),
-                        entry: entry.clone(),
-                    })
-                    .collect();
-                Self::Inline(rows)
-            }
-            _ => Self::None,
+        }
+        if rows.is_empty() {
+            Self::None
+        } else {
+            Self::Inline(rows)
         }
     }
 }
 
-/// Stable identity for one Choice option in a feature field. Locale
+/// Stable identity for one Choice option on a feature action. Locale
 /// text + structural fields (level/cost/effects) are resolved at
-/// render time from the feature's `FieldDefinition`.
+/// render time from the feature's `ActionDefinition`.
 #[derive(Clone)]
 pub struct ChoiceOptionKey {
     pub feat_name: String,
@@ -88,20 +111,16 @@ pub struct ChoiceFieldKey {
 
 #[cfg_attr(
     feature = "perf-marks",
-    tracing::instrument(name = "ref.feature_choices", skip(fields), fields(feat = feat_name))
+    tracing::instrument(name = "ref.feature_choices", skip(actions), fields(feat = feat_name))
 )]
 fn feature_choices(
     feat_name: &str,
-    fields: &BTreeMap<Box<str>, FieldDefinition>,
+    actions: &BTreeMap<Box<str>, ActionDefinition>,
 ) -> Option<Vec<ChoiceFieldKey>> {
-    let values: Vec<_> = fields
+    let values: Vec<_> = actions
         .values()
-        .filter_map(|field_def| {
-            let FieldKind::Choice {
-                options: ChoiceOptions::List(list),
-                ..
-            } = &field_def.kind
-            else {
+        .filter_map(|action_def| {
+            let ChoiceOptions::List(list) = &action_def.options else {
                 return None;
             };
             if list.is_empty() {
@@ -109,12 +128,12 @@ fn feature_choices(
             }
             Some(ChoiceFieldKey {
                 feat_name: feat_name.to_string(),
-                field_name: field_def.name.to_string(),
+                field_name: action_def.name.to_string(),
                 options: list
                     .iter()
                     .map(|opt| ChoiceOptionKey {
                         feat_name: feat_name.to_string(),
-                        field_name: field_def.name.to_string(),
+                        field_name: action_def.name.to_string(),
                         name: opt.name.to_string(),
                     })
                     .collect(),
@@ -163,7 +182,7 @@ pub fn SpellEffectsView(effects: Vec<(String, Expr)>) -> impl IntoView {
 struct SumEntry {
     text: String,
     num: Option<i32>,
-    /// Raw attribute key for compound detection (e.g. "INITIATIVE.BONUS").
+    /// Raw attribute key for compound detection (e.g. "INIT.BONUS").
     raw_key: Option<String>,
     /// If this entry is `var op rhs`, stores `(raw_var_key, op, rhs_text)`.
     compound: Option<(String, String, String)>,
@@ -259,6 +278,18 @@ impl AssignmentSummarizer {
             }
             _ => {
                 let label = attr.display_name(self.i18n);
+                // For attrs whose value is an enum index (CasterAbility,
+                // CasterCoef, SlotPool), render the named label via
+                // `format_value` instead of the raw integer. Compound forms
+                // (`X += rhs`) keep `display` as-is since the rhs is just a
+                // number and `format_value` would mis-interpret it.
+                let display = if prefix.is_empty()
+                    && let Some(num) = value.num
+                {
+                    attr.format_value(num, self.i18n)
+                } else {
+                    display
+                };
                 self.other.push(format!("{label} {prefix}{display}"));
             }
         }
@@ -577,10 +608,8 @@ pub fn collect_feature_views<'a>(
             category: feat.category,
             has_prerequisites: feat.prerequisites.is_some(),
             has_assignments: feat.assign.as_deref().is_some_and(|a| !a.is_empty()),
-            spells: FeatureSpells::from_spell_list(
-                feat.spells.as_ref().map(|spells_def| &spells_def.list),
-            ),
-            choices: feature_choices(&feat.name, &feat.fields),
+            spells: FeatureSpells::from_feature(feat),
+            choices: feature_choices(&feat.name, &feat.actions),
         })
         .collect()
 }
@@ -737,12 +766,12 @@ fn ChoiceOptionRow(key: ChoiceOptionKey) -> impl IntoView {
         <div class="feature-choice-entry">
             <strong>{move || opt_label.get()}</strong>
             {move || registry.features().lookup(&feat_name, |loc| {
-                let field_def = loc.data.fields.get(field_name.as_str())?;
-                let FieldKind::Choice { options: ChoiceOptions::List(list), cost: cost_unit, .. } = &field_def.kind else { return None; };
+                let action_def = loc.data.actions.get(field_name.as_str())?;
+                let ChoiceOptions::List(list) = &action_def.options else { return None; };
                 let opt = list.iter().find(|o| *o.name == name)?;
                 let level = opt.level;
                 let cost = opt.cost;
-                let unit = cost_unit.clone();
+                let unit = action_def.cost.clone();
                 let effects: Vec<(String, Expr)> = opt
                     .effects
                     .iter()

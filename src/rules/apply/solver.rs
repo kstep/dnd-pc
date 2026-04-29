@@ -5,9 +5,8 @@ use crate::{
     model::{AssignInputs, Attribute, AttributeGroup, Character, Expr},
     rules::{
         WhenCondition,
-        apply::{args_ctx::WithArgsRef, pending::PendingFeature},
+        apply::{args_ctx::WithArgsRef, dry_run_apply_feature, pending::PendingFeature},
         feature::FeatureDefinition,
-        spells::EMPTY_SPELL_INDEX,
     },
 };
 
@@ -185,14 +184,12 @@ fn solve_assign(
                 ..AssignInputs::default()
             })
             .collect();
-        // Solver compares only `eq_derived` — sticky spell imports don't
-        // affect that surface, so an empty spells index is sound here.
-        feats[feat_idx].def.apply(
-            feats[feat_idx].pending.level,
+        dry_run_apply_feature(
+            feats[feat_idx].def,
             &mut trial,
-            WhenCondition::OnFeatureAdd,
+            feats[feat_idx].pending,
             &inputs,
-            &EMPTY_SPELL_INDEX,
+            WhenCondition::OnFeatureAdd,
         );
         return solve_assign(feats, feat_idx + 1, 0, &trial, target, attempts);
     }
@@ -291,12 +288,12 @@ fn candidate_changes_baseline(
         })
         .collect();
     let mut trial = baseline.clone_lean();
-    feats[feat_idx].def.apply(
-        feats[feat_idx].pending.level,
+    dry_run_apply_feature(
+        feats[feat_idx].def,
         &mut trial,
-        WhenCondition::OnFeatureAdd,
+        feats[feat_idx].pending,
         &inputs,
-        &EMPTY_SPELL_INDEX,
+        WhenCondition::OnFeatureAdd,
     );
     !baseline.eq_derived(&trial)
 }

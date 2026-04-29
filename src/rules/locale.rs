@@ -7,7 +7,7 @@ use crate::{
     rules::{
         background::BackgroundDefinition,
         class::{ClassDefinition, SubclassDefinition},
-        feature::{ChoiceOption, ChoiceOptions, FeatureDefinition, FieldDefinition, FieldKind},
+        feature::{ActionDefinition, ChoiceOption, ChoiceOptions, FeatureDefinition},
         species::SpeciesDefinition,
     },
 };
@@ -126,32 +126,36 @@ impl<'a> LocalizedText<'a, FeatureDefinition, LocaleMap> {
             .unwrap_or("")
     }
 
-    pub fn field(&'a self, name: &str) -> Option<LocalizedField<'a>> {
-        self.data.fields.get(name).map(|fd| LocalizedField {
-            feat_name: &self.data.name,
-            data: fd,
-            locale: self.locale,
-        })
+    pub fn action(&'a self, name: &str) -> Option<LocalizedAction<'a>> {
+        self.data
+            .actions
+            .get(name)
+            .map(|action_def| LocalizedAction {
+                feat_name: &self.data.name,
+                data: action_def,
+                locale: self.locale,
+            })
     }
 }
 
-/// Wrapper for a `FieldDefinition` that knows its parent feature name so the
-/// flat sub-key (`"FeatName.field.X"`) can be built on demand.
-pub struct LocalizedField<'a> {
+/// Wrapper for an `ActionDefinition` that knows its parent feature name so
+/// the flat sub-key (`"FeatName.field.X"`) can be built on demand. The
+/// "field" infix is preserved in locale keys for migration continuity.
+pub struct LocalizedAction<'a> {
     pub feat_name: &'a str,
-    pub data: &'a FieldDefinition,
+    pub data: &'a ActionDefinition,
     pub locale: Option<&'a LocaleMap>,
 }
 
-impl<'a> Deref for LocalizedField<'a> {
-    type Target = FieldDefinition;
+impl<'a> Deref for LocalizedAction<'a> {
+    type Target = ActionDefinition;
 
-    fn deref(&self) -> &FieldDefinition {
+    fn deref(&self) -> &ActionDefinition {
         self.data
     }
 }
 
-impl<'a> LocalizedField<'a> {
+impl<'a> LocalizedAction<'a> {
     fn entry(&self) -> Option<&'a LocaleText> {
         let key = LocaleKey::flat_field(self.feat_name, &self.data.name);
         self.locale.and_then(|m| m.get(key.as_str()))
@@ -170,11 +174,7 @@ impl<'a> LocalizedField<'a> {
     }
 
     pub fn option(&'a self, opt_name: &str) -> Option<LocalizedOption<'a>> {
-        let FieldKind::Choice {
-            options: ChoiceOptions::List(opts),
-            ..
-        } = &self.data.kind
-        else {
+        let ChoiceOptions::List(opts) = &self.data.options else {
             return None;
         };
         opts.iter()

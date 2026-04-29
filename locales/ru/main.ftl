@@ -451,6 +451,13 @@ sync-sign-in-google = Войти через Google
 show-expression = Показать выражение
 points = Очки
 points-max = Макс. очков
+die-sides = Граней куба
+die-count = Число костей
+die-used = Использовано костей
+bonus = Бонус
+choice-count = Количество выборов
+sticky = Всегда подготовлено
+free-uses-used = Использовано своб.
 reset = Сброс
 spell-level-badge = { $count ->
     [0] Заговор

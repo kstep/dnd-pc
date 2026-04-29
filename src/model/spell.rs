@@ -215,6 +215,25 @@ impl Spell {
     pub fn set_label(&mut self, value: String) {
         self.label = Some(value);
     }
+
+    /// Upsert `free_uses.max`, clamping `used` if it exceeds the new max.
+    /// Creates `free_uses` if absent (with `used = 0`).
+    pub fn set_free_uses_max(&mut self, new_max: u32) {
+        match &mut self.free_uses {
+            Some(fu) => {
+                fu.max = new_max;
+                if fu.used > new_max {
+                    fu.used = new_max;
+                }
+            }
+            None => {
+                self.free_uses = Some(FreeUses {
+                    used: 0,
+                    max: new_max,
+                });
+            }
+        }
+    }
 }
 
 #[cfg(test)]

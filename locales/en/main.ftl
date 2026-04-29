@@ -451,6 +451,13 @@ sync-sign-in-google = Sign in with Google
 show-expression = Show expression
 points = Points
 points-max = Max points
+die-sides = Die sides
+die-count = Die count
+die-used = Used dice
+bonus = Bonus
+choice-count = Choice count
+sticky = Always prepared
+free-uses-used = Used free uses
 reset = Reset
 spell-level-badge = { $count ->
     [0] Cantrip

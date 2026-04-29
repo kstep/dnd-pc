@@ -14,8 +14,8 @@ use crate::{
     effective::EffectiveCharacter,
     expr::{self, DicePool},
     model::{
-        ActiveEffect, ActiveEffects, Attribute, Character, EffectDefinition, EffectDuration, Expr,
-        FeatureData, FeatureValue, Op,
+        ActiveEffect, ActiveEffects, AttrKey, Attribute, Character, EffectDefinition,
+        EffectDuration, Expr, FeatureData, FeatureValue, Op,
     },
 };
 
@@ -83,20 +83,23 @@ pub fn open_calc_modal(
     show.set(true);
 }
 
-/// Populate `extra_vars` with resource field values (POINTS/POINTS_MAX) from
+/// Populate `extra_vars` with resource field values (POINTS/POINTS.MAX) from
 /// a feature's data entry. Index matches the field's position in the `fields`
 /// Vec (not just among Points/Die fields).
 pub fn inject_resource_vars(extra_vars: &mut BTreeMap<Attribute, i32>, entry: &FeatureData) {
-    for (idx, field) in entry.fields.iter().enumerate() {
-        let idx = idx as u8;
+    // Stage I parser refactor: collapse legacy per-index POINTS to scoped form.
+    // Semantics narrow in Task 4; for now last-write-wins matches the prior
+    // single-resource-per-feature behavior in practice.
+    let scoped = AttrKey::Scoped;
+    for field in entry.fields.iter() {
         match &field.value {
             FeatureValue::Points { used, max } => {
-                extra_vars.insert(Attribute::Points(idx), (*max - *used) as i32);
-                extra_vars.insert(Attribute::PointsMax(idx), *max as i32);
+                extra_vars.insert(Attribute::Points(scoped), (*max - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax(scoped), *max as i32);
             }
             FeatureValue::Die { die, used } => {
-                extra_vars.insert(Attribute::Points(idx), (die.amount - *used) as i32);
-                extra_vars.insert(Attribute::PointsMax(idx), die.amount as i32);
+                extra_vars.insert(Attribute::Points(scoped), (die.amount - *used) as i32);
+                extra_vars.insert(Attribute::PointsMax(scoped), die.amount as i32);
             }
             _ => {}
         }

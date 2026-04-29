@@ -6,7 +6,7 @@ use crate::{
     model::{Character, Spell},
     rules::{
         cache::FetchCache,
-        feature::{FeatureDefinition, FeaturesIndex, FieldKind},
+        feature::{FeatureDefinition, FeaturesIndex},
         locale::{LocaleKey, LocaleMap, SpellsLocaleMap},
         registry::LocalizedIndex,
         spells::SpellsIndex,
@@ -16,9 +16,10 @@ use crate::{
 /// Per-spell extras the caller wants to either fill from the feature's spell
 /// entry or clear. `cost` comes from the matching `SpellEntry` (or 0 if the
 /// feature uses a `Ref { from }` block — those have no per-entry cost).
+/// `level` comes from the global `SpellsIndex` (catalog enrichment).
 pub(super) struct SpellExtras {
     pub cost: u32,
-    pub free_uses_max: u32,
+    pub level: Option<u32>,
 }
 
 /// Single traversal for both fill and clear operations.
@@ -105,28 +106,14 @@ fn sync_feature_labels(
     }
 
     // 3. Feature data: fields, choices, spells
-    let char_level = character.level();
-
-    let free_uses_map: BTreeMap<String, u32> = character
-        .features
-        .keys()
-        .filter_map(|key| {
-            let feat_def = features_map.get(key.as_str())?;
-            let max = feat_def.free_uses_max(char_level, character);
-            (max > 0).then(|| (key.clone(), max))
-        })
-        .collect();
-
     for (key, entry) in character.features.data_mut() {
         let Some(feat_def) = features_map.get(key.as_str()) else {
             continue;
         };
 
-        // Field labels/descriptions + choice option labels/descriptions
+        // Field labels/descriptions: applies to all FeatureFields, including
+        // those created lazily by assign expressions (no FieldDefinition).
         for field in &mut entry.fields {
-            let Some(field_def) = feat_def.fields.get(field.name.as_str()) else {
-                continue;
-            };
             let field_key = LocaleKey::flat_field(&feat_def.name, &field.name);
             let field_text = raw_locale.and_then(|m| m.get(field_key.as_str()));
             set_label(
@@ -140,8 +127,9 @@ fn sync_feature_labels(
                     .unwrap_or(""),
             );
 
-            if let FieldKind::Choice { options, .. } = &field_def.kind {
-                let def_options = feat_def.resolve_def_options(options);
+            // Choice option enrichment requires a matching ActionDefinition.
+            if let Some(action_def) = feat_def.actions.get(field.name.as_str()) {
+                let def_options = feat_def.resolve_def_options(&action_def.options);
                 for opt in field.value.choices_mut() {
                     if opt.name.is_empty() {
                         continue;
@@ -165,60 +153,69 @@ fn sync_feature_labels(
             }
         }
 
-        // Spell labels/descriptions + extra per-spell processing
-        if let Some(spells_def) = &feat_def.spells
-            && let Some(spell_data) = &mut entry.spells
-        {
-            let free_uses_max = free_uses_map.get(key.as_str()).copied().unwrap_or(0);
+        // Spell labels/descriptions + extra per-spell processing.
+        // Sticky spells (post-Stage-II) live in `entry.spells` even when the
+        // catalog `feat_def.spells` block was dropped — sync runs on the
+        // runtime data alone, with the catalog used only for `cost` lookups.
+        let Some(spell_data) = &mut entry.spells else {
+            continue;
+        };
 
-            if let Some(known) = &mut spell_data.known {
-                for spell in known.iter_mut() {
-                    if spell.name.is_empty() {
-                        continue;
-                    }
-                    spells_index.lookup_untracked(spell.name.as_str(), |loc| {
-                        set_label(
-                            &mut spell.label,
-                            loc.locale.and_then(|t| t.label.as_deref()),
-                        );
-                        set_desc(&mut spell.description, loc.description());
-                    });
-                }
-            }
-
-            let known_spells = spell_data.known.as_deref().unwrap_or_default();
-            for spell in spell_data.spells.iter_mut() {
+        if let Some(known) = &mut spell_data.known {
+            for spell in known.iter_mut() {
                 if spell.name.is_empty() {
                     continue;
                 }
-                let known_entry = known_spells.iter().find(|known| known.name == spell.name);
-                if let Some(known) = known_entry {
-                    set_label(&mut spell.label, known.label.as_deref());
-                    set_desc(&mut spell.description, &known.description);
-                } else {
-                    spells_index.lookup_untracked(spell.name.as_str(), |loc| {
-                        set_label(
-                            &mut spell.label,
-                            loc.locale.and_then(|t| t.label.as_deref()),
-                        );
-                        set_desc(&mut spell.description, loc.description());
-                    });
-                }
-                let cost = spells_def
-                    .list
-                    .inline_entries()
-                    .iter()
-                    .find(|entry| *entry.name == spell.name)
-                    .map(|entry| entry.cost)
-                    .unwrap_or(0);
-                on_spell_extra(
-                    spell,
-                    SpellExtras {
-                        cost,
-                        free_uses_max,
-                    },
-                );
+                spells_index.lookup_untracked(spell.name.as_str(), |loc| {
+                    set_label(
+                        &mut spell.label,
+                        loc.locale.and_then(|t| t.label.as_deref()),
+                    );
+                    set_desc(&mut spell.description, loc.description());
+                });
             }
+        }
+
+        let known_spells = spell_data.known.as_deref().unwrap_or_default();
+        for spell in spell_data.spells.iter_mut() {
+            if spell.name.is_empty() {
+                continue;
+            }
+            let known_entry = known_spells.iter().find(|known| known.name == spell.name);
+            let mut catalog_level: Option<u32> = None;
+            if let Some(known) = known_entry {
+                set_label(&mut spell.label, known.label.as_deref());
+                set_desc(&mut spell.description, &known.description);
+                catalog_level = Some(known.level);
+            } else {
+                spells_index.lookup_untracked(spell.name.as_str(), |loc| {
+                    set_label(
+                        &mut spell.label,
+                        loc.locale.and_then(|t| t.label.as_deref()),
+                    );
+                    set_desc(&mut spell.description, loc.description());
+                    catalog_level = Some(loc.level);
+                });
+            }
+            let cost = feat_def
+                .spells
+                .as_ref()
+                .and_then(|spells_def| {
+                    spells_def
+                        .list
+                        .inline_entries()
+                        .iter()
+                        .find(|entry| *entry.name == spell.name)
+                        .map(|entry| entry.cost)
+                })
+                .unwrap_or(0);
+            on_spell_extra(
+                spell,
+                SpellExtras {
+                    cost,
+                    level: catalog_level,
+                },
+            );
         }
     }
 }

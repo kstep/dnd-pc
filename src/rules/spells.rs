@@ -5,10 +5,7 @@ use strum::{Display, EnumIter, EnumString, VariantArray};
 
 use crate::{
     demap::{self, Named},
-    model::{
-        Character, EffectDefinition, EffectDuration, EffectRange, FreeUses, Spell, SpellData,
-        Translatable,
-    },
+    model::{Character, EffectDefinition, EffectDuration, EffectRange, SpellData, Translatable},
     rules::feature::{ActionType, FeatureDefinition},
 };
 
@@ -248,74 +245,16 @@ impl<'de> Deserialize<'de> for SpellEntry {
 }
 
 impl SpellsDefinition {
-    /// Per-feature SpellData bootstrap: ensures `SpellData` exists, imports
-    /// sticky entries (looking up their full definition in `spells_index`),
-    /// and refreshes `free_uses.max` after a level-up. `Ref` blocks have no
-    /// per-entry sticky info, so they only ensure the skeleton.
-    pub fn apply(
-        &self,
-        feat_def: &FeatureDefinition,
-        level: u32,
-        character: &mut Character,
-        spells_index: &BTreeMap<Box<str>, SpellDefinition>,
-    ) {
+    /// Per-feature SpellData skeleton init. Sticky imports and free_uses
+    /// pool tracking are now expressed as OnCompute STICKY/FREE_USES
+    /// assigns, materialized lazily by the Context handlers.
+    pub fn apply(&self, feat_def: &FeatureDefinition, character: &mut Character) {
         let feature_name: &str = &feat_def.name;
-        let free_uses_max = feat_def.free_uses_max(level, character);
         let entry = character
             .features
             .entry(feature_name.to_string())
             .or_default();
         entry.spells.get_or_insert_with(SpellData::default);
-
-        let Some(spell_data) = character.features.spell_data_mut(feature_name) else {
-            return;
-        };
-
-        for entry in self
-            .list
-            .inline_entries()
-            .iter()
-            .filter(|entry| entry.sticky && entry.min_level <= level)
-        {
-            if spell_data
-                .spells
-                .iter()
-                .any(|existing| existing.name.as_str() == &*entry.name)
-            {
-                continue;
-            }
-            let Some(def) = spells_index.get(&*entry.name) else {
-                continue;
-            };
-            let free_uses = (entry.cost > 0 && free_uses_max > 0).then_some(FreeUses {
-                used: 0,
-                max: free_uses_max,
-            });
-            spell_data.spells.push(Spell {
-                name: def.name.to_string(),
-                label: None,
-                description: String::new(),
-                level: def.level,
-                sticky: true,
-                cost: entry.cost,
-                free_uses,
-            });
-        }
-
-        // Update free_uses.max on existing prepared spells (level-up).
-        if free_uses_max > 0 {
-            for spell in &mut spell_data.spells {
-                if spell.cost > 0 {
-                    spell
-                        .free_uses
-                        .get_or_insert(FreeUses {
-                            used: 0,
-                            max: free_uses_max,
-                        })
-                        .max = free_uses_max;
-                }
-            }
-        }
     }
 }
 
@@ -337,17 +276,17 @@ mod tests {
     fn parse_expr_with_mul_dice() {
         use crate::model::Expr;
         let cases = [
-            "(SLOT_LEVEL * 2)d4",
-            "(SLOT_LEVEL + 2)d6",
-            "(SLOT_LEVEL)d8",
-            "(SLOT_LEVEL / 2)d8 + CASTER_MODIFIER",
-            "SLOT_LEVEL / 2",
+            "(SLOT.LEVEL * 2)d4",
+            "(SLOT.LEVEL + 2)d6",
+            "(SLOT.LEVEL)d8",
+            "(SLOT.LEVEL / 2)d8 + CASTER.MOD",
+            "SLOT.LEVEL / 2",
             "if(LEVEL >= 17, 4, if(LEVEL >= 11, 3, if(LEVEL >= 5, 2, 1)))d6",
             // These use implicit dice after a bare variable (space before d)
-            "SLOT_LEVEL d6",
-            "SLOT_LEVEL d4 + CASTER_MODIFIER",
-            "2d8 + SLOT_LEVEL d6",
-            "SLOT_LEVEL / 2 d8 + CASTER_MODIFIER",
+            "SLOT.LEVEL d6",
+            "SLOT.LEVEL d4 + CASTER.MOD",
+            "2d8 + SLOT.LEVEL d6",
+            "SLOT.LEVEL / 2 d8 + CASTER.MOD",
         ];
         for expr_str in cases {
             let result = expr_str.parse::<Expr>();

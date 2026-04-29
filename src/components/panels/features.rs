@@ -4,7 +4,7 @@ use reactive_stores::{Field, Store, StoreFieldIterator};
 
 use crate::{
     components::{
-        apply::PreviewContext,
+        apply::CaptureContext,
         build_hints::{
             BuildChoiceFillHint, BuildNeedsRebuildHint, BuildPendingApplyHint, BuildReplayHint,
         },
@@ -12,7 +12,7 @@ use crate::{
         feature_row::FeatureRow,
     },
     model::{Character, CharacterStoreFields, Feature, FeatureSource, FeaturesStoreFields},
-    rules::{RulesRegistry, WhenCondition},
+    rules::{RulesRegistry, WhenCondition, apply::apply_assignments_with_inputs},
 };
 
 #[component]
@@ -63,11 +63,19 @@ pub fn FeaturesPanel() -> impl IntoView {
             .map(|feature| {
                 let mut entries: Vec<String> = Vec::new();
                 registry.with_feature(&feature.name, |feat_def| {
-                    let mut ctx = PreviewContext {
+                    let mut ctx = CaptureContext {
                         character: &mut blank,
                         captured: Vec::new(),
                     };
-                    feat_def.assign(&mut ctx, WhenCondition::OnFeatureAdd, &feature.inputs);
+                    if let Some(assignments) = feat_def.assign.as_ref() {
+                        apply_assignments_with_inputs(
+                            &mut ctx,
+                            assignments,
+                            WhenCondition::OnFeatureAdd,
+                            &feature.inputs,
+                            true,
+                        );
+                    }
                     for (attr, value) in ctx.captured {
                         entries.push(format!(
                             "{}: {}",

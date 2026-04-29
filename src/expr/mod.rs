@@ -206,6 +206,9 @@ impl<Var, Val, Grp> Deref for Expr<Var, Val, Grp> {
 
 impl<Var: Copy, Val: Copy, Grp: Copy> Expr<Var, Val, Grp> {
     pub fn run<I: Interpreter<Var, Val, Grp>>(&self, mut interp: I) -> Result<I::Output, Error> {
+        if self.0.is_empty() {
+            return Err(Error::EmptyExpression);
+        }
         self.run_block(&mut interp, BLOCK_MAIN)?;
         interp.finish()
     }
@@ -215,7 +218,10 @@ impl<Var: Copy, Val: Copy, Grp: Copy> Expr<Var, Val, Grp> {
         interp: &mut I,
         block: BlockIndex,
     ) -> Result<(), Error> {
-        for &op in self.0[block as usize].iter() {
+        let Some(block_ops) = self.0.get(block as usize) else {
+            return Err(Error::InvalidBlock(block));
+        };
+        for &op in block_ops.iter() {
             if let Some(sub_block) = interp.exec(op)? {
                 self.run_block(interp, sub_block)?;
             }
@@ -614,14 +620,14 @@ mod tests {
         assert_eq!(expr.to_string(), "AC + 5; AC - 5; (AC - 5) * 2");
 
         // Dice with complex amount/sides must keep parentheses
-        // These use Attribute as the Var type since SLOT_LEVEL/CLASS_LEVEL
+        // These use Attribute as the Var type since SLOT.LEVEL/CLASS.LEVEL
         // are not in the local test Var enum.
         use crate::model::Attribute;
-        let expr: super::Expr<Attribute> = "(SLOT_LEVEL + 2)d6".parse().unwrap();
-        assert_eq!(expr.to_string(), "(SLOT_LEVEL + 2)d6");
+        let expr: super::Expr<Attribute> = "(SLOT.LEVEL + 2)d6".parse().unwrap();
+        assert_eq!(expr.to_string(), "(SLOT.LEVEL + 2)d6");
 
-        let expr: super::Expr<Attribute> = "(CLASS_LEVEL / 2)d8".parse().unwrap();
-        assert_eq!(expr.to_string(), "(CLASS_LEVEL / 2)d8");
+        let expr: super::Expr<Attribute> = "(CLASS.LEVEL / 2)d8".parse().unwrap();
+        assert_eq!(expr.to_string(), "(CLASS.LEVEL / 2)d8");
     }
 
     #[wasm_bindgen_test]
@@ -830,8 +836,8 @@ mod tests {
         assert_eq!(expr.to_string(), "d20!");
 
         use crate::model::Attribute;
-        let expr: super::Expr<Attribute> = "(CASTER_MODIFIER + 1)d8!".parse().unwrap();
-        assert_eq!(expr.to_string(), "(CASTER_MODIFIER + 1)d8!");
+        let expr: super::Expr<Attribute> = "(CASTER.MOD + 1)d8!".parse().unwrap();
+        assert_eq!(expr.to_string(), "(CASTER.MOD + 1)d8!");
     }
 
     #[wasm_bindgen_test]

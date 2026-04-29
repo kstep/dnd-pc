@@ -9,9 +9,10 @@ use crate::{
     model::{format_bonus, proficiency_bonus_for_level},
     pages::reference::{
         RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
-        encode_name, progression::preview_progression,
+        encode_name,
+        progression::{preview_pool_values, preview_progression},
     },
-    rules::{DefinitionStore, FieldKind, IndexEntry, RulesRegistry, ValueOrExpr},
+    rules::{DefinitionStore, IndexEntry, PoolSummarizer, RulesRegistry},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -113,39 +114,43 @@ pub fn ClassReference() -> impl IntoView {
                         (list_name, preview)
                     });
 
-                // Field columns — collect owned data since features_index borrow is temporary
+                // Per-column source: assign-derived pools (Points/Die/Bonus/
+                // Choice). All Choice scaling now flows through CHOICE.<n>.COUNT
+                // assigns and shows up here uniformly via `PoolKind::Choice`.
                 struct FieldColumn {
                     label: String,
-                    kind: FieldKind,
+                    per_level: Vec<String>,
                 }
                 let field_columns: Vec<FieldColumn> = registry.with_features_index(|features_index| {
-                    def.feature_names(subname.as_deref())
-                        .flat_map(|feat_name| {
-                            features_index.get(feat_name).into_iter().flat_map(|feat_def| {
-                                feat_def
-                                    .fields
-                                    .values()
-                                    .filter(|field_def| {
-                                        field_def.kind.has_levels()
-                                            && !matches!(field_def.kind, FieldKind::FreeUses { .. })
-                                    })
-                                    .map(|field_def| {
-                                        let label = registry
-                                            .features()
-                                            .lookup_untracked(feat_name, |loc| {
-                                                loc.field(&field_def.name)
-                                                    .map(|f| f.label().to_string())
-                                            })
-                                            .flatten()
-                                            .unwrap_or_else(|| field_def.name.to_string());
-                                        FieldColumn {
-                                            label,
-                                            kind: field_def.kind.clone(),
-                                        }
-                                    })
-                            })
-                        })
-                        .collect()
+                    let mut columns: Vec<FieldColumn> = Vec::new();
+                    for feat_name in def.feature_names(subname.as_deref()) {
+                        let Some(feat_def) = features_index.get(feat_name) else { continue };
+                        let pools = PoolSummarizer::new(feat_def).pools();
+                        if pools.is_empty() {
+                            continue;
+                        }
+                        let per_level_per_pool = preview_pool_values(feat_def, &pools);
+                        for (pool_idx, pool) in pools.iter().enumerate() {
+                            let label = registry
+                                .features()
+                                .lookup_untracked(feat_name, |loc| {
+                                    loc.action(pool.name)
+                                        .map(|action| action.label().to_string())
+                                })
+                                .flatten()
+                                .unwrap_or_else(|| pool.name.to_string());
+                            let per_level: Vec<String> = per_level_per_pool
+                                .iter()
+                                .map(|row| row[pool_idx].clone())
+                                .collect();
+                            // Skip pools that never produce a value.
+                            if per_level.iter().all(|cell| cell == "\u{2014}") {
+                                continue;
+                            }
+                            columns.push(FieldColumn { label, per_level });
+                        }
+                    }
+                    columns
                 });
 
                 // Build progression table rows
@@ -181,39 +186,7 @@ pub fn ClassReference() -> impl IntoView {
 
                         let field_values: Vec<String> = field_columns
                             .iter()
-                            .map(|fc| match &fc.kind {
-                                FieldKind::Points { levels, .. }
-                                | FieldKind::FreeUses { levels } => {
-                                    match levels.at_level(level) {
-                                        Some(v @ ValueOrExpr::Value(1..)) | Some(v @ ValueOrExpr::Expr(_)) => v.to_string(),
-                                        _ => "\u{2014}".into(),
-                                    }
-                                }
-                                FieldKind::Die { levels } => {
-                                    match levels.at_level(level) {
-                                        Some(de) if !matches!(de.amount, ValueOrExpr::Value(0)) => {
-                                            de.to_string()
-                                        }
-                                        _ => "\u{2014}".into(),
-                                    }
-                                }
-                                FieldKind::Choice { levels, .. } => {
-                                    let v: u32 = levels.get_for_level(level);
-                                    if v > 0 {
-                                        v.to_string()
-                                    } else {
-                                        "\u{2014}".into()
-                                    }
-                                }
-                                FieldKind::Bonus { levels } => {
-                                    let v: i32 = levels.get_for_level(level);
-                                    if v != 0 {
-                                        format_bonus(v)
-                                    } else {
-                                        "\u{2014}".into()
-                                    }
-                                }
-                            })
+                            .map(|column| column.per_level[(level - 1) as usize].clone())
                             .collect();
 
                         let progression_row = spell_progression

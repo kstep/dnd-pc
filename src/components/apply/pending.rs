@@ -44,14 +44,8 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
         registry,
         pending,
         None,
-        move |character, pending, inputs, feat_index, spell_index| {
-            apply_new_features(
-                feat_index,
-                spell_index,
-                character,
-                pending,
-                Some(&inputs.feature_inputs),
-            );
+        move |character, pending, inputs, feat_index| {
+            apply_new_features(feat_index, character, pending, Some(&inputs.feature_inputs));
             mark_all_applied(character);
         },
     );
