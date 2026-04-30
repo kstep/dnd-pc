@@ -6,6 +6,6 @@
 !.env.example
 
 .playwright-mcp/
-.claude/worktrees/
+.claude/
 .worktrees/
 .superpowers/
