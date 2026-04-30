@@ -21,7 +21,6 @@ classes = Classes
 class = Class
 subclass = Subclass
 btn-add-class = + Add Class
-btn-apply-feature = Apply feature
 btn-edit-feature = Edit feature inputs
 apply = Apply
 apply-features-title = Apply features
@@ -159,8 +158,6 @@ free-uses = Free Uses
 ## Equipment panel
 weapons = Weapons
 name = Name
-atk-bonus = Atk Bonus
-atk-formula = Attack formula
 atk-magic = Magic
 weapon-ability = Ability
 attack = Attack

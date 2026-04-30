@@ -21,7 +21,6 @@ classes = Классы
 class = Класс
 subclass = Подкласс
 btn-add-class = + Добавить класс
-btn-apply-feature = Применить способность
 btn-edit-feature = Редактировать параметры способности
 apply = Применить
 apply-features-title = Применить способности
@@ -163,8 +162,6 @@ free-uses = Своб. исп.
 ## Панель снаряжения
 weapons = Оружие
 name = Название
-atk-bonus = Бонус атаки
-atk-formula = Формула атаки
 atk-magic = Магия
 weapon-ability = Характеристика
 attack = Атака

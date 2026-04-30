@@ -1,56 +1,16 @@
-use std::{collections::BTreeMap, fmt};
+use std::collections::BTreeMap;
 
 use serde::Deserialize;
 
 use crate::{
     demap::{self, Named},
-    expr::{self, Eval as _},
+    expr::Eval as _,
     model::{
         Attribute, Character, EffectDefinition, Expr, FeatureCategory, FeatureField, Translatable,
         short_name,
     },
     rules::spells::SpellsDefinition,
 };
-
-/// A field value that is either a static number or an expression evaluated
-/// against the character (e.g. `"max(1, CHA.MOD)"` for Bardic Inspiration
-/// uses).
-#[derive(Debug, Clone, Deserialize)]
-#[serde(untagged)]
-pub enum ValueOrExpr {
-    Value(u32),
-    Expr(Expr),
-}
-
-impl Default for ValueOrExpr {
-    fn default() -> Self {
-        Self::Value(0)
-    }
-}
-
-impl fmt::Display for ValueOrExpr {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            Self::Value(v) => write!(f, "{v}"),
-            Self::Expr(expr) => write!(f, "{expr}"),
-        }
-    }
-}
-
-impl expr::Eval<Attribute, i32> for ValueOrExpr {
-    type Output = u32;
-
-    fn eval(&self, ctx: &impl expr::Context<Attribute, i32>) -> u32 {
-        match self {
-            Self::Value(v) => *v,
-            Self::Expr(expr) => expr.eval(ctx).unwrap_or(0).max(0) as u32,
-        }
-    }
-
-    fn is_dynamic(&self) -> bool {
-        matches!(self, Self::Expr(_))
-    }
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
 pub enum ActionType {

@@ -144,25 +144,6 @@ impl Attribute {
     }
 }
 
-/// Parse an `AttrKey` segment.
-/// - `""` → `Scoped`
-/// - `` `<name>` `` → `Named(intern(name))`
-/// - anything else → `Err`
-#[allow(dead_code)]
-pub fn parse_attr_key(input: &str) -> Result<AttrKey, &'static str> {
-    if input.is_empty() {
-        return Ok(AttrKey::Scoped);
-    }
-    let stripped = input
-        .strip_prefix('`')
-        .and_then(|rest| rest.strip_suffix('`'))
-        .ok_or("expected backtick-quoted name")?;
-    if stripped.is_empty() {
-        return Err("empty backtick name");
-    }
-    Ok(AttrKey::Named(intern(stripped)))
-}
-
 /// Split a leading backtick segment from `input`. Returns `(name, remaining)`
 /// where `remaining` starts at the character after the closing backtick.
 fn parse_backtick_name(input: &str) -> Result<(&str, &str), &'static str> {

@@ -94,14 +94,6 @@ impl Toast {
         self
     }
 
-    /// Override the auto-close duration set by [`Toast::new`].
-    #[allow(dead_code)] // part of the public builder API; not every caller
-    // needs a custom duration
-    pub fn auto_close(mut self, after: Duration) -> Self {
-        self.auto_close = Some(after);
-        self
-    }
-
     /// Keep the toast on screen until the user dismisses it manually.
     pub fn persist(mut self) -> Self {
         self.auto_close = None;

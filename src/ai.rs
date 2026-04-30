@@ -116,14 +116,6 @@ impl AiProvider {
         format!("{}/v1/images/generations", self.base_url())
     }
 
-    #[allow(dead_code)]
-    pub fn name(&self) -> &'static str {
-        match self {
-            Self::OpenAI => "OpenAI",
-            Self::Proxy => "Hosted",
-        }
-    }
-
     fn models_url(&self) -> String {
         format!("{}/v1/models", self.base_url())
     }
