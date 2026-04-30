@@ -144,17 +144,26 @@ impl Attribute {
     }
 }
 
-/// Split a leading backtick segment from `input`. Returns `(name, remaining)`
-/// where `remaining` starts at the character after the closing backtick.
+/// Split a leading name segment from `input`. Returns `(name, remaining)`.
+/// Backticks are optional — when the name has no special chars (`.`, backtick),
+/// callers can omit them: `parse_backtick_name("Lucky.MAX")` →
+/// `Ok(("Lucky", ".MAX"))`. With backticks: ``parse_backtick_name("`Sorcery
+/// Points`.MAX")`` → `Ok(("Sorcery Points", ".MAX"))`.
 fn parse_backtick_name(input: &str) -> Result<(&str, &str), &'static str> {
-    let after_open = input.strip_prefix('`').ok_or("expected backtick")?;
-    let close_at = after_open.find('`').ok_or("unterminated backtick name")?;
-    let name = &after_open[..close_at];
-    if name.is_empty() {
-        return Err("empty backtick name");
+    if let Some(after_open) = input.strip_prefix('`') {
+        let close_at = after_open.find('`').ok_or("unterminated backtick name")?;
+        let name = &after_open[..close_at];
+        if name.is_empty() {
+            return Err("empty backtick name");
+        }
+        return Ok((name, &after_open[close_at + 1..]));
     }
-    let remaining = &after_open[close_at + 1..];
-    Ok((name, remaining))
+    let end = input.find('.').unwrap_or(input.len());
+    let name = &input[..end];
+    if name.is_empty() {
+        return Err("empty name");
+    }
+    Ok((name, &input[end..]))
 }
 
 /// Write an `AttrKey` rendering: `<PREFIX>` for Scoped,
@@ -417,7 +426,7 @@ impl FromStr for Attribute {
                 "MAX" => Ok(Self::PointsMax(AttrKey::Scoped)),
                 _ => {
                     let (name, remaining) = parse_backtick_name(rest)?;
-                    let key = AttrKey::Named(intern(name));
+                    let key = AttrKey::named(name);
                     match remaining {
                         "" => Ok(Self::Points(key)),
                         ".MAX" => Ok(Self::PointsMax(key)),
@@ -427,7 +436,7 @@ impl FromStr for Attribute {
             },
             "DIE" => {
                 let (name, remaining) = parse_backtick_name(rest)?;
-                let key = AttrKey::Named(intern(name));
+                let key = AttrKey::named(name);
                 match remaining {
                     ".SIDES" => Ok(Self::DieSides(key)),
                     ".COUNT" => Ok(Self::DieCount(key)),
@@ -440,11 +449,11 @@ impl FromStr for Attribute {
                 if !remaining.is_empty() {
                     return Err("unknown BONUS suffix");
                 }
-                Ok(Self::Bonus(AttrKey::Named(intern(name))))
+                Ok(Self::Bonus(AttrKey::named(name)))
             }
             "CHOICE" => {
                 let (name, remaining) = parse_backtick_name(rest)?;
-                let key = AttrKey::Named(intern(name));
+                let key = AttrKey::named(name);
                 match remaining {
                     ".COUNT" => Ok(Self::ChoiceCount(key)),
                     _ => Err("unknown CHOICE suffix (expected COUNT)"),
@@ -455,13 +464,13 @@ impl FromStr for Attribute {
                 if !remaining.is_empty() {
                     return Err("unknown STICKY suffix");
                 }
-                Ok(Self::Sticky(AttrKey::Named(intern(name))))
+                Ok(Self::Sticky(AttrKey::named(name)))
             }
             "FREE_USES" => match rest {
                 "USED" => Ok(Self::FreeUsesUsed(AttrKey::Scoped)),
                 _ => {
                     let (name, remaining) = parse_backtick_name(rest)?;
-                    let key = AttrKey::Named(intern(name));
+                    let key = AttrKey::named(name);
                     match remaining {
                         "" => Ok(Self::FreeUses(key)),
                         ".USED" => Ok(Self::FreeUsesUsed(key)),
@@ -802,6 +811,40 @@ mod tests {
     use super::*;
 
     #[wasm_bindgen_test]
+    fn parse_named_pool_optional_backticks() {
+        // Backticks are optional when the name has no special chars.
+        assert_eq!(
+            "POINTS.Lucky.MAX".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(AttrKey::named("Lucky"))
+        );
+        assert_eq!(
+            "POINTS.Lucky".parse::<Attribute>().unwrap(),
+            Attribute::Points(AttrKey::named("Lucky"))
+        );
+        assert_eq!(
+            "DIE.Lucky.SIDES".parse::<Attribute>().unwrap(),
+            Attribute::DieSides(AttrKey::named("Lucky"))
+        );
+        assert_eq!(
+            "BONUS.Lucky".parse::<Attribute>().unwrap(),
+            Attribute::Bonus(AttrKey::named("Lucky"))
+        );
+        assert_eq!(
+            "STICKY.Fireball".parse::<Attribute>().unwrap(),
+            Attribute::Sticky(AttrKey::named("Fireball"))
+        );
+        assert_eq!(
+            "FREE_USES.Fireball.USED".parse::<Attribute>().unwrap(),
+            Attribute::FreeUsesUsed(AttrKey::named("Fireball"))
+        );
+        // Backticked form for names with spaces still works.
+        assert_eq!(
+            "POINTS.`Sorcery Points`.MAX".parse::<Attribute>().unwrap(),
+            Attribute::PointsMax(AttrKey::named("Sorcery Points"))
+        );
+    }
+
+    #[wasm_bindgen_test]
     fn parse_advantage_attributes() {
         assert_eq!(
             "STR.ADV".parse::<Attribute>().unwrap(),
@@ -938,10 +981,6 @@ mod tests {
             "POINTS.`Ki`.MAX".parse::<Attribute>().unwrap(),
             Attribute::PointsMax(AttrKey::named("Ki"))
         );
-        // Indexed POINTS.<n> is no longer accepted
-        assert!("POINTS.2".parse::<Attribute>().is_err());
-        // Bare-name (unquoted) is not accepted; backticks required
-        assert!("POINTS.Ki".parse::<Attribute>().is_err());
     }
 
     #[wasm_bindgen_test]
@@ -999,7 +1038,7 @@ mod tests {
             "BONUS.`Fighting Style`".parse::<Attribute>().unwrap(),
             Attribute::Bonus(AttrKey::named("Fighting Style"))
         );
-        assert!("BONUS.X".parse::<Attribute>().is_err());
+        // Bonus has no suffix.
         assert!("BONUS.`X`.MAX".parse::<Attribute>().is_err());
     }
 
@@ -1035,7 +1074,6 @@ mod tests {
             "STICKY.`Mage Hand`".parse::<Attribute>().unwrap(),
             Attribute::Sticky(AttrKey::named("Mage Hand"))
         );
-        assert!("STICKY.MageHand".parse::<Attribute>().is_err());
     }
 
     #[wasm_bindgen_test]
