@@ -10,6 +10,21 @@ use crate::{
 
 #[component]
 pub fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
+    view! {
+        <Modal show title=move_tr!("story-settings")>
+            <Show when=move || show.get()>
+                <AiSettingsContent show settings />
+            </Show>
+        </Modal>
+    }
+}
+
+/// Body of the settings modal. Mounted only while `show=true` so the
+/// `LocalResource` that probes the provider's `/v1/models` endpoint is
+/// created lazily — not on every editor load just because the modal sits
+/// somewhere in the tree.
+#[component]
+fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> impl IntoView {
     let draft = Store::new(settings.get_untracked());
     let proxy_available = AiProvider::Proxy.is_available();
 
@@ -31,12 +46,6 @@ pub fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> 
                 image_model: String::new(),
             })
             .await
-        }
-    });
-
-    Effect::new(move || {
-        if show.get() {
-            draft.set(settings.get_untracked());
         }
     });
 
@@ -75,7 +84,7 @@ pub fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> 
     let is_proxy = move || matches!(draft.provider().get(), AiProvider::Proxy);
 
     view! {
-        <Modal show title=move_tr!("story-settings")>
+        <>
             <div class="modal-body ai-settings-modal">
                 <Show when=move || proxy_available>
                     <div class="textarea-field">
@@ -186,6 +195,6 @@ pub fn AiSettingsModal(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> 
             <div class="modal-actions">
                 <button class="btn-primary" on:click=on_save>{move_tr!("story-save")}</button>
             </div>
-        </Modal>
+        </>
     }
 }
