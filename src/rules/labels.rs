@@ -3,10 +3,10 @@ use std::collections::BTreeMap;
 use leptos::prelude::*;
 
 use crate::{
-    model::{Character, Spell},
+    model::{Character, FeatureField, FeatureOption, FeatureValue, Spell},
     rules::{
         cache::FetchCache,
-        feature::{FeatureDefinition, FeaturesIndex},
+        feature::{ChoiceOptions, FeatureDefinition, FeaturesIndex},
         locale::{LocaleKey, LocaleMap, SpellsLocaleMap},
         registry::LocalizedIndex,
         spells::SpellsIndex,
@@ -106,10 +106,54 @@ fn sync_feature_labels(
     }
 
     // 3. Feature data: fields, choices, spells
+    let char_level = character.level();
     for (key, entry) in character.features.data_mut() {
         let Some(feat_def) = features_map.get(key.as_str()) else {
             continue;
         };
+
+        // Mirror action-menu options into runtime Choice fields so the
+        // renderers (build tab, session) read them from `entry.fields`
+        // without peeking into `feat_def.actions`. Re-syncs each cycle:
+        // labels follow locale, level-gated entries follow current level.
+        for (action_name, action_def) in &feat_def.actions {
+            let ChoiceOptions::List(def_opts) = &action_def.options else {
+                continue;
+            };
+            let mirrored: Vec<FeatureOption> = def_opts
+                .iter()
+                .filter(|opt| opt.action.is_some() && opt.level <= char_level)
+                .map(|opt| FeatureOption {
+                    name: opt.name.to_string(),
+                    label: None,
+                    description: String::new(),
+                    cost: opt.cost,
+                    action: opt.action,
+                })
+                .collect();
+            if mirrored.is_empty() {
+                continue;
+            }
+            let pos = entry
+                .fields
+                .iter()
+                .position(|field| field.name.as_str() == action_name.as_ref());
+            let field = match pos {
+                Some(idx) => &mut entry.fields[idx],
+                None => {
+                    entry.fields.push(FeatureField {
+                        name: action_name.to_string(),
+                        label: None,
+                        description: String::new(),
+                        value: FeatureValue::Choice {
+                            options: Vec::new(),
+                        },
+                    });
+                    entry.fields.last_mut().unwrap()
+                }
+            };
+            field.value = FeatureValue::Choice { options: mirrored };
+        }
 
         // Field labels/descriptions: applies to all FeatureFields, including
         // those created lazily by assign expressions (no FieldDefinition).

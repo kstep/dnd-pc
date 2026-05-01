@@ -5,11 +5,13 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{
-        entry_name::EntryName, icon::Icon, slot_box::SlotBox, toggle_button::ToggleButton,
+        enchantment::EnchantmentModal, entry_name::EntryName, icon::Icon, slot_box::SlotBox,
+        toggle_button::ToggleButton,
     },
     model::{
         Ability, Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields,
-        DamageType, EquipmentStoreFields, Item, Translatable, Weapon, WeaponCategory, WeaponEffect,
+        DamageType, Enchantment, EquipmentStoreFields, GearRef, Item, Translatable, Weapon,
+        WeaponCategory, WeaponEffect,
     },
 };
 
@@ -35,6 +37,41 @@ pub fn EquipmentPanel() -> impl IntoView {
     let show_sp = move || currency_expanded.get() || currency.sp().get() > 0;
     let show_ep = move || currency_expanded.get() || currency.ep().get() > 0;
     let show_pp = move || currency_expanded.get() || currency.pp().get() > 0;
+
+    // Enchantment modal state — references the currently-edited gear slot.
+    let edit_target = RwSignal::new(None::<GearRef>);
+    let show_enchant = RwSignal::new(false);
+    let editing_enchant = Signal::derive(move || {
+        edit_target
+            .get()
+            .and_then(|target| match target {
+                GearRef::Item(i) => items.read().get(i).map(|x| x.magic.clone()),
+                GearRef::Weapon(i) => weapons.read().get(i).map(|x| x.magic.clone()),
+                GearRef::Armor(i) => armors.read().get(i).map(|x| x.magic.clone()),
+            })
+            .unwrap_or_default()
+    });
+    let save_enchant = Callback::new(move |value: Enchantment| {
+        let Some(target) = edit_target.get_untracked() else {
+            return;
+        };
+        match target {
+            GearRef::Item(i) if i < items.read().len() => {
+                items.write()[i].magic = value;
+            }
+            GearRef::Weapon(i) if i < weapons.read().len() => {
+                weapons.write()[i].magic = value;
+            }
+            GearRef::Armor(i) if i < armors.read().len() => {
+                armors.write()[i].magic = value;
+            }
+            _ => {}
+        }
+    });
+    let edit_gear = move |target: GearRef| {
+        edit_target.set(Some(target));
+        show_enchant.set(true);
+    };
 
     view! {
         <section>
@@ -214,6 +251,15 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             <ToggleButton />
                                             <div class="entry-content">
                                                 <input
+                                                    type="checkbox"
+                                                    class="entry-equipped"
+                                                    title=move_tr!("equipped")
+                                                    prop:checked=move || weapons.read()[i].equipped
+                                                    on:change=move |e| {
+                                                        weapons.write()[i].equipped = event_target_checked(&e);
+                                                    }
+                                                />
+                                                <input
                                                     type="text"
                                                     class="entry-name"
                                                     placeholder=move_tr!("name")
@@ -263,6 +309,13 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                 </select>
                                             </div>
                                             <div class="entry-actions">
+                                                <button
+                                                    class="btn-icon"
+                                                    title=move_tr!("enchantment-edit")
+                                                    on:click=move |_| edit_gear(GearRef::Weapon(i))
+                                                >
+                                                    <Icon name="pencil" />
+                                                </button>
                                                 <button
                                                     class="btn-remove"
                                                     on:click=move |_| {
@@ -484,6 +537,15 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                 <ToggleButton />
                                                 <div class="entry-content">
                                                     <input
+                                                        type="checkbox"
+                                                        class="entry-equipped"
+                                                        title=move_tr!("equipped")
+                                                        prop:checked=move || armors.read()[i].equipped
+                                                        on:change=move |e| {
+                                                            armors.write()[i].equipped = event_target_checked(&e);
+                                                        }
+                                                    />
+                                                    <input
                                                         type="text"
                                                         class="entry-name"
                                                         placeholder=move_tr!("name")
@@ -545,6 +607,13 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                     </select>
                                                 </div>
                                                 <div class="entry-actions">
+                                                    <button
+                                                        class="btn-icon"
+                                                        title=move_tr!("enchantment-edit")
+                                                        on:click=move |_| edit_gear(GearRef::Armor(i))
+                                                    >
+                                                        <Icon name="pencil" />
+                                                    </button>
                                                     <button
                                                         class="btn-remove"
                                                         on:click=move |_| {
@@ -618,6 +687,15 @@ pub fn EquipmentPanel() -> impl IntoView {
                                             <ToggleButton />
                                             <div class="entry-content">
                                                 <input
+                                                    type="checkbox"
+                                                    class="entry-equipped"
+                                                    title=move_tr!("equipped")
+                                                    prop:checked=move || items.read()[i].equipped
+                                                    on:change=move |e| {
+                                                        items.write()[i].equipped = event_target_checked(&e);
+                                                    }
+                                                />
+                                                <input
                                                     type="text"
                                                     class="entry-name"
                                                     placeholder=move_tr!("item-name")
@@ -639,6 +717,13 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                 />
                                             </div>
                                             <div class="entry-actions">
+                                                <button
+                                                    class="btn-icon"
+                                                    title=move_tr!("enchantment-edit")
+                                                    on:click=move |_| edit_gear(GearRef::Item(i))
+                                                >
+                                                    <Icon name="pencil" />
+                                                </button>
                                                 <button
                                                     class="btn-remove"
                                                     on:click=move |_| {
@@ -675,5 +760,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 {move_tr!("btn-add-item")}
             </button>
         </section>
+
+        <EnchantmentModal show=show_enchant value=editing_enchant on_save=save_enchant />
     }
 }

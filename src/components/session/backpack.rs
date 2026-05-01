@@ -81,6 +81,7 @@ pub fn BackpackBlock() -> impl IntoView {
                             name,
                             quantity,
                             description,
+                            ..Item::default()
                         });
 
                         name_el.set_value("");
@@ -104,6 +105,19 @@ pub fn BackpackBlock() -> impl IntoView {
                     .map(|(idx, item)| {
                         let qty = item.quantity;
                         let desc = item.description.clone();
+                        let equipped = item.equipped;
+                        let equipped_checkbox = view! {
+                            <input
+                                type="checkbox"
+                                class="entry-equipped"
+                                title=move_tr!("equipped")
+                                prop:checked=equipped
+                                on:change=move |e| {
+                                    items_store.write()[idx].equipped = event_target_checked(&e);
+                                }
+                            />
+                        }
+                        .into_any();
                         let qty_input = view! {
                             <input
                                 type="number"
@@ -132,6 +146,7 @@ pub fn BackpackBlock() -> impl IntoView {
                             description: String::new(),
                             badge: None,
                             actions: None,
+                            name_prefix: Some(equipped_checkbox),
                             name_extra: Some(qty_input),
                             description_view: Some(desc_edit),
                         }

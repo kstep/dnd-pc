@@ -193,12 +193,11 @@ impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
             Op::BinOp(_) | Op::Cmp(_) => -1,
             // Unary ops: pop 1, push 1 → 0
             Op::Not | Op::AvgHp => 0,
-            // Roll: pop 2 (count, sides), push count+1 items → variable, but
-            // always followed by Sum/Keep/Drop that reduces back. For compound
-            // detection purposes, Roll+reducer is net -1 (like a binary op).
-            // We won't encounter Roll in typical assignment expressions, so
-            // treat it conservatively.
-            Op::Roll => 0,
+            // Roll + reducer (Sum/Keep/Drop/Explode): conceptually a binary op
+            // taking (count, sides) and producing one die value. Real stack
+            // effect depends on count, but we charge the net -1 to Roll so the
+            // pair (Roll = -1) + (reducer = 0) sums to -1 statically.
+            Op::Roll => -1,
             Op::Sum
             | Op::Explode
             | Op::KeepMax(_)

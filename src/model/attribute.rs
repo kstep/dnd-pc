@@ -66,6 +66,15 @@ pub enum Attribute {
     FreeUses(AttrKey),
     FreeUsesUsed(AttrKey),
     Cost,
+    /// Gear-local: current charges remaining (= max - used).
+    Charges,
+    /// Gear-local: maximum charges of the owning gear.
+    ChargesMax,
+    /// Gear-local: charges already spent.
+    ChargesUsed,
+    /// Gear-local: read-only count of remaining items in the stack.
+    /// Decrement is structural via `ChoiceOption.consumes`.
+    Quantity,
     Resistance(DamageType),
     Vulnerability(DamageType),
     Immunity(DamageType),
@@ -361,6 +370,8 @@ impl FromStr for Attribute {
                 "POINTS" => Ok(Self::Points(AttrKey::Scoped)),
                 "FREE_USES" => Ok(Self::FreeUses(AttrKey::Scoped)),
                 "COST" => Ok(Self::Cost),
+                "CHARGES" => Ok(Self::Charges),
+                "QUANTITY" => Ok(Self::Quantity),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -422,6 +433,11 @@ impl FromStr for Attribute {
             "DR" => parse_damage_type(rest)
                 .map(Self::DamageReduction)
                 .ok_or("unknown damage type"),
+            "CHARGES" => match rest {
+                "MAX" => Ok(Self::ChargesMax),
+                "USED" => Ok(Self::ChargesUsed),
+                _ => Err("unknown CHARGES suffix (expected MAX or USED)"),
+            },
             "POINTS" => match rest {
                 "MAX" => Ok(Self::PointsMax(AttrKey::Scoped)),
                 _ => {
@@ -587,6 +603,10 @@ impl fmt::Display for Attribute {
             Self::FreeUses(key) => fmt_attr_key(key, "FREE_USES", "", f),
             Self::FreeUsesUsed(key) => fmt_attr_key(key, "FREE_USES", ".USED", f),
             Self::Cost => f.write_str("COST"),
+            Self::Charges => f.write_str("CHARGES"),
+            Self::ChargesMax => f.write_str("CHARGES.MAX"),
+            Self::ChargesUsed => f.write_str("CHARGES.USED"),
+            Self::Quantity => f.write_str("QUANTITY"),
             Self::Resistance(dt) => write!(f, "RESIST.{}", dt.abbr()),
             Self::Vulnerability(dt) => write!(f, "VULN.{}", dt.abbr()),
             Self::Immunity(dt) => write!(f, "IMMUNE.{}", dt.abbr()),
@@ -714,6 +734,10 @@ impl Attribute {
                 format!("{} ({spell})", tr!(i18n, "free-uses-used"))
             }
             Self::Cost => tr!(i18n, "cost"),
+            Self::Charges => tr!(i18n, "charges"),
+            Self::ChargesMax => tr!(i18n, "charges-max"),
+            Self::ChargesUsed => tr!(i18n, "charges-used"),
+            Self::Quantity => tr!(i18n, "quantity"),
             Self::Resistance(dt) => {
                 format!(
                     "{} ({})",
@@ -842,6 +866,45 @@ mod tests {
             "POINTS.`Sorcery Points`.MAX".parse::<Attribute>().unwrap(),
             Attribute::PointsMax(AttrKey::named("Sorcery Points"))
         );
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_gear_local_attributes() {
+        assert_eq!("CHARGES".parse::<Attribute>().unwrap(), Attribute::Charges);
+        assert_eq!(
+            "CHARGES.MAX".parse::<Attribute>().unwrap(),
+            Attribute::ChargesMax
+        );
+        assert_eq!(
+            "CHARGES.USED".parse::<Attribute>().unwrap(),
+            Attribute::ChargesUsed
+        );
+        assert_eq!(
+            "QUANTITY".parse::<Attribute>().unwrap(),
+            Attribute::Quantity
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_gear_local_round_trip() {
+        for attr in [
+            Attribute::Charges,
+            Attribute::ChargesMax,
+            Attribute::ChargesUsed,
+            Attribute::Quantity,
+        ] {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn gear_local_attributes_not_scoped() {
+        assert!(!Attribute::Charges.is_scoped());
+        assert!(!Attribute::ChargesMax.is_scoped());
+        assert!(!Attribute::ChargesUsed.is_scoped());
+        assert!(!Attribute::Quantity.is_scoped());
     }
 
     #[wasm_bindgen_test]

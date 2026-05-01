@@ -37,6 +37,20 @@ pub fn WeaponsBlock() -> impl IntoView {
                 let total_atk = eff.weapon_attack_bonus(w);
                 let name_atk = w.name.clone();
                 let quantity = w.quantity;
+                let equipped = w.equipped;
+
+                let equipped_checkbox = view! {
+                    <input
+                        type="checkbox"
+                        class="entry-equipped"
+                        title=move_tr!("equipped")
+                        prop:checked=equipped
+                        on:change=move |e| {
+                            weapons.write()[idx].equipped = event_target_checked(&e);
+                        }
+                    />
+                }
+                .into_any();
 
                 let active_effects: Vec<_> =
                     w.effects.iter().filter(|e| !e.expr.is_empty()).collect();
@@ -129,6 +143,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                     description,
                     badge: Some(view! { <>{attack_badge}{first_badge}{more}</> }.into_any()),
                     actions: cast_button,
+                    name_prefix: Some(equipped_checkbox),
                     name_extra: Some(qty_input),
                     description_view: None,
                 }

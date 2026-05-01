@@ -63,7 +63,10 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     // Load and provide active effects (separate from character, not synced).
     let char_id = store.read_untracked().id;
     let mut initial_effects = storage::load_effects(&char_id);
-    initial_effects.recompute(&store.read_untracked());
+    let registry = expect_context::<RulesRegistry>();
+    registry.with_features_index_untracked(|feat_index| {
+        initial_effects.recompute(&store.read_untracked(), feat_index);
+    });
     let effects = RwSignal::new(initial_effects);
     provide_context(EffectiveCharacter::new(store, effects));
 
@@ -78,9 +81,11 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         let needs_propagation = store
             .try_with(|character| {
                 effects.track();
-                effects
-                    .try_update_untracked(|eff| eff.recompute(character))
-                    .unwrap_or(false)
+                registry.with_features_index_untracked(|feat_index| {
+                    effects
+                        .try_update_untracked(|eff| eff.recompute(character, feat_index))
+                        .unwrap_or(false)
+                })
             })
             .unwrap_or(false);
         if needs_propagation {
@@ -104,22 +109,20 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
 
     // Trigger definition fetches when the index arrives or character changes.
     // This is cheap — just kicks off async fetches, no store mutation.
-    let registry = expect_context::<RulesRegistry>();
     Effect::new(move || {
         store.with(|c| {
             registry.ensure_definitions_fetched(c);
         });
     });
 
-    // Fill labels from cached definitions. `store.track()` subscribes to
-    // every character mutation (rebuild, level-up, edits) so the refill
-    // catches structural changes; `update_untracked` mutates labels without
-    // firing the subscription back at us. Locale switches and registry
-    // resource arrivals are covered via `track()` calls inside
-    // `fill_from_registry`.
+    // Fill labels from cached definitions. Effect deps are the locale
+    // resources (subscribed via `track()` calls inside `fill_from_registry`);
+    // `store.update` notifies views so they re-render with the just-synced
+    // labels. We do NOT track the store here — that would loop on our own
+    // write. Character-mutating callers (apply pipeline, rest, rebuild)
+    // refill labels themselves inside their `store.update` block.
     Effect::new(move || {
-        store.track();
-        store.update_untracked(|c| {
+        store.update(|c| {
             registry.fill_from_registry(c);
         });
     });

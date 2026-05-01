@@ -5,8 +5,11 @@ use strum::{Display, EnumIter, EnumString, VariantArray};
 
 use crate::{
     demap::{self, Named},
-    model::{Character, EffectDefinition, EffectDuration, EffectRange, SpellData, Translatable},
-    rules::feature::{ActionType, FeatureDefinition},
+    model::{
+        ActionType, Character, EffectDefinition, EffectDuration, EffectRange, SpellData,
+        Translatable,
+    },
+    rules::feature::FeatureDefinition,
 };
 
 #[derive(Debug, Clone, Copy, Deserialize)]

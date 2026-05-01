@@ -158,24 +158,13 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 let label = field.label().to_string();
                 let field_name = field.name.clone();
 
-                let classes = store.identity().classes().read();
-                let feature_data = store.features().data().read();
-                let (cost_label, all_options) = feature_name.with_value(|key| {
-                    let cost_label = registry.get_choice_cost_label(key, &field_name);
-                    let char_fields = feature_data
-                        .get(key)
-                        .map(|e| e.fields.as_slice())
-                        .unwrap_or(&[]);
-                    let all_options =
-                        registry.get_choice_options(&classes, key, &field_name, char_fields);
-                    (cost_label, all_options)
-                });
-                drop(feature_data);
-                drop(classes);
+                let cost_label =
+                    feature_name.with_value(|key| registry.get_choice_cost_label(key, &field_name));
 
-                let char_level = store.read_untracked().level();
-                let is_action_menu =
-                    options.is_empty() && all_options.iter().any(|o| o.action.is_some());
+                // Action menus mirror their definition options into runtime
+                // (lazy-created by `sync_labels`), so detection lives on the
+                // runtime field — `opt.action.is_some()` marks an action item.
+                let is_action_menu = options.iter().any(|opt| opt.action.is_some());
 
                 if is_action_menu {
                     let label_view = if let Some(ref cost_title) = cost_label {
@@ -184,14 +173,13 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         label
                     };
 
-                    let action_views = all_options
+                    let action_views = options
                         .iter()
-                        .filter(|opt| opt.level <= char_level)
                         .map(|opt| {
-                            let action_icon = opt.action.map(|a| {
-                                let title = i18n.tr(a.tr_key());
+                            let action_icon = opt.action.map(|action_type| {
+                                let title = i18n.tr(action_type.tr_key());
                                 view! {
-                                    <Icon name=a.icon_name() title=title />
+                                    <Icon name=action_type.icon_name() title=title />
                                 }
                             });
                             let cost_str = (opt.cost > 0).then(|| format!(" ({})", opt.cost));
@@ -224,6 +212,19 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         </div>
                     }));
                 }
+
+                // Stored choices: keep registry-driven datalist suggestions.
+                let all_options = store.identity().classes().with(|classes| {
+                    store.features().data().with(|feature_data| {
+                        feature_name.with_value(|key| {
+                            let char_fields = feature_data
+                                .get(key)
+                                .map(|entry| entry.fields.as_slice())
+                                .unwrap_or(&[]);
+                            registry.get_choice_options(classes, key, &field_name, char_fields)
+                        })
+                    })
+                });
 
                 let has_cost = cost_label.is_some();
                 let fld_name = StoredValue::new(field_name.clone());

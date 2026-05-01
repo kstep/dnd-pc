@@ -12,7 +12,7 @@ use strum::{Display, EnumIter, EnumString};
 
 use crate::{
     expr::DicePool,
-    model::{Die, SpellData, Translatable},
+    model::{ActionType, Die, SpellData, Translatable},
 };
 
 #[derive(
@@ -574,6 +574,12 @@ pub struct FeatureOption {
     pub description: String,
     #[serde(default)]
     pub cost: u32,
+    /// Set when this option is an action menu item (e.g. Innate Sorcery cast
+    /// button). `None` for stored-choice picks. Filled by `sync_labels` from
+    /// the registry definition; persisted so renderers don't need a
+    /// `feat.actions` lookup.
+    #[serde(default)]
+    pub action: Option<ActionType>,
 }
 
 impl FeatureOption {

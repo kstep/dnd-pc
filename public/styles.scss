@@ -1624,10 +1624,6 @@ section {
   gap: var(--size-1);
   min-width: 0;
 
-  .entry-item:has(> .entry-actions:empty) > & {
-    grid-column: 2 / -1;
-  }
-
   .icon-wrapper {
     padding: var(--size-1);
   }
@@ -4556,3 +4552,243 @@ main > * > :first-child {
   to { opacity: 1; }
 }
 
+
+/* ====================== Enchantment modal ====================== */
+
+dialog.modal:has(.enchantment-modal) {
+  width: 80vw;
+  max-width: 80vw;
+}
+
+.enchantment-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+}
+
+.enchant-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+
+  > h3 {
+    margin: 0;
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-6);
+  }
+}
+
+.enchant-section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+  cursor: pointer;
+  width: fit-content;
+
+  > h3 {
+    margin: 0;
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-6);
+  }
+
+  > input[type="checkbox"] {
+    margin: 0;
+  }
+}
+
+.charges-row {
+  display: flex;
+  align-items: center;
+  gap: var(--size-2);
+  padding: var(--size-1) 0;
+}
+
+.charges-sep {
+  color: var(--text-secondary);
+  font-size: var(--font-size-2);
+}
+
+.field-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+  font-size: var(--font-size-0);
+  color: var(--text-secondary);
+}
+
+.field-label {
+  white-space: nowrap;
+}
+
+.entry-empty {
+  margin: 0;
+  padding: var(--size-1) 0;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: var(--font-size-0);
+}
+
+/* ---- Passives list ---- */
+
+.passive-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, auto);
+  gap: var(--size-1);
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---- Action card ---- */
+
+.action-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2);
+  padding: var(--size-2);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-2);
+  background: var(--panel-bg);
+}
+
+.action-card + .action-card {
+  margin-top: var(--size-1);
+}
+
+.action-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  .entry-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: var(--font-weight-6);
+  }
+}
+
+.action-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding-left: var(--size-2);
+  border-left: 2px solid var(--panel-border);
+}
+
+/* ---- Option card ---- */
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding: var(--size-1) var(--size-2);
+  border-radius: var(--radius-2);
+  background: color-mix(in srgb, var(--panel-bg) 85%, var(--text-primary) 5%);
+}
+
+.option-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  .entry-name {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.option-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+  align-items: center;
+
+  .field-inline {
+    gap: var(--size-1);
+  }
+
+  .short-input {
+    width: 4em;
+  }
+
+  select {
+    min-width: 8em;
+  }
+}
+
+.option-effects {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding-left: var(--size-2);
+  border-left: 1px dashed var(--panel-border);
+}
+
+.option-effects-title {
+  margin: 0;
+  font-size: var(--font-size-0);
+  font-weight: var(--font-weight-6);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.effect-edit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  gap: var(--size-1);
+  align-items: center;
+
+  > input {
+    min-width: 0;
+  }
+}
+
+.btn-add-effect {
+  align-self: flex-start;
+}
+
+.effect-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-1);
+  padding: var(--size-1) var(--size-2);
+  border-radius: var(--radius-2);
+  background: color-mix(in srgb, var(--panel-bg) 70%, var(--text-primary) 5%);
+}
+
+.effect-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  .entry-name {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.effect-expr-input {
+  width: 100%;
+  font-family: var(--font-mono, monospace);
+  font-size: var(--font-size-0);
+}
+
+.effect-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2) var(--size-3);
+  align-items: center;
+
+  .short-input {
+    width: 4em;
+  }
+
+  select {
+    min-width: 7em;
+  }
+
+  .scope-input {
+    width: 10em;
+  }
+}

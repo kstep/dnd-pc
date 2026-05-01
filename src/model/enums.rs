@@ -8,6 +8,45 @@ pub trait Translatable {
     }
 }
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    Display,
+    EnumString,
+    EnumIter,
+    VariantArray
+)]
+pub enum ActionType {
+    Action,
+    BonusAction,
+    Reaction,
+}
+
+impl ActionType {
+    pub fn icon_name(&self) -> &'static str {
+        match self {
+            Self::Action => "swords",
+            Self::BonusAction => "zap",
+            Self::Reaction => "shield",
+        }
+    }
+}
+
+impl Translatable for ActionType {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Action => "action-type-action",
+            Self::BonusAction => "action-type-bonus-action",
+            Self::Reaction => "action-type-reaction",
+        }
+    }
+}
+
 /// Implements Serialize (as u8) and Deserialize (u8 or legacy string name) for
 /// a `#[repr(u8)]` enum.
 macro_rules! enum_serde_u8 {

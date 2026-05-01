@@ -332,5 +332,9 @@ fn apply_batch(
             callback(character, &resolved, inputs, feat_index);
         });
         registry.compute(character);
+        // Sync labels for any newly-added features so the UI shows
+        // localized text immediately, instead of waiting for the next
+        // locale-driven layout Effect run.
+        registry.fill_from_registry(character);
     });
 }

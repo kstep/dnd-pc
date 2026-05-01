@@ -14,6 +14,7 @@ impl RulesRegistry {
         self.with_features_index_untracked(|feat_index| {
             crate::rules::apply::assign(character, feat_index, WhenCondition::OnLongRest);
         });
+        crate::rules::apply::assign_items(character, WhenCondition::OnLongRest);
     }
 
     pub fn short_rest(&self, character: &mut Character) {
@@ -21,6 +22,7 @@ impl RulesRegistry {
         self.with_features_index_untracked(|feat_index| {
             crate::rules::apply::assign(character, feat_index, WhenCondition::OnShortRest);
         });
+        crate::rules::apply::assign_items(character, WhenCondition::OnShortRest);
     }
 
     /// Apply a single feature's lifecycle pass: spells skeleton init,

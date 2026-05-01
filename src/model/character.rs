@@ -1495,6 +1495,7 @@ pub mod tests {
             } else {
                 Some(expr_str.parse::<Expr>().unwrap())
             },
+            ..Armor::default()
         }
     }
 

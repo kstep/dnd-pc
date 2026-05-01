@@ -103,24 +103,22 @@ impl EffectiveCharacter {
 
     pub fn spell_save_dc(&self, ability: Ability, feature: &str) -> i32 {
         let effects = self.effects.read();
+        let global_delta = effects.global_override(Attribute::SpellDc).unwrap_or(0);
         if let Some(dc) = effects.resolve_scoped(feature, Attribute::SpellDc) {
-            return dc;
+            return dc + global_delta;
         }
-        if let Some(dc) = effects.global_override(Attribute::SpellDc) {
-            return dc;
-        }
-        8 + self.proficiency_bonus() + self.ability_modifier(ability)
+        let base = 8 + self.proficiency_bonus() + self.ability_modifier(ability);
+        base + global_delta
     }
 
     pub fn spell_attack_bonus(&self, ability: Ability, feature: &str) -> i32 {
         let effects = self.effects.read();
+        let global_delta = effects.global_override(Attribute::SpellAttack).unwrap_or(0);
         if let Some(atk) = effects.resolve_scoped(feature, Attribute::SpellAttack) {
-            return atk;
+            return atk + global_delta;
         }
-        if let Some(atk) = effects.global_override(Attribute::SpellAttack) {
-            return atk;
-        }
-        self.proficiency_bonus() + self.ability_modifier(ability)
+        let base = self.proficiency_bonus() + self.ability_modifier(ability);
+        base + global_delta
     }
 
     pub fn spell_attack_advantage(&self, feature: &str) -> AdvantageState {

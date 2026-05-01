@@ -56,7 +56,7 @@ pub fn EffectsBlock() -> impl IntoView {
     };
 
     let commit_effect = move |effect: ActiveEffect| {
-        effects.update(|active| active.add(effect, &store.read()));
+        effects.update(|active| active.add(effect));
         effect_label.set(String::new());
         effect_key.set(None);
         effect_desc.set(String::new());
@@ -196,7 +196,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                                 type="checkbox"
                                                 prop:checked=enabled
                                                 on:change=move |_| {
-                                                    effects.update(|active| active.toggle(i, &store.read()));
+                                                    effects.update(|active| active.toggle(i));
                                                 }
                                             />
                                         </label>
@@ -218,7 +218,7 @@ pub fn EffectsBlock() -> impl IntoView {
                                             class="btn-icon btn-icon--danger"
                                             title=move_tr!("effect-remove")
                                             on:click=move |_| {
-                                                effects.update(|active| { active.remove(i, &store.read()); });
+                                                effects.update(|active| { active.remove(i); });
                                             }
                                         >
                                             <Icon name="circle-minus" />
@@ -240,12 +240,14 @@ pub fn EffectsBlock() -> impl IntoView {
                                                     let rolls = expr.as_ref().map(|parsed| parsed.dice_rolls(&*store.read())).unwrap_or_default();
                                                     let has_dice = !rolls.is_empty();
                                                     let dice_expr = expr.clone();
-                                                    effects.update(|effects| {
-                                                        effects.update_field(i, |eff| {
-                                                            eff.pool = None;
-                                                            eff.expr = expr;
+                                                    registry.with_features_index_untracked(|feat_index| {
+                                                        effects.update(|effects| {
+                                                            effects.update_field(i, |eff| {
+                                                                eff.pool = None;
+                                                                eff.expr = expr;
+                                                            });
+                                                            effects.recompute(&store.read(), feat_index);
                                                         });
-                                                        effects.recompute(&store.read());
                                                     });
                                                     if has_dice
                                                         && let Some(expr) = dice_expr
@@ -312,9 +314,11 @@ pub fn EffectsBlock() -> impl IntoView {
 
                         if let Some(effect_index) = reroll_index.get_untracked() {
                             // Re-roll existing effect
-                            effects.update(|active| {
-                                active.update_field(effect_index, |eff| eff.pool = Some(pool));
-                                active.recompute(&store.read());
+                            registry.with_features_index_untracked(|feat_index| {
+                                effects.update(|active| {
+                                    active.update_field(effect_index, |eff| eff.pool = Some(pool));
+                                    active.recompute(&store.read(), feat_index);
+                                });
                             });
                             reroll_index.set(None);
                         } else {

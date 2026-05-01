@@ -218,7 +218,7 @@ pub fn apply_self_effects_now(
             enabled: true,
             scope,
         };
-        active_effects.update(|active| active.add(effect, &store.read()));
+        active_effects.update(|active| active.add(effect));
     }
 }
 
@@ -478,7 +478,7 @@ pub fn EffectsCalcModal(
                             scope,
                         };
 
-                        effects.update(|active| active.add(effect, &store.read()));
+                        effects.update(|active| active.add(effect));
                     }
 
                     show.set(false);

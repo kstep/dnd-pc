@@ -2,8 +2,8 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
-    model::{EffectDuration, EffectRange, Translatable},
-    rules::{ActionType, CastTime, SpellMeta},
+    model::{ActionType, EffectDuration, EffectRange, Translatable},
+    rules::{CastTime, SpellMeta},
 };
 
 fn format_cast_time(cast_time: CastTime, ritual: bool) -> impl IntoView {

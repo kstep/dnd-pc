@@ -15,10 +15,10 @@ use crate::{
         session_list::{SessionList, SessionListItem},
     },
     model::{
-        Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption, FeatureValue,
-        FeaturesStoreFields, Translatable, short_name,
+        ActionType, Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption,
+        FeatureValue, FeaturesStoreFields, Translatable, short_name,
     },
-    rules::{ActionType, ChoiceOption, ChoiceOptions, RulesRegistry},
+    rules::{ChoiceOption, ChoiceOptions, RulesRegistry},
 };
 
 /// Info extracted from the registry for a single action.
@@ -108,6 +108,7 @@ fn build_choice_items(
                     None
                 },
                 actions: cast_button,
+                name_prefix: None,
                 name_extra: None,
                 description_view: None,
             }
@@ -197,6 +198,16 @@ pub fn ChoicesBlock() -> impl IntoView {
         let mut ref_views: Vec<AnyView> = Vec::new();
 
         for (feat_name, entry) in features.iter() {
+            // Scoped fallback: when an action has no explicit cost reference,
+            // spend from this feature's single Points/Die pool (lazy-created
+            // by assign expressions). Matches the pure-assign convention
+            // where pool name == feature name without redundant data wiring.
+            let scoped_pool = entry
+                .fields
+                .iter()
+                .find(|field| field.value.available_points().is_some())
+                .map(|field| field.name.clone());
+
             let Some(actions) = registry.with_feature(feat_name, |feat| {
                 feat.actions
                     .iter()
@@ -207,8 +218,9 @@ pub fn ChoicesBlock() -> impl IntoView {
                             None
                         };
 
-                        let (points, _max_points) = action_def
-                            .cost
+                        let cost = action_def.cost.clone().or_else(|| scoped_pool.clone());
+
+                        let (points, _max_points) = cost
                             .as_deref()
                             .and_then(|cost| remaining_points.get(cost))
                             .copied()
@@ -228,7 +240,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                             ChoiceFieldInfo {
                                 points,
                                 from,
-                                cost: action_def.cost.clone(),
+                                cost,
                                 action_options,
                             },
                         )
@@ -238,10 +250,17 @@ pub fn ChoicesBlock() -> impl IntoView {
                 continue;
             };
 
-            for (field_index, field) in entry.fields.iter().enumerate() {
-                let Some(info) = actions.get(&field.name) else {
-                    continue;
-                };
+            // Iterate ACTIONS, not entry.fields — action menus (e.g. Innate
+            // Sorcery, Channel Divinity: Read Thoughts) have no same-name
+            // runtime field; the field, when it exists, holds stored picks
+            // for List-with-non-action options or Ref dropdowns.
+            for (action_name, info) in actions.iter() {
+                let field_with_index = entry
+                    .fields
+                    .iter()
+                    .enumerate()
+                    .find(|(_, field)| field.name == *action_name);
+
                 let short = info.cost.as_deref().map(short_name);
                 let points = info.points;
 
@@ -276,44 +295,40 @@ pub fn ChoicesBlock() -> impl IntoView {
                             })
                         });
 
-                let FeatureValue::Choice { options } = &field.value else {
-                    continue;
-                };
-
-                let label = field.label().to_string();
-
                 match &info.from {
-                    // Action menu or regular stored choices — group by label
-                    None if options.is_empty() && !info.action_options.is_empty() => {
-                        let items = build_choice_items(
-                            info.action_options.iter().map(|opt| ChoiceItemInput {
-                                name: opt.label().to_string(),
-                                description: opt.description.clone(),
-                                cost: opt.cost,
-                                action: opt.action,
-                                effects: opt.effects.clone(),
-                                feature_name: feat_name.clone(),
-                            }),
-                            points,
-                            spend_cost,
-                            open_effects,
-                            &i18n,
-                        );
-                        let group = groups.entry(label).or_insert_with(|| ChoiceGroup {
-                            short: short.clone(),
-                            items: Vec::new(),
-                        });
-                        group.items.extend(items);
-                    }
+                    // Action menu or stored choices — both render runtime
+                    // options of the matching Choice field. Action items are
+                    // marked by `opt.action.is_some()` (mirrored by
+                    // `sync_labels` from the registry definition).
                     None => {
+                        let Some((_, field)) = field_with_index else {
+                            continue;
+                        };
+                        let FeatureValue::Choice { options } = &field.value else {
+                            continue;
+                        };
+                        let label = field.label().to_string();
                         let items = build_choice_items(
-                            options.iter().map(|opt| ChoiceItemInput {
-                                name: opt.label().to_string(),
-                                description: opt.description.clone(),
-                                cost: opt.cost,
-                                action: None,
-                                effects: Vec::new(),
-                                feature_name: feat_name.clone(),
+                            options.iter().map(|opt| {
+                                // Cast effects aren't mirrored into runtime —
+                                // look up by option name in the action's def.
+                                let effects = opt
+                                    .action
+                                    .and_then(|_| {
+                                        info.action_options
+                                            .iter()
+                                            .find(|def_opt| *def_opt.name == opt.name)
+                                            .map(|def_opt| def_opt.effects.clone())
+                                    })
+                                    .unwrap_or_default();
+                                ChoiceItemInput {
+                                    name: opt.label().to_string(),
+                                    description: opt.description.clone(),
+                                    cost: opt.cost,
+                                    action: opt.action,
+                                    effects,
+                                    feature_name: feat_name.clone(),
+                                }
                             }),
                             points,
                             spend_cost,
@@ -326,8 +341,15 @@ pub fn ChoicesBlock() -> impl IntoView {
                         });
                         group.items.extend(items);
                     }
-                    // Ref-based choices (dropdown selects) — render standalone
+                    // Ref-based choices (dropdown selects) — render standalone.
                     Some(from) => {
+                        let Some((field_index, field)) = field_with_index else {
+                            continue;
+                        };
+                        let FeatureValue::Choice { options } = &field.value else {
+                            continue;
+                        };
+                        let label = field.label().to_string();
                         let Some(from_field) =
                             entry.fields.iter().find(|field| &field.name == from)
                         else {

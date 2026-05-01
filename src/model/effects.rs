@@ -5,10 +5,11 @@ use serde::{Deserialize, Serialize};
 use crate::{
     demap,
     expr::{self, Context, DicePool},
-    model::{Ability, Attribute, Character, Expr, WeaponEffect},
+    model::{Ability, Attribute, Character, Charges, Expr, GearRef, WeaponEffect},
+    rules::{WhenCondition, feature::FeatureDefinition},
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum EffectRange {
     Caster,
     #[default]
@@ -41,7 +42,7 @@ impl EffectRange {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum EffectDuration {
     #[default]
     Instant,
@@ -69,7 +70,7 @@ impl PartialOrd for EffectDuration {
 /// A lightweight effect definition carrying a name and expression.
 /// Used on `SpellDefinition` for damage/healing formulas; designed to be
 /// reusable for feature effects, weapon effects, etc.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct EffectDefinition {
     pub name: String,
     #[serde(default)]
@@ -171,6 +172,242 @@ impl<'de> Deserialize<'de> for EffectsIndex {
 /// and then managed by the user (e.g. temp HP spent by damage).
 const CONSUMABLE_ATTRS: [Attribute; 2] = [Attribute::Hp, Attribute::TempHp];
 
+/// Mutable wrapper that layers scoped overrides on top of global ones.
+/// Optionally bound to a gear slot for read-only `Charges*` / `Quantity`
+/// resolution during gear `OnEffect` evaluation.
+struct Ctx<'a> {
+    character: &'a Character,
+    gear: Option<GearRef>,
+    global: &'a mut BTreeMap<Attribute, i32>,
+    scoped: Option<&'a mut BTreeMap<Attribute, i32>>,
+    casting_ability: Option<Ability>,
+}
+
+impl Ctx<'_> {
+    fn gear_charges(&self) -> Option<&Charges> {
+        let gear = self.gear?;
+        match gear {
+            GearRef::Item(i) => self
+                .character
+                .equipment
+                .items
+                .get(i)?
+                .magic
+                .charges
+                .as_ref(),
+            GearRef::Weapon(i) => self
+                .character
+                .equipment
+                .weapons
+                .get(i)?
+                .magic
+                .charges
+                .as_ref(),
+            GearRef::Armor(i) => self
+                .character
+                .equipment
+                .armors
+                .get(i)?
+                .magic
+                .charges
+                .as_ref(),
+        }
+    }
+
+    fn gear_quantity(&self) -> Option<u32> {
+        let gear = self.gear?;
+        match gear {
+            GearRef::Item(i) => self.character.equipment.items.get(i).map(|x| x.quantity),
+            GearRef::Weapon(i) => self.character.equipment.weapons.get(i).map(|x| x.quantity),
+            GearRef::Armor(_) => Some(1),
+        }
+    }
+}
+
+impl Context<Attribute, i32> for Ctx<'_> {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        // Gear-local attrs are read-only in OnEffect.
+        if matches!(
+            var,
+            Attribute::Charges
+                | Attribute::ChargesMax
+                | Attribute::ChargesUsed
+                | Attribute::Quantity,
+        ) {
+            log::warn!("{var:?} is read-only in OnEffect overlay");
+            return Ok(());
+        }
+        let value = if var.is_advantage() {
+            let current = self.resolve(var).unwrap_or(0);
+            (current + value).clamp(-1, 1)
+        } else {
+            value
+        };
+        let target = if var.is_scoped() {
+            self.scoped.as_deref_mut().unwrap_or(&mut *self.global)
+        } else {
+            &mut *self.global
+        };
+        target.insert(var, value);
+        Ok(())
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        // Gear-local reads when bound to a gear slot.
+        match var {
+            Attribute::Charges => {
+                return Ok(self.gear_charges().map(|c| c.available()).unwrap_or(0) as i32);
+            }
+            Attribute::ChargesMax => {
+                return Ok(self.gear_charges().map(|c| c.max).unwrap_or(0) as i32);
+            }
+            Attribute::ChargesUsed => {
+                return Ok(self.gear_charges().map(|c| c.used).unwrap_or(0) as i32);
+            }
+            Attribute::Quantity => return Ok(self.gear_quantity().unwrap_or(0) as i32),
+            _ => {}
+        }
+        // SpellDc / SpellAttack: scoped is an absolute per-feature override,
+        // global is an additive delta applied to every feature (gear focus +1
+        // to all spells writes here). Read semantics differ by ctx:
+        //
+        // - Scoped feature ctx: returns scoped or base — WITHOUT global delta.
+        //   `SPELL.DC += 1` writes capture only the feature's contribution into scoped;
+        //   global is layered on top at the final consumer.
+        // - Gear ctx (no scope, no casting ability): returns global delta as
+        //   accumulator so `SPELL.DC += 1` reads 0 and writes 1 to global.
+        if matches!(var, Attribute::SpellDc | Attribute::SpellAttack) {
+            let scoped_abs = self.scoped.as_ref().and_then(|s| s.get(&var)).copied();
+            return match (scoped_abs, self.casting_ability) {
+                (Some(abs), _) => Ok(abs),
+                (None, Some(ability)) => match var {
+                    Attribute::SpellDc => Ok(self.character.spell_save_dc(ability)),
+                    Attribute::SpellAttack => Ok(self.character.spell_attack_bonus(ability)),
+                    _ => unreachable!(),
+                },
+                (None, None) => Ok(self.global.get(&var).copied().unwrap_or(0)),
+            };
+        }
+        // Check scoped first, then global, then character base
+        if let Some(ref scoped) = self.scoped
+            && let Some(&value) = scoped.get(&var)
+        {
+            return Ok(value);
+        }
+        if let Some(&value) = self.global.get(&var) {
+            return Ok(value);
+        }
+        Ok(self.character.resolve(var).unwrap_or(0))
+    }
+}
+
+fn eval_user_effects(
+    character: &Character,
+    effects: &[ActiveEffect],
+    overrides: &mut BTreeMap<Attribute, i32>,
+    scoped_overrides: &mut BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
+) {
+    for effect in effects.iter().filter(|e| e.enabled) {
+        let Some(ref expr) = effect.expr else {
+            continue;
+        };
+        let casting_ability = effect.scope.as_ref().and_then(|scope| {
+            character
+                .features
+                .get(&**scope)
+                .and_then(|e| e.spells.as_ref())
+                .map(|s| s.casting_ability)
+        });
+        let mut ctx = Ctx {
+            character,
+            gear: None,
+            global: overrides,
+            scoped: effect
+                .scope
+                .clone()
+                .map(|scope| scoped_overrides.entry(scope).or_default()),
+            casting_ability,
+        };
+        let result = match effect.pool {
+            Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
+            None => expr.apply(&mut ctx),
+        };
+        if let Err(error) = result {
+            log::error!("Effect '{}' expression error: {error}", effect.name);
+        }
+    }
+}
+
+fn eval_features_on_effect(
+    character: &Character,
+    feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    overrides: &mut BTreeMap<Attribute, i32>,
+    scoped_overrides: &mut BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
+) {
+    for feature in character.features.iter() {
+        let Some(def) = feat_index.get(feature.name.as_str()) else {
+            continue;
+        };
+        let Some(assigns) = def.assign.as_deref() else {
+            continue;
+        };
+        let scope_name = feature.name.to_string();
+        let casting_ability = character
+            .features
+            .get(&scope_name)
+            .and_then(|e| e.spells.as_ref())
+            .map(|s| s.casting_ability);
+        let mut ctx = Ctx {
+            character,
+            gear: None,
+            global: overrides,
+            scoped: Some(scoped_overrides.entry(scope_name.into()).or_default()),
+            casting_ability,
+        };
+        for assign in assigns.iter().filter(|a| a.when == WhenCondition::OnEffect) {
+            if let Err(error) = assign.expr.apply(&mut ctx) {
+                log::debug!("Feature '{}' OnEffect assign error: {error}", feature.name);
+            }
+        }
+    }
+}
+
+fn eval_gear_on_effect(character: &Character, overrides: &mut BTreeMap<Attribute, i32>) {
+    let mut run = |gear: GearRef, assigns: &[crate::rules::feature::Assignment]| {
+        let mut ctx = Ctx {
+            character,
+            gear: Some(gear),
+            global: overrides,
+            scoped: None,
+            casting_ability: None,
+        };
+        for assign in assigns.iter().filter(|a| a.when == WhenCondition::OnEffect) {
+            if let Err(error) = assign.expr.apply(&mut ctx) {
+                log::debug!("Gear {gear:?} OnEffect assign error: {error}");
+            }
+        }
+    };
+
+    for (i, item) in character.equipment.items.iter().enumerate() {
+        if !item.is_active() || item.magic.assign.is_empty() {
+            continue;
+        }
+        run(GearRef::Item(i), &item.magic.assign);
+    }
+    for (i, weapon) in character.equipment.weapons.iter().enumerate() {
+        if !weapon.is_active() || weapon.magic.assign.is_empty() {
+            continue;
+        }
+        run(GearRef::Weapon(i), &weapon.magic.assign);
+    }
+    for (i, armor) in character.equipment.armors.iter().enumerate() {
+        if !armor.is_active() || armor.magic.assign.is_empty() {
+            continue;
+        }
+        run(GearRef::Armor(i), &armor.magic.assign);
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ActiveEffects {
     #[serde(default)]
@@ -218,18 +455,16 @@ impl ActiveEffects {
         changed
     }
 
-    pub fn add(&mut self, effect: ActiveEffect, character: &Character) {
-        let needs_recompute = effect.enabled && effect.expr.is_some();
+    /// Push an effect onto the list. Does NOT recompute — the caller's
+    /// reactive scope will trigger `recompute` on the next layout effect
+    /// cycle (since `effects` is observed by the EffectiveCharacter pass).
+    pub fn add(&mut self, effect: ActiveEffect) {
         self.effects.push(effect);
-        if needs_recompute {
-            self.recompute(character);
-        }
     }
 
-    pub fn remove(&mut self, index: usize, character: &Character) -> ActiveEffect {
-        let effect = self.effects.remove(index);
-        self.recompute(character);
-        effect
+    /// Remove the effect at `index`. Does NOT recompute (see `add`).
+    pub fn remove(&mut self, index: usize) -> ActiveEffect {
+        self.effects.remove(index)
     }
 
     /// Update a single field of an effect without recomputing (no expression
@@ -240,74 +475,30 @@ impl ActiveEffects {
         }
     }
 
-    pub fn toggle(&mut self, index: usize, character: &Character) {
+    /// Flip the `enabled` flag on the effect at `index`. Does NOT recompute.
+    pub fn toggle(&mut self, index: usize) {
         if let Some(effect) = self.effects.get_mut(index) {
             effect.enabled = !effect.enabled;
         }
-        self.recompute(character);
     }
 
     /// Evaluate all enabled expressions. Must be called after
     /// deserialization and after any mutation.
-    pub fn recompute(&mut self, character: &Character) -> bool {
+    ///
+    /// Three sources contribute to the overlay:
+    /// 1. User effects (`self.effects` filtered by `enabled`).
+    /// 2. Feature `OnEffect` assigns from the catalog (transient passive
+    ///    bonuses while a feature is in `features.list`).
+    /// 3. Active gear `OnEffect` assigns from
+    ///    `equipment.{items,weapons,armors}` filtered by `is_active()`.
+    pub fn recompute(
+        &mut self,
+        character: &Character,
+        feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    ) -> bool {
         self.overrides.clear();
         self.scoped_overrides.clear();
 
-        // Mutable wrapper that layers scoped overrides on top of global ones.
-        // Spell-specific attributes (SpellDc, SpellAttack, SpellAttackAdvantage)
-        // are written to the scoped map; all other attributes forward to global.
-        struct Ctx<'a> {
-            character: &'a Character,
-            global: &'a mut BTreeMap<Attribute, i32>,
-            scoped: Option<&'a mut BTreeMap<Attribute, i32>>,
-            casting_ability: Option<Ability>,
-        }
-        impl Context<Attribute, i32> for Ctx<'_> {
-            fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
-                let value = if var.is_advantage() {
-                    let current = self.resolve(var).unwrap_or(0);
-                    (current + value).clamp(-1, 1)
-                } else {
-                    value
-                };
-                let target = if var.is_scoped() {
-                    self.scoped.as_deref_mut().unwrap_or(&mut *self.global)
-                } else {
-                    &mut *self.global
-                };
-                target.insert(var, value);
-                Ok(())
-            }
-
-            fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-                // Check scoped first, then global, then character base
-                if let Some(ref scoped) = self.scoped
-                    && let Some(&value) = scoped.get(&var)
-                {
-                    return Ok(value);
-                }
-                if let Some(&value) = self.global.get(&var) {
-                    return Ok(value);
-                }
-                match var {
-                    Attribute::SpellDc | Attribute::SpellAttack => {
-                        let ability = self
-                            .casting_ability
-                            .ok_or(expr::Error::unsupported_var(var))?;
-                        match var {
-                            Attribute::SpellDc => Ok(self.character.spell_save_dc(ability)),
-                            Attribute::SpellAttack => {
-                                Ok(self.character.spell_attack_bonus(ability))
-                            }
-                            _ => unreachable!(),
-                        }
-                    }
-                    _ => Ok(self.character.resolve(var).unwrap_or(0)),
-                }
-            }
-        }
-
-        // Destructure to allow simultaneous mutable borrows of different fields
         let Self {
             effects,
             overrides,
@@ -315,37 +506,13 @@ impl ActiveEffects {
             ..
         } = self;
 
-        for effect in effects.iter().filter(|e| e.enabled) {
-            let Some(ref expr) = effect.expr else {
-                continue;
-            };
+        // Layer order: most-permanent → least-permanent. Features ground the
+        // overlay first, gear stacks on top of them, user effects (toggled
+        // buffs) run last so their absolute writes win on conflict.
+        eval_features_on_effect(character, feat_index, overrides, scoped_overrides);
+        eval_gear_on_effect(character, overrides);
+        eval_user_effects(character, effects, overrides, scoped_overrides);
 
-            let casting_ability = effect.scope.as_ref().and_then(|scope| {
-                character
-                    .features
-                    .get(&**scope)
-                    .and_then(|e| e.spells.as_ref())
-                    .map(|s| s.casting_ability)
-            });
-
-            let mut ctx = Ctx {
-                character,
-                global: overrides,
-                scoped: effect
-                    .scope
-                    .clone()
-                    .map(|scope| scoped_overrides.entry(scope).or_default()),
-                casting_ability,
-            };
-
-            let result = match effect.pool {
-                Some(ref pool) => expr.apply_with_dice(&mut ctx, pool),
-                None => expr.apply(&mut ctx),
-            };
-            if let Err(error) = result {
-                log::error!("Effect '{}' expression error: {error}", effect.name);
-            }
-        }
         CONSUMABLE_ATTRS.iter().any(|attr| {
             if self.overrides.contains_key(attr) {
                 !self.memoized.contains_key(attr)
@@ -384,7 +551,10 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::model::{Ability, FeatureData, SpellData, SpellSlotPool};
+    use crate::{
+        model::{Ability, FeatureData, SpellData, SpellSlotPool},
+        rules::feature::EMPTY_FEATURES_INDEX,
+    };
 
     fn effect_with_expr(expr: &str) -> ActiveEffect {
         ActiveEffect {
@@ -398,20 +568,26 @@ mod tests {
         }
     }
 
+    fn recompute(effects: &mut ActiveEffects, character: &Character) {
+        effects.recompute(character, &EMPTY_FEATURES_INDEX);
+    }
+
     #[wasm_bindgen_test]
     fn advantage_additive_clamp() {
         let character = Character::new();
         let mut effects = ActiveEffects::default();
 
         // Single advantage source → advantage
-        effects.add(effect_with_expr("STR.ADV = 1"), &character);
+        effects.add(effect_with_expr("STR.ADV = 1"));
+        recompute(&mut effects, &character);
         assert_eq!(
             effects.resolve(&character, Attribute::AbilityAdvantage(Ability::Strength)),
             1
         );
 
         // Add disadvantage source → cancels to flat
-        effects.add(effect_with_expr("STR.ADV = -1"), &character);
+        effects.add(effect_with_expr("STR.ADV = -1"));
+        recompute(&mut effects, &character);
         assert_eq!(
             effects.resolve(&character, Attribute::AbilityAdvantage(Ability::Strength)),
             0
@@ -424,14 +600,16 @@ mod tests {
         let mut effects = ActiveEffects::default();
 
         // Two advantage sources → still clamped to 1
-        effects.add(effect_with_expr("ATK.ADV = 1"), &character);
-        effects.add(effect_with_expr("ATK.ADV = 1"), &character);
+        effects.add(effect_with_expr("ATK.ADV = 1"));
+        effects.add(effect_with_expr("ATK.ADV = 1"));
+        recompute(&mut effects, &character);
         assert_eq!(effects.resolve(&character, Attribute::AttackAdvantage), 1);
 
         // Two disadvantage sources → still clamped to -1
         let mut effects2 = ActiveEffects::default();
-        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"), &character);
-        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"), &character);
+        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"));
+        effects2.add(effect_with_expr("DEX.SAVE.ADV = -1"));
+        recompute(&mut effects2, &character);
         assert_eq!(
             effects2.resolve(&character, Attribute::SaveAdvantage(Ability::Dexterity)),
             -1
@@ -475,13 +653,15 @@ mod tests {
         let base_dc = character.spell_save_dc(Ability::Charisma);
         let mut effects = ActiveEffects::default();
 
-        effects.add(scoped_effect(feature, "SPELL.DC += 1"), &character);
+        effects.add(scoped_effect(feature, "SPELL.DC += 1"));
+        recompute(&mut effects, &character);
         assert_eq!(
             effects.resolve_scoped(feature, Attribute::SpellDc),
             Some(base_dc + 1),
         );
 
-        effects.add(scoped_effect(feature, "SPELL.DC += 1"), &character);
+        effects.add(scoped_effect(feature, "SPELL.DC += 1"));
+        recompute(&mut effects, &character);
         assert_eq!(
             effects.resolve_scoped(feature, Attribute::SpellDc),
             Some(base_dc + 2),
@@ -497,7 +677,8 @@ mod tests {
         let mut effects = ActiveEffects::default();
 
         // Scoped effect with both spell and non-spell attributes
-        effects.add(scoped_effect(feature, "SPELL.DC += 1; AC += 1"), &character);
+        effects.add(scoped_effect(feature, "SPELL.DC += 1; AC += 1"));
+        recompute(&mut effects, &character);
 
         // Spell DC goes to scoped storage
         assert_eq!(
@@ -518,12 +699,51 @@ mod tests {
         let mut effects = ActiveEffects::default();
 
         // Unscoped effect sets AC
-        effects.add(effect_with_expr("AC += 2"), &character);
+        effects.add(effect_with_expr("AC += 2"));
         // Scoped effect layers on top
-        effects.add(scoped_effect(feature, "AC += 1"), &character);
+        effects.add(scoped_effect(feature, "AC += 1"));
+        recompute(&mut effects, &character);
 
         // Should see base + 2 + 1 = base + 3
         assert_eq!(effects.resolve(&character, Attribute::Ac), base_ac + 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn global_spell_dc_stacks_on_top_of_feature_scope() {
+        // Magic focus: gear writes `SPELL.DC += 1` (no scope, no
+        // casting_ability) → stored as global delta, applied to every
+        // feature on read.
+        let feature = "Spellcasting (Sorcerer)";
+        let character = character_with_spellcasting(feature, Ability::Charisma);
+        let base_dc = character.spell_save_dc(Ability::Charisma);
+        let mut effects = ActiveEffects::default();
+
+        // Simulate gear OnEffect by writing a non-scoped effect.
+        effects.add(effect_with_expr("SPELL.DC += 1"));
+        recompute(&mut effects, &character);
+
+        // Without scoped feature override: base + global delta.
+        assert_eq!(
+            effects.resolve_scoped(feature, Attribute::SpellDc),
+            None,
+            "scoped should be empty — feature didn't write its own override",
+        );
+        assert_eq!(
+            effects.global_override(Attribute::SpellDc),
+            Some(1),
+            "global should store the delta",
+        );
+
+        // Adding a feature scoped override on top: stacks additively.
+        effects.add(scoped_effect(feature, "SPELL.DC += 1"));
+        recompute(&mut effects, &character);
+        // scoped contains the absolute (base + 1) captured at write time;
+        // global delta still 1; final consumer sees scoped + global = base + 2.
+        assert_eq!(
+            effects.resolve_scoped(feature, Attribute::SpellDc),
+            Some(base_dc + 1),
+        );
+        assert_eq!(effects.global_override(Attribute::SpellDc), Some(1));
     }
 
     #[wasm_bindgen_test]
@@ -532,7 +752,8 @@ mod tests {
         let mut effects = ActiveEffects::default();
 
         // Regular attribute uses plain assignment (not additive-clamp)
-        effects.add(effect_with_expr("AC = 18"), &character);
+        effects.add(effect_with_expr("AC = 18"));
+        recompute(&mut effects, &character);
         assert_eq!(effects.resolve(&character, Attribute::Ac), 18);
     }
 }

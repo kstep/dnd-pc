@@ -7,6 +7,9 @@ pub struct SessionListItem {
     pub description: String,
     pub badge: Option<AnyView>,
     pub actions: Option<AnyView>,
+    /// Optional view rendered before the name inside `entry-content`. Used
+    /// for the equipped checkbox on gear rows.
+    pub name_prefix: Option<AnyView>,
     /// Optional view rendered between badges and actions, visually trailing
     /// the name row. Used for inline controls like quantity inputs that
     /// belong with the item's content, not its actions.
@@ -43,6 +46,7 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                                 })
                             }}
                             <div class="entry-content">
+                                {item.name_prefix}
                                 <EntryName>{item.name}</EntryName>
                             </div>
                             {item.badge.map(|badges| view! {

@@ -6,8 +6,8 @@ use crate::{
     components::{
         icon::Icon,
         session::{
-            BackpackBlock, ChoicesBlock, DamageModifiersBlock, EffectsBlock, LanguagesBlock,
-            ResourcesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
+            BackpackBlock, ChoicesBlock, DamageModifiersBlock, EffectsBlock, GearActionsBlock,
+            LanguagesBlock, ResourcesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
         },
         session_header::SessionHeader,
         session_nav::SessionNav,
@@ -43,6 +43,7 @@ pub fn CharacterSession() -> impl IntoView {
                 </div>
                 <WeaponsBlock />
                 <SpellsBlock />
+                <GearActionsBlock />
                 <ChoicesBlock />
                 <LanguagesBlock />
                 <DamageModifiersBlock />

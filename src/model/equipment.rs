@@ -1,7 +1,17 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, ArmorType, DamageType, Expr, Money, WeaponCategory};
+use crate::model::{Ability, ArmorType, DamageType, Enchantment, Expr, Money, WeaponCategory};
+
+/// Stable reference to a gear slot inside `Equipment`. Used by the
+/// enchantment editor, gear-actions UI, and `ItemApplyCtx` to address a
+/// specific item / weapon / armor by kind and index.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GearRef {
+    Item(usize),
+    Weapon(usize),
+    Armor(usize),
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
@@ -25,9 +35,17 @@ pub struct Armor {
     pub armor_type: ArmorType,
     #[serde(default)]
     pub ac_expr: Option<Expr>,
+    #[serde(default)]
+    pub equipped: bool,
+    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
+    pub magic: Enchantment,
 }
 
 impl Armor {
+    pub fn is_active(&self) -> bool {
+        self.equipped
+    }
+
     /// Generate the default AC formula string for the given armor type and base
     /// AC.
     pub fn default_ac_expr_str(armor_type: ArmorType, base_ac: u32) -> String {
@@ -77,6 +95,10 @@ pub struct Weapon {
     pub attack_expr: Option<Expr>,
     #[serde(default)]
     pub effects: Vec<WeaponEffect>,
+    #[serde(default)]
+    pub equipped: bool,
+    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
+    pub magic: Enchantment,
 }
 
 fn default_quantity() -> u32 {
@@ -97,11 +119,17 @@ impl Default for Weapon {
             magic_bonus: 0,
             attack_expr: None,
             effects: Vec::new(),
+            equipped: false,
+            magic: Enchantment::default(),
         }
     }
 }
 
 impl Weapon {
+    pub fn is_active(&self) -> bool {
+        self.equipped
+    }
+
     /// Generate the default attack-bonus formula for the given weapon
     /// parameters. The formula is fully reactive: it uses `PROF.XXX_WEAPONS`
     /// to include proficiency bonus only when the character is proficient,
@@ -164,6 +192,16 @@ pub struct Item {
     pub quantity: u32,
     #[serde(default)]
     pub description: String,
+    #[serde(default)]
+    pub equipped: bool,
+    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
+    pub magic: Enchantment,
+}
+
+impl Item {
+    pub fn is_active(&self) -> bool {
+        self.equipped
+    }
 }
 
 impl std::fmt::Display for Item {

@@ -19,8 +19,8 @@ pub use background::BackgroundDefinition;
 pub use cache::DefinitionStore;
 pub use class::{ClassDefinition, ClassLevelRules, SubclassDefinition};
 pub use feature::{
-    ActionDefinition, ActionType, Assignment, ChoiceOption, ChoiceOptions, FeatureDefinition,
-    FeaturesIndex, ReplaceWith, WhenCondition,
+    ActionDefinition, Assignment, ChoiceOption, ChoiceOptions, FeatureDefinition, FeaturesIndex,
+    ReplaceWith, WhenCondition,
 };
 pub use index::{
     BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,

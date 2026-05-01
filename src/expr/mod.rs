@@ -962,6 +962,18 @@ mod tests {
         let expr: Expr = "AC += INT; AC -= 2".parse().unwrap();
         assert_eq!(expr.to_string(), "AC += INT; AC -= 2");
 
+        // Compound with dice on the rhs (regression: stack tracker had Roll
+        // delta = 0, so the dice block didn't reduce the depth and detection
+        // missed the final 2→1 transition, falling back to verbose form).
+        let expr: Expr = "AC += d4".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += d4");
+
+        let expr: Expr = "AC += 1d4 + 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += d4 + 1");
+
+        let expr: Expr = "AC -= min(1d6 + 1, AC)".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= min(d6 + 1, AC)");
+
         // Compound subtraction with multi-term rhs (no redundant parens)
         let expr: Expr = "AC -= INT + 5".parse().unwrap();
         assert_eq!(expr.to_string(), "AC -= INT + 5");

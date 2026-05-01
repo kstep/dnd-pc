@@ -17,11 +17,11 @@ use crate::{
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, Attribute, Character, CharacterStoreFields, CombatStatsStoreFields,
+        Ability, ActionType, Attribute, Character, CharacterStoreFields, CombatStatsStoreFields,
         EffectDuration, EffectRange, FeatureValue, FeaturesStoreFields, SpellSlotLevel,
         SpellSlotPool, format_bonus,
     },
-    rules::{ActionType, CastTime, RulesRegistry},
+    rules::{CastTime, RulesRegistry},
 };
 
 fn format_rounds(rounds: u32) -> String {
@@ -456,6 +456,7 @@ pub fn SpellsBlock() -> impl IntoView {
                             description: spell.description.clone(),
                             badge: Some(badge),
                             actions: cast_button,
+                            name_prefix: None,
                             name_extra: None,
                             description_view: None,
                         }

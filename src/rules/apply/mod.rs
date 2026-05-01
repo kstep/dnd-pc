@@ -2,6 +2,7 @@ pub mod args_ctx;
 mod collect;
 mod compute;
 pub mod context;
+mod item_ctx;
 mod pending;
 mod primitives;
 mod rebuild;
@@ -15,6 +16,7 @@ pub use collect::{
 };
 pub use compute::{assign, compute};
 pub use context::{ApplyContext, apply_assignments_with_inputs};
+pub use item_ctx::{ItemApplyCtx, assign_items};
 pub use pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs};
 pub use primitives::{
     apply_new_features, build_cascade_base_before, dry_run_apply_feature, replay,

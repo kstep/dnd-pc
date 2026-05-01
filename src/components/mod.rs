@@ -18,6 +18,7 @@ pub mod confirm_modal;
 pub mod datalist;
 pub mod dropdown;
 pub mod effects_calc_modal;
+pub mod enchantment;
 pub mod entity_field;
 pub mod entry_name;
 pub mod expr_args_input;

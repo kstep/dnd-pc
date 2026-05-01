@@ -1,43 +1,16 @@
 use std::collections::BTreeMap;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     demap::{self, Named},
     expr::Eval as _,
     model::{
-        Attribute, Character, EffectDefinition, Expr, FeatureCategory, FeatureField, Translatable,
-        short_name,
+        ActionType, Attribute, Character, EffectDefinition, Expr, FeatureCategory, FeatureField,
+        Translatable, short_name,
     },
     rules::spells::SpellsDefinition,
 };
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
-pub enum ActionType {
-    Action,
-    BonusAction,
-    Reaction,
-}
-
-impl ActionType {
-    pub fn icon_name(&self) -> &'static str {
-        match self {
-            Self::Action => "swords",
-            Self::BonusAction => "zap",
-            Self::Reaction => "shield",
-        }
-    }
-}
-
-impl Translatable for ActionType {
-    fn tr_key(&self) -> &'static str {
-        match self {
-            Self::Action => "action-type-action",
-            Self::BonusAction => "action-type-bonus-action",
-            Self::Reaction => "action-type-reaction",
-        }
-    }
-}
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize)]
 pub enum ReplaceWith {
@@ -75,7 +48,7 @@ pub struct FeatureDefinition {
     pub prerequisites: Option<Expr>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Assignment {
     pub expr: Expr,
     pub when: WhenCondition,
@@ -91,12 +64,46 @@ impl Assignment {
     }
 }
 
-#[derive(Debug, Copy, Clone, Deserialize, PartialEq, Eq)]
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    strum::Display,
+    strum::EnumString
+)]
 pub enum WhenCondition {
+    /// Feature pipeline: runs once when feature is added.
     OnFeatureAdd,
-    OnLongRest,
+    /// Feature pipeline: runs every `Character::compute()` cycle, mutates
+    /// character base.
     OnCompute,
+    /// Gear pipeline: runs every `Character::compute()` cycle while the gear
+    /// is active. Mutates `<gear>.magic.charges` and may mutate character base.
+    OnGearActive,
+    /// Gear pipeline: runs every `ActiveEffects::recompute()` cycle while the
+    /// gear is active. Writes to overrides only.
+    OnEffect,
+    /// Either pipeline: long-rest event.
+    OnLongRest,
+    /// Either pipeline: short-rest event.
     OnShortRest,
+}
+
+impl Translatable for WhenCondition {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::OnFeatureAdd => "when-on-feature-add",
+            Self::OnCompute => "when-on-compute",
+            Self::OnGearActive => "when-on-gear-active",
+            Self::OnEffect => "when-on-effect",
+            Self::OnLongRest => "when-on-long-rest",
+            Self::OnShortRest => "when-on-short-rest",
+        }
+    }
 }
 
 impl Named for FeatureDefinition {
@@ -108,6 +115,10 @@ impl Named for FeatureDefinition {
 /// Global features index, loaded from `features.json`.
 #[derive(Clone)]
 pub struct FeaturesIndex(pub BTreeMap<Box<str>, FeatureDefinition>);
+
+/// Empty fallback for callers that need a stable reference when the index
+/// hasn't loaded yet (e.g. native tests, recompute before features.json is in).
+pub static EMPTY_FEATURES_INDEX: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
 
 impl<'de> serde::Deserialize<'de> for FeaturesIndex {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
@@ -206,7 +217,7 @@ impl FeatureDefinition {
 /// A user-facing Choice slot on a feature: named action with selectable
 /// options and optional cost-pool linkage. Per-level option counts are
 /// driven by `CHOICE.<name>.COUNT` assignments, not the definition.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ActionDefinition {
     pub name: Box<str>,
     #[serde(default)]
@@ -240,6 +251,7 @@ impl ActionDefinition {
                     label: opt.label.clone(),
                     description: opt.description.clone(),
                     cost: opt.cost,
+                    consumes: 0,
                     level: 0,
                     action: None,
                     effects: Vec::new(),
@@ -255,7 +267,7 @@ impl Named for ActionDefinition {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ChoiceOptions {
     List(Vec<ChoiceOption>),
@@ -268,7 +280,7 @@ impl Default for ChoiceOptions {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChoiceOption {
     pub name: Box<str>,
     #[serde(default)]
@@ -277,6 +289,10 @@ pub struct ChoiceOption {
     pub description: String,
     #[serde(default)]
     pub cost: u32,
+    /// Items consumed per use (Item.quantity decrement). Items only — for
+    /// feature actions this is always 0.
+    #[serde(default)]
+    pub consumes: u32,
     #[serde(default)]
     pub level: u32,
     #[serde(default)]

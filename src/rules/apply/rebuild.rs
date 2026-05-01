@@ -199,6 +199,10 @@ pub fn build_clean(
     })?;
 
     merge_preserved(&mut clean, original);
+    // Fresh character has empty Feature/Spell/Field labels — fill them
+    // before commit so the UI doesn't briefly show structural English names
+    // until the next locale-driven layout Effect run.
+    registry.fill_from_registry(&mut clean);
     Ok(RebuildOutcome {
         character: clean,
         skipped_features: accum.skipped,
