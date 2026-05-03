@@ -1,6 +1,5 @@
 {
   "name": "Sorcerer",
-  "hit_die": 6,
   "levels": {
     "1": {
       "features": [
@@ -17,7 +16,7 @@
     },
     "3": {
       "features": [
-        "Sorcerer Subclass"
+        "Subclass"
       ]
     },
     "4": {

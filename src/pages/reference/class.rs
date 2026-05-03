@@ -5,14 +5,15 @@ use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
     components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
+    expr::Context as _,
     hooks::use_hash_href,
-    model::{format_bonus, proficiency_bonus_for_level},
+    model::{Attribute, format_bonus, proficiency_bonus_for_level},
     pages::reference::{
         RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
         encode_name,
         progression::{preview_pool_values, preview_progression},
     },
-    rules::{DefinitionStore, IndexEntry, PoolSummarizer, RulesRegistry},
+    rules::{DefinitionStore, IndexEntry, PoolSummarizer, RulesRegistry, eval_at_levels},
 };
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
@@ -86,32 +87,42 @@ pub fn ClassReference() -> impl IntoView {
                     None => class_label.clone(),
                 };
                 let description = loc.description().to_string();
-                let hit_die = format!("d{}", def.hit_die);
 
-                // Resolve the class's primary caster feature from the
-                // global features index (if any) and build the progression
-                // preview from its `assign` expressions.
-                let (spell_list_name, spell_progression) =
+                // Hit-die size lives on the `Class Proficiencies (X)` feature
+                // as a `HIT_DICE.SIDES = N` assign — eval the OnFeatureAdd
+                // pass against an empty context to read it back.
+                // Single pass over the class's features:
+                // - first feature with `spells` → spell progression preview;
+                // - first feature whose OnFeatureAdd writes HIT_DICE.SIDES → die size.
+                let (spell_list_name, spell_progression, hit_die) =
                     registry.with_features_index(|features_index| {
-                        let preview = def
-                            .feature_names(subname.as_deref())
-                            .find_map(|feat_name| {
-                                let feat = features_index.get(feat_name)?;
-                                let _ = feat.spells.as_ref()?;
-                                Some(preview_progression(feat))
-                            });
-                        let list_name = def
-                            .feature_names(subname.as_deref())
-                            .find_map(|feat_name| {
-                                features_index
-                                    .get(feat_name)?
-                                    .spells
-                                    .as_ref()?
-                                    .list
-                                    .ref_name()
-                                    .map(|short: &str| short.to_string())
-                            });
-                        (list_name, preview)
+                        let mut spell_progression = None;
+                        let mut spell_list = None;
+                        let mut hit_sides = 0_i32;
+                        for feat_name in def.feature_names(subname.as_deref()) {
+                            let Some(feat) = features_index.get(feat_name) else {
+                                continue;
+                            };
+                            if let Some(spells) = feat.spells.as_ref() {
+                                if spell_progression.is_none() {
+                                    spell_progression = Some(preview_progression(feat));
+                                }
+                                if spell_list.is_none() {
+                                    spell_list = spells
+                                        .list
+                                        .ref_name()
+                                        .map(|short: &str| short.to_string());
+                                }
+                            }
+                            if hit_sides == 0 {
+                                let ctx = eval_at_levels(feat, |_, _| {});
+                                if let Ok(sides) = ctx.resolve(Attribute::HitDiceSides) {
+                                    hit_sides = sides;
+                                }
+                            }
+                        }
+                        let hit_die = (hit_sides > 0).then(|| format!("d{hit_sides}"));
+                        (spell_list, spell_progression, hit_die)
                     });
 
                 // Per-column source: assign-derived pools (Points/Die/Bonus/
@@ -268,10 +279,12 @@ pub fn ClassReference() -> impl IntoView {
                         })}
 
                         <div class="reference-info-bar">
-                            <div class="info-item">
-                                <span class="info-label">{move_tr!("ref-hit-die")}</span>
-                                <span class="info-value">{hit_die}</span>
-                            </div>
+                            {hit_die.map(|hd| view! {
+                                <div class="info-item">
+                                    <span class="info-label">{move_tr!("ref-hit-die")}</span>
+                                    <span class="info-value">{hd}</span>
+                                </div>
+                            })}
                             {(!prerequisites.is_empty()).then(|| view! {
                                 <div class="info-item">
                                     <span class="info-label">{move_tr!("ref-prerequisites")}</span>

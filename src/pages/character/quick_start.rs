@@ -22,7 +22,7 @@ use crate::{
     },
     names::{self, NamesData},
     rules::{
-        ApplyInputs, DefinitionStore, RulesRegistry,
+        ApplyInputs, RulesRegistry,
         apply::{PendingFeature, apply_new_features, collect_pending_features},
         feature::FeatureDefinition,
     },
@@ -224,9 +224,10 @@ fn collect_quick_start_pending(
 }
 
 /// Apply callback shared by manual and AI quick-start: set applied flags,
-/// hit dice, apply features, set HP, navigate to editor.
+/// apply features, set HP, navigate to editor. Hit-die size now lands via
+/// the Class Proficiencies feature's OnFeatureAdd assign, so no longer
+/// pre-filled here.
 fn finalize_quick_start(
-    registry: RulesRegistry,
     character: &mut Character,
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
@@ -238,7 +239,6 @@ fn finalize_quick_start(
     if !character.identity.background.is_empty() && !character.applied.background {
         character.applied.background = true;
     }
-    let class_cache = registry.classes().cache().read_untracked();
     // Collect class updates first to avoid borrowing character.applied while
     // iterating character.identity.classes.
     let class_updates: Vec<(String, u32)> = character
@@ -252,12 +252,6 @@ fn finalize_quick_start(
             character.applied.mark_level(class_name, lvl);
         }
     }
-    for class_level in &mut character.identity.classes {
-        if let Some(def) = class_cache.get(class_level.class.as_str()) {
-            class_level.hit_die_sides = def.hit_die;
-        }
-    }
-
     apply_new_features(
         features_index,
         character,
@@ -298,7 +292,7 @@ fn create_character(
         all_pending,
         None,
         move |character, pending, inputs, feat_index| {
-            finalize_quick_start(registry, character, pending, inputs, feat_index);
+            finalize_quick_start(character, pending, inputs, feat_index);
         },
     );
 }
@@ -346,7 +340,7 @@ fn apply_ai_result(
         prefilled,
         result.replacements,
         move |character, pending, inputs, feat_index| {
-            finalize_quick_start(registry, character, pending, inputs, feat_index);
+            finalize_quick_start(character, pending, inputs, feat_index);
         },
     );
 }

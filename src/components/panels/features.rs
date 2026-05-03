@@ -126,11 +126,27 @@ pub fn FeaturesPanel() -> impl IntoView {
         </button>
         <div class="entry-list">
             <For
-                each=move || (0..features.list().read().len()).rev()
-                key=|idx| *idx
-                let:idx
+                // Key by stable per-instance dom_id so rebuilds that drop +
+                // re-add features (e.g. subclass swap) don't leave child
+                // components subscribed to stale indices — `at_unkeyed(idx)`
+                // panics when the underlying Vec has shrunk past the cached
+                // idx, and by-index keying made every length change
+                // potentially fatal.
+                each=move || {
+                    features
+                        .list()
+                        .read()
+                        .iter()
+                        .enumerate()
+                        .map(|(idx, feature)| (idx, feature.dom_id()))
+                        .rev()
+                        .collect::<Vec<_>>()
+                }
+                key=|(_, dom_id)| dom_id.clone()
+                let:row
             >
                 {
+                    let (idx, _dom_id) = row;
                     // `header_label` reads features.list() reactively: after a
                     // remove the indices stay valid but the group-head boundary
                     // shifts, so the row at the new top has to re-evaluate.

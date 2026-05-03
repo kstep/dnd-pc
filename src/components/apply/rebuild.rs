@@ -128,6 +128,7 @@ fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
             })
             .collect(),
         replacements,
+        picks: BTreeMap::new(),
     }
 }
 

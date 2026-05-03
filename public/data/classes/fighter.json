@@ -1,6 +1,5 @@
 {
   "name": "Fighter",
-  "hit_die": 10,
   "levels": {
     "1": {
       "features": [
@@ -18,7 +17,7 @@
     },
     "3": {
       "features": [
-        "Fighter Subclass"
+        "Subclass"
       ]
     },
     "4": {

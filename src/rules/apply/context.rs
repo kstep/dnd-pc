@@ -1,8 +1,8 @@
 use crate::{
     expr,
     model::{
-        Ability, AttrKey, Attribute, Character, Die, Feature, FeatureField, FeatureOption,
-        FeatureSource, FeatureValue, Spell, SpellData, SpellSlotPool,
+        Ability, AttrKey, Attribute, Character, ClassLevel, Die, Feature, FeatureField,
+        FeatureOption, FeatureSource, FeatureValue, Spell, SpellData, SpellSlotPool,
     },
     rules::{WhenCondition, apply::args_ctx::WithArgs, feature::Assignment},
 };
@@ -44,17 +44,35 @@ impl<'a> ApplyContext<'a> {
     /// current level of the class — assigns that scale with progression
     /// (e.g. `POINTS.MAX = CLASS.LEVEL`) need the latter.
     pub fn class_level(&self) -> i32 {
+        self.scoped_class().map(|cl| cl.level as i32).unwrap_or(0)
+    }
+
+    /// Class entry that owns the scoped feature, or None for non-Class
+    /// sources (Species, Background, User). Same scope semantics as
+    /// `class_level()` but exposes the full `ClassLevel` for callers that
+    /// need hit-die fields too.
+    fn scoped_class(&self) -> Option<&ClassLevel> {
         let class_name: &str = match &self.current_feature().source {
             FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => name,
-            _ => return 0,
+            _ => return None,
         };
         self.character
             .identity
             .classes
             .iter()
             .find(|class_level| class_level.class == class_name)
-            .map(|class_level| class_level.level as i32)
-            .unwrap_or(0)
+    }
+
+    fn scoped_class_mut(&mut self) -> Option<&mut ClassLevel> {
+        let class_name: String = match &self.current_feature().source {
+            FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => name.to_string(),
+            _ => return None,
+        };
+        self.character
+            .identity
+            .classes
+            .iter_mut()
+            .find(|class_level| class_level.class == class_name)
     }
 
     /// Iterate `assignments`, evaluating each whose `when` matches. For
@@ -734,6 +752,30 @@ impl<'a> ApplyContext<'a> {
 impl expr::Context<Attribute, i32> for ApplyContext<'_> {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
+            Attribute::HitDice => {
+                if let Some(class) = self.scoped_class_mut() {
+                    let max = class.level as i32;
+                    class.hit_dice_used = (max - value).clamp(0, max) as u32;
+                }
+                Ok(())
+            }
+            Attribute::HitDiceUsed => {
+                if let Some(class) = self.scoped_class_mut() {
+                    let max = class.level as i32;
+                    class.hit_dice_used = value.clamp(0, max) as u32;
+                }
+                Ok(())
+            }
+            Attribute::HitDiceSides => {
+                if let Some(class) = self.scoped_class_mut() {
+                    class.hit_die_sides = value.max(0) as u32;
+                }
+                Ok(())
+            }
+            Attribute::HitDiceMax => {
+                log::warn!("HIT_DICE.MAX is read-only (= class level)");
+                Ok(())
+            }
             Attribute::Points(n) => self.assign_points(n, value),
             Attribute::PointsMax(n) => self.assign_points_max(n, value),
             Attribute::DieSides(n) => self.assign_die_sides(n, value),
@@ -835,6 +877,19 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
             Attribute::ClassLevel => Ok(self.class_level()),
+            Attribute::HitDice => Ok(self
+                .scoped_class()
+                .map(|cl| (cl.level as i32 - cl.hit_dice_used as i32).max(0))
+                .unwrap_or(0)),
+            Attribute::HitDiceMax => Ok(self.scoped_class().map(|cl| cl.level as i32).unwrap_or(0)),
+            Attribute::HitDiceUsed => Ok(self
+                .scoped_class()
+                .map(|cl| cl.hit_dice_used as i32)
+                .unwrap_or(0)),
+            Attribute::HitDiceSides => Ok(self
+                .scoped_class()
+                .map(|cl| cl.hit_die_sides as i32)
+                .unwrap_or(0)),
             Attribute::Arg(n) => self
                 .current_feature()
                 .inputs
@@ -950,5 +1005,92 @@ pub fn apply_assignments_with_inputs<C: expr::Context<Attribute, i32>>(
         if log_errors && let Err(error) = result {
             log::error!("Failed to apply assignment: {error:?}");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+    use crate::{
+        expr::Context as _,
+        model::{ClassLevel, Feature, FeatureSource},
+    };
+
+    fn fighter_at_5() -> Character {
+        let mut character = Character::new();
+        character.identity.classes.push(ClassLevel {
+            class: "Fighter".to_string(),
+            level: 5,
+            hit_die_sides: 10,
+            hit_dice_used: 2,
+            ..ClassLevel::default()
+        });
+        character.features.list.push(Feature {
+            name: "Second Wind".to_string(),
+            source: FeatureSource::Class("Fighter".into(), 1),
+            ..Default::default()
+        });
+        character
+    }
+
+    #[wasm_bindgen_test]
+    fn hit_dice_resolves_through_class_scope() {
+        let mut character = fighter_at_5();
+        let ctx = ApplyContext::new(&mut character, 0);
+
+        assert_eq!(ctx.resolve(Attribute::HitDiceMax).unwrap(), 5);
+        assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 2);
+        assert_eq!(ctx.resolve(Attribute::HitDice).unwrap(), 3);
+        assert_eq!(ctx.resolve(Attribute::HitDiceSides).unwrap(), 10);
+    }
+
+    #[wasm_bindgen_test]
+    fn hit_dice_used_assign_writes_back() {
+        let mut character = fighter_at_5();
+        let mut ctx = ApplyContext::new(&mut character, 0);
+
+        ctx.assign(Attribute::HitDiceUsed, 0).unwrap();
+        assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 0);
+
+        // HIT_DICE = 4 → used = max - 4 = 1
+        ctx.assign(Attribute::HitDice, 4).unwrap();
+        assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 1);
+        assert_eq!(ctx.resolve(Attribute::HitDice).unwrap(), 4);
+
+        // Clamps to [0, max]
+        ctx.assign(Attribute::HitDiceUsed, 99).unwrap();
+        assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 5);
+    }
+
+    #[wasm_bindgen_test]
+    fn hit_dice_sides_assign_writes_back() {
+        // Class proficiencies feature can set the die size:
+        //   HIT_DICE.SIDES = 10
+        let mut character = fighter_at_5();
+        // Wipe the field so we observe the assign actually writing.
+        character.identity.classes[0].hit_die_sides = 0;
+        let mut ctx = ApplyContext::new(&mut character, 0);
+
+        ctx.assign(Attribute::HitDiceSides, 10).unwrap();
+        assert_eq!(ctx.resolve(Attribute::HitDiceSides).unwrap(), 10);
+    }
+
+    #[wasm_bindgen_test]
+    fn hit_dice_zero_for_non_class_features() {
+        let mut character = Character::new();
+        character.features.list.push(Feature {
+            name: "Common".to_string(),
+            source: FeatureSource::Species("Human".into()),
+            ..Default::default()
+        });
+        let ctx = ApplyContext::new(&mut character, 0);
+
+        // Non-Class scope → no class lookup → 0.
+        assert_eq!(ctx.resolve(Attribute::HitDice).unwrap(), 0);
+        assert_eq!(ctx.resolve(Attribute::HitDiceMax).unwrap(), 0);
+        assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 0);
+        assert_eq!(ctx.resolve(Attribute::HitDiceSides).unwrap(), 0);
     }
 }

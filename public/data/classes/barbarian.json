@@ -1,6 +1,5 @@
 {
   "name": "Barbarian",
-  "hit_die": 12,
   "levels": {
     "1": {
       "features": [
@@ -18,7 +17,7 @@
     },
     "3": {
       "features": [
-        "Barbarian Subclass",
+        "Subclass",
         "Primal Knowledge"
       ]
     },

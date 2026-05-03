@@ -10,8 +10,8 @@ use crate::{
     rules::{DefinitionStore, IndexEntry, RulesRegistry},
 };
 
-/// Class name selector for the first class slot. Sets `classes[0].class`,
-/// auto-fills `hit_die_sides`, and triggers definition fetch.
+/// Class name selector for the first class slot. Sets `classes[0].class`
+/// and triggers definition fetch.
 /// No level, subclass, or apply controls.
 #[component]
 pub fn ClassField() -> impl IntoView {
@@ -69,14 +69,12 @@ pub fn ClassField() -> impl IntoView {
                     .find(|opt| opt.name == input || opt.label.with_untracked(|s| s == &input))
                     .map(|opt| opt.name.clone());
                 let (name, label) = split_resolved(input, resolved);
-                let hit_die = registry.classes().with_untracked(&name, |def| def.hit_die);
                 {
                     let mut classes = classes.write();
                     classes[0].class.clone_from(&name);
                     classes[0].class_label = label;
-                    if let Some(hd) = hit_die {
-                        classes[0].hit_die_sides = hd;
-                    }
+                    // hit_die_sides is set by Class Proficiencies (X) feature's
+                    // OnFeatureAdd assign once the apply pipeline runs.
                 }
                 registry.classes().fetch_untracked(&name);
             }

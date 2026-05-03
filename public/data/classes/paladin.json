@@ -1,6 +1,5 @@
 {
   "name": "Paladin",
-  "hit_die": 10,
   "levels": {
     "1": {
       "features": [
@@ -19,7 +18,7 @@
     "3": {
       "features": [
         "Channel Divinity (Paladin)",
-        "Paladin Subclass"
+        "Subclass"
       ]
     },
     "4": {

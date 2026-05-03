@@ -1,6 +1,5 @@
 {
   "name": "Druid",
-  "hit_die": 8,
   "levels": {
     "1": {
       "features": [
@@ -18,7 +17,7 @@
     },
     "3": {
       "features": [
-        "Druid Subclass"
+        "Subclass"
       ]
     },
     "4": {

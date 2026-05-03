@@ -37,6 +37,9 @@ pub enum RebuildReason {
         applied: u32,
         current: u32,
     },
+    SubclassChanged {
+        class: String,
+    },
 }
 
 impl RebuildReason {
@@ -56,6 +59,9 @@ impl RebuildReason {
                 "applied" => *applied,
                 "current" => *current,
             }),
+            Self::SubclassChanged { class } => {
+                tr!(i18n, "rebuild-reason-subclass-changed", { "class" => class.clone() })
+            }
         }
     }
 }
@@ -460,6 +466,31 @@ impl Character {
                 });
             }
         }
+        // Subclass picked changed: features.list still carries entries from a
+        // previously-applied subclass that no longer matches the identity
+        // pick. Replay would re-run those stale features as-is — wrong; we
+        // need rebuild to drop them and apply the new subclass progression.
+        for cl in &self.identity.classes {
+            if cl.class.is_empty() {
+                continue;
+            }
+            let Some(picked) = cl.subclass.as_deref() else {
+                continue;
+            };
+            let drift = self.features.iter().any(|feature| {
+                matches!(
+                    &feature.source,
+                    FeatureSource::Subclass(class_name, sub, _)
+                        if class_name.as_ref() == cl.class.as_str()
+                            && sub.as_ref() != picked
+                )
+            });
+            if drift {
+                reasons.push(RebuildReason::SubclassChanged {
+                    class: cl.class.clone(),
+                });
+            }
+        }
         reasons
     }
 
@@ -774,7 +805,7 @@ impl Character {
             ClassLevel, FeatureCategory, FeatureData, FeatureSource, Spell, SpellData,
         };
 
-        let mut ch = Character {
+        Character {
             id: Uuid::nil(),
             identity: CharacterIdentity {
                 name: "Share Test".to_string(),
@@ -867,13 +898,12 @@ impl Character {
             updated_at: 0,
             shared: false,
             schema_version: 0,
-        };
-        ch
+        }
     }
 }
 
 #[cfg(test)]
-pub mod tests {
+mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;

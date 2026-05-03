@@ -14,12 +14,13 @@ use crate::{
         ref_link::Ref,
     },
     model::{
-        Character, CharacterStoreFields, Feature, FeatureStoreFields, FeatureValue,
-        FeaturesStoreFields,
+        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
+        FeatureStoreFields, FeatureValue, FeaturesStoreFields,
     },
     rules::{
         RulesRegistry,
         apply::{FeatureKey, PendingFeature, apply_new_features, build_cascade_base_before},
+        feature::IdentitySlot,
     },
 };
 
@@ -71,10 +72,49 @@ pub fn FeatureRow(
             (feature_data.spells.is_some(), has_empty)
         })
         .unwrap_or((false, false));
-    let has_interactive_inputs = registry.with_features_index_untracked(|idx| {
-        idx.get(feature_name.as_str())
-            .is_some_and(|feat_def| feat_def.has_interactive_inputs())
-    });
+    // Reactive — features.json may not be loaded at mount, but arrives later.
+    // `_untracked` would freeze the value to `false` for the row's lifetime
+    // and the edit button would never appear after a rebuild that re-mounts
+    // the row before the index resource resolves.
+    let has_interactive_inputs = {
+        let feature_name = feature_name.clone();
+        Memo::new(move |_| {
+            registry.with_features_index(|idx| {
+                idx.get(feature_name.as_str())
+                    .is_some_and(|feat_def| feat_def.has_interactive_inputs())
+            })
+        })
+    };
+
+    // Identity-grant placeholders (the generic Subclass picker) get a sibling
+    // suffix " - {picked}" rendered next to the native label so the build
+    // panel reads "Subclass - Life Domain" without touching feature.label.
+    // Returns None when the feature isn't a picker or the slot is empty;
+    // the suffix span is then omitted.
+    let pick_suffix = {
+        let feature_name = feature_name.clone();
+        Signal::derive(move || {
+            let is_subclass_picker = registry.with_features_index(|idx| {
+                idx.get(feature_name.as_str())
+                    .and_then(|feat_def| feat_def.grants)
+                    .map(|grants| matches!(grants, IdentitySlot::Subclass))
+                    .unwrap_or(false)
+            });
+            if !is_subclass_picker {
+                return None;
+            }
+            let FeatureSource::Class(class_name, _) = &feature.read().source else {
+                return None;
+            };
+            store
+                .identity()
+                .classes()
+                .read()
+                .iter()
+                .find(|cl| cl.class.as_str() == class_name.as_ref())
+                .and_then(|cl| cl.subclass_label.clone().or_else(|| cl.subclass.clone()))
+        })
+    };
 
     let row_info = Memo::new(move |_| {
         let not_applied = !feature.applied().get();
@@ -153,6 +193,9 @@ pub fn FeatureRow(
                             on:click=move |_| toggle()
                         >
                             {move || feature.read().label().to_string()}
+                            {move || pick_suffix.get().map(|suffix| view! {
+                                <span class="entry-name-pick"> " — " {suffix} </span>
+                            })}
                         </span>
                     })
                 } else {
@@ -247,7 +290,7 @@ pub fn FeatureRow(
                 })}
             </div>
             <div class="entry-actions">
-                <Show when=move || has_interactive_inputs>
+                <Show when=move || has_interactive_inputs.get()>
                     <button
                         class="btn-apply-level"
                         title=move_tr!("btn-edit-feature")

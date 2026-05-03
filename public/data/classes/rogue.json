@@ -1,6 +1,5 @@
 {
   "name": "Rogue",
-  "hit_die": 8,
   "levels": {
     "1": {
       "features": [
@@ -18,7 +17,7 @@
     },
     "3": {
       "features": [
-        "Rogue Subclass",
+        "Subclass",
         "Steady Aim"
       ]
     },

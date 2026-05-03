@@ -57,10 +57,10 @@ pub fn GearActionsBlock() -> impl IntoView {
                 }
             }
             GearRef::Armor(i) => {
-                if let Some(armor) = character.equipment.armors.get_mut(i) {
-                    if let Some(ref mut charges) = armor.magic.charges {
-                        charges.used = (charges.used + cost).min(charges.max);
-                    }
+                if let Some(armor) = character.equipment.armors.get_mut(i)
+                    && let Some(ref mut charges) = armor.magic.charges
+                {
+                    charges.used = (charges.used + cost).min(charges.max);
                 }
             }
         });

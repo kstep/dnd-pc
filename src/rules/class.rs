@@ -11,7 +11,6 @@ use crate::{
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassDefinition {
     pub name: Box<str>,
-    pub hit_die: u32,
     #[serde(default)]
     pub levels: LevelRules<ClassLevelRules>,
     #[serde(default, deserialize_with = "demap::named_map")]

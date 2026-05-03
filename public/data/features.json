@@ -91,6 +91,10 @@
     "category": "Origin"
   },
   {
+    "name": "Subclass",
+    "grants": "Subclass"
+  },
+  {
     "name": "Tavern Brawler",
     "category": "Origin"
   },
@@ -1244,9 +1248,6 @@
     ]
   },
   {
-    "name": "Artificer Subclass"
-  },
-  {
     "name": "Magic Item Tinker",
     "actions": [
       {
@@ -1630,9 +1631,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Barbarian Subclass"
   },
   {
     "name": "Primal Knowledge",
@@ -2053,9 +2051,6 @@
   },
   {
     "name": "Jack of All Trades"
-  },
-  {
-    "name": "Bard Subclass"
   },
   {
     "name": "Font of Inspiration"
@@ -2534,9 +2529,6 @@
         "expr": "SPELL.CANTRIPS = tier(CLASS.LEVEL, 1:3, 4:4, 10:5); SLOT.1 = tier(CASTER.LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER.LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER.LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER.LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER.LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER.LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER.LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER.LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER.LEVEL.ARCANE, 1:0, 17:1); SPELL.READY = tier(CLASS.LEVEL, 1:4, 2:5, 3:6, 4:7, 5:9, 6:10, 7:11, 8:12, 9:14, 10:15, 11:16, 13:17, 15:18, 17:19, 18:20, 19:21, 20:22)"
       }
     ]
-  },
-  {
-    "name": "Cleric Subclass"
   },
   {
     "name": "Sear Undead"
@@ -3486,9 +3478,6 @@
     ]
   },
   {
-    "name": "Druid Subclass"
-  },
-  {
     "name": "Wild Resurgence"
   },
   {
@@ -4013,9 +4002,6 @@
   },
   {
     "name": "Tactical Mind"
-  },
-  {
-    "name": "Fighter Subclass"
   },
   {
     "name": "Tactical Shift"
@@ -4692,9 +4678,6 @@
     ]
   },
   {
-    "name": "Monk Subclass"
-  },
-  {
     "name": "Slow Fall",
     "actions": [
       {
@@ -5269,9 +5252,6 @@
   },
   {
     "name": "Paladin's Smite"
-  },
-  {
-    "name": "Paladin Subclass"
   },
   {
     "name": "Faithful Steed"
@@ -6063,9 +6043,6 @@
     "name": "Deft Explorer"
   },
   {
-    "name": "Ranger Subclass"
-  },
-  {
     "name": "Roving",
     "assign": [
       {
@@ -6605,9 +6582,6 @@
         ]
       }
     ]
-  },
-  {
-    "name": "Rogue Subclass"
   },
   {
     "name": "Steady Aim",
@@ -7201,9 +7175,6 @@
         "when": "OnCompute"
       }
     ]
-  },
-  {
-    "name": "Sorcerer Subclass"
   },
   {
     "name": "Sorcerous Restoration",
@@ -7958,9 +7929,6 @@
     "name": "Magical Cunning"
   },
   {
-    "name": "Warlock Subclass"
-  },
-  {
     "name": "Contact Patron"
   },
   {
@@ -8672,9 +8640,6 @@
     "name": "Scholar"
   },
   {
-    "name": "Wizard Subclass"
-  },
-  {
     "name": "Memorize Spell"
   },
   {
@@ -9222,7 +9187,7 @@
     "name": "Class Proficiencies (Artificer)",
     "assign": [
       {
-        "expr": "CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9244,7 +9209,7 @@
     "name": "Class Proficiencies (Barbarian)",
     "assign": [
       {
-        "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 12; STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9257,7 +9222,7 @@
     "name": "Class Proficiencies (Bard)",
     "assign": [
       {
-        "expr": "DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9279,7 +9244,7 @@
     "name": "Class Proficiencies (Cleric)",
     "assign": [
       {
-        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9292,7 +9257,7 @@
     "name": "Class Proficiencies (Druid)",
     "assign": [
       {
-        "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9305,7 +9270,7 @@
     "name": "Class Proficiencies (Fighter)",
     "assign": [
       {
-        "expr": "STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 10; STR.SAVE.PROF = 1; CON.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9327,7 +9292,7 @@
     "name": "Class Proficiencies (Monk)",
     "assign": [
       {
-        "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9340,7 +9305,7 @@
     "name": "Class Proficiencies (Paladin)",
     "assign": [
       {
-        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 10; WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.HEAVY_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9353,7 +9318,7 @@
     "name": "Class Proficiencies (Ranger)",
     "assign": [
       {
-        "expr": "STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 10; STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9366,7 +9331,7 @@
     "name": "Class Proficiencies (Rogue)",
     "assign": [
       {
-        "expr": "DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9379,7 +9344,7 @@
     "name": "Class Proficiencies (Sorcerer)",
     "assign": [
       {
-        "expr": "CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 6; CON.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9392,7 +9357,7 @@
     "name": "Class Proficiencies (Warlock)",
     "assign": [
       {
-        "expr": "WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; WIS.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9405,7 +9370,7 @@
     "name": "Class Proficiencies (Wizard)",
     "assign": [
       {
-        "expr": "INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 6; INT.SAVE.PROF = 1; WIS.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
         "when": "OnFeatureAdd"
       },
       {

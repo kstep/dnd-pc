@@ -337,9 +337,6 @@
   "Arms of the Astral Self.field.Actions.option.Arms of the Astral Self": {
     "description": "Spend 1 ki: summon astral arms; creatures within 10 ft make DEX save or take 2× Martial Arts die Force"
   },
-  "Artificer Subclass": {
-    "description": "You gain an Artificer subclass of your choice. The Alchemist, Armorer, Artillerist, and Battle Smith, and Cartographer subclasses are detailed after this class's description. A subclass is a specialization that grants you features at certain Artificer levels. For the rest of your career, you gain each of your subclass's features that are of your Artificer level or lower."
-  },
   "Artillerist Spells": {
     "description": "When you reach an Artificer level specified in the Artillerist Spells table, you thereafter always have the listed spells prepared."
   },
@@ -513,12 +510,6 @@
   },
   "Balm of the Summer Court.field.Actions.option.Balm of the Summer Court": {
     "description": "Spend up to half Druid level in d6s from fey energy pool: roll dice to heal ally within 120 ft + grant Temp HP equal to number of dice spent"
-  },
-  "Barbarian Subclass": {
-    "description": "You gain a Barbarian subclass of your choice. A subclass is a specialization that grants you features at certain Barbarian levels. For the rest of your career, you gain each of your subclass's features that are of your Barbarian level or lower."
-  },
-  "Bard Subclass": {
-    "description": "You gain a Bard subclass of your choice. A subclass is a specialization that grants you features at certain Bard levels. For the rest of your career, you gain each of your subclass's features that are of your Bard level or lower."
   },
   "Bardic Damage": {
     "description": "You can use Dexterity instead of Strength for the attack rolls of your Unarmed Strikes. When you deal damage with an Unarmed Strike, you can deal Bludgeoning damage equal to a roll of your Bardic Inspiration die plus your Dexterity modifier, instead of the strike's normal damage. This roll doesn't expend the die."
@@ -1295,9 +1286,6 @@
   "Class Proficiencies (Wizard)": {
     "description": "Choose 2 from: Arcana, History, Insight, Investigation, Medicine, Religion. Saves: INT, WIS. Simple weapons."
   },
-  "Cleric Subclass": {
-    "description": "You gain a Cleric subclass of your choice. A subclass is a specialization that grants you features at certain Cleric levels. For the rest of your career, you gain each of your subclass's features that are of your Cleric level or lower."
-  },
   "Cloak of Shadows": {
     "description": "As a Magic action while entirely within Dim Light or Darkness, you can expend 3 Focus Points to shroud yourself with shadows for 1 minute, until you have the Incapacitated condition, or until you end your turn in Bright Light. While shrouded by these shadows, you gain the following benefits. Invisibility: You have the Invisible condition."
   },
@@ -1726,9 +1714,6 @@
   },
   "Dreadnaught": {
     "description": "You design your armor to become a towering juggernaut in battle. It has the following features: Force Demolisher: An arcane wrecking ball or sledgehammer projects from your armor. The demolisher counts as a Simple Melee weapon with the R property, and it deals 1d10 Force damage on a hit."
-  },
-  "Druid Subclass": {
-    "description": "You gain a Druid subclass of your choice. A subclass is a specialization that grants you features at certain Druid levels. For the rest of your career, you gain each of your subclass's features that are of your Druid level or lower."
   },
   "Druidic": {
     "description": "You know Druidic, the secret language of Druids. While learning this ancient tongue, you also unlocked the magic of communicating with animals; you always have the Speak with Animals spell prepared. You can use Druidic to leave hidden messages. You and others who know Druidic automatically spot such a message. Others spot the message's presence with a successful DC 15 Intelligence (Investigation) check but can't decipher it without magic."
@@ -2239,9 +2224,6 @@
   },
   "Fiery Soul": {
     "description": "You gain immunity to fire damage. In addition, any spell or effect you create ignores resistance to fire damage and treats immunity to fire damage as resistance to fire damage."
-  },
-  "Fighter Subclass": {
-    "description": "You gain a Fighter subclass of your choice. A subclass is a specialization that grants you features at certain Fighter levels. For the rest of your career, you gain each of your subclass's features that are of your Fighter level or lower."
   },
   "Fighting Spirit": {
     "description": "Your intensity in battle can shield you and help you strike true. As a bonus action on your turn, you can give yourself advantage on weapon attack rolls until the end of the current turn. When you do so, you also gain 5 temporary hit points."
@@ -3514,9 +3496,6 @@
   "Momentary Stasis.field.Momentary Stasis": {
     "label": "Momentary Stasis"
   },
-  "Monk Subclass": {
-    "description": "You gain a Monk subclass of your choice. A subclass is a specialization that grants you features at certain Monk levels. For the rest of your career, you gain each of your subclass's features that are of your Monk level or lower."
-  },
   "Monk's Focus": {
     "description": "Your focus and martial training allow you to harness a well of extraordinary energy within yourself. This energy is represented by Focus Points. Your Monk level determines the number of points you have, as shown in the Focus Points column of the Monk Features table. You can expend these points to enhance or fuel certain Monk features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. When you expend a Focus Point, it is unavailable until you finish a Short or Long Rest, at the end of which you regain all your expended points. Some features that use Focus Points require your target to make a saving throw. The save DC equals 8 plus your Wisdom modifier and Proficiency Bonus. Flurry of Blows: You can expend 1 Focus Point to make two Unarmed Strikes as a Bonus Action. Patient Defense: You can take the Disengage action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and the Dodge actions as a Bonus Action. Step of the Wind: You can take the Dash action as a Bonus Action. Alternatively, you can expend 1 Focus Point to take both the Disengage and Dash actions as a Bonus Action, and your jump distance is doubled for the turn."
   },
@@ -3832,9 +3811,6 @@
   "Pact Magic": {
     "description": "Through occult ceremony, you have formed a pact with a mysterious entity to gain magical powers. The entity is a voice in the shadows—its identity unclear—but its boon to you is concrete: the ability to cast spells."
   },
-  "Paladin Subclass": {
-    "description": "You gain a Paladin subclass of your choice. A subclass is a specialization that grants you features at certain Paladin levels. For the rest of your career, you gain each of your subclass's features that are of your Paladin level or lower. A Paladin tries to hold to the highest standards of conduct, but even the most dedicated are fallible. Sometimes a Paladin transgresses their oath."
-  },
   "Paladin's Smite": {
     "description": "You always have the Divine Smite spell prepared. In addition, you can cast it without expending a spell slot, but you must finish a Long Rest before you can cast it in this way again."
   },
@@ -4119,9 +4095,6 @@
   },
   "Rallying Surge": {
     "description": "When you use your Action Surge, you can choose allies within a 30-foot Emanation [Area of Effect] originating from yourself, up to a number of allies equal to your Charisma modifier (minimum of one). Each of those allies can immediately take a Reaction to use one of the following options. Attack: The ally makes one attack with a weapon or an Unarmed Strike."
-  },
-  "Ranger Subclass": {
-    "description": "You gain a Ranger subclass of your choice. A subclass is a specialization that grants you features at certain Ranger levels. For the rest of your career, you gain each of your subclass's features that are of your Ranger level or lower."
   },
   "Rapid Strike": {
     "description": "You learn to trade accuracy for swift strikes. If you take the Attack action on your turn and have advantage on an attack roll against one of the targets, you can forgo the advantage for that roll to make an additional weapon attack against that target, as part of the same action. You can do so no more than once per turn."
@@ -4480,9 +4453,6 @@
   "Ritual Caster": {
     "description": "Increase INT, WIS, or CHA by 1 (max 20). You have a ritual book containing two level 1 ritual spells of your choice (from any class list). You can cast them as rituals. You can add new ritual spells found in the world. Spellcasting ability is the increased ability score."
   },
-  "Rogue Subclass": {
-    "description": "You gain a Rogue subclass of your choice. A subclass is a specialization that grants you features at certain Rogue levels. For the rest of your career, you gain each of your subclass's features that are of your Rogue level or lower."
-  },
   "Roving": {
     "description": "Your Speed increases by 10 feet while you aren't wearing Heavy armor. You also have a Climb Speed and a Swim Speed equal to your Speed."
   },
@@ -4734,9 +4704,6 @@
   },
   "Song of Victory": {
     "description": "After you cast a spell that has a casting time of an action, you can make one attack with a weapon as a Bonus Action."
-  },
-  "Sorcerer Subclass": {
-    "description": "You gain a Sorcerer subclass of your choice. A subclass is a specialization that grants you features at certain Sorcerer levels. For the rest of your career, you gain each of your subclass's features that are of your Sorcerer level or lower."
   },
   "Sorcerous Restoration": {
     "description": "When you finish a Short Rest, you can regain expended Sorcery Points, but no more than a number equal to half your Sorcerer level (round down). Once you use this feature, you can't do so again until you finish a Long Rest."
@@ -5016,6 +4983,10 @@
   },
   "Stunning Strike": {
     "description": "Once per turn when you hit a creature with a Monk weapon or an Unarmed Strike, you can expend 1 Focus Point to attempt a stunning strike. The target must make a Constitution saving throw. On a failed save, the target has the Stunned condition until the start of your next turn."
+  },
+  "Subclass": {
+    "label": "Subclass",
+    "description": "Choose a subclass for this class. Subclass features apply automatically as you level up."
   },
   "Sudden Strike": {
     "description": "You can strike with deadly speed. If you take the Attack action on your turn, you can make one additional attack as a bonus action. This attack can benefit from your Sneak Attack even if you have already used it this turn, but you can't use your Sneak Attack against the same target more than once in a turn."
@@ -5608,9 +5579,6 @@
   "Warding Maneuver.field.Warding Maneuver": {
     "label": "Warding Maneuver"
   },
-  "Warlock Subclass": {
-    "description": "You gain a Warlock subclass of your choice. A subclass is a specialization that grants you features at certain Warlock levels. For the rest of your career, you gain each of your subclass's features that are of your Warlock level or lower."
-  },
   "Warping Implosion": {
     "description": "You can unleash a space-warping anomaly. As a Magic action, you teleport to an unoccupied space you can see within 120 feet of yourself. Immediately after you disappear, each creature within 30 feet of the space you left must make a Strength saving throw against your spell save DC."
   },
@@ -5712,9 +5680,6 @@
   },
   "Winter Walker Spells.spell.Remove Curse": {
     "description": "At your touch, all curses affecting one creature or object end. If the object is a cursed magic item, its curse remains, but the spell breaks its owner's Attunement to the object so it can be removed or discarded."
-  },
-  "Wizard Subclass": {
-    "description": "You gain a Wizard subclass of your choice. A subclass is a specialization that grants you features at certain Wizard levels. For the rest of your career, you gain each of your subclass's features that are of your Wizard level or lower."
   },
   "Wizardly Quill": {
     "description": "As a bonus action, you can magically create a Tiny quill in your free hand. The magic quill has the following properties: The quill doesn't require ink. When you write with it, it produces ink in a color of your choice on the writing surface."

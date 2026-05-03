@@ -21,7 +21,7 @@ use crate::{
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
-        feature::{FeatureDefinition, ReplaceWith},
+        feature::{FeatureDefinition, IdentitySlot, ReplaceWith},
     },
 };
 
@@ -281,11 +281,14 @@ fn collect_rebuild_pending_inputs(
             };
             let Some(assign_defs) = feat_def.assign.as_ref() else {
                 // Pure-replaceable feats (e.g. Versatile: replace_with=Origin,
-                // no assign) also emit in the modal so the user can pick a
-                // replacement. Capture cascade_base here if no interactive
-                // feat has done so yet — nothing before advanced
+                // no assign) and identity-grant placeholders (`grants:
+                // Some(_)` — the generic Subclass picker) also emit in the
+                // modal so the user can pick. Capture cascade_base here if no
+                // interactive feat has done so yet — nothing before advanced
                 // validation_baseline for this branch, so the base matches.
-                if !matches!(feat_def.replace_with, ReplaceWith::None) && cascade_base.is_none() {
+                let needs_modal = !matches!(feat_def.replace_with, ReplaceWith::None)
+                    || feat_def.grants.is_some();
+                if needs_modal && cascade_base.is_none() {
                     cascade_base = Some(validation_baseline.clone_lean());
                 }
                 state_idx_by_pending.push(None);
@@ -441,6 +444,25 @@ fn collect_rebuild_pending_inputs(
                     inputs.push(pi);
                 }
                 emit_started = true;
+            } else if feat_def.grants.is_some() {
+                // Identity-grant placeholder (the generic Subclass picker).
+                // No assigns, no replace_with — just a marker that triggers
+                // a pick step in the modal cascade. Emit `pending_inputs`
+                // (which sets `pick: Some(slot)`) only when the matching
+                // identity slot is empty in `original`; otherwise this is a
+                // re-apply / silent commit and we suppress the modal section.
+                if identity_slot_is_empty(feat_def, pending, original) {
+                    if let Some(pi) = pending.pending_inputs(feat_def, original) {
+                        inputs.push(pi);
+                        emit_started = true;
+                    }
+                } else if emit_started {
+                    inputs.push(PendingInputs::hidden_for_cascade(
+                        pending.name.clone(),
+                        feat_def,
+                        pending.source.clone(),
+                    ));
+                }
             }
         }
         (inputs, had_rejections, cascade_base)
@@ -460,6 +482,28 @@ fn collect_rebuild_pending_inputs(
 ///
 /// First match wins — `original.features` preserves insertion order, and a
 /// single slot hosts exactly one replacement.
+/// True when the identity slot the placeholder grants (`feat_def.grants`) is
+/// currently empty for the relevant scope. Drives whether the cascade emits
+/// an interactive `pick` section or silent-commits the placeholder.
+fn identity_slot_is_empty(
+    feat_def: &FeatureDefinition,
+    pending: &PendingFeature,
+    original: &Character,
+) -> bool {
+    match feat_def.grants {
+        Some(IdentitySlot::Subclass) => match &pending.source {
+            FeatureSource::Class(class_name, _) => original
+                .identity
+                .classes
+                .iter()
+                .find(|class_level| class_level.class.as_str() == class_name.as_ref())
+                .is_none_or(|class_level| class_level.subclass.is_none()),
+            _ => false,
+        },
+        None => false,
+    }
+}
+
 fn detect_replacement(
     pending: &PendingFeature,
     feat_def: &FeatureDefinition,
@@ -737,7 +781,8 @@ fn apply_class_level(
                 name: class_name.to_owned(),
             })?
     };
-    clean.identity.classes[class_idx].hit_die_sides = class_def.hit_die;
+    // hit_die_sides is set by Class Proficiencies (X) feature's OnFeatureAdd
+    // assign once the class features land below.
     let pending: Vec<PendingFeature> =
         collect_class_features(clean, class_idx, class_level, class_def, ctx.feat_index).collect();
     apply_pending(ctx, clean, &pending);
@@ -1268,7 +1313,94 @@ mod tests {
             actions: BTreeMap::new(),
             assign: None,
             prerequisites: None,
+            grants: None,
         }
+    }
+
+    fn subclass_picker_def() -> FeatureDefinition {
+        FeatureDefinition {
+            name: "Subclass".into(),
+            stackable: false,
+            category: FeatureCategory::Class,
+            replace_with: ReplaceWith::None,
+            spells: None,
+            actions: BTreeMap::new(),
+            assign: None,
+            prerequisites: None,
+            grants: Some(IdentitySlot::Subclass),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn identity_slot_is_empty_no_class() {
+        let pending = PendingFeature {
+            name: "Subclass".into(),
+            source: FeatureSource::Class("Cleric".into(), 1),
+            level: 1,
+        };
+        let original = Character::default();
+        assert!(
+            identity_slot_is_empty(&subclass_picker_def(), &pending, &original),
+            "no matching ClassLevel ⇒ empty (cascade emits pick)"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn identity_slot_is_empty_unset_subclass() {
+        let pending = PendingFeature {
+            name: "Subclass".into(),
+            source: FeatureSource::Class("Cleric".into(), 1),
+            level: 1,
+        };
+        let mut original = Character::default();
+        original.identity.classes.push(ClassLevel {
+            class: "Cleric".into(),
+            level: 1,
+            subclass: None,
+            ..ClassLevel::default()
+        });
+        assert!(identity_slot_is_empty(
+            &subclass_picker_def(),
+            &pending,
+            &original
+        ));
+    }
+
+    #[wasm_bindgen_test]
+    fn identity_slot_is_empty_set_subclass() {
+        let pending = PendingFeature {
+            name: "Subclass".into(),
+            source: FeatureSource::Class("Cleric".into(), 1),
+            level: 1,
+        };
+        let mut original = Character::default();
+        original.identity.classes.push(ClassLevel {
+            class: "Cleric".into(),
+            level: 1,
+            subclass: Some("Life Domain".into()),
+            ..ClassLevel::default()
+        });
+        assert!(
+            !identity_slot_is_empty(&subclass_picker_def(), &pending, &original),
+            "subclass already picked ⇒ cascade silent-commits"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn pending_inputs_emits_pick_for_grants_feature() {
+        let def = subclass_picker_def();
+        let pending = PendingFeature {
+            name: "Subclass".into(),
+            source: FeatureSource::Class("Cleric".into(), 1),
+            level: 1,
+        };
+        let original = Character::default();
+        let pi = pending
+            .pending_inputs(&def, &original)
+            .expect("grants feature must produce a PendingInputs even with no exprs");
+        assert_eq!(pi.pick, Some(IdentitySlot::Subclass));
+        assert!(pi.exprs.is_empty());
+        assert!(matches!(pi.replace_with, ReplaceWith::None));
     }
 
     #[wasm_bindgen_test]
@@ -1282,8 +1414,8 @@ mod tests {
         );
 
         let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-        feat_index.insert(slot_def.name.clone().into(), slot_def.clone());
-        feat_index.insert(swap_def.name.clone().into(), swap_def.clone());
+        feat_index.insert(slot_def.name.clone(), slot_def.clone());
+        feat_index.insert(swap_def.name.clone(), swap_def.clone());
 
         let mut original = Character::default();
         original
@@ -1318,7 +1450,7 @@ mod tests {
         let slot_source = FeatureSource::Class("Rogue".into(), 3);
         let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
         let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
-            std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
+            std::iter::once((slot_def.name.clone(), slot_def.clone())).collect();
 
         let mut original = Character::default();
         // F itself is in original — user never swapped.
@@ -1591,7 +1723,7 @@ mod tests {
         let slot_source = FeatureSource::Class("Rogue".into(), 3);
         let slot_def = feat_def("Cunning Action", FeatureCategory::Class, ReplaceWith::None);
         let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
-            std::iter::once((slot_def.name.clone().into(), slot_def.clone())).collect();
+            std::iter::once((slot_def.name.clone(), slot_def.clone())).collect();
 
         let original = Character::default();
         let pending = PendingFeature {

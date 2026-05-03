@@ -1,6 +1,5 @@
 {
   "name": "Artificer",
-  "hit_die": 8,
   "levels": {
     "1": {
       "features": [
@@ -16,7 +15,7 @@
     },
     "3": {
       "features": [
-        "Artificer Subclass"
+        "Subclass"
       ]
     },
     "4": {

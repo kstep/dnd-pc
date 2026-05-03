@@ -32,7 +32,7 @@ watch = []
 # Paths to ignore.
 ignore = [
     ".playwright-mcp",
-    "tests/perf",
+    "tests",
     ".worktrees",
     ".claude",
     "docs",

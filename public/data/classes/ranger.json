@@ -1,6 +1,5 @@
 {
   "name": "Ranger",
-  "hit_die": 10,
   "levels": {
     "1": {
       "features": [
@@ -18,7 +17,7 @@
     },
     "3": {
       "features": [
-        "Ranger Subclass"
+        "Subclass"
       ]
     },
     "4": {

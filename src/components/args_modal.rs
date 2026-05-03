@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use leptos::prelude::*;
+use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
@@ -13,16 +13,24 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    model::{AssignInputs, Character, Expr, Feature, FeatureSource},
+    model::{
+        AssignInputs, Character, CharacterIdentityStoreFields, CharacterStoreFields, Expr, Feature,
+        FeatureSource,
+    },
     rules::{
-        ApplyInputs, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry, WhenCondition,
-        apply::apply_feature,
+        ApplyInputs, DefinitionStore, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry,
+        WhenCondition, apply::apply_feature, feature::IdentitySlot,
     },
 };
 
 type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
 type ArgsSignals = BTreeMap<FeatureKey, Vec<StoredValue<Vec<RwSignal<i32>>>>>;
 type DiceSignals = BTreeMap<FeatureKey, Vec<StoredValue<DiceGroupSignals>>>;
+/// Identity-slot pick state. Keyed by the placeholder feature's real
+/// `FeatureKey` (`name="Subclass" + source=Class(_,_)` for the subclass
+/// picker). Value pairs the slot kind (so the submit handler knows which
+/// `Identity` field to mutate) with the user-chosen value signal.
+type PickSignals = BTreeMap<FeatureKey, (IdentitySlot, RwSignal<Option<String>>)>;
 
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
@@ -119,6 +127,7 @@ fn ArgsFeatureInput(
     all_dice: RwSignal<DiceSignals>,
     all_valid: RwSignal<Vec<Memo<bool>>>,
     all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+    all_picks: RwSignal<PickSignals>,
 ) -> impl IntoView {
     #[cfg(feature = "perf-marks")]
     let _mount_span = tracing::info_span!(
@@ -225,6 +234,14 @@ fn ArgsFeatureInput(
         move || registry.source_label(&source, i18n)
     };
 
+    let pick_kind = pending_inputs.pick;
+    let pick_view = pick_kind.map(|kind| {
+        let key = key.clone();
+        view! {
+            <PickInput kind=kind feature_key=key all_picks=all_picks all_valid=all_valid />
+        }
+    });
+
     view! {
         <div class="args-modal-feature">
             <h4>
@@ -239,10 +256,154 @@ fn ArgsFeatureInput(
             <div style:display=move || if is_replacing.get() { "none" } else { "" }>
                 {expr_views}
             </div>
+            {pick_view}
             {replaceable.then(|| {
                 let source = source.clone();
                 view! { <ReplacementPicker replace_with replacement_choice replacement_prefill character all_signals all_dice all_valid source replace_only /> }
             })}
+        </div>
+    }
+}
+
+/// Identity-slot pick section (Subclass for now). Renders a datalist of
+/// options sourced from the matching catalog (`class_def.subclasses` for
+/// Subclass) filtered to those reachable from the placeholder's source.
+/// Required-select: validity reports valid only when an option is chosen.
+#[component]
+fn PickInput(
+    kind: IdentitySlot,
+    feature_key: FeatureKey,
+    all_picks: RwSignal<PickSignals>,
+    all_valid: RwSignal<Vec<Memo<bool>>>,
+) -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let store = expect_context::<Store<Character>>();
+
+    let parent_class = match kind {
+        IdentitySlot::Subclass => match &feature_key.source {
+            FeatureSource::Class(class_name, _) => Some(class_name.clone()),
+            _ => None,
+        },
+    };
+
+    // Pre-fill from the live character's matching identity slot. Pre-existing
+    // picks (re-edit / silent commit on existing characters) seed the
+    // datalist with the current value so the user can confirm or change.
+    let initial_pick: Option<String> = match kind {
+        IdentitySlot::Subclass => match &feature_key.source {
+            FeatureSource::Class(class_name, _) => store
+                .read_untracked()
+                .identity
+                .classes
+                .iter()
+                .find(|class_level| class_level.class.as_str() == class_name.as_ref())
+                .and_then(|class_level| class_level.subclass.clone()),
+            _ => None,
+        },
+    };
+
+    let pick_choice: RwSignal<Option<String>> = RwSignal::new(initial_pick.clone());
+
+    all_picks.update(|picks| {
+        picks.insert(feature_key, (kind, pick_choice));
+    });
+
+    all_valid.update(|validations| {
+        validations.push(Memo::new(move |_| pick_choice.get().is_some()));
+    });
+
+    let datalist_id = next_datalist_id();
+    let class_key = parent_class.clone().unwrap_or_default();
+
+    let options = {
+        let class_key = class_key.clone();
+        Signal::derive(move || {
+            registry
+                .classes()
+                .with(&class_key, |class_def| {
+                    class_def
+                        .subclasses
+                        .values()
+                        .map(|subclass_def| {
+                            let sub_name = subclass_def.name.to_string();
+                            let class_key = class_key.clone();
+                            let sub_key = sub_name.clone();
+                            let label = ArcSignal::derive({
+                                let class_key = class_key.clone();
+                                let sub_key = sub_key.clone();
+                                move || {
+                                    registry
+                                        .classes()
+                                        .lookup(&class_key, |locale| {
+                                            locale
+                                                .subclass(&sub_key)
+                                                .map(|localized| localized.label().to_string())
+                                        })
+                                        .flatten()
+                                        .unwrap_or_else(|| sub_key.clone())
+                                }
+                            });
+                            let description = ArcSignal::derive({
+                                let class_key = class_key.clone();
+                                let sub_key = sub_key.clone();
+                                move || {
+                                    registry
+                                        .classes()
+                                        .lookup(&class_key, |locale| {
+                                            locale.subclass(&sub_key).map(|localized| {
+                                                localized.description().to_string()
+                                            })
+                                        })
+                                        .flatten()
+                                        .unwrap_or_default()
+                                }
+                            });
+                            DatalistOption::with_signals(sub_name, label, description)
+                        })
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default()
+        })
+    };
+
+    let initial_label = initial_pick
+        .as_ref()
+        .map(|sub_name| {
+            registry
+                .classes()
+                .lookup_untracked(&class_key, |locale| {
+                    locale
+                        .subclass(sub_name)
+                        .map(|localized| localized.label().to_string())
+                })
+                .flatten()
+                .unwrap_or_else(|| sub_name.clone())
+        })
+        .unwrap_or_default();
+
+    let input_value = RwSignal::new(initial_label);
+    let placeholder = Signal::derive(move || move_tr!("pick-subclass").get());
+
+    let on_input = move |text: String, resolved: Option<String>| {
+        if text.is_empty() {
+            pick_choice.set(None);
+            return;
+        }
+        pick_choice.set(resolved);
+    };
+
+    view! {
+        <div class="pick-input">
+            <label class="pick-input-label">{move_tr!("pick-subclass")}</label>
+            <SharedDatalist id=datalist_id.clone() options=options />
+            <DatalistInput
+                value=input_value
+                placeholder=placeholder
+                list_id=datalist_id
+                options=options
+                on_input=on_input
+                required=true
+            />
         </div>
     }
 }
@@ -479,6 +640,7 @@ pub fn ArgsModal() -> impl IntoView {
                 let all_valid: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
                 let all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>> =
                     RwSignal::new(BTreeMap::new());
+                let all_picks: RwSignal<PickSignals> = RwSignal::new(BTreeMap::new());
 
                 // Build cascade chain: snapshot[i] = character with pending
                 // features 0..i applied (via FeatureDefinition::assign — the
@@ -632,7 +794,7 @@ pub fn ArgsModal() -> impl IntoView {
                             register_hidden_signals(&pending_inputs, all_signals);
                             ().into_any()
                         } else {
-                            view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements /> }.into_any()
+                            view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements all_picks /> }.into_any()
                         }
                     })
                     .collect_view();
@@ -698,9 +860,61 @@ pub fn ArgsModal() -> impl IntoView {
                             })
                         });
 
+                    // Collect identity-slot picks keyed by the placeholder
+                    // feature's real (name, source). Each entry pairs the
+                    // slot kind with the chosen value.
+                    let pick_entries: Vec<(FeatureKey, IdentitySlot, String)> = all_picks
+                        .with_untracked(|picks_map| {
+                            picks_map
+                                .iter()
+                                .filter_map(|(key, (slot, signal))| {
+                                    let pick = signal.get_untracked()?;
+                                    Some((key.clone(), *slot, pick))
+                                })
+                                .collect()
+                        });
+
+                    // Write identity slots to live store BEFORE invoking
+                    // `on_complete`, so `build_clean`'s identity carry-over
+                    // reads the just-picked value on the first pass.
+                    for (key, slot, pick) in &pick_entries {
+                        match slot {
+                            IdentitySlot::Subclass => {
+                                let FeatureSource::Class(class_name, _) = &key.source else {
+                                    continue;
+                                };
+                                let class_name = class_name.clone();
+                                let pick = pick.clone();
+                                let label = registry
+                                    .classes()
+                                    .lookup_untracked(&class_name, |locale| {
+                                        locale
+                                            .subclass(&pick)
+                                            .map(|localized| localized.label().to_string())
+                                    })
+                                    .flatten();
+                                store.identity().classes().update(|classes| {
+                                    if let Some(class_level) = classes
+                                        .iter_mut()
+                                        .find(|cl| cl.class.as_str() == class_name.as_ref())
+                                    {
+                                        class_level.subclass = Some(pick);
+                                        class_level.subclass_label = label;
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    let picks: BTreeMap<FeatureKey, String> = pick_entries
+                        .into_iter()
+                        .map(|(key, _slot, pick)| (key, pick))
+                        .collect();
+
                     ctx.complete(ApplyInputs {
                         feature_inputs: inputs_map,
                         replacements,
+                        picks,
                     });
                 };
 

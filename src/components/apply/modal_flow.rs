@@ -106,6 +106,11 @@ pub fn edit_inputs_modal(
 
     let key = FeatureKey::new(name, source);
     let ctx = expect_context::<ArgsModalCtx>();
+    // Identity-slot picks (subclass) are committed straight into the live
+    // store by the args modal; the rebuild-reasons detector picks up the drift
+    // (features.list still carries entries sourced under the prior subclass)
+    // and surfaces the rebuild banner — replay would re-run stale entries
+    // as-is, which is wrong when the subclass roster itself shifts.
     ctx.open(vec![pending_input], base, move |inputs| {
         // If the user picked a replacement, rename the feature in-place and
         // pull inputs under the replacement key. `applied = false` only when
@@ -292,6 +297,7 @@ pub fn apply_with_prefilled_args(
     let seeded_inputs = ApplyInputs {
         feature_inputs: BTreeMap::new(),
         replacements: prefilled_replacements,
+        picks: BTreeMap::new(),
     };
 
     if all_inputs.is_empty() {

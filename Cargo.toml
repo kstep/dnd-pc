@@ -81,6 +81,8 @@ perf-marks = ["dep:tracing", "dep:tracing-wasm", "leptos/tracing"]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
+fluent-bundle = "0.16"
+unic-langid = { version = "0.9", features = ["macros"] }
 
 [profile.release]
 opt-level = 'z'

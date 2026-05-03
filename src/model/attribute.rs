@@ -40,6 +40,14 @@ pub enum Attribute {
     Ac,
     Speed,
     ClassLevel,
+    /// Hit dice available for the class scope (= max - used).
+    HitDice,
+    /// Total hit dice of the scoped class (= class level).
+    HitDiceMax,
+    /// Hit dice already spent for the scoped class.
+    HitDiceUsed,
+    /// Hit-die size for the scoped class (d6/d8/d10/d12).
+    HitDiceSides,
     CasterLevel(Option<SpellSlotPool>),
     CasterModifier,
     ProfBonus,
@@ -149,6 +157,10 @@ impl Attribute {
                 | Self::SpellCantrips
                 | Self::SpellKnown
                 | Self::SpellReady
+                | Self::HitDice
+                | Self::HitDiceMax
+                | Self::HitDiceUsed
+                | Self::HitDiceSides
         )
     }
 }
@@ -372,6 +384,7 @@ impl FromStr for Attribute {
                 "COST" => Ok(Self::Cost),
                 "CHARGES" => Ok(Self::Charges),
                 "QUANTITY" => Ok(Self::Quantity),
+                "HIT_DICE" => Ok(Self::HitDice),
                 other => {
                     // Bare ability names => ability score
                     parse_ability(other)
@@ -433,6 +446,12 @@ impl FromStr for Attribute {
             "DR" => parse_damage_type(rest)
                 .map(Self::DamageReduction)
                 .ok_or("unknown damage type"),
+            "HIT_DICE" => match rest {
+                "MAX" => Ok(Self::HitDiceMax),
+                "USED" => Ok(Self::HitDiceUsed),
+                "SIDES" => Ok(Self::HitDiceSides),
+                _ => Err("unknown HIT_DICE suffix (expected MAX, USED or SIDES)"),
+            },
             "CHARGES" => match rest {
                 "MAX" => Ok(Self::ChargesMax),
                 "USED" => Ok(Self::ChargesUsed),
@@ -575,6 +594,10 @@ impl fmt::Display for Attribute {
             Self::Ac => f.write_str("AC"),
             Self::Speed => f.write_str("SPEED"),
             Self::ClassLevel => f.write_str("CLASS.LEVEL"),
+            Self::HitDice => f.write_str("HIT_DICE"),
+            Self::HitDiceMax => f.write_str("HIT_DICE.MAX"),
+            Self::HitDiceUsed => f.write_str("HIT_DICE.USED"),
+            Self::HitDiceSides => f.write_str("HIT_DICE.SIDES"),
             Self::CasterLevel(None) => f.write_str("CASTER.LEVEL"),
             Self::CasterLevel(Some(SpellSlotPool::Arcane)) => f.write_str("CASTER.LEVEL.ARCANE"),
             Self::CasterLevel(Some(SpellSlotPool::Pact)) => f.write_str("CASTER.LEVEL.PACT"),
@@ -695,6 +718,10 @@ impl Attribute {
             Self::ProfBonus => tr!(i18n, "proficiency-bonus"),
             Self::Level => tr!(i18n, "level"),
             Self::ClassLevel => tr!(i18n, "class-level"),
+            Self::HitDice => tr!(i18n, "hit-dice"),
+            Self::HitDiceMax => tr!(i18n, "hit-dice-max"),
+            Self::HitDiceUsed => tr!(i18n, "hit-dice-used"),
+            Self::HitDiceSides => tr!(i18n, "hit-dice-sides"),
             Self::CasterLevel(None) => tr!(i18n, "caster-level"),
             Self::CasterLevel(Some(pool)) => {
                 format!("{} ({})", tr!(i18n, "caster-level"), i18n.tr(pool.tr_key()))
@@ -892,6 +919,37 @@ mod tests {
             Attribute::ChargesMax,
             Attribute::ChargesUsed,
             Attribute::Quantity,
+        ] {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_hit_dice_attributes() {
+        assert_eq!("HIT_DICE".parse::<Attribute>().unwrap(), Attribute::HitDice);
+        assert_eq!(
+            "HIT_DICE.MAX".parse::<Attribute>().unwrap(),
+            Attribute::HitDiceMax
+        );
+        assert_eq!(
+            "HIT_DICE.USED".parse::<Attribute>().unwrap(),
+            Attribute::HitDiceUsed
+        );
+        assert_eq!(
+            "HIT_DICE.SIDES".parse::<Attribute>().unwrap(),
+            Attribute::HitDiceSides
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_hit_dice_round_trip() {
+        for attr in [
+            Attribute::HitDice,
+            Attribute::HitDiceMax,
+            Attribute::HitDiceUsed,
+            Attribute::HitDiceSides,
         ] {
             let s = attr.to_string();
             let parsed: Attribute = s.parse().unwrap();
