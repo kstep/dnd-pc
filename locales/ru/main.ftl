@@ -20,11 +20,11 @@ prof-bonus = Бонус мастерства
 classes = Классы
 class = Класс
 subclass = Подкласс
-btn-add-class = + Добавить класс
+btn-add-class = + Добавить / повысить
 btn-edit-feature = Редактировать параметры способности
 apply = Применить
 apply-features-title = Применить способности
-build-replay-hint-title = Эти способности отредактированы или не применены. Нажмите Переприменить чтобы пересчитать персонажа.
+build-replay-hint-title = Эти способности отредактированы или не применены. Нажмите Перестроить чтобы пересчитать персонажа.
 build-choice-hint-title = В этих способностях нужно выбрать опцию:
 build-pending-apply-title = Новые уровни или изменения ещё не применены. Нажмите Применить, чтобы добавить связанные способности.
 build-needs-rebuild-title = У персонажа {$reasons}. Нужна пересборка.
@@ -33,9 +33,8 @@ rebuild-reason-background = изменена предыстория
 rebuild-reason-class-removed = удалён класс «{$class}»
 rebuild-reason-level-lowered = понижен уровень класса «{$class}» (было {$applied}, стало {$current})
 rebuild-reason-subclass-changed = изменён подкласс класса «{$class}»
-prerequisites-label = Требуется
-replace-with-feat = Заменить на черту
-pick-subclass = Выберите подкласс
+rebuild-reason-legacy-system-markers = устаревший формат данных
+replace-with-feat = Заменить на…
 no-eligible-options = Нет доступных вариантов
 export-json = Сохранить в файл
 import-json = Загрузить из файла
@@ -90,8 +89,6 @@ diff-notes-summary = «{ $text }» · { $level } · { $date } · всего: { $
 ## Панель боя
 armor-class = Класс защиты
 recalculate = Пересчитать
-replay = Переприменить
-replay-confirm = Переприменение сбросит и заново применит все фичи. Продолжить?
 rebuild = Пересобрать
 rebuild-confirm = Персонаж будет пересобран с нуля. HP, использованные слоты и hit dice сохранятся.
 toast-rebuild-done = Персонаж пересобран
@@ -198,7 +195,7 @@ add-item = Добавить предмет
 
 ## Способности / Личность / Владения
 feature-name = Название способности
-btn-add-feature = + Добавить способность
+btn-add-feature = Добавить способность
 source-class = Класс
 source-subclass = Подкласс
 source-species = Раса
@@ -293,6 +290,8 @@ damage-thunder = Звук
 
 ## Диалоги подтверждения
 confirm-reset = Сбросить персонажа до пустого?
+remove-class = Удалить класс
+confirm-remove-class = Удалить этот класс и все его уровни? Потом нужно будет пересобрать персонажа.
 
 ## Сессия
 slot-level = Ур. { $level }
@@ -389,6 +388,10 @@ feat-cat-epic-boon = Эпические благословения
 feat-cat-generation = Генерация
 feat-cat-faction = Фракция
 feat-cat-dragonmark = Знак дракона
+feat-cat-system-species = Раса (системная)
+feat-cat-system-background = Предыстория (системная)
+feat-cat-system-subclass = Подкласс (системный)
+feat-cat-system-class = Класс (системный)
 feat-cat-all = Все категории
 ref-spells = Заклинания
 ref-select-spell-list = Выберите список заклинаний для просмотра

@@ -1,5 +1,5 @@
 pub mod apply;
-pub use apply::{ApplyInputs, FeatureKey, PendingInputs};
+pub use apply::{ApplyInputs, FeatureKey, PendingInputs, RecomputePending};
 pub mod background;
 mod cache;
 pub mod class;
@@ -26,7 +26,7 @@ pub use index::{
     BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,
 };
 pub use preview::{PreviewContext, eval_at_levels};
-pub use registry::RulesRegistry;
+pub use registry::{FeaturesView, RulesRegistry};
 pub use species::SpeciesDefinition;
 pub use spells::{
     CastTime, SpellCategory, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex,

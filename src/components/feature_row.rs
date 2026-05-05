@@ -14,13 +14,12 @@ use crate::{
         ref_link::Ref,
     },
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, Feature, FeatureSource,
-        FeatureStoreFields, FeatureValue, FeaturesStoreFields,
+        Character, CharacterStoreFields, Feature, FeatureStoreFields, FeatureValue,
+        FeaturesStoreFields,
     },
     rules::{
         RulesRegistry,
-        apply::{FeatureKey, PendingFeature, apply_new_features, build_cascade_base_before},
-        feature::IdentitySlot,
+        apply::{FeatureKey, PendingFeature, build_cascade_base_before},
     },
 };
 
@@ -83,36 +82,6 @@ pub fn FeatureRow(
                 idx.get(feature_name.as_str())
                     .is_some_and(|feat_def| feat_def.has_interactive_inputs())
             })
-        })
-    };
-
-    // Identity-grant placeholders (the generic Subclass picker) get a sibling
-    // suffix " - {picked}" rendered next to the native label so the build
-    // panel reads "Subclass - Life Domain" without touching feature.label.
-    // Returns None when the feature isn't a picker or the slot is empty;
-    // the suffix span is then omitted.
-    let pick_suffix = {
-        let feature_name = feature_name.clone();
-        Signal::derive(move || {
-            let is_subclass_picker = registry.with_features_index(|idx| {
-                idx.get(feature_name.as_str())
-                    .and_then(|feat_def| feat_def.grants)
-                    .map(|grants| matches!(grants, IdentitySlot::Subclass))
-                    .unwrap_or(false)
-            });
-            if !is_subclass_picker {
-                return None;
-            }
-            let FeatureSource::Class(class_name, _) = &feature.read().source else {
-                return None;
-            };
-            store
-                .identity()
-                .classes()
-                .read()
-                .iter()
-                .find(|cl| cl.class.as_str() == class_name.as_ref())
-                .and_then(|cl| cl.subclass_label.clone().or_else(|| cl.subclass.clone()))
         })
     };
 
@@ -193,9 +162,6 @@ pub fn FeatureRow(
                             on:click=move |_| toggle()
                         >
                             {move || feature.read().label().to_string()}
-                            {move || pick_suffix.get().map(|suffix| view! {
-                                <span class="entry-name-pick"> " — " {suffix} </span>
-                            })}
                         </span>
                     })
                 } else {
@@ -208,66 +174,31 @@ pub fn FeatureRow(
                             list_id=feature_list_id.clone()
                             options=options
                             on_input=move |input, resolved| {
-                                let key_for_apply = {
-                                    let mut w = feature.write();
-                                    if let Some(key) = resolved {
-                                        // Resolved to a real feat: bind name to
-                                        // the registry key and pull canonical
-                                        // label/description from the index.
-                                        w.name = key.clone();
-                                        let (label, description) = registry
-                                            .features()
-                                            .lookup_untracked(key.as_str(), |loc| {
-                                                let label = loc
-                                                    .locale
-                                                    .and_then(|map| {
-                                                        map.get(&*loc.data.name)
-                                                    })
-                                                    .and_then(|text| text.label.clone());
-                                                (label, loc.description().to_string())
-                                            })
-                                            .unwrap_or_default();
-                                        w.label = label;
-                                        w.description = description;
-                                        Some(key)
-                                    } else {
-                                        // Free text: keep label only, drop any
-                                        // prior registry binding so this row
-                                        // stops being treated as an indexed feat.
-                                        w.name.clear();
-                                        w.set_label(input);
-                                        w.description.clear();
-                                        None
-                                    }
-                                };
-                                if let Some(key) = key_for_apply {
-                                    let is_non_interactive = registry.with_features_index_untracked(|index| {
-                                        index.get(key.as_str())
-                                            .is_some_and(|feat_def| !feat_def.has_interactive_inputs())
-                                    });
-                                    if is_non_interactive {
-                                        let source = feature.with_untracked(|f| f.source.clone());
-                                        let level = source.added_at_level();
-                                        let pending = vec![PendingFeature {
-                                            name: key,
-                                            source,
-                                            level,
-                                        }];
-                                        apply_with_modal(
-                                            store,
-                                            registry,
-                                            pending,
-                                            None,
-                                            move |character, pending, inputs, feat_index| {
-                                                apply_new_features(
-                                                    feat_index,
-                                                    character,
-                                                    pending,
-                                                    Some(&inputs.feature_inputs),
-                                                );
-                                            },
-                                        );
-                                    }
+                                let mut w = feature.write();
+                                if let Some(key) = resolved {
+                                    // Resolved to a real feat: bind name to
+                                    // the registry key and pull canonical
+                                    // label/description from the index.
+                                    w.name = key.clone();
+                                    let (label, description) = registry
+                                        .features()
+                                        .lookup_untracked(key.as_str(), |loc| {
+                                            let label = loc
+                                                .locale
+                                                .and_then(|map| map.get(&*loc.data.name))
+                                                .and_then(|text| text.label.clone());
+                                            (label, loc.description().to_string())
+                                        })
+                                        .unwrap_or_default();
+                                    w.label = label;
+                                    w.description = description;
+                                } else {
+                                    // Free text: keep label only, drop any
+                                    // prior registry binding so this row
+                                    // stops being treated as an indexed feat.
+                                    w.name.clear();
+                                    w.set_label(input);
+                                    w.description.clear();
                                 }
                             }
                         />
@@ -320,20 +251,7 @@ pub fn FeatureRow(
                             } else {
                                 let level = source.added_at_level();
                                 let pending = vec![PendingFeature { name, source, level }];
-                                apply_with_modal(
-                                    store,
-                                    registry,
-                                    pending,
-                                    None,
-                                    move |character, pending, inputs, feat_index| {
-                                        apply_new_features(
-                                            feat_index,
-                                            character,
-                                            pending,
-                                            Some(&inputs.feature_inputs),
-                                        );
-                                    },
-                                );
+                                apply_with_modal(store, registry, pending, None, None, |_| {});
                             }
                         }
                     >

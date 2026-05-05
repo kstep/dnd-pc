@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 
 use crate::{
     expr,
-    model::{Attribute, SpellSlotPool},
+    model::{AttrKey, Attribute, SpellSlotPool},
     rules::{WhenCondition, feature::FeatureDefinition},
 };
 
@@ -64,7 +64,8 @@ pub fn eval_at_levels<F: FnMut(u32, &mut PreviewContext)>(
     }
     for level in 1..=20u32 {
         ctx.values.insert(Attribute::Level, level as i32);
-        ctx.values.insert(Attribute::ClassLevel, level as i32);
+        ctx.values
+            .insert(Attribute::ClassLevel(AttrKey::Scoped), level as i32);
         for assign in feat_def.assign.iter().flatten() {
             if assign.when == WhenCondition::OnCompute
                 && let Err(error) = assign.expr.apply(&mut ctx)

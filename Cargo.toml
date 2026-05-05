@@ -83,6 +83,7 @@ perf-marks = ["dep:tracing", "dep:tracing-wasm", "leptos/tracing"]
 wasm-bindgen-test = "0.3"
 fluent-bundle = "0.16"
 unic-langid = { version = "0.9", features = ["macros"] }
+any_spawner = { version = "0.3", features = ["wasm-bindgen"] }
 
 [profile.release]
 opt-level = 'z'

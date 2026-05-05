@@ -1,6 +1,6 @@
 use std::{collections::BTreeMap, sync::Arc};
 
-use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
+use leptos::prelude::*;
 use leptos_fluent::{I18n, move_tr};
 use reactive_stores::Store;
 
@@ -13,25 +13,16 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    model::{
-        AssignInputs, Character, CharacterIdentityStoreFields, CharacterStoreFields, Expr, Feature,
-        FeatureSource,
-    },
+    model::{AssignInputs, Character, Expr, Feature, FeatureCategory, FeatureSource, IdentitySlot},
     rules::{
-        ApplyInputs, DefinitionStore, FeatureKey, PendingInputs, ReplaceWith, RulesRegistry,
-        WhenCondition, apply::apply_feature, feature::IdentitySlot,
+        ApplyInputs, DefinitionStore, FeatureKey, PendingInputs, RecomputePending, ReplaceWith,
+        RulesRegistry, WhenCondition, apply::apply_feature,
     },
 };
 
 type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
 type ArgsSignals = BTreeMap<FeatureKey, Vec<StoredValue<Vec<RwSignal<i32>>>>>;
 type DiceSignals = BTreeMap<FeatureKey, Vec<StoredValue<DiceGroupSignals>>>;
-/// Identity-slot pick state. Keyed by the placeholder feature's real
-/// `FeatureKey` (`name="Subclass" + source=Class(_,_)` for the subclass
-/// picker). Value pairs the slot kind (so the submit handler knows which
-/// `Identity` field to mutate) with the user-chosen value signal.
-type PickSignals = BTreeMap<FeatureKey, (IdentitySlot, RwSignal<Option<String>>)>;
-
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
 #[derive(Clone, Copy)]
@@ -46,6 +37,17 @@ pub struct ArgsModalCtx {
     /// state; the feature-edit flow passes a pre-edit snapshot built via
     /// `build_cascade_base_before`.
     cascade_base: StoredValue<Option<Arc<Character>>>,
+    /// Speculative-cascade recompute closure. When set, the modal's
+    /// pick-watcher Effect runs this against a speculative character (cascade
+    /// base + tentative identity picks) and updates `pending` with the
+    /// returned list. `None` disables speculative recomputation — the modal
+    /// renders whatever pending was passed at `open` time, unchanged.
+    recompute: StoredValue<Option<RecomputePending>>,
+    /// Reset hook for component-scoped state signals (all_signals, all_dice,
+    /// all_replacements, all_valid). Set once when `ArgsModal` mounts; called
+    /// from `open` so each modal session starts with fresh state, no
+    /// pollution from a previous open/close cycle.
+    reset_state: StoredValue<Option<Box<dyn Fn() + Send + Sync>>>,
 }
 
 impl ArgsModalCtx {
@@ -55,6 +57,8 @@ impl ArgsModalCtx {
             pending: RwSignal::new(Vec::new()),
             callback: StoredValue::new(None),
             cascade_base: StoredValue::new(None),
+            recompute: StoredValue::new(None),
+            reset_state: StoredValue::new(None),
         }
     }
 
@@ -63,17 +67,27 @@ impl ArgsModalCtx {
     /// `ApplyInputs`. `base` seeds the cascade snapshot[0]: `None` uses the
     /// live store (level-up / user-add / quick-start); `Some(character)`
     /// overrides — rebuild passes an identity-only character, edit flow
-    /// passes a pre-edit snapshot.
+    /// passes a pre-edit snapshot. `recompute` enables speculative cascade —
+    /// when an identity-slot pick changes mid-modal, the closure runs against
+    /// the speculative character to recompute the pending list. `None`
+    /// disables speculation (edit-feature flows where pending is fixed).
     pub fn open(
         &self,
         pending: Vec<PendingInputs>,
         base: Option<Arc<Character>>,
+        recompute: Option<RecomputePending>,
         on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
     ) {
+        self.reset_state.with_value(|reset| {
+            if let Some(reset) = reset {
+                reset();
+            }
+        });
         self.pending.set(pending);
         self.callback
             .update_value(|cb| *cb = Some(Box::new(on_complete)));
         self.cascade_base.set_value(base);
+        self.recompute.set_value(recompute);
         self.show.set(true);
     }
 
@@ -84,8 +98,113 @@ impl ArgsModalCtx {
             }
         });
         self.cascade_base.set_value(None);
+        self.recompute.set_value(None);
         self.show.set(false);
     }
+
+    /// Wire the component-scoped state-reset hook. Called once from
+    /// `ArgsModal` on mount; subsequent `open` invocations call the
+    /// stored closure to clear state signals before showing the new modal.
+    fn install_reset(&self, reset: impl Fn() + Send + Sync + 'static) {
+        self.reset_state.set_value(Some(Box::new(reset)));
+    }
+}
+
+/// Apply one cascade step onto `prior`. `tracked` controls whether input-
+/// signal reads subscribe the calling reactive context — per-section
+/// snapshots pass `true`, outer modal watcher passes `false` (else the
+/// section-mount → `all_signals` write loops back into the watcher).
+fn apply_cascade_step(
+    prior: &Character,
+    key: &FeatureKey,
+    all_signals: RwSignal<ArgsSignals>,
+    all_dice: RwSignal<DiceSignals>,
+    all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+    registry: &RulesRegistry,
+    tracked: bool,
+) -> Character {
+    let mut ch = prior.clone_lean();
+    let read_replacements = |map: &BTreeMap<String, RwSignal<Option<String>>>| {
+        map.get(&key.name).and_then(|sig| {
+            if tracked {
+                sig.get()
+            } else {
+                sig.get_untracked()
+            }
+        })
+    };
+    let replacement = if tracked {
+        all_replacements.with(read_replacements)
+    } else {
+        all_replacements.with_untracked(read_replacements)
+    };
+    let effective_key = match &replacement {
+        Some(name) => FeatureKey::new(name.clone(), key.source.clone()),
+        None => key.clone(),
+    };
+    let read_dice = |entries: &DiceSignals| -> Vec<DicePool> {
+        entries
+            .get(&effective_key)
+            .map(|groups| {
+                groups
+                    .iter()
+                    .map(|dice_group| dice_group.with_value(collect_dice_pool))
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    let dice_pools: Vec<DicePool> = if tracked {
+        all_dice.with(read_dice)
+    } else {
+        all_dice.with_untracked(read_dice)
+    };
+    let read_signals = |entries: &ArgsSignals| -> Vec<AssignInputs> {
+        entries
+            .get(&effective_key)
+            .map(|groups| {
+                groups
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, sig_group)| {
+                        sig_group.with_value(|signals| AssignInputs {
+                            args: signals
+                                .iter()
+                                .map(|signal| {
+                                    if tracked {
+                                        signal.get()
+                                    } else {
+                                        signal.get_untracked()
+                                    }
+                                })
+                                .collect(),
+                            dice: dice_pools.get(idx).cloned().unwrap_or_default(),
+                        })
+                    })
+                    .collect()
+            })
+            .unwrap_or_default()
+    };
+    let inputs: Vec<AssignInputs> = if tracked {
+        all_signals.with(read_signals)
+    } else {
+        all_signals.with_untracked(read_signals)
+    };
+    registry.with_features_index_untracked(|idx| {
+        if let Some(def) = idx.get(effective_key.name.as_str()) {
+            ch.features.list.push(Feature {
+                name: effective_key.name.clone(),
+                source: effective_key.source.clone(),
+                applied: true,
+                category: def.category,
+                inputs: inputs.clone(),
+                ..Feature::default()
+            });
+            let feature_index = ch.features.list.len() - 1;
+            apply_feature(def, &mut ch, feature_index, WhenCondition::OnFeatureAdd);
+            apply_feature(def, &mut ch, feature_index, WhenCondition::OnCompute);
+        }
+    });
+    ch
 }
 
 /// Register `all_signals` / `all_dice` entries for a `hidden` pending feat
@@ -117,17 +236,15 @@ fn register_hidden_signals(pending_inputs: &PendingInputs, all_signals: RwSignal
 #[component]
 fn ArgsFeatureInput(
     pending_inputs: PendingInputs,
-    /// Snapshot of the character BEFORE this feature is applied — the
-    /// cascade of preceding pending features applied to
-    /// `Character::default()` seeded with live identity. Drives the
-    /// `ExprArgsInput` analysis so downstream features see upstream's
-    /// expression effects.
-    character: Signal<Arc<Character>>,
+    /// Cascade-base seed captured at modal open. Each section computes its
+    /// own snapshot from this base + the apply-effect of every prior pending
+    /// entry currently in `ctx.pending`. Stored in a `StoredValue` so the
+    /// section can read it lazily inside its snapshot Effect.
+    shared_base: StoredValue<Arc<Character>>,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
-    all_valid: RwSignal<Vec<Memo<bool>>>,
+    all_valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>>,
     all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
-    all_picks: RwSignal<PickSignals>,
 ) -> impl IntoView {
     #[cfg(feature = "perf-marks")]
     let _mount_span = tracing::info_span!(
@@ -137,13 +254,9 @@ fn ArgsFeatureInput(
     .entered();
 
     let registry = expect_context::<RulesRegistry>();
+    let ctx = expect_context::<ArgsModalCtx>();
     let feature_name = pending_inputs.feature_name.clone();
-    let (feature_label, description) = registry
-        .features()
-        .lookup_untracked(&feature_name, |loc| {
-            (loc.label().to_string(), loc.description().to_string())
-        })
-        .unwrap_or_else(|| (feature_name.clone(), String::new()));
+    let (feature_label, description) = registry.feature_label_desc_untracked(&feature_name);
     let has_description = !description.is_empty();
     let replace_with = pending_inputs.replace_with;
     let replaceable = pending_inputs.is_replaceable();
@@ -151,6 +264,45 @@ fn ArgsFeatureInput(
     let source = pending_inputs.source.clone();
     let prefilled_replacement = pending_inputs.prefilled_replacement.clone();
     let replacement_prefill = pending_inputs.replacement_prefill.clone();
+
+    // Per-section snapshot: shared_base + apply(pending[0..my_idx]). When
+    // `ctx.pending` mutates (speculative recompute on identity-pick change)
+    // or any prior section's inputs change, this Effect re-fires and writes
+    // a fresh snapshot. ExprArgsInput reads `character` cheaply on each
+    // re-render of expression analysis.
+    //
+    // Cost: O(N) clone_lean + apply per section, O(N²) total across all
+    // sections when any input changes. Acceptable for typical pending lists
+    // (5-20 entries); profile if it shows up at L20+ multiclass rebuilds and
+    // memoize intermediate snapshots in a parallel `Vec<RwSignal>` if so.
+    let character_signal: RwSignal<Arc<Character>> = RwSignal::new(shared_base.get_value());
+    let section_key = FeatureKey::new(
+        pending_inputs.feature_name.clone(),
+        pending_inputs.source.clone(),
+    );
+    {
+        let section_key = section_key.clone();
+        Effect::new(move |_| {
+            let pending = ctx.pending.get();
+            let Some(my_idx) = pending.iter().position(|p| p.feature_key() == section_key) else {
+                return;
+            };
+            let mut ch = (*shared_base.get_value()).clone_lean();
+            for prior in pending.iter().take(my_idx) {
+                ch = apply_cascade_step(
+                    &ch,
+                    &prior.feature_key(),
+                    all_signals,
+                    all_dice,
+                    all_replacements,
+                    &registry,
+                    true,
+                );
+            }
+            character_signal.set(Arc::new(ch));
+        });
+    }
+    let character: Signal<Arc<Character>> = character_signal.into();
 
     // Signal tracking whether user chose to replace this feature.
     // Pre-filled from AI generation if present — user can still override.
@@ -167,9 +319,12 @@ fn ArgsFeatureInput(
     let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> = StoredValue::new(Vec::new());
     let key = FeatureKey::new(feature_name, source.clone());
 
-    // For replaceable features, collect expr validity locally so we can
-    // bypass it when the user picks a replacement.
-    let expr_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
+    // ARG validity for the section's own exprs and for the user-picked
+    // replacement's exprs (replacement validity lifted into this scope so the
+    // single section_validity memo below can AND the right set without
+    // needing a synthetic key in `all_valid`).
+    let own_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
+    let replacement_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
 
     let prefill = pending_inputs.prefill.clone();
     let expr_views = pending_inputs
@@ -185,11 +340,7 @@ fn ArgsFeatureInput(
                 dice_groups.update_value(|groups| {
                     groups.push(StoredValue::new(parts.dice_signals));
                 });
-                if replaceable {
-                    expr_valids.update(|validations| validations.push(parts.is_valid));
-                } else {
-                    all_valid.update(|validations| validations.push(parts.is_valid));
-                }
+                own_valids.update(|validations| validations.push(parts.is_valid));
             };
             view! {
                 <ExprDetails expr=expr.clone() />
@@ -210,20 +361,60 @@ fn ArgsFeatureInput(
         });
     });
 
-    // For replaceable features, push a single combined validity memo:
-    // valid if (replacing with a chosen feat) OR (not replacing AND all
-    // ARG expr memos pass). For replaceable-only features (no exprs),
-    // expr_valids is empty so the fallback is always valid.
-    if replaceable {
-        all_valid.update(|validations| {
-            validations.push(Memo::new(move |_| {
-                if replacement_choice.get().is_some() {
-                    return true;
-                }
-                expr_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
-            }));
+    // Section validity branches by replacement state: when replacing, the
+    // chosen feat's ARG memos (collected by `<ReplacementPicker>` into
+    // `replacement_valids`) drive validity; otherwise the section's own ARG
+    // memos. Single registration under section_key — `on_cleanup` below
+    // removes the entry when `<For>` drops the section.
+    let section_validity = Memo::new(move |_| {
+        if replaceable && replacement_choice.get().is_some() {
+            replacement_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
+        } else {
+            own_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
+        }
+    });
+    {
+        let section_key = section_key.clone();
+        all_valid.update(|map| {
+            map.insert(section_key, section_validity);
         });
     }
+    // Remove validity + replacement + signal entries on section unmount
+    // (For drops the section when the matching pending entry disappears).
+    // `all_signals` / `all_dice` reference StoredValues created in this
+    // scope (line ~350) — leaving stale entries behind causes a disposed-
+    // signal panic when submit walks the map. Without `all_valid` cleanup
+    // dead memos accumulate and submit stays disabled forever; without
+    // `all_replacements` cleanup the watcher Effect panics traversing it.
+    // The section's own key plus any active replacement key (registered
+    // under a different name with the same source by `ReplacementPicker`)
+    // both need clearing.
+    let cleanup_key = section_key.clone();
+    let cleanup_feature_name = section_key.name.clone();
+    let cleanup_source = section_key.source.clone();
+    on_cleanup(move || {
+        let replacement_key = replacement_choice
+            .get_untracked()
+            .map(|name| FeatureKey::new(name, cleanup_source.clone()));
+        all_valid.update(|map| {
+            map.remove(&cleanup_key);
+        });
+        all_replacements.update(|map| {
+            map.remove(&cleanup_feature_name);
+        });
+        all_signals.update(|map| {
+            map.remove(&cleanup_key);
+            if let Some(key) = &replacement_key {
+                map.remove(key);
+            }
+        });
+        all_dice.update(|map| {
+            map.remove(&cleanup_key);
+            if let Some(key) = &replacement_key {
+                map.remove(key);
+            }
+        });
+    });
 
     let is_replacing = Memo::new(move |_| replacement_choice.get().is_some());
 
@@ -233,14 +424,6 @@ fn ArgsFeatureInput(
         let source = source.clone();
         move || registry.source_label(&source, i18n)
     };
-
-    let pick_kind = pending_inputs.pick;
-    let pick_view = pick_kind.map(|kind| {
-        let key = key.clone();
-        view! {
-            <PickInput kind=kind feature_key=key all_picks=all_picks all_valid=all_valid />
-        }
-    });
 
     view! {
         <div class="args-modal-feature">
@@ -256,154 +439,10 @@ fn ArgsFeatureInput(
             <div style:display=move || if is_replacing.get() { "none" } else { "" }>
                 {expr_views}
             </div>
-            {pick_view}
             {replaceable.then(|| {
                 let source = source.clone();
-                view! { <ReplacementPicker replace_with replacement_choice replacement_prefill character all_signals all_dice all_valid source replace_only /> }
+                view! { <ReplacementPicker replace_with replacement_choice replacement_prefill character all_signals all_dice replacement_valids source replace_only /> }
             })}
-        </div>
-    }
-}
-
-/// Identity-slot pick section (Subclass for now). Renders a datalist of
-/// options sourced from the matching catalog (`class_def.subclasses` for
-/// Subclass) filtered to those reachable from the placeholder's source.
-/// Required-select: validity reports valid only when an option is chosen.
-#[component]
-fn PickInput(
-    kind: IdentitySlot,
-    feature_key: FeatureKey,
-    all_picks: RwSignal<PickSignals>,
-    all_valid: RwSignal<Vec<Memo<bool>>>,
-) -> impl IntoView {
-    let registry = expect_context::<RulesRegistry>();
-    let store = expect_context::<Store<Character>>();
-
-    let parent_class = match kind {
-        IdentitySlot::Subclass => match &feature_key.source {
-            FeatureSource::Class(class_name, _) => Some(class_name.clone()),
-            _ => None,
-        },
-    };
-
-    // Pre-fill from the live character's matching identity slot. Pre-existing
-    // picks (re-edit / silent commit on existing characters) seed the
-    // datalist with the current value so the user can confirm or change.
-    let initial_pick: Option<String> = match kind {
-        IdentitySlot::Subclass => match &feature_key.source {
-            FeatureSource::Class(class_name, _) => store
-                .read_untracked()
-                .identity
-                .classes
-                .iter()
-                .find(|class_level| class_level.class.as_str() == class_name.as_ref())
-                .and_then(|class_level| class_level.subclass.clone()),
-            _ => None,
-        },
-    };
-
-    let pick_choice: RwSignal<Option<String>> = RwSignal::new(initial_pick.clone());
-
-    all_picks.update(|picks| {
-        picks.insert(feature_key, (kind, pick_choice));
-    });
-
-    all_valid.update(|validations| {
-        validations.push(Memo::new(move |_| pick_choice.get().is_some()));
-    });
-
-    let datalist_id = next_datalist_id();
-    let class_key = parent_class.clone().unwrap_or_default();
-
-    let options = {
-        let class_key = class_key.clone();
-        Signal::derive(move || {
-            registry
-                .classes()
-                .with(&class_key, |class_def| {
-                    class_def
-                        .subclasses
-                        .values()
-                        .map(|subclass_def| {
-                            let sub_name = subclass_def.name.to_string();
-                            let class_key = class_key.clone();
-                            let sub_key = sub_name.clone();
-                            let label = ArcSignal::derive({
-                                let class_key = class_key.clone();
-                                let sub_key = sub_key.clone();
-                                move || {
-                                    registry
-                                        .classes()
-                                        .lookup(&class_key, |locale| {
-                                            locale
-                                                .subclass(&sub_key)
-                                                .map(|localized| localized.label().to_string())
-                                        })
-                                        .flatten()
-                                        .unwrap_or_else(|| sub_key.clone())
-                                }
-                            });
-                            let description = ArcSignal::derive({
-                                let class_key = class_key.clone();
-                                let sub_key = sub_key.clone();
-                                move || {
-                                    registry
-                                        .classes()
-                                        .lookup(&class_key, |locale| {
-                                            locale.subclass(&sub_key).map(|localized| {
-                                                localized.description().to_string()
-                                            })
-                                        })
-                                        .flatten()
-                                        .unwrap_or_default()
-                                }
-                            });
-                            DatalistOption::with_signals(sub_name, label, description)
-                        })
-                        .collect::<Vec<_>>()
-                })
-                .unwrap_or_default()
-        })
-    };
-
-    let initial_label = initial_pick
-        .as_ref()
-        .map(|sub_name| {
-            registry
-                .classes()
-                .lookup_untracked(&class_key, |locale| {
-                    locale
-                        .subclass(sub_name)
-                        .map(|localized| localized.label().to_string())
-                })
-                .flatten()
-                .unwrap_or_else(|| sub_name.clone())
-        })
-        .unwrap_or_default();
-
-    let input_value = RwSignal::new(initial_label);
-    let placeholder = Signal::derive(move || move_tr!("pick-subclass").get());
-
-    let on_input = move |text: String, resolved: Option<String>| {
-        if text.is_empty() {
-            pick_choice.set(None);
-            return;
-        }
-        pick_choice.set(resolved);
-    };
-
-    view! {
-        <div class="pick-input">
-            <label class="pick-input-label">{move_tr!("pick-subclass")}</label>
-            <SharedDatalist id=datalist_id.clone() options=options />
-            <DatalistInput
-                value=input_value
-                placeholder=placeholder
-                list_id=datalist_id
-                options=options
-                on_input=on_input
-                required=true
-            />
         </div>
     }
 }
@@ -421,7 +460,12 @@ fn ReplacementPicker(
     character: Signal<Arc<Character>>,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
-    all_valid: RwSignal<Vec<Memo<bool>>>,
+    /// Per-section validity sink owned by the parent `<ArgsFeatureInput>`.
+    /// Each chosen replacement's ARG memo pushes here; the parent's
+    /// `section_validity` reads this collection when `replacement_choice`
+    /// is `Some(_)`. No separate `all_valid` registration — the parent owns
+    /// the section's submit-validity entry.
+    replacement_valids: RwSignal<Vec<Memo<bool>>>,
     source: FeatureSource,
     replace_only: bool,
 ) -> impl IntoView {
@@ -433,15 +477,57 @@ fn ReplacementPicker(
     let source = StoredValue::new(source);
 
     let replacement_list_id = next_datalist_id();
-    let options = Signal::derive(move || {
+    let options = Memo::new(move |_prev: Option<&Vec<DatalistOption>>| {
         let character = store.read();
         registry.with_features_index(|features_index| {
+            // System(Class) candidates: a new class needs the full multiclass
+            // gate (every existing class meets its prereq + this class's
+            // prereq); an existing class always passes — level-up doesn't
+            // re-check multiclass requirements.
+            let class_prereqs_ok = registry.meets_class_prerequisites(&character);
+            // System(Subclass) candidates: limit to subclasses of the
+            // placeholder's parent class — `Subclass` placeholders are
+            // attached to a specific class via `source = Class(name, lvl)`,
+            // and a Cleric's picker shouldn't surface a Wizard subclass.
+            let parent_class_for_subclass = source.with_value(|source| match source {
+                FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => {
+                    Some(name.to_string())
+                }
+                _ => None,
+            });
             features_index
                 .values()
-                .filter(|feat| replace_with.matches(feat) && feat.meets_prerequisites(&character))
+                .filter(|feat| {
+                    if !replace_with.matches(feat) {
+                        return false;
+                    }
+                    match feat.category {
+                        FeatureCategory::System(IdentitySlot::Class) => {
+                            let is_own = character
+                                .identity
+                                .classes
+                                .iter()
+                                .any(|class_level| class_level.class.as_str() == &*feat.name);
+                            is_own || (class_prereqs_ok && feat.meets_prerequisites(&character))
+                        }
+                        FeatureCategory::System(IdentitySlot::Subclass) => {
+                            if !feat.meets_prerequisites(&character) {
+                                return false;
+                            }
+                            parent_class_for_subclass.as_deref().is_some_and(|parent| {
+                                registry
+                                    .classes()
+                                    .with(parent, |class_def| {
+                                        class_def.subclasses.contains_key(&*feat.name)
+                                    })
+                                    .unwrap_or(false)
+                            })
+                        }
+                        _ => feat.meets_prerequisites(&character),
+                    }
+                })
                 .map(|feat| {
-                    let (label, description) =
-                        registry.features().label_desc(&*feat.name, &*feat.name);
+                    let (label, description) = registry.feature_label_desc(&feat.name);
                     DatalistOption::with_signals(&*feat.name, label, description)
                 })
                 .collect::<Vec<_>>()
@@ -459,16 +545,6 @@ fn ReplacementPicker(
     // Track previous replacement name to clean up stale entries from
     // all_signals/all_dice when the user switches replacement choice.
     let prev_replacement: RwSignal<Option<String>> = RwSignal::new(None);
-
-    // Local validity memos for replacement feat ARGs, reset on each selection
-    // change. One combined memo is pushed to all_valid (below) so stale memos
-    // don't accumulate.
-    let replacement_valids: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
-    all_valid.update(|validations| {
-        validations.push(Memo::new(move |_| {
-            replacement_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
-        }));
-    });
 
     // Load (description, exprs) for a replacement feature name. Used by both
     // the initial-seed path (pre-filled from AI generation) and by `on_input`
@@ -498,10 +574,16 @@ fn ReplacementPicker(
             replacement_prefill.set_value(None);
         }
 
-        // Clean up stale signal/dice entries from previous replacement
+        // Clean up stale signal/dice entries from previous replacement.
+        // Same source as the section — exact key, direct remove.
         if let Some(old_name) = prev {
-            all_signals.update(|entries| entries.retain(|key, _| key.name != old_name));
-            all_dice.update(|entries| entries.retain(|key, _| key.name != old_name));
+            let stale_key = FeatureKey::new(old_name, source.get_value());
+            all_signals.update(|entries| {
+                entries.remove(&stale_key);
+            });
+            all_dice.update(|entries| {
+                entries.remove(&stale_key);
+            });
         }
         replacement_valids.set(Vec::new());
 
@@ -624,312 +706,212 @@ pub fn ArgsModal() -> impl IntoView {
     let _mount_span = tracing::info_span!("modal.open").entered();
 
     let ctx = expect_context::<ArgsModalCtx>();
-
     let title = Signal::derive(move || move_tr!("apply-features-title").get());
+    let store = expect_context::<Store<Character>>();
+
+    // Component-scoped state — survives modal close/open cycles. Cleared
+    // explicitly via `install_reset` whenever a new session begins.
+    let all_signals: RwSignal<ArgsSignals> = RwSignal::new(BTreeMap::new());
+    let all_dice: RwSignal<DiceSignals> = RwSignal::new(BTreeMap::new());
+    let all_valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>> = RwSignal::new(BTreeMap::new());
+    let all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>> =
+        RwSignal::new(BTreeMap::new());
+
+    // Cascade-base seed captured per modal session in a StoredValue so
+    // every section's snapshot Effect can read it lazily without retriggering
+    // the watcher Effect when reading.
+    let shared_base: StoredValue<Arc<Character>> = StoredValue::new(Arc::new(Character::default()));
+
+    // Wire the state-reset hook so each `ArgsModalCtx::open` starts fresh —
+    // no stale ARG inputs, dice rolls, replacements, or validity entries
+    // from a previous modal session.
+    ctx.install_reset(move || {
+        all_signals.update(|m| m.clear());
+        all_dice.update(|m| m.clear());
+        all_valid.update(|m| m.clear());
+        all_replacements.update(|m| m.clear());
+    });
+
+    // Capture cascade base when the modal transitions to open. `open()` has
+    // already populated `ctx.cascade_base`; if absent (e.g. live-store flow),
+    // fall back to a lean clone of the live character.
+    Effect::new(move |_| {
+        if !ctx.show.get() {
+            return;
+        }
+        let base = ctx
+            .cascade_base
+            .with_value(|opt| opt.clone())
+            .unwrap_or_else(|| Arc::new(store.read_untracked().clone_lean()));
+        shared_base.set_value(base);
+    });
+
+    // Replacement-watcher: an aggregator subscribes to BOTH the outer
+    // `all_replacements` map and each inner replacement-choice signal (via
+    // `sig.get()` inside the closure). On any change, build a speculative
+    // character by layering each pending entry's effective feature
+    // (replacement-aware) onto the cascade base, then call the modal
+    // session's recompute closure. Identity writes happen as side-effects of
+    // the synthesized System features' assigns.
+    let registry = expect_context::<RulesRegistry>();
+    // Memo (not Signal::derive) so the watcher only re-fires when the actual
+    // set of chosen replacements changes — not on every all_replacements
+    // mount/unmount which adds/removes None-valued entries with no semantic
+    // effect.
+    let replacement_choices = Memo::new(move |_| {
+        all_replacements.with(|map| {
+            map.iter()
+                .filter_map(|(name, sig)| sig.get().map(|chosen| (name.clone(), chosen)))
+                .collect::<BTreeMap<String, String>>()
+        })
+    });
+    Effect::new(move |_| {
+        if !ctx.show.get() {
+            return;
+        }
+        let choices = replacement_choices.get();
+        let recomputed = ctx.recompute.with_value(|opt| {
+            let recompute = opt.as_ref()?;
+            let mut speculative = (*shared_base.get_value()).clone_lean();
+            let pending_now = ctx.pending.get_untracked();
+            for entry in &pending_now {
+                // Unresolved replaceable placeholder — skip. Pushing the
+                // placeholder into speculative.features makes subsequent
+                // collect_pending_features think it's already applied,
+                // creating a recompute oscillation between "placeholder
+                // pending" and "placeholder absorbed".
+                if entry.is_replaceable() && !choices.contains_key(&entry.feature_name) {
+                    continue;
+                }
+                speculative = apply_cascade_step(
+                    &speculative,
+                    &entry.feature_key(),
+                    all_signals,
+                    all_dice,
+                    all_replacements,
+                    &registry,
+                    false,
+                );
+            }
+            // Identity attributes just got written by the System(_) assigns.
+            // collect_pending_features (called inside `recompute`) reads the
+            // class / species / background caches via untracked reads, so
+            // we (a) trigger fetches for any newly-referenced definition,
+            // and (b) tracked-read each cache entry so this Effect re-fires
+            // when an async fetch lands and the relevant features become
+            // collectable.
+            registry.ensure_definitions_fetched(&speculative);
+            for class_level in &speculative.identity.classes {
+                if !class_level.class.is_empty() {
+                    registry.classes().with(&class_level.class, |_| {});
+                }
+            }
+            if !speculative.identity.species.is_empty() {
+                registry
+                    .species()
+                    .with(&speculative.identity.species, |_| {});
+            }
+            if !speculative.identity.background.is_empty() {
+                registry
+                    .backgrounds()
+                    .with(&speculative.identity.background, |_| {});
+            }
+            Some(recompute(&speculative))
+        });
+        // Defer overwrite until first pick AND recompute is non-empty:
+        // initial pending's hidden/visible split is row-stable, and an empty
+        // recompute (registry not yet loaded, etc.) shouldn't blank the modal.
+        if let Some(new_pending) = recomputed
+            && !choices.is_empty()
+            && !new_pending.is_empty()
+        {
+            ctx.pending.set(new_pending);
+        }
+    });
+
+    let is_valid = Memo::new(move |_| {
+        all_valid.with(|map| !map.is_empty() && map.values().all(|memo| memo.get()))
+    });
+
+    let on_submit = move |event: web_sys::SubmitEvent| {
+        event.prevent_default();
+
+        let replacements: BTreeMap<String, String> = all_replacements.with_untracked(|entries| {
+            entries
+                .iter()
+                .filter_map(|(original_name, signal)| {
+                    signal
+                        .get_untracked()
+                        .map(|replacement| (original_name.clone(), replacement))
+                })
+                .collect()
+        });
+
+        let inputs_map: BTreeMap<FeatureKey, Vec<AssignInputs>> =
+            all_signals.with_untracked(|sig_entries| {
+                all_dice.with_untracked(|dice_entries| {
+                    sig_entries
+                        .iter()
+                        .filter(|(key, _)| !replacements.contains_key(&key.name))
+                        .map(|(key, signal_groups)| {
+                            let dice_groups = dice_entries.get(key);
+                            let feature_inputs: Vec<AssignInputs> = signal_groups
+                                .iter()
+                                .enumerate()
+                                .map(|(i, sigs)| {
+                                    let args = sigs.with_value(|signals| {
+                                        signals
+                                            .iter()
+                                            .map(|signal| signal.get_untracked())
+                                            .collect()
+                                    });
+                                    let dice = dice_groups
+                                        .and_then(|groups| groups.get(i))
+                                        .map(|dice_sv| dice_sv.with_value(collect_dice_pool))
+                                        .unwrap_or_default();
+                                    AssignInputs { args, dice }
+                                })
+                                .collect();
+                            (key.clone(), feature_inputs)
+                        })
+                        .collect()
+                })
+            });
+
+        ctx.complete(ApplyInputs {
+            feature_inputs: inputs_map,
+            replacements,
+        });
+    };
 
     view! {
         <Modal show=ctx.show title=title>
-            {move || {
-                let pending = ctx.pending.get();
-                if pending.is_empty() {
-                    return None;
-                }
-
-                let all_signals: RwSignal<ArgsSignals> = RwSignal::new(BTreeMap::new());
-                let all_dice: RwSignal<DiceSignals> = RwSignal::new(BTreeMap::new());
-                let all_valid: RwSignal<Vec<Memo<bool>>> = RwSignal::new(Vec::new());
-                let all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>> =
-                    RwSignal::new(BTreeMap::new());
-                let all_picks: RwSignal<PickSignals> = RwSignal::new(BTreeMap::new());
-
-                // Build cascade chain: snapshot[i] = character with pending
-                // features 0..i applied (via FeatureDefinition::assign — the
-                // expression-only subset of apply, sufficient for analyze).
-                // snapshot[0] seeded from either a caller-supplied base (rebuild
-                // passes a fresh identity-only Character so the cascade matches
-                // the build-from-scratch state) or from the live store (level-up
-                // / user-add apply on top of the current sheet).
-                //
-                // INVARIANT: the seed is one-shot, never re-synced while the
-                // modal is open. The modal blocks the UI so user mutations can't
-                // happen concurrently; background writes (auto-save, cloud sync)
-                // don't touch Attributes the cascade resolves.
-                let store = expect_context::<Store<Character>>();
-                let registry = expect_context::<RulesRegistry>();
-                let shared_base: Arc<Character> = ctx
-                    .cascade_base
-                    .get_value()
-                    .unwrap_or_else(|| Arc::new(store.read_untracked().clone_lean()));
-
-                let feature_keys: Vec<FeatureKey> = pending
-                    .iter()
-                    .map(|pending_input| {
-                        FeatureKey::new(
-                            pending_input.feature_name.clone(),
-                            pending_input.source.clone(),
-                        )
-                    })
-                    .collect();
-
-                // `Character` doesn't implement PartialEq (by CLAUDE.md
-                // convention — too many non-comparable fields), so Memo is
-                // off the table. Use RwSignal<Arc<Character>> + Effects:
-                // snapshot[0] is the fixed base; snapshot[i+1] is written
-                // by an Effect that reads snapshot[i] and the current
-                // inputs for pending[i], applies assign(), and writes the
-                // resulting Arc<Character>.
-                let snapshots: Vec<RwSignal<Arc<Character>>> = (0..=pending.len())
-                    .map(|_| RwSignal::new(shared_base.clone()))
-                    .collect();
-
-                for i in 0..pending.len() {
-                    let prev_sig = snapshots[i];
-                    let next_sig = snapshots[i + 1];
-                    let key = feature_keys[i].clone();
-                    Effect::new(move |_| {
-                        #[cfg(feature = "perf-marks")]
-                        let _cascade_span = tracing::info_span!(
-                            "cascade.step",
-                            idx = i,
-                            feat = %key.name,
-                        )
-                        .entered();
-
-                        let prev = prev_sig.get();
-                        // TODO(perf): N `clone_lean` per keystroke. Small
-                        // for level-up / user-add; rebuild chains ~20+
-                        // entries at L20 — bench if it gets sluggish.
-                        let mut ch = (*prev).clone_lean();
-                        // Effective feature: user-picked replacement (reactive)
-                        // or the original. Replacement's args/dice are stored
-                        // under its own FeatureKey in all_signals/all_dice.
-                        let replacement = all_replacements.with(|map| {
-                            map.get(&key.name).and_then(|sig| sig.get())
-                        });
-                        let effective_key = match &replacement {
-                            Some(name) => FeatureKey::new(name.clone(), key.source.clone()),
-                            None => key.clone(),
-                        };
-                        let dice_pools: Vec<DicePool> = all_dice.with(|entries| {
-                            entries
-                                .get(&effective_key)
-                                .map(|groups| {
-                                    groups
-                                        .iter()
-                                        .map(|dice_group| {
-                                            dice_group.with_value(collect_dice_pool)
-                                        })
-                                        .collect()
-                                })
-                                .unwrap_or_default()
-                        });
-                        let inputs: Vec<AssignInputs> = all_signals.with(|entries| {
-                            entries
-                                .get(&effective_key)
-                                .map(|groups| {
-                                    groups
-                                        .iter()
-                                        .enumerate()
-                                        .map(|(i, sig_group)| {
-                                            sig_group.with_value(|signals| AssignInputs {
-                                                args: signals
-                                                    .iter()
-                                                    .map(|signal| signal.get())
-                                                    .collect(),
-                                                dice: dice_pools
-                                                    .get(i)
-                                                    .cloned()
-                                                    .unwrap_or_default(),
-                                            })
-                                        })
-                                        .collect()
-                                })
-                                .unwrap_or_default()
-                        });
-                        registry.with_features_index_untracked(|idx| {
-                            if let Some(def) = idx.get(effective_key.name.as_str()) {
-                                // Push synthetic feature row so ApplyContext
-                                // resolves `@ARG` from `feature.inputs` and
-                                // scoped lookups land in this row's data.
-                                ch.features.list.push(Feature {
-                                    name: effective_key.name.clone(),
-                                    source: effective_key.source.clone(),
-                                    applied: true,
-                                    category: def.category,
-                                    inputs: inputs.clone(),
-                                    ..Feature::default()
-                                });
-                                let feature_index = ch.features.list.len() - 1;
-                                // Cascade is a preview; mid-typing inputs may
-                                // legitimately fail `@ARG` resolution. Errors
-                                // log at debug level so the per-keystroke spam
-                                // doesn't reach the production console.
-                                apply_feature(
-                                    def,
-                                    &mut ch,
-                                    feature_index,
-                                    WhenCondition::OnFeatureAdd,
-                                );
-                                // OnCompute picks up derived state for the
-                                // downstream cascade snapshot. Stand-in for a
-                                // global `registry.compute()`.
-                                apply_feature(
-                                    def,
-                                    &mut ch,
-                                    feature_index,
-                                    WhenCondition::OnCompute,
-                                );
-                            }
-                        });
-                        next_sig.set(Arc::new(ch));
-                    });
-                }
-
-                let feature_views = pending
-                    .into_iter()
-                    .enumerate()
-                    .map(|(i, pending_inputs)| {
-                        let character: Signal<Arc<Character>> = snapshots[i].into();
-                        if pending_inputs.hidden {
-                            register_hidden_signals(&pending_inputs, all_signals);
-                            ().into_any()
-                        } else {
-                            view! { <ArgsFeatureInput pending_inputs character all_signals all_dice all_valid all_replacements all_picks /> }.into_any()
-                        }
-                    })
-                    .collect_view();
-
-                let is_valid = Memo::new(move |_| {
-                    all_valid.with(|validations| {
-                        !validations.is_empty()
-                            && validations.iter().all(|memo| memo.get())
-                    })
-                });
-
-                let on_submit = move |event: web_sys::SubmitEvent| {
-                    event.prevent_default();
-
-                    // Collect replacement decisions
-                    let replacements: BTreeMap<String, String> = all_replacements.with_untracked(
-                        |entries| {
-                            entries
-                                .iter()
-                                .filter_map(|(original_name, signal)| {
-                                    signal
-                                        .get_untracked()
-                                        .map(|replacement| (original_name.clone(), replacement))
-                                })
-                                .collect()
-                        },
-                    );
-
-                    // Build inputs_map in a single pass. `all_signals` and `all_dice`
-                    // are guaranteed to have matching keys and group counts (both are
-                    // pushed together in `on_ready`, one per expr), so we iterate
-                    // signals and look up dice by the same index.
-                    let inputs_map: BTreeMap<FeatureKey, Vec<AssignInputs>> = all_signals
-                        .with_untracked(|sig_entries| {
-                            all_dice.with_untracked(|dice_entries| {
-                                sig_entries
-                                    .iter()
-                                    .filter(|(key, _)| !replacements.contains_key(&key.name))
-                                    .map(|(key, signal_groups)| {
-                                        let dice_groups = dice_entries.get(key);
-                                        let feature_inputs: Vec<AssignInputs> = signal_groups
-                                            .iter()
-                                            .enumerate()
-                                            .map(|(i, sigs)| {
-                                                let args = sigs.with_value(|signals| {
-                                                    signals
-                                                        .iter()
-                                                        .map(|signal| signal.get_untracked())
-                                                        .collect()
-                                                });
-                                                let dice = dice_groups
-                                                    .and_then(|groups| groups.get(i))
-                                                    .map(|dice_sv| {
-                                                        dice_sv.with_value(collect_dice_pool)
-                                                    })
-                                                    .unwrap_or_default();
-                                                AssignInputs { args, dice }
-                                            })
-                                            .collect();
-                                        (key.clone(), feature_inputs)
-                                    })
-                                    .collect()
-                            })
-                        });
-
-                    // Collect identity-slot picks keyed by the placeholder
-                    // feature's real (name, source). Each entry pairs the
-                    // slot kind with the chosen value.
-                    let pick_entries: Vec<(FeatureKey, IdentitySlot, String)> = all_picks
-                        .with_untracked(|picks_map| {
-                            picks_map
-                                .iter()
-                                .filter_map(|(key, (slot, signal))| {
-                                    let pick = signal.get_untracked()?;
-                                    Some((key.clone(), *slot, pick))
-                                })
-                                .collect()
-                        });
-
-                    // Write identity slots to live store BEFORE invoking
-                    // `on_complete`, so `build_clean`'s identity carry-over
-                    // reads the just-picked value on the first pass.
-                    for (key, slot, pick) in &pick_entries {
-                        match slot {
-                            IdentitySlot::Subclass => {
-                                let FeatureSource::Class(class_name, _) = &key.source else {
-                                    continue;
-                                };
-                                let class_name = class_name.clone();
-                                let pick = pick.clone();
-                                let label = registry
-                                    .classes()
-                                    .lookup_untracked(&class_name, |locale| {
-                                        locale
-                                            .subclass(&pick)
-                                            .map(|localized| localized.label().to_string())
-                                    })
-                                    .flatten();
-                                store.identity().classes().update(|classes| {
-                                    if let Some(class_level) = classes
-                                        .iter_mut()
-                                        .find(|cl| cl.class.as_str() == class_name.as_ref())
-                                    {
-                                        class_level.subclass = Some(pick);
-                                        class_level.subclass_label = label;
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    let picks: BTreeMap<FeatureKey, String> = pick_entries
-                        .into_iter()
-                        .map(|(key, _slot, pick)| (key, pick))
-                        .collect();
-
-                    ctx.complete(ApplyInputs {
-                        feature_inputs: inputs_map,
-                        replacements,
-                        picks,
-                    });
-                };
-
-                Some(
-                    view! {
-                        <form class="args-modal-body" on:submit=on_submit>
-                            {feature_views}
-                            <button type="submit" class="btn-primary" disabled=move || !is_valid.get()>
-                                {move_tr!("apply-features-title")}
-                            </button>
-                        </form>
-                    }
-                    .into_any(),
-                )
-            }}
+            <form class="args-modal-body" on:submit=on_submit>
+                <For
+                    each=move || ctx.pending.get()
+                    key=|pending_input| pending_input.feature_key()
+                    let:pending_inputs
+                >
+                    {if pending_inputs.hidden {
+                        register_hidden_signals(&pending_inputs, all_signals);
+                        ().into_any()
+                    } else {
+                        view! {
+                            <ArgsFeatureInput
+                                pending_inputs
+                                shared_base
+                                all_signals
+                                all_dice
+                                all_valid
+                                all_replacements
+                            />
+                        }.into_any()
+                    }}
+                </For>
+                <button type="submit" class="btn-primary" disabled=move || !is_valid.get()>
+                    {move_tr!("apply-features-title")}
+                </button>
+            </form>
         </Modal>
     }
 }

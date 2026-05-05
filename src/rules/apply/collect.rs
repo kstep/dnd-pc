@@ -1,13 +1,10 @@
-use std::collections::BTreeMap;
-
 use leptos::prelude::*;
 
 use crate::{
     model::{Character, ClassLevel, FeatureSource},
     rules::{
-        DefinitionStore, RulesRegistry, apply::pending::PendingFeature,
-        background::BackgroundDefinition, class::ClassDefinition, feature::FeatureDefinition,
-        species::SpeciesDefinition,
+        DefinitionStore, FeaturesView, RulesRegistry, apply::pending::PendingFeature,
+        background::BackgroundDefinition, class::ClassDefinition, species::SpeciesDefinition,
     },
 };
 
@@ -50,12 +47,12 @@ pub fn collect_class_features<'a>(
     class_idx: usize,
     level: u32,
     class_def: &'a ClassDefinition,
-    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'a>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let class_level = &character.identity.classes[class_idx];
     class_level_sources(class_level, level, class_def)
         .filter(move |(name, source)| {
-            features_index.get(*name).is_none_or(|feat| {
+            features_index.get(name).is_none_or(|feat| {
                 !character
                     .features
                     .contains(&feat.name, feat.stackable, source)
@@ -72,7 +69,7 @@ pub fn collect_class_features<'a>(
 pub fn collect_species_features<'a>(
     character: &'a Character,
     species_def: &'a SpeciesDefinition,
-    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'a>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let total_level = character.level().max(1);
     let source = FeatureSource::Species(character.identity.species.clone().into());
@@ -98,7 +95,7 @@ pub fn collect_species_features<'a>(
 pub fn collect_background_features<'a>(
     character: &'a Character,
     bg_def: &'a BackgroundDefinition,
-    features_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'a>,
 ) -> impl Iterator<Item = PendingFeature> + 'a {
     let total_level = character.level().max(1);
     let source = FeatureSource::Background(character.identity.background.clone().into());
@@ -125,7 +122,7 @@ pub fn collect_background_features<'a>(
 pub fn collect_pending_features(
     character: &Character,
     registry: &RulesRegistry,
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
 ) -> Vec<PendingFeature> {
     let species_cache = registry.species().cache().read_untracked();
     let bg_cache = registry.backgrounds().cache().read_untracked();

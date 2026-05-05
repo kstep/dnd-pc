@@ -4,6 +4,7 @@ mod compute;
 pub mod context;
 mod item_ctx;
 mod pending;
+pub mod plan;
 mod primitives;
 mod rebuild;
 mod reconcile;
@@ -17,13 +18,14 @@ pub use collect::{
 pub use compute::{assign, compute};
 pub use context::{ApplyContext, apply_assignments_with_inputs};
 pub use item_ctx::{ItemApplyCtx, assign_items};
-pub use pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs};
+pub use pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs, RecomputePending};
 pub use primitives::{
     apply_new_features, build_cascade_base_before, dry_run_apply_feature, replay,
     resolve_replacements, restore_user_state,
 };
 pub use rebuild::{
     DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean, prepare_rebuild,
+    rebuild_recompute,
 };
 pub use reconcile::reconcile_user_feature_sources;
 pub use registry_ext::apply_feature;

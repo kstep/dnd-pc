@@ -2,15 +2,16 @@ use std::collections::BTreeMap;
 
 use crate::{
     model::{AssignInputs, Character, Expr, FeatureSource},
-    rules::{
-        ReplaceWith, WhenCondition,
-        feature::{FeatureDefinition, IdentitySlot},
-    },
+    rules::{ReplaceWith, WhenCondition, feature::FeatureDefinition},
 };
+
+/// Speculative-cascade recompute closure: given a tentative character, return
+/// the pending list the modal should display. `None` disables speculation.
+pub type RecomputePending = Box<dyn Fn(&Character) -> Vec<PendingInputs> + Send + Sync>;
 
 /// Key for per-feature-instance inputs. Stackable features appear with the
 /// same `name` but different `source`, so both identify the instance.
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FeatureKey {
     pub name: String,
     pub source: FeatureSource,
@@ -39,12 +40,6 @@ pub struct ApplyInputs {
     pub feature_inputs: BTreeMap<FeatureKey, Vec<AssignInputs>>,
     /// Original feature name → replacement feature name.
     pub replacements: BTreeMap<String, String>,
-    /// Identity-slot picks (subclass / future: species / background / class).
-    /// Keyed by the placeholder feature instance whose `grants` triggered the
-    /// pick. Apply pipeline reads this to set `feature.label` on placeholder
-    /// applications; modal-commit handler also writes the canonical
-    /// `Identity` slot from the same value.
-    pub picks: BTreeMap<FeatureKey, String>,
 }
 
 impl ApplyInputs {
@@ -83,11 +78,6 @@ pub struct PendingInputs {
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
     pub source: FeatureSource,
-    /// Identity-slot pick this placeholder triggers. `Some(_)` only when the
-    /// feature's `grants` field is set AND the corresponding `Identity` slot
-    /// is currently empty (so the modal needs to ask the user). Cascade rule
-    /// fills this; the args modal renders a dedicated pick section.
-    pub pick: Option<IdentitySlot>,
     /// When `true`, the input is fully determined and the modal hides the
     /// form; the cascade still applies the feat so downstream snapshots
     /// see its effect in pipeline order. Two sources set this:
@@ -109,10 +99,16 @@ impl PendingInputs {
         self.is_replaceable() && self.exprs.is_empty()
     }
 
+    /// Stable identifier for this pending entry — `(feature_name, source)`.
+    /// Used by the modal's `<For>` key extractor and by per-section snapshot
+    /// Effects that need to find their own position in the pending list.
+    pub fn feature_key(&self) -> FeatureKey {
+        FeatureKey::new(&self.feature_name, self.source.clone())
+    }
+
     /// Build a `PendingInputs` from a feature definition. Returns `None` if
-    /// the feature has no interactive exprs under `when`, is not replaceable
-    /// (by the supplied `replace_with`), and does not declare an identity
-    /// `grants` slot needing a pick.
+    /// the feature has no interactive exprs under `when` and is not
+    /// replaceable (by the supplied `replace_with`).
     pub fn from_feature(
         name: String,
         feat_def: &FeatureDefinition,
@@ -123,8 +119,7 @@ impl PendingInputs {
     ) -> Option<Self> {
         let exprs = feat_def.interactive_exprs(when);
         let is_replaceable = !matches!(replace_with, ReplaceWith::None);
-        let pick = feat_def.grants;
-        if exprs.is_empty() && !is_replaceable && pick.is_none() {
+        if exprs.is_empty() && !is_replaceable {
             return None;
         }
         Some(Self {
@@ -135,7 +130,6 @@ impl PendingInputs {
             prefilled_replacement: None,
             replacement_prefill: None,
             source,
-            pick,
             hidden: false,
         })
     }
@@ -158,7 +152,6 @@ impl PendingInputs {
             prefilled_replacement: None,
             replacement_prefill: None,
             source,
-            pick: feat_def.grants,
             hidden: true,
         }
     }

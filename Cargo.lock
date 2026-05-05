@@ -502,6 +502,7 @@ dependencies = [
 name = "dnd-pc"
 version = "0.1.0"
 dependencies = [
+ "any_spawner",
  "base64",
  "console_error_panic_hook",
  "console_log",

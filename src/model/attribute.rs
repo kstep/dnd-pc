@@ -39,7 +39,14 @@ pub enum Attribute {
     Level,
     Ac,
     Speed,
-    ClassLevel,
+    /// Class level: `Scoped` reads via `ApplyContext` (current class scope);
+    /// `Named(name)` reads/writes the named class's level via
+    /// `Character::assign`/`resolve`.
+    ClassLevel(AttrKey),
+    /// Number of distinct classes the character holds — read-only count of
+    /// `identity.classes`. Used for first-class exemption in synthesized
+    /// `System(Class)` prereqs (`<existing> or CLASS.COUNT == 0`).
+    ClassCount,
     /// Hit dice available for the class scope (= max - used).
     HitDice,
     /// Total hit dice of the scoped class (= class level).
@@ -100,21 +107,39 @@ pub enum Attribute {
     Feature(&'static str),
     FeatCategory(FeatureCategory),
     Language(&'static str),
+    Species(&'static str),
+    Background(&'static str),
+    Subclass(&'static str),
+}
+
+thread_local! {
+    static INTERNED: RefCell<HashSet<&'static str>> = RefCell::new(HashSet::new());
 }
 
 /// Intern a string for the lifetime of the program.
 /// Intentional leak — used for Feature attribute names that live
 /// until the wasm instance (browser tab) is closed. Deduplicates
 /// via a global HashSet so each unique name is leaked at most once.
-fn intern(s: &str) -> &'static str {
-    thread_local! {
-        static INTERNED: RefCell<HashSet<&'static str>> = RefCell::new(HashSet::new());
-    }
+pub fn intern(s: &str) -> &'static str {
     INTERNED.with_borrow_mut(|set| {
         if let Some(&existing) = set.get(s) {
             return existing;
         }
         let leaked: &'static str = Box::leak(s.to_string().into_boxed_str());
+        set.insert(leaked);
+        leaked
+    })
+}
+
+/// Like `intern` but consumes an existing `Box<str>` — leaks the box
+/// directly on dedupe miss (no extra copy / realloc). Drops the box when
+/// the contents are already interned.
+pub fn intern_box(s: Box<str>) -> &'static str {
+    INTERNED.with_borrow_mut(|set| {
+        if let Some(&existing) = set.get(s.as_ref()) {
+            return existing;
+        }
+        let leaked: &'static str = Box::leak(s);
         set.insert(leaked);
         leaked
     })
@@ -161,6 +186,7 @@ impl Attribute {
                 | Self::HitDiceMax
                 | Self::HitDiceUsed
                 | Self::HitDiceSides
+                | Self::Subclass(_)
         )
     }
 }
@@ -422,8 +448,15 @@ impl FromStr for Attribute {
                 _ => Err("unknown HP suffix (expected MAX or TEMP)"),
             },
             "CLASS" => match rest {
-                "LEVEL" => Ok(Self::ClassLevel),
-                _ => Err("unknown CLASS suffix (expected LEVEL)"),
+                "LEVEL" => Ok(Self::ClassLevel(AttrKey::Scoped)),
+                "COUNT" => Ok(Self::ClassCount),
+                _ => {
+                    let (name, remaining) = parse_backtick_name(rest)?;
+                    match remaining {
+                        ".LEVEL" => Ok(Self::ClassLevel(AttrKey::named(name))),
+                        _ => Err("unknown CLASS suffix (expected LEVEL or COUNT)"),
+                    }
+                }
             },
             "CASTER" => match rest {
                 "LEVEL" => Ok(Self::CasterLevel(None)),
@@ -546,6 +579,18 @@ impl FromStr for Attribute {
                 let name = rest.trim_matches('`');
                 Ok(Self::Language(intern(name)))
             }
+            "SPECIES" => {
+                let name = rest.trim_matches('`');
+                Ok(Self::Species(intern(name)))
+            }
+            "BACKGROUND" => {
+                let name = rest.trim_matches('`');
+                Ok(Self::Background(intern(name)))
+            }
+            "SUBCLASS" => {
+                let name = rest.trim_matches('`');
+                Ok(Self::Subclass(intern(name)))
+            }
             "FEAT_CAT" => rest
                 .parse::<FeatureCategory>()
                 .map(Self::FeatCategory)
@@ -593,7 +638,8 @@ impl fmt::Display for Attribute {
             Self::Level => f.write_str("LEVEL"),
             Self::Ac => f.write_str("AC"),
             Self::Speed => f.write_str("SPEED"),
-            Self::ClassLevel => f.write_str("CLASS.LEVEL"),
+            Self::ClassLevel(key) => fmt_attr_key(key, "CLASS", ".LEVEL", f),
+            Self::ClassCount => f.write_str("CLASS.COUNT"),
             Self::HitDice => f.write_str("HIT_DICE"),
             Self::HitDiceMax => f.write_str("HIT_DICE.MAX"),
             Self::HitDiceUsed => f.write_str("HIT_DICE.USED"),
@@ -668,6 +714,9 @@ impl fmt::Display for Attribute {
                     write!(f, "LANG.`{name}`")
                 }
             }
+            Self::Species(name) => write!(f, "SPECIES.`{name}`"),
+            Self::Background(name) => write!(f, "BACKGROUND.`{name}`"),
+            Self::Subclass(name) => write!(f, "SUBCLASS.`{name}`"),
             Self::FeatCategory(cat) => write!(f, "FEAT_CAT.{cat}"),
         }
     }
@@ -717,7 +766,10 @@ impl Attribute {
             Self::Inspiration => tr!(i18n, "inspiration"),
             Self::ProfBonus => tr!(i18n, "proficiency-bonus"),
             Self::Level => tr!(i18n, "level"),
-            Self::ClassLevel => tr!(i18n, "class-level"),
+            Self::ClassLevel(AttrKey::Scoped) => tr!(i18n, "class-level"),
+            Self::ClassLevel(AttrKey::Named(name)) => {
+                format!("{} ({name})", tr!(i18n, "class-level"))
+            }
             Self::HitDice => tr!(i18n, "hit-dice"),
             Self::HitDiceMax => tr!(i18n, "hit-dice-max"),
             Self::HitDiceUsed => tr!(i18n, "hit-dice-used"),
@@ -1458,6 +1510,71 @@ mod tests {
             Attribute::Language(intern("Common")),
             Attribute::Language(intern("Thieves' Cant")),
             Attribute::Language(intern("Draconic")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_class_level_attributes() {
+        assert_eq!(
+            "CLASS.LEVEL".parse::<Attribute>().unwrap(),
+            Attribute::ClassLevel(AttrKey::Scoped)
+        );
+        assert_eq!(
+            "CLASS.`Wizard`.LEVEL".parse::<Attribute>().unwrap(),
+            Attribute::ClassLevel(AttrKey::named("Wizard"))
+        );
+        assert_eq!(
+            "CLASS.Wizard.LEVEL".parse::<Attribute>().unwrap(),
+            Attribute::ClassLevel(AttrKey::named("Wizard"))
+        );
+        assert!("CLASS.`Wizard`".parse::<Attribute>().is_err());
+        assert!("CLASS.`Wizard`.MAX".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_class_level_round_trip() {
+        let cases = [
+            Attribute::ClassLevel(AttrKey::Scoped),
+            Attribute::ClassLevel(AttrKey::named("Wizard")),
+            Attribute::ClassLevel(AttrKey::named("Cleric")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_identity_attributes() {
+        assert_eq!(
+            "SPECIES.`Human`".parse::<Attribute>().unwrap(),
+            Attribute::Species(intern("Human"))
+        );
+        assert_eq!(
+            "BACKGROUND.`Soldier`".parse::<Attribute>().unwrap(),
+            Attribute::Background(intern("Soldier"))
+        );
+        assert_eq!(
+            "SUBCLASS.`Life Domain`".parse::<Attribute>().unwrap(),
+            Attribute::Subclass(intern("Life Domain"))
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn display_identity_round_trip() {
+        let cases = [
+            Attribute::Species(intern("Human")),
+            Attribute::Species(intern("Half-Elf")),
+            Attribute::Background(intern("Soldier")),
+            Attribute::Background(intern("Folk Hero")),
+            Attribute::Subclass(intern("Life Domain")),
+            Attribute::Subclass(intern("College of Lore")),
         ];
         for attr in cases {
             let s = attr.to_string();

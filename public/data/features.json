@@ -1,5 +1,14 @@
 [
   {
+    "name": "Generation: Background",
+    "category": "Class",
+    "replace_with": {
+      "Category": {
+        "System": "Background"
+      }
+    }
+  },
+  {
     "name": "Generation: Point Buy",
     "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
@@ -31,6 +40,15 @@
       }
     ],
     "category": "Generation"
+  },
+  {
+    "name": "Generation: Species",
+    "category": "Class",
+    "replace_with": {
+      "Category": {
+        "System": "Species"
+      }
+    }
   },
   {
     "name": "Generation: User-Defined",
@@ -92,7 +110,21 @@
   },
   {
     "name": "Subclass",
-    "grants": "Subclass"
+    "replace_with": {
+      "Category": {
+        "System": "Subclass"
+      }
+    }
+  },
+  {
+    "name": "Class Level",
+    "category": "Class",
+    "stackable": true,
+    "replace_with": {
+      "Category": {
+        "System": "Class"
+      }
+    }
   },
   {
     "name": "Tavern Brawler",

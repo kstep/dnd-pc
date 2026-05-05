@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, VecDeque};
 use leptos::prelude::ReadUntracked;
 
 use crate::{
-    model::{Character, CharacterIdentity, FeatureSource},
+    model::{Character, CharacterIdentity, FeatureCategory, FeatureSource},
     rules::{
         DefinitionStore, RulesRegistry, apply::collect::class_level_sources,
         background::BackgroundDefinition, class::ClassDefinition, species::SpeciesDefinition,
@@ -66,6 +66,14 @@ pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'
 
     for feature in character.features.list.iter_mut() {
         if !feature.source.is_user() {
+            continue;
+        }
+        // System(_) markers live on `User(N)` by design — their name matches
+        // an identity-slot owner (class / subclass / species / background)
+        // but the `User(N)` source is canonical for the level-up sequence.
+        // Rewriting them to a Class/Subclass/etc. slot here would corrupt
+        // the marker and force the rebuild plan-builder to re-emit them.
+        if matches!(feature.category, FeatureCategory::System(_)) {
             continue;
         }
         if let Some(queue) = slots.get_mut(feature.name.as_str())
@@ -461,6 +469,40 @@ mod tests {
             character.features.list[1].source,
             FeatureSource::Class("Rogue".into(), 4),
         );
+    }
+
+    #[wasm_bindgen_test]
+    fn reconcile_skips_system_class_marker() {
+        // System(Class) markers live on User(N) by design. Reconcile must
+        // leave them alone or the rebuild plan-builder would re-emit them
+        // and we'd end up with duplicate Class slots.
+        use crate::model::IdentitySlot;
+        let mut character = rogue6_thief();
+        character.features.list.push(Feature {
+            name: "Fighter".into(),
+            category: FeatureCategory::System(IdentitySlot::Class),
+            source: FeatureSource::User(3),
+            applied: true,
+            ..Feature::default()
+        });
+        let owned = (
+            cache(vec![("Rogue", rogue_def()), ("Fighter", fighter_def())]),
+            cache(vec![]),
+            cache(vec![]),
+        );
+        run_reconcile(&mut character, &owned);
+
+        let marker = character
+            .features
+            .list
+            .iter()
+            .find(|feature| feature.name == "Fighter")
+            .expect("marker preserved");
+        assert_eq!(marker.source, FeatureSource::User(3));
+        assert!(matches!(
+            marker.category,
+            FeatureCategory::System(IdentitySlot::Class)
+        ));
     }
 
     // Missing definitions in cache: reconcile must keep User(_) untouched when

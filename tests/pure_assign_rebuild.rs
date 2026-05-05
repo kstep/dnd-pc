@@ -14,7 +14,7 @@ use dnd_pc::{
         FeatureValue,
     },
     rules::{
-        WhenCondition,
+        FeaturesView, WhenCondition,
         apply::{apply_feature, compute},
         feature::FeatureDefinition,
     },
@@ -52,7 +52,7 @@ fn apply_all(
             WhenCondition::OnFeatureAdd,
         );
     }
-    compute(character, feat_index);
+    compute(character, FeaturesView::from_natural(feat_index));
 }
 
 /// Build a Wizard 5 / Sorcerer 3 / Bard 3 / Cleric 3 character with realistic

@@ -44,6 +44,18 @@ impl<Var, Val, Grp> Default for Expr<Var, Val, Grp> {
     }
 }
 
+/// Collect Ops into a single-block Expr. Use for programmatic construction
+/// (e.g. registry-side prereq composition or synthesized assigns) when the
+/// input is already in RPN form and no sub-blocks are needed. For
+/// multi-block Exprs (with `if`/`each`/`with`) parse from text instead.
+impl<Var, Val, Grp> FromIterator<Op<Var, Val, Grp>> for Expr<Var, Val, Grp> {
+    fn from_iter<I: IntoIterator<Item = Op<Var, Val, Grp>>>(iter: I) -> Self {
+        Self(Arc::from([Block::from(
+            iter.into_iter().collect::<Vec<_>>(),
+        )]))
+    }
+}
+
 impl<Var, Val, Grp> Expr<Var, Val, Grp> {
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()

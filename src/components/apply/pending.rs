@@ -4,10 +4,7 @@ use reactive_stores::Store;
 use crate::{
     components::apply::{apply_with_modal, rebuild},
     model::Character,
-    rules::{
-        RulesRegistry,
-        apply::{apply_new_features, collect_pending_features},
-    },
+    rules::{RulesRegistry, apply::collect_pending_features},
 };
 
 /// Apply every unapplied class level in one flow. Used by the Build-tab
@@ -39,16 +36,7 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
         return;
     }
 
-    apply_with_modal(
-        store,
-        registry,
-        pending,
-        None,
-        move |character, pending, inputs, feat_index| {
-            apply_new_features(feat_index, character, pending, Some(&inputs.feature_inputs));
-            mark_all_applied(character);
-        },
-    );
+    apply_with_modal(store, registry, pending, None, None, mark_all_applied);
 }
 
 /// Mark every class-level, plus species/background, as applied. Idempotent:
@@ -57,7 +45,7 @@ pub fn apply_pending(store: Store<Character>, registry: RulesRegistry) {
 /// reaches here, and species/background features come in through
 /// `apply_pending` like any other — they need flagging here too, otherwise
 /// `BuildPendingApplyHint` keeps insisting they're outstanding.
-fn mark_all_applied(character: &mut Character) {
+pub fn mark_all_applied(character: &mut Character) {
     if !character.identity.species.is_empty() {
         character.applied.species = true;
     }

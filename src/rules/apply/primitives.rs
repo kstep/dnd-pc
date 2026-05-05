@@ -1,9 +1,12 @@
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
-    model::{AssignInputs, Character, Feature, FeatureData, FeatureValue, Spell, SpellData},
+    model::{
+        AssignInputs, Character, Feature, FeatureCategory, FeatureData, FeatureSource,
+        FeatureValue, IdentitySlot, Spell, SpellData,
+    },
     rules::{
-        WhenCondition,
+        FeaturesView, WhenCondition,
         apply::{
             apply_feature, compute,
             pending::{ApplyInputs, FeatureKey, PendingFeature},
@@ -39,7 +42,7 @@ pub fn dry_run_apply_feature(
 pub fn resolve_replacements(
     pending: &[PendingFeature],
     replacements: &BTreeMap<String, String>,
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
 ) -> Vec<PendingFeature> {
     if replacements.is_empty() {
         return pending.to_vec();
@@ -73,7 +76,7 @@ pub fn resolve_replacements(
     tracing::instrument(name = "apply.new_features", skip_all, fields(n = pending.len()))
 )]
 pub fn apply_new_features(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
     character: &mut Character,
     pending: &[PendingFeature],
     feature_inputs: Option<&BTreeMap<FeatureKey, Vec<AssignInputs>>>,
@@ -95,7 +98,7 @@ pub fn apply_new_features(
 /// `HP.MAX += 5` would double-apply; user triggers Replay to recompute with new
 /// inputs).
 pub fn apply_new_feature(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
     character: &mut Character,
     pending_feature: &PendingFeature,
     inputs: &[AssignInputs],
@@ -119,6 +122,19 @@ pub fn apply_new_feature(
         }
         return;
     }
+    // Drop dead placeholders at the same source: any sibling whose
+    // `replace_with` selects this feat was waiting to be replaced.
+    let pending_source = pending_feature.source.clone();
+    let pending_name = pending_feature.name.as_str();
+    character.features.list.retain(|other| {
+        if other.source != pending_source || other.name == pending_name {
+            return true;
+        }
+        let Some(other_def) = features_index.get(other.name.as_str()) else {
+            return true;
+        };
+        !other_def.replace_with.matches(feat_def)
+    });
     character.features.add(
         &pending_feature.name,
         None,
@@ -143,12 +159,55 @@ pub fn apply_new_feature(
 /// picks, Points/Die used, prepared spells) snapshot `features.data()`
 /// beforehand and call [`restore_user_state`] after replay returns.
 pub fn replay(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
     character: &mut Character,
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
 ) {
     character.reset_computed();
+    // System markers' OnFeatureAdd assigns are accumulators (CLASS.LEVEL +=
+    // 1, SPECIES.<name> = 1, etc.). Replay re-runs them on top of the
+    // existing identity unless we wipe the fields they re-establish first —
+    // otherwise a Sorcerer L12 with six User(1..6) markers becomes L18
+    // after replay. Per-marker presence so legacy chars (no markers) keep
+    // their identity untouched.
+    let mut clear_species = false;
+    let mut clear_background = false;
+    let mut clear_subclass: BTreeSet<String> = BTreeSet::new();
+    let mut clear_class_levels: BTreeSet<String> = BTreeSet::new();
+    for feature in &character.features.list {
+        match feature.category {
+            FeatureCategory::System(IdentitySlot::Species) => clear_species = true,
+            FeatureCategory::System(IdentitySlot::Background) => clear_background = true,
+            FeatureCategory::System(IdentitySlot::Class) => {
+                clear_class_levels.insert(feature.name.clone());
+            }
+            FeatureCategory::System(IdentitySlot::Subclass) => {
+                if let FeatureSource::Class(class_name, _) = &feature.source {
+                    clear_subclass.insert(class_name.to_string());
+                }
+            }
+            _ => {}
+        }
+    }
+    if clear_species {
+        character.identity.species.clear();
+    }
+    if clear_background {
+        character.identity.background.clear();
+    }
+    for class_level in character.identity.classes.iter_mut() {
+        if clear_class_levels.contains(&class_level.class) {
+            class_level.level = 0;
+        }
+        if clear_subclass.contains(&class_level.class) {
+            class_level.subclass = None;
+        }
+    }
+    character
+        .identity
+        .classes
+        .retain(|class_level| class_level.level > 0 || !class_level.class.is_empty());
 
     // Phase 1: OnFeatureAdd at added_at_level.
     // Collect stored inputs upfront to avoid borrow conflict with
@@ -228,7 +287,7 @@ pub fn restore_user_state(
 /// If `edited` isn't in the feature list, returns the lean clone unchanged
 /// (no truncation, no replay — cascade sees all applied features).
 pub fn build_cascade_base_before(
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    features_index: FeaturesView<'_>,
     character: &Character,
     edited: &FeatureKey,
 ) -> Character {

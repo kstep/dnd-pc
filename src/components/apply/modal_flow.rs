@@ -7,14 +7,51 @@ use crate::{
     components::args_modal::ArgsModalCtx,
     model::{AssignInputs, Character, FeatureSource},
     rules::{
-        ApplyInputs, PendingInputs, RulesRegistry, WhenCondition,
-        apply::{FeatureKey, PendingFeature, replay, resolve_replacements, restore_user_state},
-        feature::FeatureDefinition,
+        ApplyInputs, FeaturesView, PendingInputs, RecomputePending, RulesRegistry, WhenCondition,
+        apply::{
+            FeatureKey, PendingFeature, apply_new_features, collect_pending_features,
+            resolve_replacements,
+        },
     },
 };
 
+/// Apply outer `pending` then iterate `collect_pending_features` until no
+/// new derived features remain — identity-slot picks chain through several
+/// passes (e.g. Class Level → Subclass placeholder → Battle Master subclass
+/// features). `MAX_PASSES` caps runaway expansion.
+fn apply_pending_cascade(
+    character: &mut Character,
+    pending: &[PendingFeature],
+    inputs: &ApplyInputs,
+    registry: &RulesRegistry,
+    feat_index: FeaturesView<'_>,
+) {
+    const MAX_PASSES: usize = 8;
+
+    let resolved = resolve_replacements(pending, &inputs.replacements, feat_index);
+    apply_new_features(
+        feat_index,
+        character,
+        &resolved,
+        Some(&inputs.feature_inputs),
+    );
+    for _ in 0..MAX_PASSES {
+        let derived = collect_pending_features(character, registry, feat_index);
+        if derived.is_empty() {
+            return;
+        }
+        let resolved_derived = resolve_replacements(&derived, &inputs.replacements, feat_index);
+        apply_new_features(
+            feat_index,
+            character,
+            &resolved_derived,
+            Some(&inputs.feature_inputs),
+        );
+    }
+}
+
 /// Collect OnFeatureAdd pending inputs from the given pending features list.
-pub(super) fn collect_all_inputs(
+fn collect_all_inputs(
     store: &Store<Character>,
     registry: &RulesRegistry,
     pending: &[PendingFeature],
@@ -38,39 +75,33 @@ pub(super) fn collect_all_inputs(
 /// `base` seeds the cascade snapshot[0]: `None` for the live-store default
 /// (level-up / user-add), `Some(character)` for flows that need a custom
 /// pre-state (edit mode passes a pre-edit snapshot so analysis doesn't see
-/// the feature's own prior contributions).
+/// the feature's own prior contributions). `recompute` enables speculative
+/// cascade — when an identity-slot pick changes mid-modal, the closure runs
+/// against a speculative character to recompute the pending list. `None`
+/// disables speculation (the modal renders the original `pending` unchanged).
 pub fn apply_with_modal(
     store: Store<Character>,
     registry: RulesRegistry,
     pending: Vec<PendingFeature>,
     base: Option<Arc<Character>>,
-    callback: impl Fn(
-        &mut Character,
-        &[PendingFeature],
-        &ApplyInputs,
-        &BTreeMap<Box<str>, FeatureDefinition>,
-    ) + Send
-    + Sync
-    + 'static,
+    recompute: Option<RecomputePending>,
+    callback: impl Fn(&mut Character) + Send + Sync + 'static,
 ) {
     let all_inputs = collect_all_inputs(&store, &registry, &pending);
 
     let apply = move |inputs: Option<&ApplyInputs>| {
         let empty = ApplyInputs::default();
         let inputs = inputs.unwrap_or(&empty);
-        store.update(|character| {
-            registry.with_features_index_untracked(|feat_index| {
-                let resolved = resolve_replacements(&pending, &inputs.replacements, feat_index);
-                callback(character, &resolved, inputs, feat_index);
-            });
-        });
+        apply_batch(store, registry, &pending, inputs, &callback);
     };
 
     if all_inputs.is_empty() {
         apply(None);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, base, move |inputs| apply(Some(&inputs)));
+        ctx.open(all_inputs, base, recompute, move |inputs| {
+            apply(Some(&inputs))
+        });
     }
 }
 
@@ -111,7 +142,7 @@ pub fn edit_inputs_modal(
     // (features.list still carries entries sourced under the prior subclass)
     // and surfaces the rebuild banner — replay would re-run stale entries
     // as-is, which is wrong when the subclass roster itself shifts.
-    ctx.open(vec![pending_input], base, move |inputs| {
+    ctx.open(vec![pending_input], base, None, move |inputs| {
         // If the user picked a replacement, rename the feature in-place and
         // pull inputs under the replacement key. `applied = false` only when
         // something actually changed — opening + closing the modal without
@@ -161,84 +192,6 @@ pub fn edit_inputs_modal(
     });
 }
 
-/// Replay all applied features from scratch. Clones the character, resets
-/// computed state, collects pending inputs on the clean clone (skipping
-/// features with stored inputs), then either replays directly or shows the
-/// args modal for features missing stored inputs.
-pub fn replay_with_modal(store: Store<Character>, registry: RulesRegistry) {
-    let mut clone = store.with_untracked(|character| character.clone());
-    clone.reset_computed();
-
-    let mut pending: Vec<PendingFeature> = clone
-        .features
-        .iter()
-        .map(|feature| PendingFeature {
-            name: feature.name.clone(),
-            source: feature.source.clone(),
-            level: feature.source.added_at_level(),
-        })
-        .collect();
-    pending.sort_by_key(|pending_feature| pending_feature.source.added_at_level());
-
-    let mut all_inputs = registry.with_features_index_untracked(|fi| {
-        pending
-            .iter()
-            .filter_map(|pf| {
-                let feat_def = fi.get(pf.name.as_str())?;
-                pf.pending_inputs(feat_def, &clone)
-            })
-            .collect::<Vec<_>>()
-    });
-    // TODO(dead-args): retain drops features that have stored inputs, so
-    // replay never opens the modal for them — stored args are passed as-is
-    // into `replay()` below. If those stored args contain "dead" positions
-    // (non-zero at a slot whose body `if(@ == …)` would no-op under the
-    // current baseline — e.g. a pick on a skill another source has since
-    // made proficient), apply silently partial-recovers: the live slots
-    // take effect, dead ones are ignored. Storage keeps the original
-    // (dirty) inputs untouched — no data loss, no crash, but no user
-    // notification either.
-    //
-    // Detection would require per-feature pre-apply baseline via pipeline
-    // walk (see prior attempts at `sanitize_stored_inputs`). Using the
-    // post-apply `clone` as baseline gives false positives for features
-    // that upgrade a slot they themselves touched (e.g. Expertise raises
-    // a skill to level 2 — body `if(@ == 1, …)` then looks inactive on
-    // re-analyze against current state, flagging legit stored picks as
-    // dead). A correct detector needs light apply + staged baseline —
-    // deferred until there's a concrete need.
-    //
-    // Rebuild covers the "data got stale" case explicitly via
-    // `simulated.eq_derived(&original)` → modal opens → Effect in
-    // `ExprArgsInput` cleans prefill reactively.
-    all_inputs.retain(|input| {
-        clone
-            .features
-            .get_inputs(&input.feature_name, &input.source)
-            .is_empty()
-    });
-
-    let do_replay = move |inputs: Option<&ApplyInputs>| {
-        let empty = ApplyInputs::default();
-        let inputs = inputs.unwrap_or(&empty);
-        store.update(|character| {
-            let original_feature_data = character.features.data().clone();
-            *character = clone;
-            registry.with_features_index_untracked(|feat_index| {
-                replay(feat_index, character, &pending, inputs);
-            });
-            restore_user_state(&original_feature_data, character.features.data_mut());
-        });
-    };
-
-    if all_inputs.is_empty() {
-        do_replay(None);
-    } else {
-        let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, None, move |inputs| do_replay(Some(&inputs)));
-    }
-}
-
 /// Like [`apply_with_modal`], but accepts pre-filled ARG values (e.g. from AI
 /// generation). All pending features — validated and invalid alike — go through
 /// the args modal with their prefill populated. The user can review/edit AI's
@@ -249,14 +202,8 @@ pub fn apply_with_prefilled_args(
     pending: Vec<PendingFeature>,
     prefilled: BTreeMap<String, Vec<i32>>,
     prefilled_replacements: BTreeMap<String, String>,
-    callback: impl Fn(
-        &mut Character,
-        &[PendingFeature],
-        &ApplyInputs,
-        &BTreeMap<Box<str>, FeatureDefinition>,
-    ) + Send
-    + Sync
-    + 'static,
+    recompute: Option<RecomputePending>,
+    callback: impl Fn(&mut Character) + Send + Sync + 'static,
 ) {
     // Build PendingInputs for every feature that needs interaction, populating
     // prefill + prefilled_replacement from AI's choices. Cascade snapshots in
@@ -297,14 +244,13 @@ pub fn apply_with_prefilled_args(
     let seeded_inputs = ApplyInputs {
         feature_inputs: BTreeMap::new(),
         replacements: prefilled_replacements,
-        picks: BTreeMap::new(),
     };
 
     if all_inputs.is_empty() {
         apply_batch(store, registry, &pending, &seeded_inputs, &callback);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
-        ctx.open(all_inputs, None, move |modal_inputs| {
+        ctx.open(all_inputs, None, recompute, move |modal_inputs| {
             // Merge AI-seeded replacements with user-submitted (user wins).
             // `seeded_inputs.feature_inputs` is always empty here — the modal
             // owns all feature_inputs — so this is an assignment rather than
@@ -318,25 +264,21 @@ pub fn apply_with_prefilled_args(
 }
 
 /// Apply a batch of pending features under a single `store.update` +
-/// `registry.compute`. Resolves replacements, invokes the caller's callback
-/// against the mutable character, then recomputes derived state.
+/// `registry.compute`. Runs `apply_pending_cascade` (outer pending +
+/// derived features), then invokes the caller's post-apply hook against
+/// the now-updated character.
 fn apply_batch(
     store: Store<Character>,
     registry: RulesRegistry,
     pending: &[PendingFeature],
     inputs: &ApplyInputs,
-    callback: &impl Fn(
-        &mut Character,
-        &[PendingFeature],
-        &ApplyInputs,
-        &BTreeMap<Box<str>, FeatureDefinition>,
-    ),
+    callback: &impl Fn(&mut Character),
 ) {
     store.update(|character| {
         registry.with_features_index_untracked(|feat_index| {
-            let resolved = resolve_replacements(pending, &inputs.replacements, feat_index);
-            callback(character, &resolved, inputs, feat_index);
+            apply_pending_cascade(character, pending, inputs, &registry, feat_index);
         });
+        callback(character);
         registry.compute(character);
         // Sync labels for any newly-added features so the UI shows
         // localized text immediately, instead of waiting for the next

@@ -1,9 +1,10 @@
-use leptos::{prelude::*, reactive::wrappers::read::ArcSignal};
-use leptos_fluent::{I18n, move_tr};
+use leptos::prelude::*;
+use leptos_fluent::I18n;
 use reactive_stores::{Field, Store, StoreFieldIterator};
 
 use crate::{
     components::{
+        add_feature_row::AddFeatureRow,
         apply::CaptureContext,
         build_hints::{
             BuildChoiceFillHint, BuildNeedsRebuildHint, BuildPendingApplyHint, BuildReplayHint,
@@ -11,7 +12,7 @@ use crate::{
         datalist::DatalistOption,
         feature_row::FeatureRow,
     },
-    model::{Character, CharacterStoreFields, Feature, FeatureSource, FeaturesStoreFields},
+    model::{Character, CharacterStoreFields, Feature, FeatureCategory, FeaturesStoreFields},
     rules::{RulesRegistry, WhenCondition, apply::apply_assignments_with_inputs},
 };
 
@@ -24,14 +25,6 @@ pub fn FeaturesPanel() -> impl IntoView {
     crate::hooks::use_scroll_to_hash();
 
     let features = store.features();
-
-    let add_feature = move |_| {
-        let level = store.read_untracked().level();
-        features.list().write().push(Feature {
-            source: FeatureSource::User(level),
-            ..Feature::default()
-        });
-    };
 
     let remove_feature = move |idx: usize| {
         let evict = {
@@ -89,28 +82,15 @@ pub fn FeaturesPanel() -> impl IntoView {
             .collect::<Vec<_>>()
     });
 
-    let prereq_prefix = move_tr!("prerequisites-label");
     let feature_options = Memo::new(move |_| {
         let character = store.read();
         registry.with_features_index(|features_index| {
             features_index
                 .values()
-                .filter(|feat| feat.is_selectable())
+                .filter(|feat| feat.is_selectable() && feat.meets_prerequisites(&character))
                 .map(|feat| {
-                    let (label, description) =
-                        registry.features().label_desc(&*feat.name, &*feat.name);
-                    let opt = DatalistOption::with_signals(&*feat.name, label, description);
-                    if let Some(expr) = &feat.prerequisites
-                        && !feat.meets_prerequisites(&character)
-                    {
-                        let expr_string = expr.to_string();
-                        let reason = ArcSignal::derive(move || {
-                            prereq_prefix.with(|prefix| format!("{prefix}: {expr_string}"))
-                        });
-                        opt.with_blocked_reason(reason)
-                    } else {
-                        opt
-                    }
+                    let (label, description) = registry.feature_label_desc(&feat.name);
+                    DatalistOption::with_signals(&*feat.name, label, description)
                 })
                 .collect::<Vec<_>>()
         })
@@ -121,40 +101,44 @@ pub fn FeaturesPanel() -> impl IntoView {
         <BuildPendingApplyHint />
         <BuildChoiceFillHint />
         <BuildReplayHint />
-        <button class="btn-primary" on:click=add_feature>
-            {move_tr!("btn-add-feature")}
-        </button>
         <div class="entry-list">
+            <AddFeatureRow options=feature_options />
             <For
-                // Key by stable per-instance dom_id so rebuilds that drop +
-                // re-add features (e.g. subclass swap) don't leave child
-                // components subscribed to stale indices — `at_unkeyed(idx)`
-                // panics when the underlying Vec has shrunk past the cached
-                // idx, and by-index keying made every length change
-                // potentially fatal.
+                // Key by `(dom_id, idx)`: stable across normal edits (idx
+                // doesn't shift) and forces a remount when a rebuild reorders
+                // or shrinks the list — captures a fresh idx so `at_unkeyed`
+                // can't read past the new len. Pure dom_id keying preserves
+                // children across reorders, leaving the captured idx stale
+                // and the inner `Field` reader panicking on `&inner[stale]`.
                 each=move || {
                     features
                         .list()
                         .read()
                         .iter()
                         .enumerate()
-                        .map(|(idx, feature)| (idx, feature.dom_id()))
+                        .filter(|(_, feature)| {
+                            !matches!(feature.category, FeatureCategory::System(_))
+                        })
                         .rev()
+                        .map(|(idx, feature)| (idx, feature.dom_id()))
                         .collect::<Vec<_>>()
                 }
-                key=|(_, dom_id)| dom_id.clone()
+                key=|(idx, dom_id)| (*idx, dom_id.clone())
                 let:row
             >
                 {
                     let (idx, _dom_id) = row;
-                    // `header_label` reads features.list() reactively: after a
-                    // remove the indices stay valid but the group-head boundary
-                    // shifts, so the row at the new top has to re-evaluate.
+                    // Reactive group-head: row k is a group head if the next
+                    // non-System feature in list order (i.e. the one rendered
+                    // immediately above it after .rev()) has a different
+                    // source — or doesn't exist. Recomputes on every list
+                    // mutation so additions don't leave stale headers.
                     let header_label = Signal::derive(move || {
                         let list = features.list().read();
                         let feature = list.get(idx)?;
-                        let next_below = list.get(idx + 1);
-                        let is_group_head = next_below
+                        let is_group_head = list[idx + 1..]
+                            .iter()
+                            .find(|next| !matches!(next.category, FeatureCategory::System(_)))
                             .is_none_or(|next| next.source != feature.source);
                         is_group_head.then(|| registry.source_label(&feature.source, i18n))
                     });
@@ -164,16 +148,21 @@ pub fn FeaturesPanel() -> impl IntoView {
                             .with(|all| all.get(idx).cloned())
                             .unwrap_or_default()
                     });
+                    // TODO: migrate to at_keyed so FeatureRow can detect zombie
+                    // state internally — at_unkeyed Reader panics on stale idx.
+                    let in_bounds = Signal::derive(move || idx < features.list().read().len());
                     view! {
                         {move || header_label.get().map(|label| view! {
                             <h3 class="features-group-header">{label}</h3>
                         })}
-                        <FeatureRow
-                            feature=feature
-                            options=feature_options
-                            row_previews=row_previews
-                            on_remove=Callback::new(move |()| remove_feature(idx))
-                        />
+                        <Show when=move || in_bounds.get() fallback=|| ()>
+                            <FeatureRow
+                                feature=feature
+                                options=feature_options
+                                row_previews=row_previews
+                                on_remove=Callback::new(move |()| remove_feature(idx))
+                            />
+                        </Show>
                     }
                 }
             </For>

@@ -1247,6 +1247,10 @@
   "Clairvoyant Combatant": {
     "description": "When you form a telepathic bond with a creature using your Awakened Mind, you can force that creature to make a Wisdom saving throw against your spell save DC. On a failed save, the creature has Disadvantage on attack rolls against you, and you have Advantage on attack rolls against that creature for the duration of the bond."
   },
+  "Class Level": {
+    "label": "Pick / level up class",
+    "description": "Choose a class to take a level in (multiclass picker on subsequent applies)."
+  },
   "Class Proficiencies (Artificer)": {
     "description": "Choose 2 from: Arcana, History, Investigation, Medicine, Nature, Perception, Sleight of Hand. Saves: CON, INT. Light/medium armor, shields, simple weapons."
   },
@@ -2324,6 +2328,10 @@
   "Gathered Swarm": {
     "description": "A swarm of intangible nature spirits has bonded itself to you and can assist you in battle. While you're alive, the swarm remains in your space, crawling on you or flying and skittering around you within your space. You determine its appearance, or you generate its appearance by rolling on the Swarm Appearance table."
   },
+  "Generation: Background": {
+    "label": "Pick background",
+    "description": "Choose a background during character creation."
+  },
   "Generation: Fixed Preset": {
     "description": "Assign the standard array (15, 14, 13, 12, 10, 8) to your ability scores. Each value can only be used once."
   },
@@ -2332,6 +2340,10 @@
   },
   "Generation: Random": {
     "description": "Roll 4d6 and keep the highest 3 for each ability score."
+  },
+  "Generation: Species": {
+    "label": "Pick species",
+    "description": "Choose a species during character creation."
   },
   "Generation: User-Defined": {
     "description": "Assign custom starting ability scores — choose any value for each ability."

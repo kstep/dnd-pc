@@ -6,10 +6,10 @@ use strum::VariantArray;
 use crate::{
     model::{
         Ability, Applied, AssignInputs, Attribute, Character, Feature, FeatureCategory,
-        FeatureSource,
+        FeatureSource, IdentitySlot,
     },
     rules::{
-        ClassDefinition, ClassIndexEntry, DefinitionStore, RulesRegistry, WhenCondition,
+        DefinitionStore, FeaturesView, RecomputePending, RulesRegistry, WhenCondition,
         apply::{
             collect::{
                 collect_background_features, collect_class_features, collect_pending_features,
@@ -17,11 +17,15 @@ use crate::{
             },
             compute, dry_run_apply_feature,
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
+            plan::level_up_plan,
             primitives::{apply_new_feature, resolve_replacements, restore_user_state},
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
-        feature::{FeatureDefinition, IdentitySlot, ReplaceWith},
+        background::BackgroundDefinition,
+        class::ClassDefinition,
+        feature::{FeatureDefinition, ReplaceWith},
+        species::SpeciesDefinition,
     },
 };
 
@@ -35,46 +39,40 @@ pub enum DefinitionKind {
     Background,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum RebuildError {
     MissingDefinition { kind: DefinitionKind, name: String },
     MulticlassPrereq { class: String },
 }
 
-/// Successful `build_clean` result: the rebuilt character plus per-feature
-/// drift accounting. `skipped_features` lists User-source features whose
-/// definition has gone missing (kept in `character.features` as orphans so the
-/// user's pick / inputs / homebrew naming aren't lost). `removed_features`
-/// lists identity-source features (Class / Subclass / Species / Background)
-/// whose definition has gone missing — these are dropped from
-/// `character.features` because the next rebuild will re-emit them under
-/// whatever name the current data file uses. Empty-name User placeholders
-/// (the "Add feature" slot before the user picks anything) are preserved
-/// silently and counted in neither vec.
+/// `build_clean` result: rebuilt character + per-feature drift accounting.
 #[derive(Debug, Clone)]
 pub struct RebuildOutcome {
     pub character: Character,
+    /// User-source features with missing definitions, kept as orphans.
     pub skipped_features: Vec<String>,
+    /// Identity-source features with missing definitions, dropped.
     pub removed_features: Vec<String>,
 }
 
-/// Internal accumulator threaded through the apply pipeline. Converted to
-/// `RebuildOutcome` at the end of `build_clean`.
+/// Skipped/removed accumulator threaded through the apply pipeline.
 #[derive(Default)]
-struct RebuildAccum {
-    skipped: Vec<String>,
-    removed: Vec<String>,
+pub struct RebuildAccum {
+    pub skipped: Vec<String>,
+    pub removed: Vec<String>,
 }
 
-/// Bundled apply-pipeline context. Cuts argument lists from 7-9 down to
-/// `(ctx, clean, ...)` and locks the index/source/inputs/accum borrows
-/// behind named fields (vs four adjacent `&BTreeMap`/`&Character` positionals
-/// that were easy to swap by mistake).
-struct RebuildCtx<'a> {
-    feat_index: &'a BTreeMap<Box<str>, FeatureDefinition>,
-    original: &'a Character,
-    extra_inputs: &'a ApplyInputs,
-    accum: &'a mut RebuildAccum,
+/// Bundled apply-pipeline context threaded through rebuild steps.
+pub struct RebuildCtx<'a> {
+    pub feat_index: FeaturesView<'a>,
+    pub class_index: &'a BTreeMap<Box<str>, ClassDefinition>,
+    pub species_cache: &'a BTreeMap<Box<str>, SpeciesDefinition>,
+    pub bg_cache: &'a BTreeMap<Box<str>, BackgroundDefinition>,
+    pub original: &'a Character,
+    pub extra_inputs: &'a ApplyInputs,
+    pub accum: &'a mut RebuildAccum,
+    pub class_counters: BTreeMap<String, u32>,
+    pub user_seen: BTreeMap<(String, FeatureSource), usize>,
 }
 
 /// Output of `prepare_rebuild`: everything the rebuild caller needs to drive
@@ -115,6 +113,31 @@ pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> Reb
     }
 }
 
+/// Speculative recompute closure for the rebuild modal cascade. Plan is
+/// derived from `original` (which has full identity); speculative supplies
+/// per-section prefill via `pending_inputs(_, speculative)` so the user's
+/// in-modal picks land in the prefill values. Cascade base is identity-
+/// stripped, so feeding speculative directly to `level_up_plan` would
+/// collapse to an empty plan for legacy chars.
+pub fn rebuild_recompute(registry: RulesRegistry, original: &Character) -> RecomputePending {
+    let identity = original.identity.clone();
+    let features = original.features.clone();
+    Box::new(move |speculative: &Character| {
+        let plan = level_up_plan(&identity, &features, &registry).unwrap_or_else(|error| {
+            log::debug!("rebuild_recompute: level_up_plan failed: {error:?}");
+            Vec::new()
+        });
+        registry.with_features_index_untracked(|feat_index| {
+            plan.into_iter()
+                .filter_map(|pending| {
+                    let feat_def = feat_index.get(pending.name.as_str())?;
+                    pending.pending_inputs(feat_def, speculative)
+                })
+                .collect()
+        })
+    })
+}
+
 /// Snapshot-level step 2: build a fresh `Character` from `default()`,
 /// applying identity + User features in canonical order (User(0) → Species →
 /// Background → classes round-robin with multiclass prereq gates), then
@@ -131,64 +154,34 @@ pub fn build_clean(
     registry: &RulesRegistry,
     extra_inputs: &ApplyInputs,
 ) -> Result<RebuildOutcome, RebuildError> {
-    let mut clean = Character::from_identity(original.identity.clone());
+    let mut clean = rebuild_skeleton(original);
     let mut accum = RebuildAccum::default();
+
+    let class_index = registry.classes().cache().read_untracked();
+    let species_cache = registry.species().cache().read_untracked();
+    let bg_cache = registry.backgrounds().cache().read_untracked();
 
     registry.with_features_index_untracked(|feat_index| -> Result<(), RebuildError> {
         let mut ctx = RebuildCtx {
             feat_index,
+            class_index: &class_index,
+            species_cache: &species_cache,
+            bg_cache: &bg_cache,
             original,
             extra_inputs,
             accum: &mut accum,
+            class_counters: BTreeMap::new(),
+            user_seen: BTreeMap::new(),
         };
+        let plan = level_up_plan(&original.identity, &original.features, registry)?;
 
-        // 1. User(0) features (e.g. Generation: * setting base abilities)
-        apply_user_features_at_level(&mut ctx, &mut clean, 0);
-
-        // 2. Species
-        if !clean.identity.species.is_empty() {
-            let species_cache = registry.species().cache().read_untracked();
-            let species_def = species_cache
-                .get(clean.identity.species.as_str())
-                .ok_or_else(|| RebuildError::MissingDefinition {
-                    kind: DefinitionKind::Species,
-                    name: clean.identity.species.clone(),
-                })?;
-            let pending: Vec<PendingFeature> =
-                collect_species_features(&clean, species_def, ctx.feat_index).collect();
-            apply_pending(&mut ctx, &mut clean, &pending);
-            clean.applied.species = true;
+        for pending in &plan {
+            apply_plan_entry(&mut ctx, &mut clean, pending)?;
         }
 
-        // 3. Background
-        if !clean.identity.background.is_empty() {
-            let bg_cache = registry.backgrounds().cache().read_untracked();
-            let bg_def = bg_cache
-                .get(clean.identity.background.as_str())
-                .ok_or_else(|| RebuildError::MissingDefinition {
-                    kind: DefinitionKind::Background,
-                    name: clean.identity.background.clone(),
-                })?;
-            let pending: Vec<PendingFeature> =
-                collect_background_features(&clean, bg_def, ctx.feat_index).collect();
-            apply_pending(&mut ctx, &mut clean, &pending);
-            clean.applied.background = true;
-        }
-
-        // 4. Classes — interleave class levels with per-step prereq filter for
-        //    multiclasses (see `apply_classes_interleaved` for details).
-        // Hold both class_index and class_entries for the whole pipeline:
-        // pick_next_class checks prereqs on every iteration, re-acquiring
-        // would thrash the locks.
-        let class_index = registry.classes().cache().read_untracked();
-        registry.with_class_entries(|class_entries| {
-            apply_classes_interleaved(&mut ctx, &class_index, class_entries, &mut clean)
-        })?;
-
-        // 5. Legacy migration: characters built before the Generation-feature system
-        //    have abilities edited directly. Convert those custom scores into a
-        //    synthesized `Generation: User-Defined` feature so future rebuilds keep
-        //    them intact.
+        // Legacy migration: characters built before the Generation-feature
+        // system have abilities edited directly. Synthesize a user feat so
+        // future rebuilds keep them intact.
         migrate_legacy_abilities(&mut clean, original);
 
         // compute creates the empty SPELL.READY/KNOWN slots that
@@ -208,6 +201,152 @@ pub fn build_clean(
         skipped_features: accum.skipped,
         removed_features: accum.removed,
     })
+}
+
+/// Skeleton character for rebuild walks: preserves stable identity (id,
+/// name, XP) but drops fields the System markers re-derive (species,
+/// background, classes). Avoids double-stacking `CLASS.LEVEL += 1` when
+/// `original` already has class entries.
+fn rebuild_skeleton(original: &Character) -> Character {
+    let mut skeleton = Character::default();
+    skeleton.id = original.id;
+    skeleton.identity.name = original.identity.name.clone();
+    skeleton.identity.experience_points = original.identity.experience_points;
+    skeleton
+}
+
+/// Apply a single plan entry to `clean`, dispatching on the feat's category:
+/// System(_) markers establish identity + collect their canonical features;
+/// other entries are User-source feats fed through `apply_pending`.
+fn apply_plan_entry(
+    ctx: &mut RebuildCtx<'_>,
+    clean: &mut Character,
+    pending: &PendingFeature,
+) -> Result<(), RebuildError> {
+    let category = ctx
+        .feat_index
+        .get(pending.name.as_str())
+        .map(|def| def.category);
+
+    match category {
+        Some(FeatureCategory::System(IdentitySlot::Class)) => {
+            // Marker bumps CLASS.<name>.LEVEL via its OnFeatureAdd assign.
+            apply_new_feature(ctx.feat_index, clean, pending, &[]);
+            let class_level = *ctx
+                .class_counters
+                .entry(pending.name.clone())
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
+
+            let class_def = ctx.class_index.get(pending.name.as_str()).ok_or_else(|| {
+                RebuildError::MissingDefinition {
+                    kind: DefinitionKind::Class,
+                    name: pending.name.clone(),
+                }
+            })?;
+            let class_idx = clean
+                .identity
+                .classes
+                .iter()
+                .position(|class_level| class_level.class == pending.name)
+                .ok_or_else(|| RebuildError::MissingDefinition {
+                    kind: DefinitionKind::Class,
+                    name: pending.name.clone(),
+                })?;
+            // Subclass placeholder is surfaced as its own System(Subclass)
+            // marker entry in the plan — drop it from the class collect to
+            // avoid a no-op duplicate row in `features.list`.
+            let class_pending: Vec<PendingFeature> =
+                collect_class_features(clean, class_idx, class_level, class_def, ctx.feat_index)
+                    .filter(|pending_feature| {
+                        ctx.feat_index
+                            .get(pending_feature.name.as_str())
+                            .is_none_or(|feat_def| {
+                                feat_def.replace_with
+                                    != ReplaceWith::Category(FeatureCategory::System(
+                                        IdentitySlot::Subclass,
+                                    ))
+                            })
+                    })
+                    .collect();
+            apply_pending(ctx, clean, &class_pending);
+            clean.applied.mark_level(&pending.name, class_level);
+            Ok(())
+        }
+        Some(FeatureCategory::System(IdentitySlot::Subclass)) => {
+            apply_new_feature(ctx.feat_index, clean, pending, &[]);
+            Ok(())
+        }
+        Some(FeatureCategory::System(IdentitySlot::Species)) => {
+            apply_new_feature(ctx.feat_index, clean, pending, &[]);
+            let species_def = ctx
+                .species_cache
+                .get(pending.name.as_str())
+                .ok_or_else(|| RebuildError::MissingDefinition {
+                    kind: DefinitionKind::Species,
+                    name: pending.name.clone(),
+                })?;
+            let species_pending: Vec<PendingFeature> =
+                collect_species_features(clean, species_def, ctx.feat_index).collect();
+            apply_pending(ctx, clean, &species_pending);
+            clean.applied.species = true;
+            Ok(())
+        }
+        Some(FeatureCategory::System(IdentitySlot::Background)) => {
+            apply_new_feature(ctx.feat_index, clean, pending, &[]);
+            let bg_def = ctx.bg_cache.get(pending.name.as_str()).ok_or_else(|| {
+                RebuildError::MissingDefinition {
+                    kind: DefinitionKind::Background,
+                    name: pending.name.clone(),
+                }
+            })?;
+            let bg_pending: Vec<PendingFeature> =
+                collect_background_features(clean, bg_def, ctx.feat_index).collect();
+            apply_pending(ctx, clean, &bg_pending);
+            clean.applied.background = true;
+            Ok(())
+        }
+        _ => {
+            // User-source feat (or feature with no definition). Delegate to
+            // the existing User pipeline so missing-def + unknown-name cases
+            // surface the same skipped/removed accounting as before.
+            apply_user_pending(ctx, clean, pending);
+            Ok(())
+        }
+    }
+}
+
+/// Apply a single non-System pending entry. Mirrors the per-feature behavior
+/// of the legacy `apply_user_features_at_level` (preserve missing-def User
+/// feats with a count). `user_seen` tracks the Nth occurrence of each
+/// (name, source) so duplicate empty-name placeholders all land in `clean`.
+fn apply_user_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: &PendingFeature) {
+    if ctx.feat_index.contains_key(pending.name.as_str()) {
+        apply_pending(ctx, clean, std::slice::from_ref(pending));
+        return;
+    }
+    let key = (pending.name.clone(), pending.source.clone());
+    let occurrence = ctx.user_seen.entry(key).or_insert(0);
+    let nth = *occurrence;
+    *occurrence += 1;
+    let Some(original_feature) = ctx
+        .original
+        .features
+        .iter()
+        .filter(|feature| {
+            feature.name == pending.name
+                && feature.source == pending.source
+                && feature.source.is_user()
+        })
+        .nth(nth)
+    else {
+        return;
+    };
+    if !original_feature.name.is_empty() {
+        log::warn!("rebuild: preserving user feature with no definition: {original_feature:?}");
+        ctx.accum.skipped.push(original_feature.name.clone());
+    }
+    clean.features.list.push(original_feature.clone());
 }
 
 /// Collect features scheduled for the rebuild that still need user input
@@ -269,7 +408,7 @@ fn collect_rebuild_pending_inputs(
         // `solver::candidate_changes_baseline`. Proper fix needs a
         // derived-only clone, deferred to avoid breaking a future
         // spells-through-assign refactor (may write to features.data).
-        let mut validation_baseline = Character::from_identity(original.identity.clone());
+        let mut validation_baseline = rebuild_skeleton(original);
         let mut cascade_base: Option<Character> = None;
         let mut feat_states: Vec<FeatState> = Vec::new();
         let mut state_idx_by_pending: Vec<Option<usize>> = Vec::with_capacity(all_pending.len());
@@ -281,13 +420,11 @@ fn collect_rebuild_pending_inputs(
             };
             let Some(assign_defs) = feat_def.assign.as_ref() else {
                 // Pure-replaceable feats (e.g. Versatile: replace_with=Origin,
-                // no assign) and identity-grant placeholders (`grants:
-                // Some(_)` — the generic Subclass picker) also emit in the
-                // modal so the user can pick. Capture cascade_base here if no
-                // interactive feat has done so yet — nothing before advanced
-                // validation_baseline for this branch, so the base matches.
-                let needs_modal = !matches!(feat_def.replace_with, ReplaceWith::None)
-                    || feat_def.grants.is_some();
+                // no assign) emit in the modal so the user can pick. Capture
+                // cascade_base here if no interactive feat has done so yet —
+                // nothing before advanced validation_baseline for this branch,
+                // so the base matches.
+                let needs_modal = !matches!(feat_def.replace_with, ReplaceWith::None);
                 if needs_modal && cascade_base.is_none() {
                     cascade_base = Some(validation_baseline.clone_lean());
                 }
@@ -366,7 +503,7 @@ fn collect_rebuild_pending_inputs(
         // Solver starts from identity (it re-applies every feat through
         // its own pipeline walk). Ignore the success flag — even a partial
         // solve leaves the best-effort prefill in each assign's `args`.
-        let solver_baseline = Character::from_identity(original.identity.clone());
+        let solver_baseline = rebuild_skeleton(original);
         let _ = solve_all(&mut feat_states, &solver_baseline, original);
 
         // Emit: walk all_pending. Interactive feats emit editable from
@@ -374,7 +511,7 @@ fn collect_rebuild_pending_inputs(
         // hidden once the visible section has opened. `emit_baseline`
         // advances through every applied feat so `detect_replacement`
         // sees the pre-apply state for each.
-        let mut emit_baseline = Character::from_identity(original.identity.clone());
+        let mut emit_baseline = rebuild_skeleton(original);
         let mut inputs: Vec<PendingInputs> = Vec::new();
         let mut emit_started = false;
         for (pending_idx, pending) in all_pending.iter().enumerate() {
@@ -409,10 +546,10 @@ fn collect_rebuild_pending_inputs(
                     WhenCondition::OnFeatureAdd,
                 );
 
-                if let Some(mut pi) = state.pending.pending_inputs(state.def, original) {
-                    pi.prefill = inputs_vec;
-                    pi.prefilled_replacement = prefilled_replacement;
-                    inputs.push(pi);
+                if let Some(mut pending_input) = state.pending.pending_inputs(state.def, original) {
+                    pending_input.prefill = inputs_vec;
+                    pending_input.prefilled_replacement = prefilled_replacement;
+                    inputs.push(pending_input);
                 }
                 emit_started = true;
             } else if feat_def.assign.is_some() {
@@ -439,30 +576,11 @@ fn collect_rebuild_pending_inputs(
                     &pending_keys,
                     &emit_baseline,
                 );
-                if let Some(mut pi) = pending.pending_inputs(feat_def, original) {
-                    pi.prefilled_replacement = prefilled_replacement;
-                    inputs.push(pi);
+                if let Some(mut pending_input) = pending.pending_inputs(feat_def, original) {
+                    pending_input.prefilled_replacement = prefilled_replacement;
+                    inputs.push(pending_input);
                 }
                 emit_started = true;
-            } else if feat_def.grants.is_some() {
-                // Identity-grant placeholder (the generic Subclass picker).
-                // No assigns, no replace_with — just a marker that triggers
-                // a pick step in the modal cascade. Emit `pending_inputs`
-                // (which sets `pick: Some(slot)`) only when the matching
-                // identity slot is empty in `original`; otherwise this is a
-                // re-apply / silent commit and we suppress the modal section.
-                if identity_slot_is_empty(feat_def, pending, original) {
-                    if let Some(pi) = pending.pending_inputs(feat_def, original) {
-                        inputs.push(pi);
-                        emit_started = true;
-                    }
-                } else if emit_started {
-                    inputs.push(PendingInputs::hidden_for_cascade(
-                        pending.name.clone(),
-                        feat_def,
-                        pending.source.clone(),
-                    ));
-                }
             }
         }
         (inputs, had_rejections, cascade_base)
@@ -482,33 +600,11 @@ fn collect_rebuild_pending_inputs(
 ///
 /// First match wins — `original.features` preserves insertion order, and a
 /// single slot hosts exactly one replacement.
-/// True when the identity slot the placeholder grants (`feat_def.grants`) is
-/// currently empty for the relevant scope. Drives whether the cascade emits
-/// an interactive `pick` section or silent-commits the placeholder.
-fn identity_slot_is_empty(
-    feat_def: &FeatureDefinition,
-    pending: &PendingFeature,
-    original: &Character,
-) -> bool {
-    match feat_def.grants {
-        Some(IdentitySlot::Subclass) => match &pending.source {
-            FeatureSource::Class(class_name, _) => original
-                .identity
-                .classes
-                .iter()
-                .find(|class_level| class_level.class.as_str() == class_name.as_ref())
-                .is_none_or(|class_level| class_level.subclass.is_none()),
-            _ => false,
-        },
-        None => false,
-    }
-}
-
 fn detect_replacement(
     pending: &PendingFeature,
     feat_def: &FeatureDefinition,
     original: &Character,
-    feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    feat_index: FeaturesView<'_>,
     pending_keys: &BTreeSet<(&str, &FeatureSource)>,
     baseline: &Character,
 ) -> Option<String> {
@@ -656,142 +752,6 @@ fn is_fixed_preset(args: &[i32]) -> bool {
     sorted == [8, 10, 12, 13, 14, 15]
 }
 
-/// Apply class levels in canonical order.
-///
-/// Algorithm: after classes[0] L1 (primary entry), check whether classes[0]
-/// meets its own prereq against the current clean character. If it doesn't,
-/// we skip multiclass logic entirely and just level classes[0] to target —
-/// classes[1..] aren't applied. If it does, we loop: at each step, filter
-/// classes[1..] by prereq against current clean; if any multiclass is
-/// eligible (passes prereq AND has remaining target levels), take its next
-/// level (preferring lower index); otherwise level classes[0]. Stops when
-/// all reachable targets are met or progress halts.
-fn apply_classes_interleaved(
-    ctx: &mut RebuildCtx<'_>,
-    class_index: &BTreeMap<Box<str>, ClassDefinition>,
-    class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
-    clean: &mut Character,
-) -> Result<(), RebuildError> {
-    let n_classes = clean.identity.classes.len();
-    if n_classes == 0 {
-        return Ok(());
-    }
-    let targets: Vec<u32> = clean
-        .identity
-        .classes
-        .iter()
-        .map(|class_level| class_level.level)
-        .collect();
-    if targets.iter().all(|&t| t == 0) {
-        return Ok(());
-    }
-
-    let mut applied: Vec<u32> = vec![0; n_classes];
-    let mut character_level: u32 = 0;
-
-    // CL1: classes[0] at class level 1 — primary, no prereq check.
-    if targets[0] > 0 && !clean.identity.classes[0].class.is_empty() {
-        apply_class_level(ctx, class_index, clean, 0, 1)?;
-        applied[0] = 1;
-        character_level = 1;
-        apply_user_features_at_level(ctx, clean, character_level);
-    }
-
-    while let Some(i) = pick_next_class(clean, &targets, &applied, class_entries) {
-        let next_class_lvl = applied[i] + 1;
-        apply_class_level(ctx, class_index, clean, i, next_class_lvl)?;
-        applied[i] = next_class_lvl;
-        character_level += 1;
-        apply_user_features_at_level(ctx, clean, character_level);
-    }
-
-    // After the loop exits: primary is maxed out, but if any multiclass still
-    // has unapplied target levels, its prereq never passed during the build —
-    // that multiclass is illegal.
-    applied
-        .iter()
-        .zip(&targets)
-        .enumerate()
-        .skip(1)
-        .find(|(i, (applied, target))| {
-            applied < target && !clean.identity.classes[*i].class.is_empty()
-        })
-        .map_or(Ok(()), |(i, _)| {
-            Err(RebuildError::MulticlassPrereq {
-                class: clean.identity.classes[i].class.clone(),
-            })
-        })
-}
-
-/// Pick the next class to level up per the filter-and-apply algorithm.
-/// `entries` is the locked class-index map from `with_class_entries`.
-/// Returns `None` when no class has remaining levels, or when multiclass
-/// logic is disabled and the primary is already at target.
-///
-/// Primary prereq is re-checked every call because earlier ASIs / background
-/// boosts can flip the result as the build progresses.
-fn pick_next_class(
-    clean: &Character,
-    targets: &[u32],
-    applied: &[u32],
-    entries: &BTreeMap<Box<str>, ClassIndexEntry>,
-) -> Option<usize> {
-    let meets_prereq = |class_name: &str| {
-        entries
-            .get(class_name)
-            .is_none_or(|entry| entry.meets_prerequisites(clean))
-    };
-
-    let idx = if meets_prereq(clean.identity.classes[0].class.as_str()) {
-        // Filter classes[1..] by prereq + remaining levels; take first match,
-        // fall back to primary (0).
-        clean
-            .identity
-            .classes
-            .iter()
-            .enumerate()
-            .skip(1)
-            .find(|(i, class_level)| {
-                !class_level.class.is_empty()
-                    && applied[*i] < targets[*i]
-                    && meets_prereq(class_level.class.as_str())
-            })
-            .map_or(0, |(i, _)| i)
-    } else {
-        0
-    };
-
-    let cl = &clean.identity.classes[idx];
-    (!cl.class.is_empty() && applied[idx] < targets[idx]).then_some(idx)
-}
-
-fn apply_class_level(
-    ctx: &mut RebuildCtx<'_>,
-    class_index: &BTreeMap<Box<str>, ClassDefinition>,
-    clean: &mut Character,
-    class_idx: usize,
-    class_level: u32,
-) -> Result<(), RebuildError> {
-    let class_def = {
-        let class_name = clean.identity.classes[class_idx].class.as_str();
-        class_index
-            .get(class_name)
-            .ok_or_else(|| RebuildError::MissingDefinition {
-                kind: DefinitionKind::Class,
-                name: class_name.to_owned(),
-            })?
-    };
-    // hit_die_sides is set by Class Proficiencies (X) feature's OnFeatureAdd
-    // assign once the class features land below.
-    let pending: Vec<PendingFeature> =
-        collect_class_features(clean, class_idx, class_level, class_def, ctx.feat_index).collect();
-    apply_pending(ctx, clean, &pending);
-    clean
-        .applied
-        .mark_level(&clean.identity.classes[class_idx].class, class_level);
-    Ok(())
-}
-
 /// Apply a batch of pending features. Replacements from the modal are
 /// resolved upfront so the correct feature (after any user-chosen swap)
 /// drives input lookup. Each resolved pending is applied via
@@ -843,7 +803,7 @@ fn apply_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: &[Pen
 /// `Subclass(X, SC, N)`).
 ///
 /// Returns empty when neither source has inputs.
-fn inputs_for_pending(
+pub fn inputs_for_pending(
     pending_feature: &PendingFeature,
     original: &Character,
     extra_inputs: &ApplyInputs,
@@ -865,40 +825,6 @@ fn inputs_for_pending(
         })
         .map(|feature| feature.inputs.clone())
         .unwrap_or_default()
-}
-
-fn apply_user_features_at_level(ctx: &mut RebuildCtx<'_>, clean: &mut Character, level: u32) {
-    // Two passes over User(level) features in `original`:
-    //   1. Missing-def → preserve the original `Feature` directly in
-    //      `clean.features.list` so the user's pick / inputs / homebrew name
-    //      survive a rebuild. Empty-name placeholders ("Add feature" slot before
-    //      the user picked anything) preserve silently; named-unknown ones (renamed
-    //      feats, custom homebrew) are logged + counted as skipped. Direct
-    //      iteration handles duplicate empty/identical-name slots correctly, which
-    //      a `find`-based path through `apply_pending` would not.
-    //   2. Has-def → flow through `apply_pending` normally.
-    let mut pending: Vec<PendingFeature> = Vec::new();
-    for feature in ctx.original.features.iter() {
-        if !matches!(&feature.source, FeatureSource::User(l) if *l == level) {
-            continue;
-        }
-        if ctx.feat_index.contains_key(feature.name.as_str()) {
-            pending.push(PendingFeature {
-                name: feature.name.clone(),
-                source: feature.source.clone(),
-                level,
-            });
-        } else {
-            if !feature.name.is_empty() {
-                log::warn!("rebuild: preserving user feature with no definition: {feature:?}");
-                ctx.accum.skipped.push(feature.name.clone());
-            }
-            clean.features.list.push(feature.clone());
-        }
-    }
-    if !pending.is_empty() {
-        apply_pending(ctx, clean, &pending);
-    }
 }
 
 /// Copy non-rebuildable user data from original into clean. Called after
@@ -1313,94 +1239,7 @@ mod tests {
             actions: BTreeMap::new(),
             assign: None,
             prerequisites: None,
-            grants: None,
         }
-    }
-
-    fn subclass_picker_def() -> FeatureDefinition {
-        FeatureDefinition {
-            name: "Subclass".into(),
-            stackable: false,
-            category: FeatureCategory::Class,
-            replace_with: ReplaceWith::None,
-            spells: None,
-            actions: BTreeMap::new(),
-            assign: None,
-            prerequisites: None,
-            grants: Some(IdentitySlot::Subclass),
-        }
-    }
-
-    #[wasm_bindgen_test]
-    fn identity_slot_is_empty_no_class() {
-        let pending = PendingFeature {
-            name: "Subclass".into(),
-            source: FeatureSource::Class("Cleric".into(), 1),
-            level: 1,
-        };
-        let original = Character::default();
-        assert!(
-            identity_slot_is_empty(&subclass_picker_def(), &pending, &original),
-            "no matching ClassLevel ⇒ empty (cascade emits pick)"
-        );
-    }
-
-    #[wasm_bindgen_test]
-    fn identity_slot_is_empty_unset_subclass() {
-        let pending = PendingFeature {
-            name: "Subclass".into(),
-            source: FeatureSource::Class("Cleric".into(), 1),
-            level: 1,
-        };
-        let mut original = Character::default();
-        original.identity.classes.push(ClassLevel {
-            class: "Cleric".into(),
-            level: 1,
-            subclass: None,
-            ..ClassLevel::default()
-        });
-        assert!(identity_slot_is_empty(
-            &subclass_picker_def(),
-            &pending,
-            &original
-        ));
-    }
-
-    #[wasm_bindgen_test]
-    fn identity_slot_is_empty_set_subclass() {
-        let pending = PendingFeature {
-            name: "Subclass".into(),
-            source: FeatureSource::Class("Cleric".into(), 1),
-            level: 1,
-        };
-        let mut original = Character::default();
-        original.identity.classes.push(ClassLevel {
-            class: "Cleric".into(),
-            level: 1,
-            subclass: Some("Life Domain".into()),
-            ..ClassLevel::default()
-        });
-        assert!(
-            !identity_slot_is_empty(&subclass_picker_def(), &pending, &original),
-            "subclass already picked ⇒ cascade silent-commits"
-        );
-    }
-
-    #[wasm_bindgen_test]
-    fn pending_inputs_emits_pick_for_grants_feature() {
-        let def = subclass_picker_def();
-        let pending = PendingFeature {
-            name: "Subclass".into(),
-            source: FeatureSource::Class("Cleric".into(), 1),
-            level: 1,
-        };
-        let original = Character::default();
-        let pi = pending
-            .pending_inputs(&def, &original)
-            .expect("grants feature must produce a PendingInputs even with no exprs");
-        assert_eq!(pi.pick, Some(IdentitySlot::Subclass));
-        assert!(pi.exprs.is_empty());
-        assert!(matches!(pi.replace_with, ReplaceWith::None));
     }
 
     #[wasm_bindgen_test]
@@ -1438,7 +1277,7 @@ mod tests {
             &pending,
             &slot_def,
             &original,
-            &feat_index,
+            FeaturesView::from_natural(&feat_index),
             &pending_keys,
             &baseline,
         );
@@ -1474,7 +1313,7 @@ mod tests {
             &pending,
             &slot_def,
             &original,
-            &feat_index,
+            FeaturesView::from_natural(&feat_index),
             &pending_keys,
             &baseline,
         );
@@ -1525,6 +1364,46 @@ mod tests {
         ));
     }
 
+    /// Drive `apply_user_pending` over every User(level) feat in `original`.
+    /// Mirrors what the plan walker does for the User-source slice of the
+    /// plan, without needing a real registry.
+    fn run_apply_user_pending(
+        original: &Character,
+        clean: &mut Character,
+        feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+        accum: &mut RebuildAccum,
+        level: u32,
+    ) {
+        let extra = ApplyInputs::default();
+        let pendings: Vec<PendingFeature> = original
+            .features
+            .iter()
+            .filter(|feature| matches!(&feature.source, FeatureSource::User(l) if *l == level))
+            .map(|feature| PendingFeature {
+                name: feature.name.clone(),
+                source: feature.source.clone(),
+                level,
+            })
+            .collect();
+        let empty_class: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+        let empty_species: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let empty_bg: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let mut ctx = RebuildCtx {
+            feat_index: FeaturesView::from_natural(feat_index),
+            class_index: &empty_class,
+            species_cache: &empty_species,
+            bg_cache: &empty_bg,
+            original,
+            extra_inputs: &extra,
+            accum,
+            class_counters: BTreeMap::new(),
+            user_seen: BTreeMap::new(),
+        };
+        for pending in &pendings {
+            apply_user_pending(&mut ctx, clean, pending);
+        }
+    }
+
     #[wasm_bindgen_test]
     fn apply_user_features_preserves_empty_name_silently() {
         // Empty-name User slots come from the "Add feature" button in the
@@ -1544,18 +1423,11 @@ mod tests {
             applied: false,
             ..Feature::default()
         });
-        let mut clean = Character::from_identity(original.identity.clone());
+        let mut clean = Character::default();
         let mut accum = RebuildAccum::default();
         let feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-        let extra = ApplyInputs::default();
 
-        let mut ctx = RebuildCtx {
-            feat_index: &feat_index,
-            original: &original,
-            extra_inputs: &extra,
-            accum: &mut accum,
-        };
-        apply_user_features_at_level(&mut ctx, &mut clean, 0);
+        run_apply_user_pending(&original, &mut clean, &feat_index, &mut accum, 0);
 
         let empty_user_count = clean
             .features
@@ -1592,18 +1464,11 @@ mod tests {
             inputs: inputs.clone(),
             ..Feature::default()
         });
-        let mut clean = Character::from_identity(original.identity.clone());
+        let mut clean = Character::default();
         let mut accum = RebuildAccum::default();
         let feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
-        let extra = ApplyInputs::default();
 
-        let mut ctx = RebuildCtx {
-            feat_index: &feat_index,
-            original: &original,
-            extra_inputs: &extra,
-            accum: &mut accum,
-        };
-        apply_user_features_at_level(&mut ctx, &mut clean, 0);
+        run_apply_user_pending(&original, &mut clean, &feat_index, &mut accum, 0);
 
         let preserved = clean
             .features
@@ -1633,11 +1498,19 @@ mod tests {
             level: 1,
         }];
 
+        let empty_class: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+        let empty_species: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let empty_bg: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
         let mut ctx = RebuildCtx {
-            feat_index: &feat_index,
+            feat_index: FeaturesView::from_natural(&feat_index),
+            class_index: &empty_class,
+            species_cache: &empty_species,
+            bg_cache: &empty_bg,
             original: &original,
             extra_inputs: &extra,
             accum: &mut accum,
+            class_counters: BTreeMap::new(),
+            user_seen: BTreeMap::new(),
         };
         apply_pending(&mut ctx, &mut clean, &pending);
 
@@ -1681,17 +1554,10 @@ mod tests {
             applied: true,
             ..Feature::default()
         });
-        let mut clean = Character::from_identity(original.identity.clone());
+        let mut clean = Character::default();
         let mut accum = RebuildAccum::default();
-        let extra = ApplyInputs::default();
 
-        let mut ctx = RebuildCtx {
-            feat_index: &feat_index,
-            original: &original,
-            extra_inputs: &extra,
-            accum: &mut accum,
-        };
-        apply_user_features_at_level(&mut ctx, &mut clean, 0);
+        run_apply_user_pending(&original, &mut clean, &feat_index, &mut accum, 0);
 
         assert_eq!(accum.skipped, vec!["Homebrew Smite".to_string()]);
         assert!(accum.removed.is_empty());
@@ -1742,11 +1608,476 @@ mod tests {
                 &pending,
                 &slot_def,
                 &original,
-                &feat_index,
+                FeaturesView::from_natural(&feat_index),
                 &pending_keys,
                 &baseline
             )
             .is_none()
         );
+    }
+
+    use crate::rules::{
+        ClassIndexEntry,
+        apply::plan::{plan_from_interleaving_with_caches, plan_from_markers},
+        background::BackgroundDefinition,
+        class::ClassDefinition,
+        registry::make_system_feature,
+        species::SpeciesDefinition,
+    };
+
+    /// Build a `feat_index` populated with synth System(_) defs for the named
+    /// classes / subclasses / species / backgrounds plus any structural class
+    /// features supplied through `extra`.
+    fn synth_feat_index(
+        classes: &[&str],
+        subclasses: &[&str],
+        species: &[&str],
+        backgrounds: &[&str],
+        extra: Vec<(&str, FeatureCategory)>,
+    ) -> BTreeMap<Box<str>, FeatureDefinition> {
+        let mut index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        for name in classes {
+            index.insert(
+                Box::from(*name),
+                make_system_feature(Box::from(*name), IdentitySlot::Class),
+            );
+        }
+        for name in subclasses {
+            index.insert(
+                Box::from(*name),
+                make_system_feature(Box::from(*name), IdentitySlot::Subclass),
+            );
+        }
+        for name in species {
+            index.insert(
+                Box::from(*name),
+                make_system_feature(Box::from(*name), IdentitySlot::Species),
+            );
+        }
+        for name in backgrounds {
+            index.insert(
+                Box::from(*name),
+                make_system_feature(Box::from(*name), IdentitySlot::Background),
+            );
+        }
+        for (name, category) in extra {
+            index.insert(
+                Box::from(name),
+                FeatureDefinition {
+                    name: Box::from(name),
+                    stackable: false,
+                    category,
+                    replace_with: ReplaceWith::None,
+                    spells: None,
+                    actions: BTreeMap::new(),
+                    assign: None,
+                    prerequisites: None,
+                },
+            );
+        }
+        index
+    }
+
+    /// Walk a plan through `apply_plan_entry` to produce a clean character.
+    /// Mirrors what `build_clean` does internally — minus `merge_preserved`
+    /// plus label fill — so tests can assert on the post-walk shape without
+    /// needing a real `RulesRegistry`.
+    fn run_plan(
+        plan: &[PendingFeature],
+        original: &Character,
+        feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+        class_index: &BTreeMap<Box<str>, ClassDefinition>,
+        species_cache: &BTreeMap<Box<str>, SpeciesDefinition>,
+        bg_cache: &BTreeMap<Box<str>, BackgroundDefinition>,
+    ) -> Character {
+        let mut clean = Character::default();
+        let extra = ApplyInputs::default();
+        let mut accum = RebuildAccum::default();
+        let mut ctx = RebuildCtx {
+            feat_index: FeaturesView::from_natural(feat_index),
+            class_index,
+            species_cache,
+            bg_cache,
+            original,
+            extra_inputs: &extra,
+            accum: &mut accum,
+            class_counters: BTreeMap::new(),
+            user_seen: BTreeMap::new(),
+        };
+        for pending in plan {
+            apply_plan_entry(&mut ctx, &mut clean, pending).expect("apply_plan_entry");
+        }
+        clean
+    }
+
+    fn fighter_class_def() -> ClassDefinition {
+        serde_json::from_value(serde_json::json!({
+            "name": "Fighter",
+            "hit_die": 10,
+            "levels": {
+                "1": { "features": [] },
+                "2": { "features": [] },
+                "3": { "features": [] }
+            },
+            "subclasses": [
+                {
+                    "name": "Battle Master",
+                    "levels": {
+                        "3": { "features": [] }
+                    }
+                }
+            ]
+        }))
+        .unwrap()
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_emits_system_class_markers_at_each_level() {
+        let mut original = Character::default();
+        original.identity.classes = vec![ClassLevel {
+            class: "Fighter".into(),
+            level: 3,
+            ..ClassLevel::default()
+        }];
+        let class_index: BTreeMap<Box<str>, ClassDefinition> =
+            std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
+        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
+
+        let plan = plan_from_interleaving_with_caches(
+            &original.identity,
+            &original.features,
+            FeaturesView::from_natural(&feat_index),
+            &class_index,
+            &class_entries,
+            &species_cache,
+            &bg_cache,
+        )
+        .expect("plan");
+
+        let clean = run_plan(
+            &plan,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        let class_markers: Vec<&Feature> = clean
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                feature.name == "Fighter"
+                    && matches!(
+                        feature.category,
+                        FeatureCategory::System(IdentitySlot::Class)
+                    )
+            })
+            .collect();
+        assert_eq!(class_markers.len(), 3);
+        assert_eq!(class_markers[0].source, FeatureSource::User(1));
+        assert_eq!(class_markers[1].source, FeatureSource::User(2));
+        assert_eq!(class_markers[2].source, FeatureSource::User(3));
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_emits_system_subclass_marker_at_pick_level() {
+        let mut original = Character::default();
+        original.identity.classes = vec![ClassLevel {
+            class: "Fighter".into(),
+            subclass: Some("Battle Master".into()),
+            level: 3,
+            ..ClassLevel::default()
+        }];
+        let class_index: BTreeMap<Box<str>, ClassDefinition> =
+            std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
+        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
+
+        let plan = plan_from_interleaving_with_caches(
+            &original.identity,
+            &original.features,
+            FeaturesView::from_natural(&feat_index),
+            &class_index,
+            &class_entries,
+            &species_cache,
+            &bg_cache,
+        )
+        .expect("plan");
+        let clean = run_plan(
+            &plan,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        let subclass_markers: Vec<&Feature> = clean
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                feature.name == "Battle Master"
+                    && matches!(
+                        feature.category,
+                        FeatureCategory::System(IdentitySlot::Subclass)
+                    )
+            })
+            .collect();
+        assert_eq!(subclass_markers.len(), 1);
+        assert_eq!(
+            subclass_markers[0].source,
+            FeatureSource::Class("Fighter".into(), 3)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_emits_system_species_and_background_markers() {
+        let mut original = Character::default();
+        original.identity.species = "Human".into();
+        original.identity.background = "Soldier".into();
+
+        let class_index: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = std::iter::once((
+            Box::from("Human"),
+            serde_json::from_value::<SpeciesDefinition>(serde_json::json!({
+                "name": "Human",
+                "features": []
+            }))
+            .unwrap(),
+        ))
+        .collect();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = std::iter::once((
+            Box::from("Soldier"),
+            serde_json::from_value::<BackgroundDefinition>(serde_json::json!({
+                "name": "Soldier",
+                "features": []
+            }))
+            .unwrap(),
+        ))
+        .collect();
+        let feat_index = synth_feat_index(&[], &[], &["Human"], &["Soldier"], vec![]);
+
+        let plan = plan_from_interleaving_with_caches(
+            &original.identity,
+            &original.features,
+            FeaturesView::from_natural(&feat_index),
+            &class_index,
+            &class_entries,
+            &species_cache,
+            &bg_cache,
+        )
+        .expect("plan");
+        let clean = run_plan(
+            &plan,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        let species = clean
+            .features
+            .list
+            .iter()
+            .find(|feature| {
+                feature.name == "Human"
+                    && matches!(
+                        feature.category,
+                        FeatureCategory::System(IdentitySlot::Species)
+                    )
+            })
+            .expect("species marker");
+        assert_eq!(species.source, FeatureSource::User(0));
+
+        let background = clean
+            .features
+            .list
+            .iter()
+            .find(|feature| {
+                feature.name == "Soldier"
+                    && matches!(
+                        feature.category,
+                        FeatureCategory::System(IdentitySlot::Background)
+                    )
+            })
+            .expect("background marker");
+        assert_eq!(background.source, FeatureSource::User(0));
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_legacy_char_round_trip_idempotent() {
+        // Original = Fighter L3 with no System markers, just a Class-source
+        // feature representing a class L1 grant. First rebuild emits markers.
+        let mut original = Character::default();
+        original.identity.classes = vec![ClassLevel {
+            class: "Fighter".into(),
+            level: 3,
+            ..ClassLevel::default()
+        }];
+        original.applied.levels.insert("Fighter".into(), {
+            let mut levels = crate::vecset::VecSet::new();
+            levels.insert(1);
+            levels.insert(2);
+            levels.insert(3);
+            levels
+        });
+
+        let class_index: BTreeMap<Box<str>, ClassDefinition> =
+            std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
+        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
+
+        // First pass: legacy char → interleaving.
+        assert!(plan_from_markers(&original.identity, &original.features).is_none());
+        let plan1 = plan_from_interleaving_with_caches(
+            &original.identity,
+            &original.features,
+            FeaturesView::from_natural(&feat_index),
+            &class_index,
+            &class_entries,
+            &species_cache,
+            &bg_cache,
+        )
+        .expect("plan1");
+        let clean1 = run_plan(
+            &plan1,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        // Output now has 3 System(Class) markers; second rebuild must use
+        // the marker path and produce the same shape.
+        let plan2 =
+            plan_from_markers(&clean1.identity, &clean1.features).expect("plan2 from markers");
+        let clean2 = run_plan(
+            &plan2,
+            &clean1,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        let class_markers_1: Vec<&FeatureSource> = clean1
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                matches!(
+                    feature.category,
+                    FeatureCategory::System(IdentitySlot::Class)
+                )
+            })
+            .map(|feature| &feature.source)
+            .collect();
+        let class_markers_2: Vec<&FeatureSource> = clean2
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                matches!(
+                    feature.category,
+                    FeatureCategory::System(IdentitySlot::Class)
+                )
+            })
+            .map(|feature| &feature.source)
+            .collect();
+        assert_eq!(class_markers_1, class_markers_2);
+        assert_eq!(class_markers_2.len(), 3);
+        assert!(!clean2.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_marker_path_skips_interleaving() {
+        // Markers populate identity.classes via the OnFeatureAdd assign
+        // (CLASS.<name>.LEVEL += 1 auto-creates the ClassLevel row), so a
+        // char with no identity.classes pre-populated still rebuilds cleanly.
+        let mut original = Character::default();
+        // identity.classes intentionally empty.
+        original.features.list = vec![
+            crate::model::Feature {
+                name: "Fighter".into(),
+                source: FeatureSource::User(1),
+                applied: true,
+                category: FeatureCategory::System(IdentitySlot::Class),
+                ..crate::model::Feature::default()
+            },
+            crate::model::Feature {
+                name: "Fighter".into(),
+                source: FeatureSource::User(2),
+                applied: true,
+                category: FeatureCategory::System(IdentitySlot::Class),
+                ..crate::model::Feature::default()
+            },
+            crate::model::Feature {
+                name: "Fighter".into(),
+                source: FeatureSource::User(3),
+                applied: true,
+                category: FeatureCategory::System(IdentitySlot::Class),
+                ..crate::model::Feature::default()
+            },
+        ];
+
+        let plan = plan_from_markers(&original.identity, &original.features).expect("marker plan");
+        // Plan must contain exactly the three class steps (plus possible
+        // species/background entries — none here).
+        let class_steps = plan
+            .iter()
+            .filter(|pending| pending.name == "Fighter")
+            .count();
+        assert_eq!(class_steps, 3);
+
+        let class_index: BTreeMap<Box<str>, ClassDefinition> =
+            std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
+
+        let clean = run_plan(
+            &plan,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        // Markers populate identity.classes via assigns + apply_plan_entry.
+        let fighter = clean
+            .identity
+            .classes
+            .iter()
+            .find(|class_level| class_level.class == "Fighter")
+            .expect("Fighter class created from markers");
+        assert_eq!(fighter.level, 3);
+
+        // Three System(Class) markers committed in features.list.
+        let markers = clean
+            .features
+            .list
+            .iter()
+            .filter(|feature| {
+                matches!(
+                    feature.category,
+                    FeatureCategory::System(IdentitySlot::Class)
+                )
+            })
+            .count();
+        assert_eq!(markers, 3);
     }
 }

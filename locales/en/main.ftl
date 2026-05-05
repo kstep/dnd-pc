@@ -20,11 +20,11 @@ prof-bonus = Prof. Bonus
 classes = Classes
 class = Class
 subclass = Subclass
-btn-add-class = + Add Class
+btn-add-class = + Add / Level Up
 btn-edit-feature = Edit feature inputs
 apply = Apply
 apply-features-title = Apply features
-build-replay-hint-title = These features were edited or not yet applied. Click Replay to re-apply.
+build-replay-hint-title = These features were edited or not yet applied. Click Rebuild to re-apply.
 build-choice-hint-title = These features need a choice selected:
 build-pending-apply-title = New levels or changes have not been applied yet. Click Apply to add related features.
 build-needs-rebuild-title = Character {$reasons}. Rebuild required.
@@ -33,9 +33,8 @@ rebuild-reason-background = background changed
 rebuild-reason-class-removed = class "{$class}" removed
 rebuild-reason-level-lowered = class "{$class}" level lowered (was {$applied}, now {$current})
 rebuild-reason-subclass-changed = subclass changed for class "{$class}"
-prerequisites-label = Requires
-replace-with-feat = Replace with a feat
-pick-subclass = Choose subclass
+rebuild-reason-legacy-system-markers = legacy data format
+replace-with-feat = Replace with…
 no-eligible-options = No eligible options available
 export-json = Save to file
 import-json = Load from file
@@ -90,8 +89,6 @@ diff-notes-summary = "{ $text }" · { $level } · { $date } · total: { $count }
 ## Combat panel
 armor-class = Armor Class
 recalculate = Recalculate
-replay = Replay
-replay-confirm = Replay will reset and re-apply all features. Continue?
 rebuild = Rebuild
 rebuild-confirm = The character will be rebuilt from scratch. HP, used slots, and hit dice are preserved.
 toast-rebuild-done = Character rebuilt
@@ -194,7 +191,7 @@ add-item = Add item
 
 ## Features / Personality / Proficiencies
 feature-name = Feature name
-btn-add-feature = + Add Feature
+btn-add-feature = Add Feature
 source-class = Class
 source-subclass = Subclass
 source-species = Species
@@ -289,6 +286,8 @@ damage-thunder = Thunder
 
 ## Confirmation dialogs
 confirm-reset = Reset character to blank?
+remove-class = Remove class
+confirm-remove-class = Remove this class and all its levels? You will need to rebuild the character afterwards.
 
 ## Session page
 slot-level = Lv { $level }
@@ -385,6 +384,10 @@ feat-cat-epic-boon = Epic Boons
 feat-cat-generation = Generation
 feat-cat-faction = Faction
 feat-cat-dragonmark = Dragonmark
+feat-cat-system-species = Species (System)
+feat-cat-system-background = Background (System)
+feat-cat-system-subclass = Subclass (System)
+feat-cat-system-class = Class (System)
 feat-cat-all = All Categories
 ref-spells = Spells
 ref-select-spell-list = Select a spell list to view spells

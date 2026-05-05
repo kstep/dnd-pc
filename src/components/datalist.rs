@@ -21,7 +21,7 @@ pub fn next_datalist_id() -> String {
 /// An entry shown in the `DatalistInput` suggestions list and the shared
 /// `DatalistModal` browse view.
 ///
-/// `name` is the stable key. `label`, `description`, and `blocked_reason` are
+/// `name` is the stable key. `label` and `description` are
 /// `ArcSignal<String>` (Arc-counted, owner-independent) so the modal — an
 /// App-root singleton that holds a snapshot of options across opens — can
 /// keep reading them after the producing scope (caller's Memo / render
@@ -32,21 +32,16 @@ pub struct DatalistOption {
     pub label: ArcSignal<String>,
     pub description: ArcSignal<String>,
     pub count: Option<u32>,
-    /// When set, the option is shown but not selectable in the modal list,
-    /// with the signal value as the reason.
-    pub blocked_reason: Option<ArcSignal<String>>,
 }
 
-// `name` is the stable identity (locale-stable). Reactive `label`/
-// `description`/`blocked_reason` propagate updates through their own
-// subscriptions, so equality on `name` + structure (count, blockedness)
-// is enough for `Memo<Vec<DatalistOption>>` change detection — per-entry
-// text changes are handled by the signal subscriptions inside the modal.
+// `name` is the stable identity (locale-stable). Reactive `label` /
+// `description` propagate updates through their own subscriptions, so
+// equality on `name` + `count` is enough for `Memo<Vec<DatalistOption>>`
+// change detection — per-entry text changes are handled by the signal
+// subscriptions inside the modal.
 impl PartialEq for DatalistOption {
     fn eq(&self, other: &Self) -> bool {
-        self.name == other.name
-            && self.count == other.count
-            && self.blocked_reason.is_some() == other.blocked_reason.is_some()
+        self.name == other.name && self.count == other.count
     }
 }
 
@@ -65,17 +60,11 @@ impl DatalistOption {
             label,
             description,
             count: None,
-            blocked_reason: None,
         }
     }
 
     pub fn with_count(mut self, count: u32) -> Self {
         self.count = Some(count);
-        self
-    }
-
-    pub fn with_blocked_reason(mut self, reason: ArcSignal<String>) -> Self {
-        self.blocked_reason = Some(reason);
         self
     }
 }
@@ -331,31 +320,24 @@ pub fn DatalistModal() -> impl IntoView {
                             label,
                             description,
                             count,
-                            blocked_reason,
                         } = opt;
                         let selected_name = name.clone();
                         let label_for_click = label.clone();
-                        let badge = ctx.badge_key.get_untracked().zip(count).map(|(key, n)| {
-                            view! {
-                                <span class="datalist-option-badge">
-                                    {move || render_badge(i18n, key, n)}
-                                </span>
-                            }
-                        });
-                        let is_blocked = blocked_reason.is_some();
-                        let blocked_reason_view = blocked_reason.map(|reason| {
-                            view! {
-                                <span class="datalist-option-blocked-reason">
-                                    {move || reason.get()}
-                                </span>
-                            }
-                        });
+                        let badge = ctx
+                            .badge_key
+                            .get_untracked()
+                            .zip(count)
+                            .map(|(badge_key, badge_count)| {
+                                view! {
+                                    <span class="datalist-option-badge">
+                                        {move || render_badge(i18n, badge_key, badge_count)}
+                                    </span>
+                                }
+                            });
                         view! {
                             <button
                                 type="button"
                                 class="datalist-option"
-                                class:datalist-option-blocked=is_blocked
-                                disabled=is_blocked
                                 on:click=move |_| {
                                     if let Some(callback) = ctx.on_pick.get_value() {
                                         // `label` may change with locale; pick
@@ -374,7 +356,6 @@ pub fn DatalistModal() -> impl IntoView {
                                 <div class="datalist-option-label">
                                     <Markdown text=description />
                                 </div>
-                                {blocked_reason_view}
                             </button>
                         }
                     }

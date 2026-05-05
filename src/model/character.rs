@@ -8,9 +8,9 @@ use uuid::Uuid;
 use crate::{
     expr::{self, Eval as _},
     model::{
-        AbilityScores, Applied, Attribute, CharacterIdentity, CombatStats, DamageModifiers,
-        Equipment, Feature, FeatureSource, Features, Note, Personality, Skills, SpellData,
-        SpellSlots, Weapon, enums::*,
+        AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
+        DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
+        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, Weapon, enums::*,
     },
     vecset::VecSet,
 };
@@ -40,6 +40,9 @@ pub enum RebuildReason {
     SubclassChanged {
         class: String,
     },
+    /// Built character with no `System(Class)` markers — needs the
+    /// rebuild flow to emit them before further drift detection works.
+    LegacyMissingSystemMarkers,
 }
 
 impl RebuildReason {
@@ -62,6 +65,7 @@ impl RebuildReason {
             Self::SubclassChanged { class } => {
                 tr!(i18n, "rebuild-reason-subclass-changed", { "class" => class.clone() })
             }
+            Self::LegacyMissingSystemMarkers => tr!(i18n, "rebuild-reason-legacy-system-markers"),
         }
     }
 }
@@ -155,7 +159,13 @@ impl Character {
 
     pub fn clear(&mut self) {
         let id = self.id;
-        let identity = mem::take(&mut self.identity);
+        let mut identity = mem::take(&mut self.identity);
+        // Drop legacy empty class entries — they're noise from a prior
+        // default and confuse downstream logic that treats class entries as
+        // canonical.
+        identity
+            .classes
+            .retain(|class_level| !class_level.class.is_empty());
         *self = Self {
             id,
             identity,
@@ -399,11 +409,6 @@ impl Character {
         self.caster_info(pool).0
     }
 
-    pub fn can_level_up(&self) -> bool {
-        !self.identity.classes.is_empty()
-            && self.identity.classes.iter().all(|cl| !cl.class.is_empty())
-    }
-
     /// True if there are forward-only changes that can be materialized
     /// without `rebuild()`: pending class levels (new class or new levels of
     /// an existing class), or species/background not yet applied while
@@ -491,6 +496,21 @@ impl Character {
                 });
             }
         }
+        // Legacy: a built character (applied.levels populated, features
+        // already materialized) carrying no System(Class) markers needs to
+        // migrate through the rebuild modal so the marker-driven path can
+        // take over on subsequent rebuilds.
+        let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
+        let has_features = !self.features.list.is_empty();
+        let has_class_markers = self.features.iter().any(|feature| {
+            matches!(
+                feature.category,
+                FeatureCategory::System(IdentitySlot::Class)
+            )
+        });
+        if has_levels && has_features && !has_class_markers {
+            reasons.push(RebuildReason::LegacyMissingSystemMarkers);
+        }
         reasons
     }
 
@@ -501,10 +521,14 @@ impl Character {
     }
 
     pub fn level(&self) -> u32 {
+        // Empty `class` entries are legacy noise from a prior default; treat
+        // them as if they weren't there so total level reflects only the
+        // classes the character actually has.
         self.identity
             .classes
             .iter()
-            .map(|cl| cl.level)
+            .filter(|class_level| !class_level.class.is_empty())
+            .map(|class_level| class_level.level)
             .sum::<u32>()
             .max(1)
     }
@@ -734,6 +758,44 @@ impl expr::Context<Attribute, i32> for Character {
                     self.languages.remove(name);
                 }
             }
+            Attribute::Species(name) => {
+                if value != 0 {
+                    self.identity.species = name.to_string();
+                } else if self.identity.species == name {
+                    self.identity.species.clear();
+                }
+            }
+            Attribute::Background(name) => {
+                if value != 0 {
+                    self.identity.background = name.to_string();
+                } else if self.identity.background == name {
+                    self.identity.background.clear();
+                }
+            }
+            Attribute::ClassLevel(AttrKey::Named(name)) => {
+                let new_level = value.max(0) as u32;
+                let existing = self
+                    .identity
+                    .classes
+                    .iter()
+                    .position(|class_level| class_level.class == name);
+                match (existing, new_level) {
+                    (Some(idx), 0) => {
+                        self.identity.classes.remove(idx);
+                    }
+                    (Some(idx), level) => {
+                        self.identity.classes[idx].level = level;
+                    }
+                    (None, 0) => {}
+                    (None, level) => {
+                        self.identity.classes.push(ClassLevel {
+                            class: name.to_string(),
+                            level,
+                            ..ClassLevel::default()
+                        });
+                    }
+                }
+            }
             Attribute::Resistance(dt) => {
                 self.damage_modifiers.set_resistant(dt, value != 0);
             }
@@ -789,6 +851,27 @@ impl expr::Context<Attribute, i32> for Character {
             Attribute::DamageReduction(dt) => Ok(self.damage_modifiers.reduction(dt) as i32),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
             Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
+            Attribute::Species(name) => Ok((self.identity.species == name) as i32),
+            Attribute::Background(name) => Ok((self.identity.background == name) as i32),
+            Attribute::ClassLevel(AttrKey::Named(name)) => Ok(self
+                .identity
+                .classes
+                .iter()
+                .find(|cl| cl.class == name)
+                .map(|cl| cl.level as i32)
+                .unwrap_or(0)),
+            Attribute::ClassCount => Ok(self
+                .identity
+                .classes
+                .iter()
+                .filter(|cl| !cl.class.is_empty())
+                .count() as i32),
+            Attribute::Subclass(name) => Ok(self
+                .identity
+                .classes
+                .iter()
+                .any(|cl| cl.subclass.as_deref() == Some(name))
+                as i32),
             Attribute::FeatCategory(cat) => Ok(self.features.has_category(cat) as i32),
             a if a.is_advantage() => Ok(0),
             other => Err(expr::Error::unsupported_var(other)),
@@ -1810,6 +1893,34 @@ mod tests {
             ch.applied.mark_level("Wizard", lvl);
         }
         assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn legacy_char_without_system_markers_needs_rebuild() {
+        let mut ch = drift_character();
+        ch.identity.classes.push(ClassLevel {
+            class: "Fighter".to_string(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        for lvl in 1..=3 {
+            ch.applied.mark_level("Fighter", lvl);
+        }
+        // Pre-marker character: only Class-source features in features.list.
+        for lvl in 1..=3 {
+            ch.features.list.push(Feature {
+                name: format!("Fighter L{lvl} grant"),
+                source: FeatureSource::Class("Fighter".into(), lvl),
+                applied: true,
+                category: FeatureCategory::Class,
+                ..Feature::default()
+            });
+        }
+        assert!(ch.needs_rebuild());
+        assert!(
+            ch.rebuild_reasons()
+                .contains(&RebuildReason::LegacyMissingSystemMarkers)
+        );
     }
 
     #[wasm_bindgen_test]

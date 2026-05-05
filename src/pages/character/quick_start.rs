@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, time::Duration};
+use std::time::Duration;
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::move_tr;
@@ -9,12 +9,9 @@ use uuid::Uuid;
 use crate::{
     components::{
         ai_generate_modal::{AiGenerateModal, AiGenerateResult},
-        apply::{apply_with_modal, apply_with_prefilled_args},
-        background_field::BackgroundField,
-        class_field::ClassField,
+        apply::{apply_with_modal, apply_with_prefilled_args, mark_all_applied},
         icon::Icon,
         ref_link::Ref,
-        species_field::SpeciesField,
     },
     model::{
         Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureCategory,
@@ -22,9 +19,8 @@ use crate::{
     },
     names::{self, NamesData},
     rules::{
-        ApplyInputs, RulesRegistry,
-        apply::{PendingFeature, apply_new_features, collect_pending_features},
-        feature::FeatureDefinition,
+        FeaturesView, RecomputePending, RulesRegistry,
+        apply::{PendingFeature, collect_pending_features},
     },
 };
 
@@ -158,7 +154,7 @@ pub fn QuickStart() -> impl IntoView {
                                     name="generation"
                                     value=name.clone()
                                     prop:checked=move || {
-                                        generation_method.with(|v| v == &name_for_check)
+                                        generation_method.with(|method| method == &name_for_check)
                                     }
                                     on:change=move |_| generation_method.set(name_for_set.clone())
                                 />
@@ -167,21 +163,6 @@ pub fn QuickStart() -> impl IntoView {
                         }
                     }).collect_view()}
                 </div>
-            </div>
-
-            <div class="quick-start-section">
-                <label>{move_tr!("species")}</label>
-                <SpeciesField />
-            </div>
-
-            <div class="quick-start-section">
-                <label>{move_tr!("background")}</label>
-                <BackgroundField />
-            </div>
-
-            <div class="quick-start-section">
-                <label>{move_tr!("class")}</label>
-                <ClassField />
             </div>
 
             <div class="quick-start-actions">
@@ -198,68 +179,76 @@ pub fn QuickStart() -> impl IntoView {
 
 // --- Shared helpers ---
 
-/// Collect all pending features for quick-start creation: generation feature
-/// (if selected) + species/background/class features.
+/// Initial pending list for the quick-start cascade modal. Order matches
+/// the conventional creation flow: generation method → species →
+/// background → class. The cascade-recompute closure re-runs this against
+/// the speculative character so newly-relevant downstream features
+/// (species traits, background skills, class L1 features) appear as soon
+/// as the user makes a pick.
+fn build_quick_start_pending_features(
+    character: &Character,
+    registry: &RulesRegistry,
+    features_index: FeaturesView<'_>,
+    gen_name: &str,
+) -> Vec<PendingFeature> {
+    let level = character.level().max(1);
+    // Always include the four placeholder features unconditionally — they
+    // own per-section reactive signals (replacement_choice, validity memos)
+    // owned by their <For> child scope. Removing them from pending after
+    // their identity slot fills would unmount the section, dispose the
+    // signals, and leave dangling references in the watcher Effect's
+    // all_replacements aggregator. The picker's replacement-choice memory
+    // keeps the user's pick visible across cascade re-runs.
+    let mut pending: Vec<PendingFeature> = Vec::new();
+    if !gen_name.is_empty() {
+        pending.push(PendingFeature {
+            name: gen_name.to_string(),
+            source: FeatureSource::User(0),
+            level,
+        });
+    }
+    for placeholder_name in ["Generation: Species", "Generation: Background"] {
+        pending.push(PendingFeature {
+            name: placeholder_name.into(),
+            source: FeatureSource::User(0),
+            level: 0,
+        });
+    }
+    // Class Level placeholder: source = User(target_total_level) so the
+    // resulting System(Class) marker lands on User(1) for the first class,
+    // matching what level_up_class emits for subsequent level-ups.
+    pending.push(PendingFeature {
+        name: "Class Level".into(),
+        source: FeatureSource::User(level),
+        level,
+    });
+    pending.extend(collect_pending_features(
+        character,
+        registry,
+        features_index,
+    ));
+    pending
+}
+
 fn collect_quick_start_pending(
     store: &Store<Character>,
     registry: &RulesRegistry,
     gen_name: &str,
 ) -> Vec<PendingFeature> {
     store.with_untracked(|character| {
-        let gen_pending = (!gen_name.is_empty()).then(|| {
-            let level = character.level().max(1);
-            PendingFeature {
-                name: gen_name.to_string(),
-                source: FeatureSource::User(0),
-                level,
-            }
-        });
-
         registry.with_features_index_untracked(|fi| {
-            let mut pending: Vec<PendingFeature> = gen_pending.into_iter().collect();
-            pending.extend(collect_pending_features(character, registry, fi));
-            pending
+            build_quick_start_pending_features(character, registry, fi, gen_name)
         })
     })
 }
 
-/// Apply callback shared by manual and AI quick-start: set applied flags,
-/// apply features, set HP, navigate to editor. Hit-die size now lands via
-/// the Class Proficiencies feature's OnFeatureAdd assign, so no longer
-/// pre-filled here.
-fn finalize_quick_start(
-    character: &mut Character,
-    pending: &[PendingFeature],
-    inputs: &ApplyInputs,
-    features_index: &BTreeMap<Box<str>, FeatureDefinition>,
-) {
-    if !character.identity.species.is_empty() && !character.applied.species {
-        character.applied.species = true;
-    }
-    if !character.identity.background.is_empty() && !character.applied.background {
-        character.applied.background = true;
-    }
-    // Collect class updates first to avoid borrowing character.applied while
-    // iterating character.identity.classes.
-    let class_updates: Vec<(String, u32)> = character
-        .identity
-        .classes
-        .iter()
-        .map(|cl| (cl.class.clone(), cl.level))
-        .collect();
-    for (class_name, level) in &class_updates {
-        for lvl in 1..=*level {
-            character.applied.mark_level(class_name, lvl);
-        }
-    }
-    apply_new_features(
-        features_index,
-        character,
-        pending,
-        Some(&inputs.feature_inputs),
-    );
+/// Post-apply hook for both manual and AI quick-start. The framework owns
+/// the full apply cascade (outer pending + derived features); this hook
+/// only flips the applied flags, sets starting HP, and navigates to the
+/// editor.
+fn finalize_quick_start(character: &mut Character) {
+    mark_all_applied(character);
     character.combat.hp_current = character.hp_max();
-
     navigate_to_editor(character.id);
 }
 
@@ -286,15 +275,35 @@ fn create_character(
 
     let all_pending = collect_quick_start_pending(&store, &registry, &gen_name);
 
+    let recompute = quick_start_recompute(registry, gen_name.clone());
+
     apply_with_modal(
         store,
         registry,
         all_pending,
         None,
-        move |character, pending, inputs, feat_index| {
-            finalize_quick_start(character, pending, inputs, feat_index);
-        },
+        Some(recompute),
+        finalize_quick_start,
     );
+}
+
+/// Recompute closure for the quick-start cascade. The modal's pick-watcher
+/// invokes this against the speculative character (cascade base with
+/// tentative species/background picks layered on top) so newly-relevant
+/// features (Tiefling's L1 grants, Soldier's tool/skill picks, etc.) appear
+/// in the modal as soon as the user makes the pick.
+fn quick_start_recompute(registry: RulesRegistry, gen_name: String) -> RecomputePending {
+    Box::new(move |speculative: &Character| {
+        registry.with_features_index_untracked(|fi| {
+            build_quick_start_pending_features(speculative, &registry, fi, &gen_name)
+                .into_iter()
+                .filter_map(|pf| {
+                    let feat_def = fi.get(pf.name.as_str())?;
+                    pf.pending_inputs(feat_def, speculative)
+                })
+                .collect()
+        })
+    })
 }
 
 // --- AI creation ---
@@ -333,14 +342,29 @@ fn apply_ai_result(
 
     let all_pending = collect_quick_start_pending(&store, &registry, &preset_name);
 
+    // Drive class / subclass acquisition through the placeholder
+    // replacement-pick path. AI no longer pre-writes identity.classes
+    // directly — the System(Class) and System(Subclass) features'
+    // assigns set the values when the placeholders swap.
+    let mut replacements = result.replacements;
+    if !concept.class.is_empty() {
+        replacements.insert("Class Level".into(), concept.class.clone());
+    }
+    if let Some(subclass) = concept.subclass.as_deref()
+        && !subclass.is_empty()
+    {
+        replacements.insert("Subclass".into(), subclass.to_string());
+    }
+
+    let recompute = quick_start_recompute(registry, preset_name);
+
     apply_with_prefilled_args(
         store,
         registry,
         all_pending,
         prefilled,
-        result.replacements,
-        move |character, pending, inputs, feat_index| {
-            finalize_quick_start(character, pending, inputs, feat_index);
-        },
+        replacements,
+        Some(recompute),
+        finalize_quick_start,
     );
 }

@@ -132,7 +132,8 @@ pub fn preview_progression(feat_def: &FeatureDefinition) -> ProgressionPreview {
 
     let mut rows = Vec::with_capacity(20);
     for level in 1..=20u32 {
-        ctx.values.insert(Attribute::ClassLevel, level as i32);
+        ctx.values
+            .insert(Attribute::ClassLevel(AttrKey::Scoped), level as i32);
         let caster_level = SpellData::single_caster_level(level, coef);
         ctx.values
             .insert(Attribute::CasterLevel(Some(pool)), caster_level as i32);

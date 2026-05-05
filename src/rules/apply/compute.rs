@@ -1,14 +1,12 @@
-use std::collections::BTreeMap;
-
 use crate::{
     model::Character,
-    rules::{WhenCondition, apply::context::ApplyContext, feature::FeatureDefinition},
+    rules::{FeaturesView, WhenCondition, apply::context::ApplyContext},
 };
 
 /// Recompute derived character state. Call after any apply pipeline step
 /// that mutates `character.features` so callers can trust the result is
 /// finalized.
-pub fn compute(character: &mut Character, feat_index: &BTreeMap<Box<str>, FeatureDefinition>) {
+pub fn compute(character: &mut Character, feat_index: FeaturesView<'_>) {
     character.compute();
     assign(character, feat_index, WhenCondition::OnCompute);
     character.compute_armor_class();
@@ -18,11 +16,7 @@ pub fn compute(character: &mut Character, feat_index: &BTreeMap<Box<str>, Featur
 /// condition. Each feature runs through an `ApplyContext` keyed by its
 /// position in `features.list`; ARG values come from each interactive
 /// assignment's matching `feature.inputs[expr_index]`.
-pub fn assign(
-    character: &mut Character,
-    feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    when: WhenCondition,
-) {
+pub fn assign(character: &mut Character, feat_index: FeaturesView<'_>, when: WhenCondition) {
     // Snapshot indices upfront so the apply phase can take `&mut character`.
     // Filter features without definitions or without matching assignments to
     // avoid building a context for no-ops.
@@ -41,7 +35,7 @@ pub fn assign(
         .collect();
 
     for feature_index in feature_indices {
-        let Some(feat_def) = feat_index.get(&*character.features.list[feature_index].name) else {
+        let Some(feat_def) = feat_index.get(&character.features.list[feature_index].name) else {
             continue;
         };
         let Some(assignments) = feat_def.assign.as_ref() else {

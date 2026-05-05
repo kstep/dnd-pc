@@ -21,7 +21,7 @@ impl Default for CharacterIdentity {
     fn default() -> Self {
         Self {
             name: "New Character".to_string(),
-            classes: vec![ClassLevel::default()],
+            classes: Vec::new(),
             species: String::new(),
             background: String::new(),
             experience_points: 0,

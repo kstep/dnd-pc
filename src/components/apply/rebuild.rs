@@ -13,7 +13,7 @@ use crate::{
         ApplyInputs, RulesRegistry,
         apply::{
             DefinitionKind, FeatureKey, PendingInputs, RebuildError, RebuildOutcome,
-            RebuildPreview, build_clean, prepare_rebuild,
+            RebuildPreview, build_clean, prepare_rebuild, rebuild_recompute,
         },
     },
 };
@@ -63,9 +63,19 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
     // Replaceable slots without a detected prefill (e.g. a fresh Versatile
     // that nobody has swapped yet) must ask the user — silent-commit would
     // lock them in as the original slot feat.
-    let needs_replacement_choice = pending
-        .iter()
-        .any(|pi| pi.is_replaceable() && pi.prefilled_replacement.is_none());
+    // A replaceable slot needs a user pick only when both:
+    // (a) no replacement was detected, and
+    // (b) the slot isn't already filled with the original feature in
+    // `original.features` — i.e. user already kept the slot's own feat last
+    // build, no need to re-prompt.
+    let needs_replacement_choice = pending.iter().any(|pending_input| {
+        if !pending_input.is_replaceable() || pending_input.prefilled_replacement.is_some() {
+            return false;
+        }
+        !original.features.iter().any(|feature| {
+            feature.name == pending_input.feature_name && feature.source == pending_input.source
+        })
+    });
 
     // Try silent commit only when pre-validation didn't reject any stored
     // inputs and every replaceable slot has a resolved prefill. Rejections
@@ -98,8 +108,11 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
     // `pending` as `hidden=true` and are applied by the cascade Effect,
     // keeping `expr.analyze` pipeline-correct for every editable step.
     let base = Arc::new(cascade_base);
+    let recompute = rebuild_recompute(registry, &original);
     let ctx = expect_context::<ArgsModalCtx>();
-    ctx.open(pending, Some(base), move |inputs| do_rebuild(Some(&inputs)));
+    ctx.open(pending, Some(base), Some(recompute), move |inputs| {
+        do_rebuild(Some(&inputs))
+    });
 }
 
 /// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
@@ -128,7 +141,6 @@ fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
             })
             .collect(),
         replacements,
-        picks: BTreeMap::new(),
     }
 }
 

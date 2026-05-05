@@ -5,7 +5,6 @@ use leptos_fluent::{move_tr, tr};
 use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 use regex::RegexBuilder;
-use strum::IntoEnumIterator as _;
 
 use crate::{
     components::ref_link::Ref,
@@ -110,7 +109,11 @@ pub fn FeatureReference() -> impl IntoView {
                     <Ref href="/r/feature" attr:class="reference-nav-item" exact=true>
                         {move_tr!("feat-cat-all")}
                     </Ref>
-                    <For each=FeatureCategory::iter key=|c| *c children=render_category />
+                    <For
+                        each=|| FeatureCategory::USER_FACING.iter().copied()
+                        key=|c| *c
+                        children=render_category
+                    />
                 </ReferenceSidebar>
                 <div class="reference-feature-page">
                     <div class="reference-feature-header">

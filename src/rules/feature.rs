@@ -20,16 +20,6 @@ pub enum ReplaceWith {
     Category(FeatureCategory),
 }
 
-/// Identity slot a feature writes to when applied. Marker on placeholder
-/// features that surface a pick step in the apply-modal cascade — modal commit
-/// writes the chosen value into the matching `Identity` field, apply pipeline
-/// reads it back via `feature.label`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
-pub enum IdentitySlot {
-    /// `ClassLevel.subclass`, scoped by the placeholder's `Class(_, _)` source.
-    Subclass,
-}
-
 impl ReplaceWith {
     pub fn matches(&self, feat: &FeatureDefinition) -> bool {
         match self {
@@ -56,8 +46,6 @@ pub struct FeatureDefinition {
     pub assign: Option<Vec<Assignment>>,
     #[serde(default)]
     pub prerequisites: Option<Expr>,
-    #[serde(default)]
-    pub grants: Option<IdentitySlot>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -140,7 +128,10 @@ impl<'de> serde::Deserialize<'de> for FeaturesIndex {
 
 impl FeatureDefinition {
     pub fn is_selectable(&self) -> bool {
-        !matches!(self.category, FeatureCategory::Class)
+        !matches!(
+            self.category,
+            FeatureCategory::Class | FeatureCategory::System(_)
+        )
     }
 
     pub fn is_replaceable(&self) -> bool {
@@ -155,12 +146,10 @@ impl FeatureDefinition {
 
     /// Structural check: does this feature have any @ARG / dice assignments
     /// that require user input through the args modal? Replaceable features
-    /// (epic boon replacement) and identity-grant placeholders (`grants:
-    /// Some(_)` — the generic Subclass picker) also count as interactive
-    /// because they surface a pick step in the modal cascade.
+    /// (epic boon replacement, identity-slot placeholders) also count as
+    /// interactive because they surface a pick step in the modal cascade.
     pub fn has_interactive_inputs(&self) -> bool {
         self.is_replaceable()
-            || self.grants.is_some()
             || self
                 .assign
                 .as_ref()
@@ -341,29 +330,6 @@ mod tests {
             index.0.len() > 900,
             "expected 900+ features, got {}",
             index.0.len()
-        );
-    }
-
-    #[test]
-    fn subclass_picker_present_with_grants() {
-        let data = include_str!("../../public/data/features.json");
-        let index: FeaturesIndex = serde_json::from_str(data).expect("deserialize");
-        let subclass = index
-            .0
-            .get("Subclass")
-            .expect("Subclass placeholder feature should exist");
-        assert_eq!(
-            subclass.grants,
-            Some(IdentitySlot::Subclass),
-            "Subclass placeholder must declare grants: Subclass"
-        );
-        assert!(
-            subclass.has_interactive_inputs(),
-            "grants feature reports as interactive so cascade emits a pick"
-        );
-        assert!(
-            !subclass.is_selectable(),
-            "category Class keeps placeholder out of selectable feat lists"
         );
     }
 

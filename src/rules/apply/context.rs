@@ -852,6 +852,16 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                 );
                 Ok(())
             }
+            Attribute::Subclass(name) => {
+                if let Some(class) = self.scoped_class_mut() {
+                    if value != 0 {
+                        class.subclass = Some(name.to_string());
+                    } else if class.subclass.as_deref() == Some(name) {
+                        class.subclass = None;
+                    }
+                }
+                Ok(())
+            }
             Attribute::SpellKnown => {
                 let pool = self.feature_pool()?;
                 let highest = Self::highest_slot_level_for(self.character, pool);
@@ -876,7 +886,7 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
-            Attribute::ClassLevel => Ok(self.class_level()),
+            Attribute::ClassLevel(AttrKey::Scoped) => Ok(self.class_level()),
             Attribute::HitDice => Ok(self
                 .scoped_class()
                 .map(|cl| (cl.level as i32 - cl.hit_dice_used as i32).max(0))

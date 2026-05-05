@@ -6,7 +6,7 @@ use crate::{
     demap,
     expr::{self, Context, DicePool},
     model::{Ability, Attribute, Character, Charges, Expr, GearRef, WeaponEffect},
-    rules::{WhenCondition, feature::FeatureDefinition},
+    rules::{FeaturesView, WhenCondition},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -307,7 +307,7 @@ fn eval_user_effects(
     overrides: &mut BTreeMap<Attribute, i32>,
     scoped_overrides: &mut BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
 ) {
-    for effect in effects.iter().filter(|e| e.enabled) {
+    for effect in effects.iter().filter(|effect| effect.enabled) {
         let Some(ref expr) = effect.expr else {
             continue;
         };
@@ -340,7 +340,7 @@ fn eval_user_effects(
 
 fn eval_features_on_effect(
     character: &Character,
-    feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
+    feat_index: FeaturesView<'_>,
     overrides: &mut BTreeMap<Attribute, i32>,
     scoped_overrides: &mut BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
 ) {
@@ -491,11 +491,7 @@ impl ActiveEffects {
     ///    bonuses while a feature is in `features.list`).
     /// 3. Active gear `OnEffect` assigns from
     ///    `equipment.{items,weapons,armors}` filtered by `is_active()`.
-    pub fn recompute(
-        &mut self,
-        character: &Character,
-        feat_index: &BTreeMap<Box<str>, FeatureDefinition>,
-    ) -> bool {
+    pub fn recompute(&mut self, character: &Character, feat_index: FeaturesView<'_>) -> bool {
         self.overrides.clear();
         self.scoped_overrides.clear();
 
@@ -569,7 +565,7 @@ mod tests {
     }
 
     fn recompute(effects: &mut ActiveEffects, character: &Character) {
-        effects.recompute(character, &EMPTY_FEATURES_INDEX);
+        effects.recompute(character, FeaturesView::from_natural(&EMPTY_FEATURES_INDEX));
     }
 
     #[wasm_bindgen_test]

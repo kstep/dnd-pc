@@ -15,8 +15,8 @@ use crate::{
         session_list::{SessionList, SessionListItem},
     },
     model::{
-        ActionType, Attribute, Character, CharacterStoreFields, EffectDefinition, FeatureOption,
-        FeatureValue, FeaturesStoreFields, Translatable, short_name,
+        ActionType, AttrKey, Attribute, Character, CharacterStoreFields, EffectDefinition,
+        FeatureOption, FeatureValue, FeaturesStoreFields, Translatable, short_name,
     },
     rules::{ChoiceOption, ChoiceOptions, RulesRegistry},
 };
@@ -142,7 +142,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                 .feature_class_level(&character.identity, &feature_name)
                 .unwrap_or(character.level());
             let mut extra_vars = BTreeMap::new();
-            extra_vars.insert(Attribute::ClassLevel, class_level as i32);
+            extra_vars.insert(Attribute::ClassLevel(AttrKey::Scoped), class_level as i32);
 
             // Inject Points field values if feature has one
             if let Some(entry) = character.features.get(&feature_name) {

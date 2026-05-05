@@ -76,19 +76,23 @@ async fn run_ai_generation(
             ai::AiError::Json(format!("unknown background: {:?}", concept.background))
         })?;
 
-    // Fill store identity so ensure_definitions_fetched can trigger fetches
+    // Fill store identity so ensure_definitions_fetched can trigger fetches.
+    // Class is no longer pre-written — the Class Level placeholder + System
+    // (Class) feature apply path handles that during the cascade modal.
     store.update(|character| {
         character.identity.name = concept.name.clone();
         character.identity.species = concept.species.clone();
         character.identity.background = concept.background.clone();
-        if let Some(class_level) = character.identity.classes.first_mut() {
-            class_level.class = concept.class.clone();
-            class_level.subclass = concept.subclass.clone();
-        }
     });
 
-    // Trigger definition fetches
+    // Trigger definition fetches. Class isn't yet in identity.classes (the
+    // Class Level placeholder will set it during apply), so kick its
+    // definition fetch separately — the subclass canonicalization below
+    // and the cascade's class-feature collection both need it loaded.
     store.with_untracked(|character| registry.ensure_definitions_fetched(character));
+    if !concept.class.is_empty() {
+        registry.classes().fetch_untracked(&concept.class);
+    }
 
     // Wait for definitions to load
     let class_name = concept.class.clone();
