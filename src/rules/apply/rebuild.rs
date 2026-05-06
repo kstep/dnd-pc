@@ -275,6 +275,36 @@ fn apply_plan_entry(
         }
         Some(FeatureCategory::System(IdentitySlot::Subclass)) => {
             apply_new_feature(ctx.feat_index, clean, pending, &[]);
+            // The prior System(Class) marker collected class features at this
+            // level before the subclass was bound on identity, so subclass
+            // features at this level (e.g. Alchemist's L3 grants) were
+            // skipped. Re-run collect_class_features now that the marker has
+            // set subclass on identity — the dedup filter drops the already-
+            // applied class features and only the subclass side comes through.
+            if let FeatureSource::Class(class_name, pick_level) = &pending.source {
+                let class_def = ctx.class_index.get(class_name.as_ref()).ok_or_else(|| {
+                    RebuildError::MissingDefinition {
+                        kind: DefinitionKind::Class,
+                        name: class_name.to_string(),
+                    }
+                })?;
+                if let Some(class_idx) = clean
+                    .identity
+                    .classes
+                    .iter()
+                    .position(|cl| cl.class.as_str() == class_name.as_ref())
+                {
+                    let subclass_pending: Vec<PendingFeature> = collect_class_features(
+                        clean,
+                        class_idx,
+                        *pick_level,
+                        class_def,
+                        ctx.feat_index,
+                    )
+                    .collect();
+                    apply_pending(ctx, clean, &subclass_pending);
+                }
+            }
             Ok(())
         }
         Some(FeatureCategory::System(IdentitySlot::Species)) => {
@@ -2079,5 +2109,84 @@ mod tests {
             })
             .count();
         assert_eq!(markers, 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn rebuild_collects_subclass_features_at_pick_level() {
+        // Regression: Artificer 6 / Alchemist legacy char rebuilt without
+        // markers used to drop the L3 subclass features (Alchemist Spells,
+        // Experimental Elixir, Tools of the Trade) because the L3 System(Class)
+        // step ran before clean.identity.classes had a subclass bound, and
+        // System(Subclass) only applied the marker without collecting features.
+        let class_def: ClassDefinition = serde_json::from_value(serde_json::json!({
+            "name": "Fighter",
+            "hit_die": 10,
+            "levels": {
+                "1": { "features": [] },
+                "2": { "features": [] },
+                "3": { "features": [] }
+            },
+            "subclasses": [
+                {
+                    "name": "Battle Master",
+                    "levels": {
+                        "3": { "features": ["Combat Superiority", "Maneuvers"] }
+                    }
+                }
+            ]
+        }))
+        .unwrap();
+        let class_index: BTreeMap<Box<str>, ClassDefinition> =
+            std::iter::once((Box::from("Fighter"), class_def)).collect();
+        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
+        let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let bg_cache: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+        let feat_index = synth_feat_index(
+            &["Fighter"],
+            &["Battle Master"],
+            &[],
+            &[],
+            vec![
+                ("Combat Superiority", FeatureCategory::Class),
+                ("Maneuvers", FeatureCategory::Class),
+            ],
+        );
+
+        let mut original = Character::default();
+        original.identity.classes = vec![ClassLevel {
+            class: "Fighter".into(),
+            subclass: Some("Battle Master".into()),
+            level: 3,
+            ..ClassLevel::default()
+        }];
+
+        let plan = plan_from_interleaving_with_caches(
+            &original.identity,
+            &original.features,
+            FeaturesView::from_natural(&feat_index),
+            &class_index,
+            &class_entries,
+            &species_cache,
+            &bg_cache,
+        )
+        .expect("plan");
+        let clean = run_plan(
+            &plan,
+            &original,
+            &feat_index,
+            &class_index,
+            &species_cache,
+            &bg_cache,
+        );
+
+        let subclass_source = FeatureSource::Subclass("Fighter".into(), "Battle Master".into(), 3);
+        for name in ["Combat Superiority", "Maneuvers"] {
+            let feature = clean
+                .features
+                .iter()
+                .find(|feature| feature.name == name)
+                .unwrap_or_else(|| panic!("subclass feature {name} missing after rebuild"));
+            assert_eq!(feature.source, subclass_source);
+        }
     }
 }
