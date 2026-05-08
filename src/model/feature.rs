@@ -76,6 +76,24 @@ impl FeatureCategory {
         Self::Faction,
         Self::Dragonmark,
     ];
+
+    /// Kebab-case slug for CSS class names (`feat-<slug>`).
+    pub fn slug(&self) -> &'static str {
+        match self {
+            Self::Class => "class",
+            Self::Origin => "origin",
+            Self::General => "general",
+            Self::FightingStyle => "fighting-style",
+            Self::EpicBoon => "epic-boon",
+            Self::Generation => "generation",
+            Self::Faction => "faction",
+            Self::Dragonmark => "dragonmark",
+            Self::System(IdentitySlot::Subclass) => "system-subclass",
+            Self::System(IdentitySlot::Species) => "system-species",
+            Self::System(IdentitySlot::Background) => "system-background",
+            Self::System(IdentitySlot::Class) => "system-class",
+        }
+    }
 }
 
 impl fmt::Display for FeatureCategory {

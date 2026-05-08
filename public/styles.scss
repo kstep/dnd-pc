@@ -1684,6 +1684,40 @@ section {
   &.disabled {
     opacity: 0.5;
   }
+
+  &.feat-system-class,
+  &.feat-system-subclass,
+  &.feat-system-species,
+  &.feat-system-background {
+    color: var(--text-secondary);
+
+    > .entry-content::before {
+      content: "";
+      flex-shrink: 0;
+      align-self: center;
+      width: 14px;
+      height: 14px;
+      background-color: currentColor;
+      -webkit-mask: var(--feat-icon-src) center / contain no-repeat;
+      mask: var(--feat-icon-src) center / contain no-repeat;
+    }
+  }
+
+  &.feat-system-class {
+    --feat-icon-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='14.5 17.5 3 6 3 3 6 3 17.5 14.5'/%3E%3Cline x1='13' x2='19' y1='19' y2='13'/%3E%3Cline x1='16' x2='20' y1='16' y2='20'/%3E%3Cline x1='19' x2='21' y1='21' y2='19'/%3E%3Cpolyline points='14.5 6.5 18 3 21 3 21 6 17.5 9.5'/%3E%3Cline x1='5' x2='9' y1='14' y2='18'/%3E%3Cline x1='7' x2='4' y1='17' y2='20'/%3E%3Cline x1='3' x2='5' y1='19' y2='21'/%3E%3C/svg%3E");
+  }
+
+  &.feat-system-subclass {
+    --feat-icon-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 3h5v5'/%3E%3Cpath d='M8 3H3v5'/%3E%3Cpath d='M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3'/%3E%3Cpath d='m15 9 6-6'/%3E%3C/svg%3E");
+  }
+
+  &.feat-system-species {
+    --feat-icon-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='5' r='1'/%3E%3Cpath d='m9 20 3-6 3 6'/%3E%3Cpath d='m6 8 6 2 6-2'/%3E%3Cpath d='M12 10v4'/%3E%3C/svg%3E");
+  }
+
+  &.feat-system-background {
+    --feat-icon-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 12h-5'/%3E%3Cpath d='M15 8h-5'/%3E%3Cpath d='M19 17V5a2 2 0 0 0-2-2H4'/%3E%3Cpath d='M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3'/%3E%3C/svg%3E");
+  }
 }
 
 @keyframes entry-target-flash {

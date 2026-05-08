@@ -154,7 +154,7 @@ pub fn FeatureRow(
     Some(view! {
         <div
             id=move || anchor_id.get()
-            class="entry-item"
+            class=move || format!("entry-item feat-{}", feature.read().category.slug())
             class:expanded=move || state.get() == Some(true)
             class:collapsed=move || state.get() == Some(false)
             class:has-pending=move || row_info.get().0
