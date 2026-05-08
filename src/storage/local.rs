@@ -24,7 +24,8 @@ struct AvatarView {
 
 /// Lightweight view over the character JSON blob. Only fields needed to
 /// build a `CharacterSummary` — avoids full `Character` deserialization on
-/// every list refresh.
+/// every list refresh. Reads `identity` from `core.identity` (schema v4+);
+/// falls back to top-level `identity` for un-migrated characters.
 #[derive(Deserialize)]
 struct SummaryView {
     id: Uuid,
@@ -33,9 +34,17 @@ struct SummaryView {
     #[serde(default)]
     shared: bool,
     #[serde(default)]
+    core: CoreView,
+    #[serde(default)]
     identity: IdentityView,
     #[serde(default)]
     personality: PersonalityView,
+}
+
+#[derive(Deserialize, Default)]
+struct CoreView {
+    #[serde(default)]
+    identity: IdentityView,
 }
 
 #[derive(Deserialize, Default)]
@@ -52,17 +61,16 @@ struct PersonalityView {
 
 impl From<SummaryView> for CharacterSummary {
     fn from(view: SummaryView) -> Self {
-        let level = view
-            .identity
-            .classes
-            .iter()
-            .map(|cl| cl.level)
-            .sum::<u32>()
-            .max(1);
+        let classes = if !view.core.identity.classes.is_empty() {
+            view.core.identity.classes
+        } else {
+            view.identity.classes
+        };
+        let level = classes.iter().map(|cl| cl.level).sum::<u32>().max(1);
         CharacterSummary {
             id: view.id,
             name: view.personality.name,
-            class: format_classes(&view.identity.classes),
+            class: format_classes(&classes),
             level,
             updated_at: view.updated_at,
             avatar_updated_at: None,
