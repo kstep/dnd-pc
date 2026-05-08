@@ -6,8 +6,8 @@ use crate::{
     demap::{self, Named},
     expr::Eval as _,
     model::{
-        ActionType, Attribute, Character, EffectDefinition, Expr, FeatureCategory, FeatureField,
-        Translatable, short_name,
+        ActionType, AssignInputs, Attribute, CharacterCore, EffectDefinition, Expr,
+        FeatureCategory, FeatureField, Translatable, short_name,
     },
     rules::spells::SpellsDefinition,
 };
@@ -138,7 +138,7 @@ impl FeatureDefinition {
         !matches!(self.replace_with, ReplaceWith::None)
     }
 
-    pub fn meets_prerequisites(&self, character: &Character) -> bool {
+    pub fn meets_prerequisites(&self, character: &CharacterCore) -> bool {
         self.prerequisites
             .as_ref()
             .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
@@ -215,6 +215,26 @@ impl FeatureDefinition {
             .filter(|assignment| assignment.when == when && assignment.is_interactive())
             .map(|assignment| assignment.expr.clone())
             .collect()
+    }
+
+    /// True when `inputs` cover every `OnFeatureAdd` interactive expression's
+    /// needs: per-expr ARG slots are filled and dice pools supplied where
+    /// the expression rolls dice.
+    pub fn inputs_sufficient(&self, inputs: &[AssignInputs]) -> bool {
+        let interactive = self.interactive_exprs(WhenCondition::OnFeatureAdd);
+        if inputs.len() < interactive.len() {
+            return false;
+        }
+        for (expr, given) in interactive.iter().zip(inputs.iter()) {
+            let slots = expr.arg_slot_count(Attribute::arg_index);
+            if given.args.len() < slots {
+                return false;
+            }
+            if expr.has_dice() && given.dice.is_empty() {
+                return false;
+            }
+        }
+        true
     }
 }
 
@@ -358,5 +378,82 @@ mod tests {
                 "legacy placeholder {key:?} should be removed"
             );
         }
+    }
+
+    fn parse_assign(when: WhenCondition, expr_str: &str) -> Assignment {
+        Assignment {
+            when,
+            expr: expr_str.parse().expect("parse expr"),
+        }
+    }
+
+    fn def_with_assigns(assigns: Vec<Assignment>) -> FeatureDefinition {
+        FeatureDefinition {
+            name: "T".into(),
+            stackable: false,
+            category: FeatureCategory::default(),
+            replace_with: ReplaceWith::None,
+            spells: None,
+            actions: BTreeMap::new(),
+            assign: Some(assigns),
+            prerequisites: None,
+        }
+    }
+
+    /// Single-arg interactive expr (mask of one ability → 1 ARG slot).
+    fn one_arg_expr() -> &'static str {
+        "with(@ABILITY(STR), each(@, @ += @ARG))"
+    }
+
+    /// Two-arg interactive expr (mask of two abilities → 2 ARG slots).
+    fn two_arg_expr() -> &'static str {
+        "with(@ABILITY(STR, DEX), each(@, @ += @ARG))"
+    }
+
+    #[test]
+    fn inputs_sufficient_count_mismatch() {
+        // Two interactive exprs but only one AssignInputs supplied.
+        let def = def_with_assigns(vec![
+            parse_assign(WhenCondition::OnFeatureAdd, one_arg_expr()),
+            parse_assign(WhenCondition::OnFeatureAdd, one_arg_expr()),
+        ]);
+        let inputs = vec![AssignInputs {
+            args: vec![1],
+            dice: Default::default(),
+        }];
+        assert!(!def.inputs_sufficient(&inputs));
+    }
+
+    #[test]
+    fn inputs_sufficient_args_short() {
+        // One expr needing 2 ARG slots, only 1 arg supplied.
+        let def = def_with_assigns(vec![parse_assign(
+            WhenCondition::OnFeatureAdd,
+            two_arg_expr(),
+        )]);
+        let inputs = vec![AssignInputs {
+            args: vec![5],
+            dice: Default::default(),
+        }];
+        assert!(!def.inputs_sufficient(&inputs));
+    }
+
+    #[test]
+    fn inputs_sufficient_complete() {
+        let def = def_with_assigns(vec![parse_assign(
+            WhenCondition::OnFeatureAdd,
+            one_arg_expr(),
+        )]);
+        let inputs = vec![AssignInputs {
+            args: vec![5],
+            dice: Default::default(),
+        }];
+        assert!(def.inputs_sufficient(&inputs));
+    }
+
+    #[test]
+    fn inputs_sufficient_no_interactive_no_inputs() {
+        let def = def_with_assigns(vec![parse_assign(WhenCondition::OnFeatureAdd, "1")]);
+        assert!(def.inputs_sufficient(&[]));
     }
 }

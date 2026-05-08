@@ -8,11 +8,13 @@ use crate::{
     demap::Named,
     expr::{BLOCK_MAIN, BinOp, Cmp, Op},
     model::{
-        AttrKey, Attribute, Character, CharacterIdentity, ClassLevel, EffectTemplate, EffectsIndex,
-        Expr, FeatureCategory, FeatureField, FeatureSource, IdentitySlot, intern_box,
+        AttrKey, Attribute, Character, CharacterCore, CharacterIdentity, ClassLevel,
+        EffectTemplate, EffectsIndex, Expr, FeatureCategory, FeatureField, FeatureSource,
+        IdentitySlot, intern_box,
     },
     rules::{
         WhenCondition,
+        apply::DefinitionCaches,
         background::BackgroundDefinition,
         cache::{DefinitionStore, FetchCache, LocalizedCache},
         class::ClassDefinition,
@@ -24,7 +26,6 @@ use crate::{
             BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry,
             SpellIndexEntry,
         },
-        labels,
         locale::{
             EffectsLocaleMap, IndexLocaleMap, LocaleMap, LocaleText, LocalizedText, SpellsLocaleMap,
         },
@@ -313,6 +314,50 @@ impl RulesRegistry {
         Self::build(locale)
     }
 
+    /// Test-only: build a registry from in-memory definitions, no fetches.
+    /// Class/species/background caches are pre-populated; indexes resolve
+    /// to provided values via `LocalizedIndex::for_test`. Caller must
+    /// `await registry.await_ready()` before any untracked read of the
+    /// indexes; cache reads are immediate.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_test(
+        features: FeaturesIndex,
+        classes: BTreeMap<Box<str>, ClassDefinition>,
+        species: BTreeMap<Box<str>, SpeciesDefinition>,
+        backgrounds: BTreeMap<Box<str>, BackgroundDefinition>,
+    ) -> Self {
+        let (locale_signal, _) = signal::<String>("en".into());
+        let locale: Signal<String> = locale_signal.into();
+        let class_cache: LocalizedCache<ClassDefinition> = LocalizedCache::new();
+        let species_cache: LocalizedCache<SpeciesDefinition> = LocalizedCache::new();
+        let background_cache: LocalizedCache<BackgroundDefinition> = LocalizedCache::new();
+        class_cache.data.set(classes);
+        species_cache.data.set(species);
+        background_cache.data.set(backgrounds);
+        Self {
+            locale,
+            class_index: LocalizedIndex::for_test(Index::default(), None),
+            class_cache,
+            species_cache,
+            background_cache,
+            spell_names_cache: FetchCache::new(),
+            spells_index: LocalizedIndex::for_test(SpellsIndex::default(), None),
+            effects_index: LocalizedIndex::for_test(EffectsIndex::default(), None),
+            features_index: LocalizedIndex::for_test(features, None),
+            synth_features: StoredValue::new(BTreeMap::new()),
+        }
+    }
+
+    /// Test-only: drive the LocalResource futures so untracked reads
+    /// return ready data.
+    #[cfg(any(test, feature = "testing"))]
+    pub async fn await_ready(&self) {
+        self.class_index.await_ready().await;
+        self.spells_index.await_ready().await;
+        self.effects_index.await_ready().await;
+        self.features_index.await_ready().await;
+    }
+
     fn build(locale: Signal<String>) -> Self {
         let class_index = LocalizedIndex::<Index, IndexLocaleMap>::new(locale, "index.json");
         let effects_index =
@@ -480,6 +525,21 @@ impl RulesRegistry {
 
     pub fn backgrounds(&self) -> BackgroundDefs {
         BackgroundDefs(*self)
+    }
+
+    /// Borrow the loaded class/species/background definition caches as a
+    /// single bundle for the apply pipeline. Mirror of
+    /// [`Self::with_features_index_untracked`] for definition caches.
+    pub fn with_definitions<R>(&self, f: impl FnOnce(DefinitionCaches<'_>) -> R) -> R {
+        let class_guard = self.class_cache.data.read_untracked();
+        let species_guard = self.species_cache.data.read_untracked();
+        let bg_guard = self.background_cache.data.read_untracked();
+        let caches = DefinitionCaches {
+            classes: &class_guard,
+            species: &species_guard,
+            backgrounds: &bg_guard,
+        };
+        f(caches)
     }
 
     // ---- Internal helpers ----
@@ -894,7 +954,7 @@ impl RulesRegistry {
         feature = "perf-marks",
         tracing::instrument(name = "registry.ensure_definitions_fetched", skip_all)
     )]
-    pub fn ensure_definitions_fetched(&self, character: &Character) {
+    pub fn ensure_definitions_fetched(&self, character: &CharacterCore) {
         for class_level in &character.identity.classes {
             if !class_level.class.is_empty() {
                 self.classes().fetch(&class_level.class);
@@ -923,11 +983,8 @@ impl RulesRegistry {
         self.spells_index.track();
         self.class_cache.locale.track();
 
-        labels::sync_labels(
+        self.sync_labels(
             character,
-            self.class_cache.locale,
-            self.features_index,
-            self.spells_index,
             // Fill: always overwrite label from definition (supports locale
             // switching without a separate clear_all_labels step).
             |target, source| {
@@ -956,11 +1013,8 @@ impl RulesRegistry {
         tracing::instrument(name = "registry.clear_from_registry", skip_all)
     )]
     pub fn clear_from_registry(&self, character: &mut Character) {
-        labels::sync_labels(
+        self.sync_labels(
             character,
-            self.class_cache.locale,
-            self.features_index,
-            self.spells_index,
             // Clear: clear label if matches
             |target, source| {
                 if target.as_deref() == source {
@@ -1168,6 +1222,45 @@ where
     T: Clone + for<'de> serde::Deserialize<'de> + Send + Sync + 'static,
     L: Clone + for<'de> serde::Deserialize<'de> + Send + Sync + 'static,
 {
+    /// Test-only constructor: bypass `fetch_json`, resolve to provided
+    /// `data` and `locale` immediately. Caller must `await await_ready()`
+    /// before any untracked read.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn for_test(data: T, locale: Option<L>) -> Self
+    where
+        T: Clone,
+        L: Clone,
+    {
+        let in_flight = RwSignal::new(0u32);
+        let data_value = data.clone();
+        let data_resource = LocalResource::new(move || {
+            let value = data_value.clone();
+            async move { Ok::<T, String>(value) }
+        });
+        let locale_value = locale.clone();
+        let locale_resource = LocalResource::new(move || {
+            let value = locale_value.clone();
+            async move { value }
+        });
+        let loading = Signal::derive(move || in_flight.get() > 0);
+        let this = Self {
+            data: data_resource,
+            locale: locale_resource,
+            in_flight,
+            loading,
+        };
+        this.observe_initial();
+        this
+    }
+
+    /// Drive both inner futures to completion. Test-only — production
+    /// code reacts to `data.read()` becoming `Some` instead.
+    #[cfg(any(test, feature = "testing"))]
+    pub async fn await_ready(&self) {
+        let _ = self.data.into_future().await;
+        let _ = self.locale.into_future().await;
+    }
+
     pub fn new(locale: Signal<String>, file_name: &'static str) -> Self {
         let in_flight = RwSignal::new(0u32);
 

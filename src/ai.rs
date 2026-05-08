@@ -417,7 +417,7 @@ impl CharacterContext {
             .collect::<Vec<_>>()
             .join(" / ");
         Self {
-            name: character.identity.name.clone(),
+            name: character.personality.name.clone(),
             species: character.identity.species.clone(),
             class,
             subclass,

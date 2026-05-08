@@ -159,7 +159,7 @@ impl demap::Named for EffectTemplate {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct EffectsIndex(pub BTreeMap<Box<str>, EffectTemplate>);
 
 impl<'de> Deserialize<'de> for EffectsIndex {

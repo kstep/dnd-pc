@@ -14,8 +14,8 @@ use crate::{
         ref_link::Ref,
     },
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, FeatureCategory,
-        FeatureSource, PersonalityStoreFields,
+        Character, CharacterCore, CharacterCoreStoreFields, CharacterIdentityStoreFields,
+        CharacterStoreFields, FeatureCategory, FeatureSource, PersonalityStoreFields,
     },
     names::{self, NamesData},
     rules::{
@@ -34,30 +34,29 @@ pub fn QuickStart() -> impl IntoView {
     // Auto-fill a random name on load (replacing "New Character")
     Effect::new(move || {
         if let Some(Some(ref data)) = *names_data.read() {
-            let current = store.identity().name().get_untracked();
+            let current = store.personality().name().get_untracked();
             if current == "New Character" {
-                let species = store.identity().species().get_untracked();
-                store.identity().name().set(data.generate_name(&species));
+                let species = store.core().identity().species().get_untracked();
+                store.personality().name().set(data.generate_name(&species));
             }
         }
     });
 
     let randomize_name = move |_| {
         if let Some(Some(ref data)) = *names_data.read_untracked() {
-            let species = store.identity().species().get_untracked();
-            store.identity().name().set(data.generate_name(&species));
+            let species = store.core().identity().species().get_untracked();
+            store.personality().name().set(data.generate_name(&species));
         }
     };
 
-    let generation_options: Memo<Vec<(String, String)>> = Memo::new(move |_| {
+    // Label as `ArcSignal<String>` subscribes to the locale resource, so
+    // switching language updates the rendered text without remounting.
+    let generation_options: Memo<Vec<(String, ArcSignal<String>)>> = Memo::new(move |_| {
         registry.with_features_index(|idx| {
             idx.values()
                 .filter(|feat| matches!(feat.category, FeatureCategory::Generation))
                 .map(|feat| {
-                    let label = registry
-                        .features()
-                        .lookup_untracked(&feat.name, |loc| loc.label().to_string())
-                        .unwrap_or_else(|| feat.name.to_string());
+                    let (label, _) = registry.feature_label_desc(&feat.name);
                     (feat.name.to_string(), label)
                 })
                 .collect::<Vec<_>>()
@@ -125,9 +124,9 @@ pub fn QuickStart() -> impl IntoView {
                         type="text"
                         required
                         autofocus
-                        prop:value=move || store.identity().name().get()
+                        prop:value=move || store.personality().name().get()
                         on:input=move |event| {
-                            store.identity().name().set(event_target_value(&event));
+                            store.personality().name().set(event_target_value(&event));
                         }
                     />
                     <button
@@ -147,6 +146,7 @@ pub fn QuickStart() -> impl IntoView {
                     {move || generation_options.read().iter().map(|(name, label)| {
                         let name_for_check = name.clone();
                         let name_for_set = name.clone();
+                        let label = label.clone();
                         view! {
                             <label class="generation-option">
                                 <input
@@ -158,7 +158,7 @@ pub fn QuickStart() -> impl IntoView {
                                     }
                                     on:change=move |_| generation_method.set(name_for_set.clone())
                                 />
-                                {label.clone()}
+                                {move || label.get()}
                             </label>
                         }
                     }).collect_view()}
@@ -186,7 +186,7 @@ pub fn QuickStart() -> impl IntoView {
 /// (species traits, background skills, class L1 features) appear as soon
 /// as the user makes a pick.
 fn build_quick_start_pending_features(
-    character: &Character,
+    character: &CharacterCore,
     registry: &RulesRegistry,
     features_index: FeaturesView<'_>,
     gen_name: &str,
@@ -293,13 +293,18 @@ fn create_character(
 /// features (Tiefling's L1 grants, Soldier's tool/skill picks, etc.) appear
 /// in the modal as soon as the user makes the pick.
 fn quick_start_recompute(registry: RulesRegistry, gen_name: String) -> RecomputePending {
-    Box::new(move |speculative: &Character| {
+    Box::new(move |speculative: &CharacterCore| {
+        // Reset applied flags so collect/build_pending_features see fresh
+        // class L_n features. Cascade-on-clone speculative path sets these
+        // flags to feed identity events; we strip before discovery.
+        let mut snapshot = speculative.clone();
+        snapshot.applied.reset();
         registry.with_features_index_untracked(|fi| {
-            build_quick_start_pending_features(speculative, &registry, fi, &gen_name)
+            build_quick_start_pending_features(&snapshot, &registry, fi, &gen_name)
                 .into_iter()
                 .filter_map(|pf| {
                     let feat_def = fi.get(pf.name.as_str())?;
-                    pf.pending_inputs(feat_def, speculative)
+                    pf.pending_inputs(feat_def, &snapshot)
                 })
                 .collect()
         })

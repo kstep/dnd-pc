@@ -7,7 +7,7 @@ use crate::model::{Character, DamageType};
 /// Latest schema version. Bumped when a new migration step is added.
 /// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
 /// the migration loop entirely.
-pub const CURRENT_SCHEMA_VERSION: u32 = 3;
+pub const CURRENT_SCHEMA_VERSION: u32 = 4;
 
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut Value) {
@@ -398,6 +398,13 @@ pub fn migrate_value(mut value: Value) -> Value {
         migrate_v14(&mut value);
     }
 
+    // → schema version 4: character name moves from identity to personality;
+    // apply-pipeline fields gather under `core`.
+    if version < 4 {
+        migrate_v15(&mut value);
+        migrate_v16(&mut value);
+    }
+
     if let Value::Object(map) = &mut value {
         map.insert("schema_version".into(), Value::from(CURRENT_SCHEMA_VERSION));
     }
@@ -500,6 +507,80 @@ fn migrate_v14(value: &mut Value) {
             "text": text,
         }])
     };
+}
+
+/// Lift apply-pipeline fields (identity / abilities / saving_throws /
+/// skills / combat / features / proficiencies / languages /
+/// damage_modifiers / spell_slots / applied) into a nested `core`
+/// object so cascade can clone just the relevant slice. Idempotent:
+/// any top-level core-field always wins over the `core` slot — a buggy
+/// earlier run of this migration could leave empty defaults inside
+/// `core` while the real data lingered at the top level, and that's the
+/// only realistic scenario where both sides are populated. Equipment /
+/// personality / notes / shared / updated_at / id / schema_version stay
+/// at the top level.
+fn migrate_v16(value: &mut Value) {
+    const CORE_FIELDS: &[&str] = &[
+        "identity",
+        "abilities",
+        "saving_throws",
+        "skills",
+        "combat",
+        "features",
+        "proficiencies",
+        "languages",
+        "damage_modifiers",
+        "spell_slots",
+        "applied",
+    ];
+    let Some(map) = value.as_object_mut() else {
+        return;
+    };
+    let mut core = match map.remove("core") {
+        Some(Value::Object(map)) => map,
+        _ => serde_json::Map::new(),
+    };
+    for field in CORE_FIELDS {
+        if let Some(top_value) = map.remove(*field) {
+            core.insert((*field).into(), top_value);
+        }
+    }
+    if !core.is_empty() {
+        map.insert("core".into(), Value::Object(core));
+    }
+}
+
+/// Move `identity.name` → `personality.name` (display-only, not a rules
+/// input). Idempotent: skip if `personality.name` already populated.
+fn migrate_v15(value: &mut Value) {
+    let already_moved = value
+        .get("personality")
+        .and_then(|p| p.get("name"))
+        .is_some_and(|n| n.as_str().is_some_and(|s| !s.is_empty()));
+    if already_moved {
+        if let Some(identity) = value.get_mut("identity").and_then(Value::as_object_mut) {
+            identity.remove("name");
+        }
+        return;
+    }
+    let name = value
+        .get_mut("identity")
+        .and_then(Value::as_object_mut)
+        .and_then(|m| m.remove("name"))
+        .and_then(|v| v.as_str().map(str::to_owned))
+        .unwrap_or_default();
+    if name.is_empty() {
+        return;
+    }
+    let personality = value.as_object_mut().map(|m| {
+        m.entry("personality")
+            .or_insert_with(|| serde_json::json!({}))
+    });
+    if let Some(p) = personality
+        && let Some(obj) = p.as_object_mut()
+    {
+        obj.insert("name".into(), Value::String(name));
+    }
 }
 
 /// Move `identity.alignment` → `personality.alignment` (alignment is
@@ -606,5 +687,57 @@ mod tests {
             migrated["schema_version"].as_u64(),
             Some(u64::from(CURRENT_SCHEMA_VERSION))
         );
+    }
+
+    #[test]
+    fn migrate_v16_recovers_split_state_from_buggy_prior_run() {
+        // Simulates a character whose previous load ran a buggy migrate_v16
+        // that created an empty `core` and bumped schema_version while the
+        // real data was left at the top level.
+        let mut input = serde_json::json!({
+            "schema_version": 4,
+            "id": "1",
+            "core": {
+                "identity": {},
+                "features": {"data": {}, "list": []},
+            },
+            "identity": {"species": "Elf", "classes": [{"class": "Wizard", "level": 3}]},
+            "features": {"data": {}, "list": [{"name": "Fireball"}]},
+            "abilities": {"intelligence": 16},
+        });
+        migrate_v16(&mut input);
+        assert_eq!(
+            input["core"]["identity"]["species"].as_str(),
+            Some("Elf"),
+            "non-empty top-level field must override empty core slot"
+        );
+        assert_eq!(
+            input["core"]["features"]["list"].as_array().map(Vec::len),
+            Some(1)
+        );
+        assert_eq!(
+            input["core"]["abilities"]["intelligence"].as_u64(),
+            Some(16)
+        );
+        assert!(input.get("identity").is_none(), "top-level lifted away");
+        assert!(input.get("features").is_none());
+        assert!(input.get("abilities").is_none());
+    }
+
+    #[test]
+    fn migrate_v16_top_level_overrides_core() {
+        // When both sides have data the top-level wins: the only realistic
+        // scenario is the buggy-prior-run case, where `core` carries empty
+        // defaults and the real data sits at the top level.
+        let mut input = serde_json::json!({
+            "core": {"abilities": {"intelligence": 8}},
+            "abilities": {"intelligence": 18},
+        });
+        migrate_v16(&mut input);
+        assert_eq!(
+            input["core"]["abilities"]["intelligence"].as_u64(),
+            Some(18)
+        );
+        assert!(input.get("abilities").is_none());
     }
 }

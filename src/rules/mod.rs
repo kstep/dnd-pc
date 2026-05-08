@@ -26,7 +26,7 @@ pub use index::{
     BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,
 };
 pub use preview::{PreviewContext, eval_at_levels};
-pub use registry::{FeaturesView, RulesRegistry};
+pub use registry::{FeaturesView, RulesRegistry, make_system_feature};
 pub use species::SpeciesDefinition;
 pub use spells::{
     CastTime, SpellCategory, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex,

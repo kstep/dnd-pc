@@ -11,13 +11,14 @@ use crate::{
     expr::{
         self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, ExprAnalysis, IterStack, VarGroup,
     },
-    model::{AssignInputs, Attribute, AttributeGroup, Character, Expr, Op},
+    model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr, Op},
 };
 
-// --- ArgContext: resolves Arg(n) from signals, delegates rest to Character ---
+// --- ArgContext: resolves Arg(n) from signals, delegates rest to CharacterCore
+// ---
 
 struct ArgContext<'a> {
-    character: &'a Character,
+    character: &'a CharacterCore,
     args: &'a [Signal<i32>],
 }
 
@@ -558,7 +559,7 @@ pub fn ExprArgsInput(
     /// analysis — the character with all upstream pending features already
     /// applied. Non-cascade call sites can pass a derived signal over the
     /// live `Store<Character>`.
-    character: Signal<Arc<Character>>,
+    character: Signal<Arc<CharacterCore>>,
     #[prop(optional)] prefill: AssignInputs,
     on_ready: impl FnOnce(ExprArgsInputParts) + 'static,
 ) -> impl IntoView {
@@ -592,19 +593,9 @@ pub fn ExprArgsInput(
         expr_for_analysis.analyze(&*character, Attribute::arg_index)
     });
 
-    // Reactive sanitization of arg signals: when `analysis.active_args`
-    // changes (init + any upstream cascade update), zero any signal at a
-    // now-inactive position. Maintains invariant:
-    // `arg_signals[i].get() != 0 ⇒ i ∈ analysis.active_args`.
-    //
-    // Without this, a stored arg on a slot that became inactive (e.g. a
-    // pick on a skill another source made proficient) stays as `1` in the
-    // hidden signal — guard's `fold(+, @, @ARG) == N` counts it, visible
-    // checkboxes get auto-disabled, user can't complete the form.
-    //
-    // No cycle: `analysis` depends only on `character` Signal, not on
-    // `arg_signals`. `signal.get_untracked()` avoids self-subscription;
-    // `signal.set(0)` triggers `is_valid`/`is_satisfied` but not `analysis`.
+    // Zero arg signals at slots that fell out of `analysis.active_args`
+    // (cross-source dedup: a pick another source made redundant must not
+    // inflate this expression's guard count).
     let arg_signals_for_cleanup = arg_signals.clone();
     Effect::new(move |_| {
         let snapshot = analysis.get();

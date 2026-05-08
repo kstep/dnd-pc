@@ -3,7 +3,10 @@ use reactive_stores::Store;
 
 use crate::{
     components::stat_box::StatBox,
-    model::{Ability, Character, CharacterStoreFields, Translatable, format_bonus},
+    model::{
+        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, Translatable,
+        format_bonus,
+    },
 };
 
 #[component]
@@ -28,7 +31,7 @@ pub fn AbilityScoreBlock(ability: Ability) -> impl IntoView {
                 prop:value=move || score.get().to_string()
                 on:input=move |e| {
                     if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                        store.abilities().write().set(ability, value.clamp(1, 30));
+                        store.core().abilities().write().set(ability, value.clamp(1, 30));
                     }
                 }
             />

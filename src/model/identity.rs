@@ -3,10 +3,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::model::Alignment;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct CharacterIdentity {
-    #[serde(default)]
-    pub name: String,
     #[serde(default)]
     pub classes: Vec<ClassLevel>,
     #[serde(default, alias = "race")]
@@ -15,18 +13,6 @@ pub struct CharacterIdentity {
     pub background: String,
     #[serde(default)]
     pub experience_points: u32,
-}
-
-impl Default for CharacterIdentity {
-    fn default() -> Self {
-        Self {
-            name: "New Character".to_string(),
-            classes: Vec::new(),
-            species: String::new(),
-            background: String::new(),
-            experience_points: 0,
-        }
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
@@ -94,6 +80,8 @@ impl Default for ClassLevel {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct Personality {
+    #[serde(default = "default_character_name")]
+    pub name: String,
     pub alignment: Alignment,
     #[serde(default)]
     pub history: String,
@@ -107,9 +95,14 @@ pub struct Personality {
     pub flaws: String,
 }
 
+fn default_character_name() -> String {
+    "New Character".to_string()
+}
+
 impl Default for Personality {
     fn default() -> Self {
         Self {
+            name: default_character_name(),
             alignment: Alignment::TrueNeutral,
             history: String::new(),
             personality_traits: String::new(),

@@ -3004,6 +3004,7 @@ dialog.modal.closing::backdrop {
   color: var(--text-secondary);
   font-size: var(--font-size-1);
   font-weight: normal;
+  text-align: end;
 }
 
 .args-modal-description {

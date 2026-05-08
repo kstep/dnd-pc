@@ -147,8 +147,8 @@ impl Character {
             &mut rows,
             sec,
             "character-name",
-            self.identity.name.clone(),
-            imported.identity.name.clone(),
+            self.personality.name.clone(),
+            imported.personality.name.clone(),
         );
         push_if_diff(
             &mut rows,
@@ -275,8 +275,8 @@ impl Character {
 
         // --- Features (names only, descriptions stripped during sharing) ---
         let sec = "panel-features";
-        let local_val = format_names(self.features(), |f| &f.name);
-        let imported_val = format_names(imported.features(), |f| &f.name);
+        let local_val = format_names(&self.features.list, |f| f.name.as_str());
+        let imported_val = format_names(&imported.features.list, |f| f.name.as_str());
         push_if_diff(&mut rows, sec, "panel-features", local_val, imported_val);
 
         // --- Equipment ---
@@ -474,11 +474,11 @@ pub fn ImportConflict(
         let mut character = incoming.write_value();
         let new_id = Uuid::new_v4();
         character.id = new_id;
-        character.identity.name = format!("{} (Copy)", character.identity.name);
+        character.personality.name = format!("{} (Copy)", character.personality.name);
         save_character(&mut character, new_id);
     };
 
-    let name = existing.read_value().identity.name.clone();
+    let name = existing.read_value().personality.name.clone();
     let message = move_tr!("import-conflict-message", { "name" => name.clone() });
 
     let diff_rows = untrack(|| existing.read_value().diff(&incoming.read_value(), i18n));

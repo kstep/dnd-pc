@@ -7,8 +7,8 @@ use crate::{
     components::{icon::Icon, stat_box::StatBox},
     effective::{AdvantageState, EffectiveCharacter},
     model::{
-        Ability, Character, CharacterStoreFields, CombatStatsStoreFields, DamageType, Skill,
-        Translatable, format_bonus,
+        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, CombatStatsStoreFields,
+        DamageType, Skill, Translatable, format_bonus,
     },
 };
 
@@ -30,7 +30,7 @@ pub fn StatsBlock() -> impl IntoView {
     let eff = expect_context::<EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
 
-    let combat = store.combat();
+    let combat = store.core().combat();
     let damage_input = NodeRef::<Input>::new();
     let damage_value = move || {
         damage_input

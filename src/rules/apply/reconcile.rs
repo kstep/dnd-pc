@@ -1,40 +1,19 @@
 use std::collections::{BTreeMap, VecDeque};
 
-use leptos::prelude::ReadUntracked;
-
 use crate::{
     model::{Character, CharacterIdentity, FeatureCategory, FeatureSource},
     rules::{
-        DefinitionStore, RulesRegistry, apply::collect::class_level_sources,
-        background::BackgroundDefinition, class::ClassDefinition, species::SpeciesDefinition,
+        RulesRegistry,
+        apply::{caches::DefinitionCaches, collect::class_level_sources},
     },
 };
-
-// Local grouping for reconcile's two pure entry points — keeps the signature
-// tight without committing to a project-wide `Caches` abstraction. Promote to
-// `src/rules/` if a second call site ever needs the same bundle.
-pub struct DefinitionCaches<'a> {
-    pub classes: &'a BTreeMap<Box<str>, ClassDefinition>,
-    pub species: &'a BTreeMap<Box<str>, SpeciesDefinition>,
-    pub backgrounds: &'a BTreeMap<Box<str>, BackgroundDefinition>,
-}
 
 /// Rewrite `User(_)` sources on features whose names match a canonical slot
 /// granted by the character's identity. Preserves `inputs`, `applied`,
 /// `label`, `description`. Genuine user-added features (no matching identity
 /// slot) are left alone.
 pub fn reconcile_user_feature_sources(character: &mut Character, registry: &RulesRegistry) {
-    let class_cache = registry.classes().cache().read_untracked();
-    let species_cache = registry.species().cache().read_untracked();
-    let backgrounds_cache = registry.backgrounds().cache().read_untracked();
-    reconcile_with_defs(
-        character,
-        DefinitionCaches {
-            classes: &class_cache,
-            species: &species_cache,
-            backgrounds: &backgrounds_cache,
-        },
-    );
+    registry.with_definitions(|caches| reconcile_with_defs(character, caches));
 }
 
 // Three sequential passes over features.list are intentional: (1) early-exit
@@ -43,7 +22,7 @@ pub fn reconcile_user_feature_sources(character: &mut Character, registry: &Rule
 // the guard + pre-subtract requires splitting `character` borrows around a
 // lazy-init closure; the borrow-checker gymnastics aren't worth saving
 // ~80 comparisons on a button-click path.
-pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'_>) {
+pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches) {
     if !character
         .features
         .iter()
@@ -64,7 +43,7 @@ pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'
         }
     }
 
-    for feature in character.features.list.iter_mut() {
+    for feature in character.features.iter_mut() {
         if !feature.source.is_user() {
             continue;
         }
@@ -89,7 +68,7 @@ pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches<'
 // unclaimed slot so stored inputs align with increasing level order.
 pub fn build_canonical_slots(
     identity: &CharacterIdentity,
-    caches: DefinitionCaches<'_>,
+    caches: DefinitionCaches,
 ) -> BTreeMap<Box<str>, VecDeque<FeatureSource>> {
     let mut slots: BTreeMap<Box<str>, VecDeque<FeatureSource>> = BTreeMap::new();
 
@@ -140,7 +119,9 @@ mod tests {
     use super::*;
     use crate::{
         model::{AssignInputs, ClassLevel, Feature},
-        rules::class::ClassDefinition,
+        rules::{
+            background::BackgroundDefinition, class::ClassDefinition, species::SpeciesDefinition,
+        },
     };
 
     fn cache<T>(entries: Vec<(&str, T)>) -> BTreeMap<Box<str>, T> {
@@ -205,31 +186,44 @@ mod tests {
         character
     }
 
-    type OwnedCaches = (
-        BTreeMap<Box<str>, ClassDefinition>,
-        BTreeMap<Box<str>, SpeciesDefinition>,
-        BTreeMap<Box<str>, BackgroundDefinition>,
-    );
+    /// Test-side owned bundle. Tests project it through `caches_view` to get
+    /// the borrow-based [`DefinitionCaches`] expected by reconcile.
+    struct OwnedCaches {
+        classes: BTreeMap<Box<str>, ClassDefinition>,
+        species: BTreeMap<Box<str>, SpeciesDefinition>,
+        backgrounds: BTreeMap<Box<str>, BackgroundDefinition>,
+    }
+
+    impl OwnedCaches {
+        fn view(&self) -> DefinitionCaches<'_> {
+            DefinitionCaches {
+                classes: &self.classes,
+                species: &self.species,
+                backgrounds: &self.backgrounds,
+            }
+        }
+    }
 
     fn default_caches() -> OwnedCaches {
-        let classes = cache(vec![("Rogue", rogue_def())]);
-        let species = cache(vec![(
-            "Rock Gnome",
-            serde_json::from_value::<SpeciesDefinition>(serde_json::json!({
-                "name": "Rock Gnome",
-                "features": ["Gnome Cunning", "Artificer's Lore"]
-            }))
-            .unwrap(),
-        )]);
-        let backgrounds = cache(vec![(
-            "Criminal",
-            serde_json::from_value::<BackgroundDefinition>(serde_json::json!({
-                "name": "Criminal",
-                "features": ["Criminal Contact"]
-            }))
-            .unwrap(),
-        )]);
-        (classes, species, backgrounds)
+        OwnedCaches {
+            classes: cache(vec![("Rogue", rogue_def())]),
+            species: cache(vec![(
+                "Rock Gnome",
+                serde_json::from_value::<SpeciesDefinition>(serde_json::json!({
+                    "name": "Rock Gnome",
+                    "features": ["Gnome Cunning", "Artificer's Lore"]
+                }))
+                .unwrap(),
+            )]),
+            backgrounds: cache(vec![(
+                "Criminal",
+                serde_json::from_value::<BackgroundDefinition>(serde_json::json!({
+                    "name": "Criminal",
+                    "features": ["Criminal Contact"]
+                }))
+                .unwrap(),
+            )]),
+        }
     }
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -241,18 +235,6 @@ mod tests {
         }
     }
 
-    fn run_reconcile(character: &mut Character, caches: &OwnedCaches) {
-        let (classes, species, backgrounds) = caches;
-        reconcile_with_defs(
-            character,
-            DefinitionCaches {
-                classes,
-                species,
-                backgrounds,
-            },
-        );
-    }
-
     #[wasm_bindgen_test]
     fn reconcile_reassigns_class_feature() {
         let mut original = rogue6_thief();
@@ -260,7 +242,8 @@ mod tests {
             applied: false,
             ..feature("Class Proficiencies (Rogue)", FeatureSource::User(0))
         });
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(
             original.features.list[0].source,
@@ -276,7 +259,8 @@ mod tests {
             .features
             .list
             .push(feature("Fast Hands", FeatureSource::User(0)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(
             original.features.list[0].source,
@@ -295,7 +279,8 @@ mod tests {
             .features
             .list
             .push(feature("Criminal Contact", FeatureSource::User(0)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(
             original.features.list[0].source,
@@ -319,7 +304,8 @@ mod tests {
             .features
             .list
             .push(feature("Ability Score Improvement", FeatureSource::User(0)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(
             original.features.list[0].source,
@@ -338,7 +324,8 @@ mod tests {
             .features
             .list
             .push(feature("Lucky", FeatureSource::User(4)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(original.features.list[0].source, FeatureSource::User(4));
     }
@@ -355,7 +342,8 @@ mod tests {
             inputs: stored_inputs.clone(),
             ..feature("Class Proficiencies (Rogue)", FeatureSource::User(0))
         });
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
         let feat = &original.features.list[0];
         assert_eq!(feat.source, FeatureSource::Class("Rogue".into(), 1));
         assert!(feat.applied);
@@ -369,7 +357,8 @@ mod tests {
             .features
             .list
             .push(feature("Generation: User-Defined", FeatureSource::User(0)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(original.features.list[0].source, FeatureSource::User(0));
     }
@@ -377,15 +366,8 @@ mod tests {
     #[wasm_bindgen_test]
     fn canonical_slots_skip_class_levels_above_applied() {
         let character = rogue6_thief();
-        let (classes, species, backgrounds) = default_caches();
-        let slots = build_canonical_slots(
-            &character.identity,
-            DefinitionCaches {
-                classes: &classes,
-                species: &species,
-                backgrounds: &backgrounds,
-            },
-        );
+        let owned = default_caches();
+        let slots = build_canonical_slots(&character.identity, owned.view());
 
         assert!(!slots.contains_key("Evasion"));
         assert!(!slots.contains_key("Supreme Sneak"));
@@ -400,7 +382,8 @@ mod tests {
             FeatureSource::Class("Rogue".into(), 1),
         ));
         let before = original.features.list.clone();
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
         assert_eq!(original.features.list.as_slice(), before.as_slice());
     }
 
@@ -416,7 +399,8 @@ mod tests {
             .features
             .list
             .push(feature("Ability Score Improvement", FeatureSource::User(0)));
-        run_reconcile(&mut original, &default_caches());
+        let owned = default_caches();
+        reconcile_with_defs(&mut original, owned.view());
 
         assert_eq!(
             original.features.list[0].source,
@@ -455,11 +439,12 @@ mod tests {
             .list
             .push(feature("Ability Score Improvement", FeatureSource::User(0)));
 
-        let classes = cache(vec![("Fighter", fighter_def()), ("Rogue", rogue_def())]);
-        let species = BTreeMap::new();
-        let backgrounds = BTreeMap::new();
-        let caches = (classes, species, backgrounds);
-        run_reconcile(&mut character, &caches);
+        let owned = OwnedCaches {
+            classes: cache(vec![("Fighter", fighter_def()), ("Rogue", rogue_def())]),
+            species: BTreeMap::new(),
+            backgrounds: BTreeMap::new(),
+        };
+        reconcile_with_defs(&mut character, owned.view());
 
         assert_eq!(
             character.features.list[0].source,
@@ -485,12 +470,12 @@ mod tests {
             applied: true,
             ..Feature::default()
         });
-        let owned = (
-            cache(vec![("Rogue", rogue_def()), ("Fighter", fighter_def())]),
-            cache(vec![]),
-            cache(vec![]),
-        );
-        run_reconcile(&mut character, &owned);
+        let owned = OwnedCaches {
+            classes: cache(vec![("Rogue", rogue_def()), ("Fighter", fighter_def())]),
+            species: cache(vec![]),
+            backgrounds: cache(vec![]),
+        };
+        reconcile_with_defs(&mut character, owned.view());
 
         let marker = character
             .features
@@ -515,8 +500,12 @@ mod tests {
             FeatureSource::User(0),
         ));
 
-        let empty: OwnedCaches = (BTreeMap::new(), BTreeMap::new(), BTreeMap::new());
-        run_reconcile(&mut original, &empty);
+        let empty = OwnedCaches {
+            classes: BTreeMap::new(),
+            species: BTreeMap::new(),
+            backgrounds: BTreeMap::new(),
+        };
+        reconcile_with_defs(&mut original, empty.view());
 
         assert_eq!(original.features.list[0].source, FeatureSource::User(0));
     }

@@ -12,7 +12,11 @@ use crate::{
         datalist::DatalistOption,
         feature_row::FeatureRow,
     },
-    model::{Character, CharacterStoreFields, Feature, FeatureCategory, FeaturesStoreFields},
+    hooks::use_query_signal,
+    model::{
+        Character, CharacterCoreStoreFields, CharacterStoreFields, Feature, FeatureCategory,
+        FeaturesStoreFields, IdentitySlot,
+    },
     rules::{RulesRegistry, WhenCondition, apply::apply_assignments_with_inputs},
 };
 
@@ -24,7 +28,10 @@ pub fn FeaturesPanel() -> impl IntoView {
 
     crate::hooks::use_scroll_to_hash();
 
-    let features = store.features();
+    let (advanced, _) = use_query_signal::<bool>("advanced");
+    let advanced = Signal::derive(move || advanced.get().unwrap_or(false));
+
+    let features = store.core().features();
 
     let remove_feature = move |idx: usize| {
         let evict = {
@@ -50,7 +57,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     // position so each row pulls its own preview row from the panel-level Memo.
     let assign_previews = Memo::new(move |_| {
         let mut blank = Character::default();
-        let features_read = store.features().read();
+        let features_read = store.core().features().read();
         features_read
             .iter()
             .map(|feature| {
@@ -111,13 +118,22 @@ pub fn FeaturesPanel() -> impl IntoView {
                 // children across reorders, leaving the captured idx stale
                 // and the inner `Field` reader panicking on `&inner[stale]`.
                 each=move || {
+                    let advanced_on = advanced.get();
                     features
                         .list()
                         .read()
                         .iter()
                         .enumerate()
                         .filter(|(_, feature)| {
-                            !matches!(feature.category, FeatureCategory::System(_))
+                            advanced_on
+                                || !matches!(
+                                    feature.category,
+                                    FeatureCategory::System(
+                                        IdentitySlot::Class
+                                            | IdentitySlot::Species
+                                            | IdentitySlot::Background
+                                    )
+                                )
                         })
                         .rev()
                         .map(|(idx, feature)| (idx, feature.dom_id()))
@@ -138,7 +154,17 @@ pub fn FeaturesPanel() -> impl IntoView {
                         let feature = list.get(idx)?;
                         let is_group_head = list[idx + 1..]
                             .iter()
-                            .find(|next| !matches!(next.category, FeatureCategory::System(_)))
+                            .find(|next| {
+                                advanced.get()
+                                    || !matches!(
+                                        next.category,
+                                        FeatureCategory::System(
+                                            IdentitySlot::Class
+                                                | IdentitySlot::Species
+                                                | IdentitySlot::Background
+                                        )
+                                    )
+                            })
                             .is_none_or(|next| next.source != feature.source);
                         is_group_head.then(|| registry.source_label(&feature.source, i18n))
                     });

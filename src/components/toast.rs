@@ -34,12 +34,22 @@ impl ToastKind {
 }
 
 pub struct Toast {
-    message: Signal<String>,
+    message: ToastMessage,
     kind: ToastKind,
     action: Option<ToastAction>,
     auto_close: Option<Duration>,
     on_dismiss: Option<Callback<()>>,
     owner: Option<Owner>,
+}
+
+/// Resolved or deferred toast message. The deferred form (`I18n`) lets
+/// `show()` allocate the reactive signal under the toast container's
+/// owner so it outlives whichever transient scope queued the toast —
+/// otherwise dismissing the caller (e.g. an unmounted banner button)
+/// disposes the signal while the toast is still on-screen.
+enum ToastMessage {
+    Signal(Signal<String>),
+    I18n(&'static str),
 }
 
 impl Toast {
@@ -52,7 +62,7 @@ impl Toast {
     /// override the duration.
     pub fn new(message: impl Into<Signal<String>>) -> Self {
         Self {
-            message: message.into(),
+            message: ToastMessage::Signal(message.into()),
             kind: ToastKind::Info,
             action: None,
             auto_close: Some(Self::DEFAULT_DURATION),
@@ -67,8 +77,17 @@ impl Toast {
     }
 
     /// Look up a translation reactively from the current i18n bundle.
+    /// Signal allocation defers to `show()` so the message survives the
+    /// caller's scope being disposed before the toast auto-closes.
     pub fn i18n(key: &'static str) -> Self {
-        Self::new(Signal::derive(move || expect_context::<I18n>().tr(key)))
+        Self {
+            message: ToastMessage::I18n(key),
+            kind: ToastKind::Info,
+            action: None,
+            auto_close: Some(Self::DEFAULT_DURATION),
+            on_dismiss: None,
+            owner: Owner::current(),
+        }
     }
 
     /// i18n + success kind.
@@ -119,13 +138,19 @@ impl Toast {
         };
         // Allocate entry signals under the context's owner (app root) so they
         // survive past the caller's scope — e.g. when an Effect that created
-        // the toast re-runs before the user clicks dismiss.
+        // the toast re-runs before the user clicks dismiss, or when a button
+        // unmounts (legacy-data banner) right after the rebuild it triggered.
+        let message_kind = self.message;
         let (entry, auto_close) = ctx.owner.with(|| {
             let id = next_toast_id();
+            let message = match message_kind {
+                ToastMessage::Signal(signal) => signal,
+                ToastMessage::I18n(key) => Signal::derive(move || expect_context::<I18n>().tr(key)),
+            };
             (
                 Entry {
                     id,
-                    message: self.message,
+                    message,
                     kind: self.kind,
                     action: self.action,
                     on_dismiss: self.on_dismiss,

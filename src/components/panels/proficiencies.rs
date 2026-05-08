@@ -5,14 +5,14 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{icon::Icon, slot_box::SlotBox},
-    model::{Character, CharacterStoreFields, Proficiency, Translatable},
+    model::{Character, CharacterCoreStoreFields, CharacterStoreFields, Proficiency, Translatable},
 };
 
 #[component]
 pub fn ProficienciesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    let languages = store.languages();
+    let languages = store.core().languages();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
@@ -22,7 +22,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 {Proficiency::iter()
                     .map(|prof| {
                         let active = Memo::new(move |_| {
-                            store.proficiencies().read().contains(&prof)
+                            store.core().proficiencies().read().contains(&prof)
                         });
                         let tr_key = prof.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
@@ -34,7 +34,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                 class:tag=true
                                 class:highlighted=move || active.get()
                                 on:click=move |_| {
-                                    store.proficiencies().update(|profs| profs.toggle(prof));
+                                    store.core().proficiencies().update(|profs| profs.toggle(prof));
                                 }
                             >
                                 <Icon

@@ -5,50 +5,12 @@ use reactive_stores::Store;
 
 use crate::{
     components::args_modal::ArgsModalCtx,
-    model::{AssignInputs, Character, FeatureSource},
+    model::{AssignInputs, Character, CharacterCore, FeatureSource},
     rules::{
-        ApplyInputs, FeaturesView, PendingInputs, RecomputePending, RulesRegistry, WhenCondition,
-        apply::{
-            FeatureKey, PendingFeature, apply_new_features, collect_pending_features,
-            resolve_replacements,
-        },
+        ApplyInputs, PendingInputs, RecomputePending, RulesRegistry, WhenCondition,
+        apply::{FeatureKey, PendingFeature, cascade},
     },
 };
-
-/// Apply outer `pending` then iterate `collect_pending_features` until no
-/// new derived features remain — identity-slot picks chain through several
-/// passes (e.g. Class Level → Subclass placeholder → Battle Master subclass
-/// features). `MAX_PASSES` caps runaway expansion.
-fn apply_pending_cascade(
-    character: &mut Character,
-    pending: &[PendingFeature],
-    inputs: &ApplyInputs,
-    registry: &RulesRegistry,
-    feat_index: FeaturesView<'_>,
-) {
-    const MAX_PASSES: usize = 8;
-
-    let resolved = resolve_replacements(pending, &inputs.replacements, feat_index);
-    apply_new_features(
-        feat_index,
-        character,
-        &resolved,
-        Some(&inputs.feature_inputs),
-    );
-    for _ in 0..MAX_PASSES {
-        let derived = collect_pending_features(character, registry, feat_index);
-        if derived.is_empty() {
-            return;
-        }
-        let resolved_derived = resolve_replacements(&derived, &inputs.replacements, feat_index);
-        apply_new_features(
-            feat_index,
-            character,
-            &resolved_derived,
-            Some(&inputs.feature_inputs),
-        );
-    }
-}
 
 /// Collect OnFeatureAdd pending inputs from the given pending features list.
 fn collect_all_inputs(
@@ -83,7 +45,7 @@ pub fn apply_with_modal(
     store: Store<Character>,
     registry: RulesRegistry,
     pending: Vec<PendingFeature>,
-    base: Option<Arc<Character>>,
+    base: Option<Arc<CharacterCore>>,
     recompute: Option<RecomputePending>,
     callback: impl Fn(&mut Character) + Send + Sync + 'static,
 ) {
@@ -115,7 +77,7 @@ pub fn edit_inputs_modal(
     registry: RulesRegistry,
     name: String,
     source: FeatureSource,
-    base: Option<Arc<Character>>,
+    base: Option<Arc<CharacterCore>>,
 ) {
     let pending_input = registry.with_features_index_untracked(|fi| {
         let feat_def = fi.get(name.as_str())?;
@@ -264,9 +226,9 @@ pub fn apply_with_prefilled_args(
 }
 
 /// Apply a batch of pending features under a single `store.update` +
-/// `registry.compute`. Runs `apply_pending_cascade` (outer pending +
-/// derived features), then invokes the caller's post-apply hook against
-/// the now-updated character.
+/// `registry.compute`. Drives `cascade()` with the modal-collected inputs,
+/// then invokes the caller's post-apply hook against the now-updated
+/// character.
 fn apply_batch(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -274,9 +236,23 @@ fn apply_batch(
     inputs: &ApplyInputs,
     callback: &impl Fn(&mut Character),
 ) {
+    let inputs_for = |key: &FeatureKey| -> Vec<AssignInputs> {
+        inputs.feature_inputs.get(key).cloned().unwrap_or_default()
+    };
+    let replacement_for = |name: &str| -> Option<String> { inputs.replacements.get(name).cloned() };
     store.update(|character| {
-        registry.with_features_index_untracked(|feat_index| {
-            apply_pending_cascade(character, pending, inputs, &registry, feat_index);
+        registry.with_definitions(|caches| {
+            registry.with_features_index_untracked(|feat_index| {
+                cascade(
+                    character,
+                    pending,
+                    feat_index,
+                    caches,
+                    &inputs_for,
+                    &replacement_for,
+                    false,
+                );
+            });
         });
         callback(character);
         registry.compute(character);

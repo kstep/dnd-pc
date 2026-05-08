@@ -17,10 +17,10 @@ pub fn export_character(character: &Character) {
         }
     };
 
-    let filename = if character.identity.name.is_empty() {
+    let filename = if character.personality.name.is_empty() {
         "character.dnd.json".to_string()
     } else {
-        format!("{}.dnd.json", character.identity.name)
+        format!("{}.dnd.json", character.personality.name)
     };
 
     // Telegram Mini App has no working download or Web Share path (Android

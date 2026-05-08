@@ -15,8 +15,9 @@ use crate::{
         session_list::{SessionList, SessionListItem},
     },
     model::{
-        ActionType, AttrKey, Attribute, Character, CharacterStoreFields, EffectDefinition,
-        FeatureOption, FeatureValue, FeaturesStoreFields, Translatable, short_name,
+        ActionType, AttrKey, Attribute, Character, CharacterCoreStoreFields, CharacterStoreFields,
+        EffectDefinition, FeatureOption, FeatureValue, FeaturesStoreFields, Translatable,
+        short_name,
     },
     rules::{ChoiceOption, ChoiceOptions, RulesRegistry},
 };
@@ -129,7 +130,7 @@ pub fn ChoicesBlock() -> impl IntoView {
     let eff = expect_context::<crate::effective::EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
 
-    let feature_data = store.features().data();
+    let feature_data = store.core().features().data();
 
     // Effects calculator modal state
     let show_calc = RwSignal::new(false);

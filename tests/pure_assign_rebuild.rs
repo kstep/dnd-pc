@@ -44,11 +44,11 @@ fn apply_all(
             inputs: vec![AssignInputs::default()],
             ..Feature::default()
         });
-        let feature_index = character.features.list.len() - 1;
+        let feature_pos = character.features.list.len() - 1;
         apply_feature(
             feat_def,
             character,
-            feature_index,
+            feature_pos,
             WhenCondition::OnFeatureAdd,
         );
     }
@@ -60,7 +60,6 @@ fn apply_all(
 /// pick its own without copy-pasting the rest of the identity.
 fn make_character(classes: Vec<ClassLevel>) -> Character {
     let identity = CharacterIdentity {
-        name: "Test".into(),
         classes,
         ..Default::default()
     };

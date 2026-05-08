@@ -15,8 +15,8 @@ use crate::{
         toggle_button::ToggleButton,
     },
     model::{
-        Ability, Character, CharacterStoreFields, FeaturesStoreFields, Spell, SpellData,
-        SpellSlotPool, Translatable, format_bonus,
+        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, FeaturesStoreFields,
+        Spell, SpellData, SpellSlotPool, Translatable, format_bonus,
     },
     rules::{RulesRegistry, SpellMeta},
 };
@@ -34,7 +34,7 @@ fn update_spells(
     f: impl FnOnce(&mut SpellData),
 ) {
     feat_name.with_value(|key| {
-        store.features().data().update(|map| {
+        store.core().features().data().update(|map| {
             if let Some(sc) = map.get_mut(key).and_then(|entry| entry.spells.as_mut()) {
                 f(sc);
             }
@@ -63,6 +63,7 @@ fn read_spell<T: Default>(
 ) -> T {
     feat_name.with_value(|key| {
         store
+            .core()
             .features()
             .data()
             .read()
@@ -131,6 +132,7 @@ fn read_known_spell<T: Default>(
 ) -> T {
     feat_name.with_value(|key| {
         store
+            .core()
             .features()
             .data()
             .read()
@@ -170,6 +172,7 @@ fn FeatureSpellcastingSection(
     let casting_ability = Memo::new(move |_| {
         feat_name.with_value(|key| {
             store
+                .core()
                 .features()
                 .data()
                 .read()
@@ -185,6 +188,7 @@ fn FeatureSpellcastingSection(
     let is_two_tier = Memo::new(move |_| {
         feat_name.with_value(|key| {
             store
+                .core()
                 .features()
                 .data()
                 .read()
@@ -208,6 +212,7 @@ fn FeatureSpellcastingSection(
     let pool = Memo::new(move |_| {
         feat_name.with_value(|key| {
             store
+                .core()
                 .features()
                 .data()
                 .read()
@@ -220,6 +225,7 @@ fn FeatureSpellcastingSection(
 
     let max_slot_level = Memo::new(move |_| {
         store
+            .core()
             .spell_slots()
             .read()
             .get(&pool.get())
@@ -288,7 +294,7 @@ fn FeatureSpellcastingSection(
         }
     });
     Effect::new(move || {
-        let guard = store.features().data().read();
+        let guard = store.core().features().data().read();
         let known = feat_name.with_value(|key| {
             guard
                 .get(key)
@@ -400,7 +406,7 @@ fn FeatureSpellcastingSection(
                 </div>
                 <div class="entry-list">
                     {move || {
-                        let guard = store.features().data().read();
+                        let guard = store.core().features().data().read();
                         feat_name.with_value(|key| {
                             guard
                                 .get(key)
@@ -545,7 +551,7 @@ fn FeatureSpellcastingSection(
             </div>
             <div class="entry-list">
                 {move || {
-                    let guard = store.features().data().read();
+                    let guard = store.core().features().data().read();
                     let two_tier = is_two_tier.get();
                     feat_name.with_value(|key| {
                         guard
@@ -753,6 +759,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let has_spells = Memo::new(move |_| {
         store
+            .core()
             .features()
             .data()
             .read()
@@ -814,7 +821,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         prop:value=slot.used.to_string()
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                store.spell_slots().update(|pools| {
+                                                                store.core().spell_slots().update(|pools| {
                                                                     if let Some(slots) = pools.get_mut(&pool) {
                                                                         slots[idx].used = value;
                                                                     }
@@ -830,7 +837,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         prop:value=slot.total.to_string()
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                store.spell_slots().update(|pools| {
+                                                                store.core().spell_slots().update(|pools| {
                                                                     if let Some(slots) = pools.get_mut(&pool) {
                                                                         slots[idx].total = value;
                                                                     }
@@ -850,7 +857,7 @@ pub fn SpellcastingPanel() -> impl IntoView {
             </section>
             {move || {
                 store
-                    .features().data()
+                    .core().features().data()
                     .read()
                     .iter()
                     .filter_map(|(name, entry)| {

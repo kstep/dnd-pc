@@ -2,12 +2,12 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
-use crate::model::{Character, CharacterStoreFields};
+use crate::model::{Character, CharacterCoreStoreFields, CharacterStoreFields};
 
 #[component]
 pub fn LanguagesBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
-    let languages = store.languages();
+    let languages = store.core().languages();
     let langs = move || {
         languages
             .read()

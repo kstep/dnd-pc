@@ -44,7 +44,7 @@ impl<'a> IndexEntry<'a> {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct Index {
     #[serde(deserialize_with = "demap::named_map")]
     pub classes: BTreeMap<Box<str>, ClassIndexEntry>,

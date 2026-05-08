@@ -1,4 +1,7 @@
-use std::mem;
+use std::{
+    mem,
+    ops::{Deref, DerefMut},
+};
 
 use leptos_fluent::{I18n, tr};
 use reactive_stores::Store;
@@ -98,27 +101,25 @@ pub struct CharacterSummary {
     pub shared: bool,
 }
 
-// --- Main Character ---
+// --- Character core ---
 
-#[derive(Debug, Clone, Serialize, Deserialize, Store)]
-pub struct Character {
-    pub id: Uuid,
+/// The slice of state the apply pipeline reads and writes — every field
+/// `cascade()` / `apply_pending` / `compute()` touches lives here. A clone
+/// of this is the speculative cascade snapshot in args modal flows.
+#[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
+pub struct CharacterCore {
     #[serde(default)]
     pub identity: CharacterIdentity,
     #[serde(default)]
-    abilities: AbilityScores,
+    pub abilities: AbilityScores,
     #[serde(default)]
-    saving_throws: VecSet<Ability>,
+    pub saving_throws: VecSet<Ability>,
     #[serde(default)]
     pub skills: Skills,
     #[serde(default)]
     pub combat: CombatStats,
     #[serde(default)]
-    pub personality: Personality,
-    #[serde(default)]
     pub features: Features,
-    #[serde(default)]
-    pub equipment: Equipment,
     #[serde(default)]
     pub proficiencies: VecSet<Proficiency>,
     #[serde(default)]
@@ -129,6 +130,19 @@ pub struct Character {
     pub spell_slots: SpellSlots,
     #[serde(default)]
     pub applied: Applied,
+}
+
+// --- Main Character ---
+
+#[derive(Debug, Clone, Serialize, Deserialize, Store)]
+pub struct Character {
+    pub id: Uuid,
+    #[serde(default)]
+    pub core: CharacterCore,
+    #[serde(default)]
+    pub equipment: Equipment,
+    #[serde(default)]
+    pub personality: Personality,
     #[serde(default)]
     pub notes: Vec<Note>,
     #[serde(default)]
@@ -138,8 +152,338 @@ pub struct Character {
     pub schema_version: u32,
 }
 
+impl Deref for Character {
+    type Target = CharacterCore;
+
+    fn deref(&self) -> &CharacterCore {
+        &self.core
+    }
+}
+
+impl DerefMut for Character {
+    fn deref_mut(&mut self) -> &mut CharacterCore {
+        &mut self.core
+    }
+}
+
 pub fn now_epoch_secs() -> u64 {
     (js_sys::Date::now() / 1000.0) as u64
+}
+
+impl CharacterCore {
+    pub fn level(&self) -> u32 {
+        self.identity
+            .classes
+            .iter()
+            .filter(|class_level| !class_level.class.is_empty())
+            .map(|class_level| class_level.level)
+            .sum::<u32>()
+    }
+
+    /// Effective current level for a feature based on its source.
+    /// Class features use their class's current level; others use total level.
+    pub fn effective_level_for(&self, source: &FeatureSource) -> u32 {
+        match source {
+            FeatureSource::Class(class_name, _) | FeatureSource::Subclass(class_name, _, _) => self
+                .identity
+                .classes
+                .iter()
+                .find(|cl| cl.class.as_str() == &**class_name)
+                .map_or(0, |cl| cl.level),
+            FeatureSource::Species(_) | FeatureSource::Background(_) | FeatureSource::User(_) => {
+                self.level()
+            }
+        }
+    }
+
+    pub fn xp_threshold(&self) -> u32 {
+        XP_THRESHOLDS
+            .get(self.level().saturating_sub(1) as usize)
+            .copied()
+            .unwrap_or(0)
+    }
+
+    pub fn proficiency_bonus(&self) -> i32 {
+        proficiency_bonus_for_level(self.level())
+    }
+
+    pub fn ability_modifier(&self, ability: Ability) -> i32 {
+        self.abilities.modifier(ability)
+    }
+
+    pub fn proficient_with(&self, ability: Ability) -> bool {
+        self.saving_throws.contains(&ability)
+    }
+
+    pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
+        let modifier = self.ability_modifier(ability);
+        let proficient = self.proficient_with(ability);
+        modifier
+            + if proficient {
+                self.proficiency_bonus()
+            } else {
+                0
+            }
+    }
+
+    pub fn skill_bonus(&self, skill: Skill) -> i32 {
+        let ability = skill.ability();
+        let modifier = self.ability_modifier(ability);
+        let prof_level = self.skills.get(skill);
+        modifier + prof_level.multiplier() * self.proficiency_bonus()
+    }
+
+    pub fn initiative(&self) -> i32 {
+        self.ability_modifier(Ability::Dexterity) + self.combat.initiative_misc_bonus
+    }
+
+    pub fn spell_save_dc(&self, ability: Ability) -> i32 {
+        8 + self.proficiency_bonus() + self.ability_modifier(ability)
+    }
+
+    pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
+        self.proficiency_bonus() + self.ability_modifier(ability)
+    }
+
+    /// Evaluate a weapon's attack-bonus expression against this character.
+    /// Uses the weapon's explicit `attack_expr` when set, otherwise the
+    /// default derived from its `category` / `ability` / `magic_bonus`.
+    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
+        weapon.effective_attack_expr().eval(self).unwrap_or(0)
+    }
+
+    /// `(caster_level, caster_class_count)` for `pool`. Single class:
+    /// PHB single-class table. Multi: PHB Multiclass Spellcaster Table.
+    fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
+        let entries: Vec<(u32, u32)> = self
+            .identity
+            .classes
+            .iter()
+            .filter_map(|cl| {
+                let max_coef = self
+                    .features
+                    .iter()
+                    .filter_map(|feature| {
+                        if feature.source.as_class() != Some(cl.class.as_str()) {
+                            return None;
+                        }
+                        let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
+                        (spell_data.pool == pool && spell_data.caster_coef != 0)
+                            .then_some(spell_data.caster_coef)
+                    })
+                    .max()?;
+                Some((cl.level, max_coef))
+            })
+            .collect();
+        let caster_classes = entries.len() as u32;
+
+        let caster_level = match entries.as_slice() {
+            [] => 0,
+            [(level, coef)] => SpellData::single_caster_level(*level, *coef),
+            many => many.iter().map(|(level, coef)| level / coef).sum(),
+        };
+
+        (caster_level, caster_classes)
+    }
+
+    pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
+        self.caster_info(pool).0
+    }
+
+    pub fn ability_score(&self, ability: Ability) -> u32 {
+        self.abilities.get(ability)
+    }
+
+    pub fn modify_ability(&mut self, ability: Ability, delta: i32) {
+        let current = self.abilities.get(ability) as i32;
+        self.abilities.set(ability, (current + delta).max(1) as u32);
+    }
+
+    pub fn set_ability(&mut self, ability: Ability, value: u32) {
+        self.abilities.set(ability, value.max(1));
+    }
+
+    /// Compare the derived state (what feature-apply produces) between two
+    /// characters. Ignores identity (user input), build (features.list —
+    /// rebuild restructures it), personality (untouched), and
+    /// compute-derived fields (hp/ac/spell_slots re-derive after commit).
+    pub fn eq_derived(&self, other: &Self) -> bool {
+        self.abilities == other.abilities
+            && self.saving_throws == other.saving_throws
+            && self.skills == other.skills
+            && self.proficiencies == other.proficiencies
+            && self.languages == other.languages
+            && self.damage_modifiers == other.damage_modifiers
+    }
+
+    /// Compute base max HP from class levels and CON modifier.
+    ///
+    /// Formula: for each class, `hit_die_sides` at level 1 +
+    /// `avg_hp(hit_die_sides)` for each subsequent level, plus
+    /// `total_level * CON modifier`.
+    pub fn compute_hp_max(&mut self) -> u32 {
+        let con_mod = self.ability_modifier(Ability::Constitution);
+        let mut total_level: i32 = 0;
+        let base: i32 = self
+            .identity
+            .classes
+            .iter()
+            .map(|cl| {
+                total_level += cl.level as i32;
+                let sides = cl.hit_die_sides as i32;
+                sides + (cl.level as i32 - 1) * expr::avg_hp(sides)
+            })
+            .sum();
+        let total = (base + total_level * con_mod).max(0) as u32;
+        self.combat.hp_max = total;
+        total
+    }
+
+    /// Reset speed to the default walking speed (30 ft).
+    /// Race/feature `OnCompute` assignments override this.
+    pub fn compute_speed(&mut self) -> u32 {
+        self.combat.speed = DEFAULT_SPEED;
+        DEFAULT_SPEED
+    }
+
+    /// Reset base combat stats to defaults before feature assignments.
+    ///
+    /// Sets default AC (`10 + DEX.MOD`), recomputes HP and speed,
+    /// and resets misc bonuses. After this, call
+    /// `RulesRegistry::assign(character, OnCompute)` to apply feature
+    /// bonuses (including natural armor via `AC = max(AC, ...)`),
+    /// then `compute_armor_class()` to apply equipped armor and shields.
+    pub fn compute(&mut self) {
+        self.combat.armor_class = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
+        self.compute_hp_max();
+        self.compute_speed();
+        self.combat.initiative_misc_bonus = 0;
+        self.combat.attack_count = 1;
+    }
+
+    /// True if there are forward-only changes that can be materialized
+    /// without `rebuild()`: pending class levels (new class or new levels of
+    /// an existing class), or species/background not yet applied while
+    /// `features` is still empty (first-time application). Once any feature
+    /// has been applied, species/background cannot be inserted ahead of it
+    /// — that case routes through `needs_rebuild()` instead. Callers should
+    /// check `needs_rebuild()` first; apply only makes sense when `applied`
+    /// is a strict prefix of `identity`.
+    pub fn has_pending_apply(&self) -> bool {
+        let no_features = self.features.is_empty();
+        let species_apply =
+            !self.identity.species.is_empty() && !self.applied.species && no_features;
+        let background_apply =
+            !self.identity.background.is_empty() && !self.applied.background && no_features;
+        species_apply
+            || background_apply
+            || self.identity.classes.iter().any(|cl| {
+                !cl.class.is_empty()
+                    && (1..=cl.level).any(|lvl| !self.applied.contains_level(&cl.class, lvl))
+            })
+    }
+
+    /// Returns the list of drift reasons that require `rebuild()`. Empty
+    /// when applied state matches identity. UI surfaces this list in the
+    /// rebuild banner so the user knows what triggered it.
+    pub fn rebuild_reasons(&self) -> Vec<RebuildReason> {
+        let mut reasons = Vec::new();
+        let has_features = !self.features.is_empty();
+
+        if !self.identity.species.is_empty() && !self.applied.species && has_features {
+            reasons.push(RebuildReason::SpeciesChanged);
+        }
+        if !self.identity.background.is_empty() && !self.applied.background && has_features {
+            reasons.push(RebuildReason::BackgroundChanged);
+        }
+        // Applied levels for a class no longer present in identity (deleted or
+        // renamed). Empty level sets are tolerated — they may be tombstones.
+        for (class, lvls) in &self.applied.levels {
+            if lvls.is_empty() {
+                continue;
+            }
+            if !self.identity.classes.iter().any(|cl| &cl.class == class) {
+                reasons.push(RebuildReason::ClassRemoved(class.clone()));
+            }
+        }
+        // Class level lowered: applied retains levels above the current
+        // identity level.
+        for cl in &self.identity.classes {
+            if cl.class.is_empty() {
+                continue;
+            }
+            if let Some(lvls) = self.applied.levels.get(&cl.class)
+                && let Some(&max) = lvls.iter().max()
+                && max > cl.level
+            {
+                reasons.push(RebuildReason::LevelLowered {
+                    class: cl.class.clone(),
+                    applied: max,
+                    current: cl.level,
+                });
+            }
+        }
+        // Subclass picked changed: features.list still carries entries from a
+        // previously-applied subclass that no longer matches the identity
+        // pick. Replay would re-run those stale features as-is — wrong; we
+        // need rebuild to drop them and apply the new subclass progression.
+        for cl in &self.identity.classes {
+            if cl.class.is_empty() {
+                continue;
+            }
+            let Some(picked) = cl.subclass.as_deref() else {
+                continue;
+            };
+            let drift = self.features.iter().any(|feature| {
+                matches!(
+                    &feature.source,
+                    FeatureSource::Subclass(class_name, sub, _)
+                        if class_name.as_ref() == cl.class.as_str()
+                            && sub.as_ref() != picked
+                )
+            });
+            if drift {
+                reasons.push(RebuildReason::SubclassChanged {
+                    class: cl.class.clone(),
+                });
+            }
+        }
+        // Legacy: a built character (applied.levels populated, features
+        // already materialized) carrying no System(Class) markers needs to
+        // migrate through the rebuild modal so the marker-driven path can
+        // take over on subsequent rebuilds.
+        let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
+        let has_features = !self.features.is_empty();
+        let has_class_markers = self.features.iter().any(|feature| {
+            matches!(
+                feature.category,
+                FeatureCategory::System(IdentitySlot::Class)
+            )
+        });
+        if has_levels && has_features && !has_class_markers {
+            reasons.push(RebuildReason::LegacyMissingSystemMarkers);
+        }
+        reasons
+    }
+
+    /// True if `applied` references slots that no longer match `identity`.
+    /// See `rebuild_reasons` for the breakdown.
+    pub fn needs_rebuild(&self) -> bool {
+        !self.rebuild_reasons().is_empty()
+    }
+
+    /// Clear all labels and descriptions (blanket clear).
+    pub fn clear_all_labels(&mut self) {
+        for cl in &mut self.identity.classes {
+            cl.class_label = None;
+            cl.subclass_label = None;
+        }
+        self.features.clear_all_labels();
+    }
+
+    pub fn class_summary(&self) -> String {
+        crate::model::format_classes(&self.identity.classes)
+    }
 }
 
 impl Character {
@@ -152,7 +496,10 @@ impl Character {
     /// target and by the rebuild args-modal as the cascade base.
     pub fn from_identity(identity: CharacterIdentity) -> Self {
         Self {
-            identity,
+            core: CharacterCore {
+                identity,
+                ..CharacterCore::default()
+            },
             ..Self::default()
         }
     }
@@ -168,7 +515,10 @@ impl Character {
             .retain(|class_level| !class_level.class.is_empty());
         *self = Self {
             id,
-            identity,
+            core: CharacterCore {
+                identity,
+                ..CharacterCore::default()
+            },
             ..Default::default()
         };
     }
@@ -198,32 +548,6 @@ impl Character {
 
     pub fn touch(&mut self) {
         self.updated_at = now_epoch_secs();
-    }
-
-    pub fn ability_score(&self, ability: Ability) -> u32 {
-        self.abilities.get(ability)
-    }
-
-    pub fn modify_ability(&mut self, ability: Ability, delta: i32) {
-        let current = self.abilities.get(ability) as i32;
-        self.abilities.set(ability, (current + delta).max(1) as u32);
-    }
-
-    pub fn set_ability(&mut self, ability: Ability, value: u32) {
-        self.abilities.set(ability, value.max(1));
-    }
-
-    /// Compare the derived state (what feature-apply produces) between two
-    /// characters. Ignores identity (user input), build (features.list —
-    /// rebuild restructures it), personality (untouched), and
-    /// compute-derived fields (hp/ac/spell_slots re-derive after commit).
-    pub fn eq_derived(&self, other: &Self) -> bool {
-        self.abilities == other.abilities
-            && self.saving_throws == other.saving_throws
-            && self.skills == other.skills
-            && self.proficiencies == other.proficiencies
-            && self.languages == other.languages
-            && self.damage_modifiers == other.damage_modifiers
     }
 
     pub fn features(&self) -> &[Feature] {
@@ -325,369 +649,15 @@ impl Character {
 
         self.combat.armor_class
     }
-
-    /// Compute base max HP from class levels and CON modifier.
-    ///
-    /// Formula: for each class, `hit_die_sides` at level 1 +
-    /// `avg_hp(hit_die_sides)` for each subsequent level, plus
-    /// `total_level * CON modifier`.
-    pub fn compute_hp_max(&mut self) -> u32 {
-        let con_mod = self.ability_modifier(Ability::Constitution);
-        let mut total_level: i32 = 0;
-        let base: i32 = self
-            .identity
-            .classes
-            .iter()
-            .map(|cl| {
-                total_level += cl.level as i32;
-                let sides = cl.hit_die_sides as i32;
-                sides + (cl.level as i32 - 1) * expr::avg_hp(sides)
-            })
-            .sum();
-        let total = (base + total_level * con_mod).max(0) as u32;
-        self.combat.hp_max = total;
-        total
-    }
-
-    /// Reset speed to the default walking speed (30 ft).
-    /// Race/feature `OnCompute` assignments override this.
-    pub fn compute_speed(&mut self) -> u32 {
-        self.combat.speed = DEFAULT_SPEED;
-        DEFAULT_SPEED
-    }
-
-    /// Reset base combat stats to defaults before feature assignments.
-    ///
-    /// Sets default AC (`10 + DEX.MOD`), recomputes HP and speed,
-    /// and resets misc bonuses. After this, call
-    /// `RulesRegistry::assign(character, OnCompute)` to apply feature
-    /// bonuses (including natural armor via `AC = max(AC, ...)`),
-    /// then `compute_armor_class()` to apply equipped armor and shields.
-    pub fn compute(&mut self) {
-        self.combat.armor_class = (10 + self.ability_modifier(Ability::Dexterity)).max(0) as u32;
-        self.compute_hp_max();
-        self.compute_speed();
-        self.combat.initiative_misc_bonus = 0;
-        self.combat.attack_count = 1;
-    }
-
-    /// `(caster_level, caster_class_count)` for `pool`. Single class:
-    /// PHB single-class table. Multi: PHB Multiclass Spellcaster Table.
-    fn caster_info(&self, pool: SpellSlotPool) -> (u32, u32) {
-        let entries: Vec<(u32, u32)> = self
-            .identity
-            .classes
-            .iter()
-            .filter_map(|cl| {
-                let max_coef = self
-                    .features
-                    .iter()
-                    .filter_map(|feature| {
-                        if feature.source.as_class() != Some(cl.class.as_str()) {
-                            return None;
-                        }
-                        let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
-                        (spell_data.pool == pool && spell_data.caster_coef != 0)
-                            .then_some(spell_data.caster_coef)
-                    })
-                    .max()?;
-                Some((cl.level, max_coef))
-            })
-            .collect();
-        let caster_classes = entries.len() as u32;
-
-        let caster_level = match entries.as_slice() {
-            [] => 0,
-            [(level, coef)] => SpellData::single_caster_level(*level, *coef),
-            many => many.iter().map(|(level, coef)| level / coef).sum(),
-        };
-
-        (caster_level, caster_classes)
-    }
-
-    pub fn caster_level(&self, pool: SpellSlotPool) -> u32 {
-        self.caster_info(pool).0
-    }
-
-    /// True if there are forward-only changes that can be materialized
-    /// without `rebuild()`: pending class levels (new class or new levels of
-    /// an existing class), or species/background not yet applied while
-    /// `features` is still empty (first-time application). Once any feature
-    /// has been applied, species/background cannot be inserted ahead of it
-    /// — that case routes through `needs_rebuild()` instead. Callers should
-    /// check `needs_rebuild()` first; apply only makes sense when `applied`
-    /// is a strict prefix of `identity`.
-    pub fn has_pending_apply(&self) -> bool {
-        let no_features = self.features.list.is_empty();
-        let species_apply =
-            !self.identity.species.is_empty() && !self.applied.species && no_features;
-        let background_apply =
-            !self.identity.background.is_empty() && !self.applied.background && no_features;
-        species_apply
-            || background_apply
-            || self.identity.classes.iter().any(|cl| {
-                !cl.class.is_empty()
-                    && (1..=cl.level).any(|lvl| !self.applied.contains_level(&cl.class, lvl))
-            })
-    }
-
-    /// Returns the list of drift reasons that require `rebuild()`. Empty
-    /// when applied state matches identity. UI surfaces this list in the
-    /// rebuild banner so the user knows what triggered it.
-    pub fn rebuild_reasons(&self) -> Vec<RebuildReason> {
-        let mut reasons = Vec::new();
-        let has_features = !self.features.list.is_empty();
-
-        if !self.identity.species.is_empty() && !self.applied.species && has_features {
-            reasons.push(RebuildReason::SpeciesChanged);
-        }
-        if !self.identity.background.is_empty() && !self.applied.background && has_features {
-            reasons.push(RebuildReason::BackgroundChanged);
-        }
-        // Applied levels for a class no longer present in identity (deleted or
-        // renamed). Empty level sets are tolerated — they may be tombstones.
-        for (class, lvls) in &self.applied.levels {
-            if lvls.is_empty() {
-                continue;
-            }
-            if !self.identity.classes.iter().any(|cl| &cl.class == class) {
-                reasons.push(RebuildReason::ClassRemoved(class.clone()));
-            }
-        }
-        // Class level lowered: applied retains levels above the current
-        // identity level.
-        for cl in &self.identity.classes {
-            if cl.class.is_empty() {
-                continue;
-            }
-            if let Some(lvls) = self.applied.levels.get(&cl.class)
-                && let Some(&max) = lvls.iter().max()
-                && max > cl.level
-            {
-                reasons.push(RebuildReason::LevelLowered {
-                    class: cl.class.clone(),
-                    applied: max,
-                    current: cl.level,
-                });
-            }
-        }
-        // Subclass picked changed: features.list still carries entries from a
-        // previously-applied subclass that no longer matches the identity
-        // pick. Replay would re-run those stale features as-is — wrong; we
-        // need rebuild to drop them and apply the new subclass progression.
-        for cl in &self.identity.classes {
-            if cl.class.is_empty() {
-                continue;
-            }
-            let Some(picked) = cl.subclass.as_deref() else {
-                continue;
-            };
-            let drift = self.features.iter().any(|feature| {
-                matches!(
-                    &feature.source,
-                    FeatureSource::Subclass(class_name, sub, _)
-                        if class_name.as_ref() == cl.class.as_str()
-                            && sub.as_ref() != picked
-                )
-            });
-            if drift {
-                reasons.push(RebuildReason::SubclassChanged {
-                    class: cl.class.clone(),
-                });
-            }
-        }
-        // Legacy: a built character (applied.levels populated, features
-        // already materialized) carrying no System(Class) markers needs to
-        // migrate through the rebuild modal so the marker-driven path can
-        // take over on subsequent rebuilds.
-        let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
-        let has_features = !self.features.list.is_empty();
-        let has_class_markers = self.features.iter().any(|feature| {
-            matches!(
-                feature.category,
-                FeatureCategory::System(IdentitySlot::Class)
-            )
-        });
-        if has_levels && has_features && !has_class_markers {
-            reasons.push(RebuildReason::LegacyMissingSystemMarkers);
-        }
-        reasons
-    }
-
-    /// True if `applied` references slots that no longer match `identity`.
-    /// See `rebuild_reasons` for the breakdown.
-    pub fn needs_rebuild(&self) -> bool {
-        !self.rebuild_reasons().is_empty()
-    }
-
-    pub fn level(&self) -> u32 {
-        // Empty `class` entries are legacy noise from a prior default; treat
-        // them as if they weren't there so total level reflects only the
-        // classes the character actually has.
-        self.identity
-            .classes
-            .iter()
-            .filter(|class_level| !class_level.class.is_empty())
-            .map(|class_level| class_level.level)
-            .sum::<u32>()
-            .max(1)
-    }
-
-    /// Effective current level for a feature based on its source.
-    /// Class features use their class's current level; others use total level.
-    pub fn effective_level_for(&self, source: &FeatureSource) -> u32 {
-        match source {
-            FeatureSource::Class(class_name, _) | FeatureSource::Subclass(class_name, _, _) => self
-                .identity
-                .classes
-                .iter()
-                .find(|cl| cl.class.as_str() == &**class_name)
-                .map_or(0, |cl| cl.level),
-            FeatureSource::Species(_) | FeatureSource::Background(_) | FeatureSource::User(_) => {
-                self.level()
-            }
-        }
-    }
-
-    pub fn xp_threshold(&self) -> u32 {
-        XP_THRESHOLDS
-            .get(self.level().saturating_sub(1) as usize)
-            .copied()
-            .unwrap_or(0)
-    }
-
-    pub fn proficiency_bonus(&self) -> i32 {
-        proficiency_bonus_for_level(self.level())
-    }
-
-    pub fn ability_modifier(&self, ability: Ability) -> i32 {
-        self.abilities.modifier(ability)
-    }
-
-    pub fn proficient_with(&self, ability: Ability) -> bool {
-        self.saving_throws.contains(&ability)
-    }
-
-    pub fn saving_throw_bonus(&self, ability: Ability) -> i32 {
-        let modifier = self.ability_modifier(ability);
-        let proficient = self.proficient_with(ability);
-        modifier
-            + if proficient {
-                self.proficiency_bonus()
-            } else {
-                0
-            }
-    }
-
-    pub fn skill_bonus(&self, skill: Skill) -> i32 {
-        let ability = skill.ability();
-        let modifier = self.ability_modifier(ability);
-        let prof_level = self.skills.get(skill);
-        modifier + prof_level.multiplier() * self.proficiency_bonus()
-    }
-
-    pub fn initiative(&self) -> i32 {
-        self.ability_modifier(Ability::Dexterity) + self.combat.initiative_misc_bonus
-    }
-
-    pub fn spell_save_dc(&self, ability: Ability) -> i32 {
-        8 + self.proficiency_bonus() + self.ability_modifier(ability)
-    }
-
-    pub fn spell_attack_bonus(&self, ability: Ability) -> i32 {
-        self.proficiency_bonus() + self.ability_modifier(ability)
-    }
-
-    /// Evaluate a weapon's attack-bonus expression against this character.
-    /// Uses the weapon's explicit `attack_expr` when set, otherwise the
-    /// default derived from its `category` / `ability` / `magic_bonus`.
-    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
-        weapon.effective_attack_expr().eval(self).unwrap_or(0)
-    }
-
-    /// Clone containing only fields that participate in Expr analysis and
-    /// `compute`. Large free-text fields (`personality`, `notes`) are skipped,
-    /// and `equipment` keeps only `weapons` + `armors` (their exprs feed AC /
-    /// attack evaluation); inventory `items` and `currency` are dropped as
-    /// decorative. Used for transient cascade bases in the args modal where
-    /// the clone is read-only and discarded on modal close.
-    #[cfg_attr(
-        feature = "perf-marks",
-        tracing::instrument(name = "character.clone_lean", skip_all)
-    )]
-    pub fn clone_lean(&self) -> Self {
-        let equipment = Equipment {
-            weapons: self.equipment.weapons.clone(),
-            armors: self.equipment.armors.clone(),
-            ..Equipment::default()
-        };
-        Self {
-            id: self.id,
-            identity: self.identity.clone(),
-            abilities: self.abilities,
-            saving_throws: self.saving_throws.clone(),
-            skills: self.skills.clone(),
-            combat: self.combat.clone(),
-            features: self.features.clone(),
-            equipment,
-            proficiencies: self.proficiencies.clone(),
-            languages: self.languages.clone(),
-            damage_modifiers: self.damage_modifiers.clone(),
-            spell_slots: self.spell_slots.clone(),
-            applied: self.applied.clone(),
-            updated_at: self.updated_at,
-            shared: self.shared,
-            schema_version: self.schema_version,
-            ..Self::default()
-        }
-    }
-
-    /// Reset all derived state for replay. Preserves identity (including
-    /// applied flags), equipment, personality, notes, and feature list with
-    /// sources intact.
-    pub fn reset_computed(&mut self) {
-        self.abilities = AbilityScores::default();
-        self.saving_throws.clear();
-        self.skills.clear();
-        self.features.clear();
-        self.proficiencies.clear();
-        self.languages.clear();
-        self.damage_modifiers.clear();
-        self.spell_slots.clear();
-        self.combat = CombatStats::default();
-    }
-
-    /// Clear all labels and descriptions (blanket clear).
-    pub fn clear_all_labels(&mut self) {
-        for cl in &mut self.identity.classes {
-            cl.class_label = None;
-            cl.subclass_label = None;
-        }
-        self.features.clear_all_labels();
-    }
-
-    pub fn class_summary(&self) -> String {
-        crate::model::format_classes(&self.identity.classes)
-    }
 }
 
 impl Default for Character {
     fn default() -> Self {
         Self {
             id: Uuid::new_v4(),
-            identity: CharacterIdentity::default(),
-            abilities: AbilityScores::default(),
-            saving_throws: VecSet::new(),
-            skills: Skills::default(),
-            combat: CombatStats::default(),
-            personality: Personality::default(),
-            features: Features::default(),
+            core: CharacterCore::default(),
             equipment: Equipment::default(),
-            spell_slots: SpellSlots::default(),
-            applied: Applied::default(),
-            proficiencies: VecSet::new(),
-            languages: VecSet::new(),
-            damage_modifiers: DamageModifiers::default(),
+            personality: Personality::default(),
             notes: Vec::new(),
             updated_at: now_epoch_secs(),
             shared: false,
@@ -697,6 +667,16 @@ impl Default for Character {
 }
 
 impl expr::Context<Attribute, i32> for Character {
+    fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
+        self.core.assign(var, value)
+    }
+
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        self.core.resolve(var)
+    }
+}
+
+impl expr::Context<Attribute, i32> for CharacterCore {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
             Attribute::Ability(ability) => {
@@ -890,92 +870,94 @@ impl Character {
 
         Character {
             id: Uuid::nil(),
-            identity: CharacterIdentity {
-                name: "Share Test".to_string(),
-                classes: vec![ClassLevel {
-                    class: "Bard".to_string(),
-                    class_label: None,
-                    subclass: None,
-                    subclass_label: None,
-                    level: 3,
-                    hit_die_sides: 8,
-                    hit_dice_used: 0,
-                }],
-                species: "Elf".to_string(),
-                background: "Entertainer".to_string(),
-                experience_points: 900,
+            core: CharacterCore {
+                identity: CharacterIdentity {
+                    classes: vec![ClassLevel {
+                        class: "Bard".to_string(),
+                        class_label: None,
+                        subclass: None,
+                        subclass_label: None,
+                        level: 3,
+                        hit_die_sides: 8,
+                        hit_dice_used: 0,
+                    }],
+                    species: "Elf".to_string(),
+                    background: "Entertainer".to_string(),
+                    experience_points: 900,
+                },
+                abilities: AbilityScores {
+                    strength: 8,
+                    dexterity: 14,
+                    constitution: 12,
+                    intelligence: 10,
+                    wisdom: 13,
+                    charisma: 16,
+                },
+                saving_throws: [Ability::Dexterity, Ability::Charisma]
+                    .into_iter()
+                    .collect(),
+                skills: Skills::default(),
+                combat: CombatStats {
+                    concentrating: None,
+                    armor_class: 13,
+                    speed: 30,
+                    hp_max: 24,
+                    hp_current: 20,
+                    hp_temp: 5,
+                    death_save_successes: 2,
+                    death_save_failures: 1,
+                    attack_bonus: 0,
+                    initiative_misc_bonus: 0,
+                    inspiration: false,
+                    attack_count: 1,
+                },
+                features: Features::from_parts(
+                    vec![Feature {
+                        name: "Bardic Inspiration".to_string(),
+                        label: None,
+                        description: "Use a bonus action...".to_string(),
+                        applied: true,
+                        category: FeatureCategory::Class,
+                        source: FeatureSource::Class("Bard".into(), 1),
+                        inputs: Vec::new(),
+                    }],
+                    BTreeMap::from([(
+                        "Spellcasting (Bard)".to_string(),
+                        FeatureData {
+                            fields: Vec::new(),
+                            spells: Some(SpellData {
+                                casting_ability: Ability::Charisma,
+                                caster_coef: 1,
+                                pool: SpellSlotPool::Arcane,
+                                spells: vec![Spell {
+                                    name: "Vicious Mockery".to_string(),
+                                    label: None,
+                                    level: 0,
+                                    description: "Unleash a string of insults...".to_string(),
+                                    sticky: false,
+                                    cost: 0,
+                                    free_uses: None,
+                                }],
+                                known: None,
+                            }),
+                        },
+                    )]),
+                ),
+                proficiencies: VecSet::new(),
+                languages: VecSet::new(),
+                damage_modifiers: DamageModifiers::default(),
+                spell_slots: SpellSlots::default(),
+                applied: Applied {
+                    species: true,
+                    background: true,
+                    levels: BTreeMap::new(),
+                },
             },
-            abilities: AbilityScores {
-                strength: 8,
-                dexterity: 14,
-                constitution: 12,
-                intelligence: 10,
-                wisdom: 13,
-                charisma: 16,
-            },
-            saving_throws: [Ability::Dexterity, Ability::Charisma]
-                .into_iter()
-                .collect(),
-            skills: Skills::default(),
-            combat: CombatStats {
-                concentrating: None,
-                armor_class: 13,
-                speed: 30,
-                hp_max: 24,
-                hp_current: 20,
-                hp_temp: 5,
-                death_save_successes: 2,
-                death_save_failures: 1,
-                attack_bonus: 0,
-                initiative_misc_bonus: 0,
-                inspiration: false,
-                attack_count: 1,
-            },
+            equipment: Equipment::default(),
             personality: Personality {
+                name: "Share Test".to_string(),
                 alignment: Alignment::ChaoticGood,
                 ..Personality::default()
-            },
-            features: Features::from_parts(
-                vec![Feature {
-                    name: "Bardic Inspiration".to_string(),
-                    label: None,
-                    description: "Use a bonus action...".to_string(),
-                    applied: true,
-                    category: FeatureCategory::Class,
-                    source: FeatureSource::Class("Bard".into(), 1),
-                    inputs: Vec::new(),
-                }],
-                BTreeMap::from([(
-                    "Spellcasting (Bard)".to_string(),
-                    FeatureData {
-                        fields: Vec::new(),
-                        spells: Some(SpellData {
-                            casting_ability: Ability::Charisma,
-                            caster_coef: 1,
-                            pool: SpellSlotPool::Arcane,
-                            spells: vec![Spell {
-                                name: "Vicious Mockery".to_string(),
-                                label: None,
-                                level: 0,
-                                description: "Unleash a string of insults...".to_string(),
-                                sticky: false,
-                                cost: 0,
-                                free_uses: None,
-                            }],
-                            known: None,
-                        }),
-                    },
-                )]),
-            ),
-            equipment: Equipment::default(),
-            proficiencies: VecSet::new(),
-            languages: VecSet::new(),
-            damage_modifiers: DamageModifiers::default(),
-            spell_slots: SpellSlots::default(),
-            applied: Applied {
-                species: true,
-                background: true,
-                levels: BTreeMap::new(),
             },
             notes: Vec::new(),
             updated_at: 0,
@@ -1004,67 +986,71 @@ mod tests {
     fn test_character() -> Character {
         Character {
             id: Uuid::nil(),
-            identity: CharacterIdentity {
-                name: "Test".to_string(),
-                classes: vec![ClassLevel {
-                    class: "Fighter".to_string(),
-                    class_label: None,
-                    subclass: None,
-                    subclass_label: None,
-                    level: 5,
-                    hit_die_sides: 10,
-                    hit_dice_used: 0,
-                }],
-                species: "Human".to_string(),
-                background: "Soldier".to_string(),
-                experience_points: 0,
-            },
-            abilities: AbilityScores {
-                strength: 16,
-                dexterity: 14,
-                constitution: 12,
-                intelligence: 10,
-                wisdom: 8,
-                charisma: 13,
-            },
-            saving_throws: [Ability::Strength, Ability::Constitution]
+            core: CharacterCore {
+                identity: CharacterIdentity {
+                    classes: vec![ClassLevel {
+                        class: "Fighter".to_string(),
+                        class_label: None,
+                        subclass: None,
+                        subclass_label: None,
+                        level: 5,
+                        hit_die_sides: 10,
+                        hit_dice_used: 0,
+                    }],
+                    species: "Human".to_string(),
+                    background: "Soldier".to_string(),
+                    experience_points: 0,
+                },
+                abilities: AbilityScores {
+                    strength: 16,
+                    dexterity: 14,
+                    constitution: 12,
+                    intelligence: 10,
+                    wisdom: 8,
+                    charisma: 13,
+                },
+                saving_throws: [Ability::Strength, Ability::Constitution]
+                    .into_iter()
+                    .collect(),
+                skills: [
+                    (Skill::Athletics, ProficiencyLevel::Proficient),
+                    (Skill::Perception, ProficiencyLevel::Expertise),
+                ]
                 .into_iter()
                 .collect(),
-            skills: [
-                (Skill::Athletics, ProficiencyLevel::Proficient),
-                (Skill::Perception, ProficiencyLevel::Expertise),
-            ]
-            .into_iter()
-            .collect(),
-            combat: CombatStats {
-                concentrating: None,
-                armor_class: 12,
-                speed: 30,
-                hp_max: 44,
-                hp_current: 44,
-                hp_temp: 0,
-                death_save_successes: 0,
-                death_save_failures: 0,
-                attack_bonus: 0,
-                initiative_misc_bonus: 0,
-                inspiration: false,
-                attack_count: 1,
+                combat: CombatStats {
+                    concentrating: None,
+                    armor_class: 12,
+                    speed: 30,
+                    hp_max: 44,
+                    hp_current: 44,
+                    hp_temp: 0,
+                    death_save_successes: 0,
+                    death_save_failures: 0,
+                    attack_bonus: 0,
+                    initiative_misc_bonus: 0,
+                    inspiration: false,
+                    attack_count: 1,
+                },
+                features: Features::default(),
+                proficiencies: [
+                    Proficiency::LightArmor,
+                    Proficiency::MediumArmor,
+                    Proficiency::HeavyArmor,
+                    Proficiency::Shields,
+                ]
+                .into_iter()
+                .collect(),
+                languages: VecSet::new(),
+                damage_modifiers: DamageModifiers::default(),
+                spell_slots: SpellSlots::default(),
+                applied: Applied::default(),
             },
-            personality: Personality::default(),
-            features: Features::default(),
+            personality: Personality {
+                name: "Test".to_string(),
+                ..Personality::default()
+            },
             equipment: Equipment::default(),
-            proficiencies: [
-                Proficiency::LightArmor,
-                Proficiency::MediumArmor,
-                Proficiency::HeavyArmor,
-                Proficiency::Shields,
-            ]
-            .into_iter()
-            .collect(),
-            languages: VecSet::new(),
-            damage_modifiers: DamageModifiers::default(),
-            spell_slots: SpellSlots::default(),
-            applied: Applied::default(),
             notes: Vec::new(),
             updated_at: 0,
             shared: false,
@@ -1121,10 +1107,14 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn level_no_classes_returns_1() {
+    fn level_no_classes_returns_zero() {
+        // `level()` is the raw sum of class levels; UI callers that need
+        // a `>= 1` floor use `.max(1)` themselves. Without that floor,
+        // `target_level = level() + 1` for a fresh character correctly
+        // produces `User(1)` for the first class pick.
         let mut ch = test_character();
         ch.identity.classes.clear();
-        assert_eq!(ch.level(), 1);
+        assert_eq!(ch.level(), 0);
     }
 
     // --- proficiency_bonus() ---
@@ -1986,6 +1976,7 @@ mod tests {
             FeatureCategory::Class,
             FeatureSource::Class("Wizard".into(), 1),
             Vec::new(),
+            true,
         );
         ch.features
             .entry("Spellcasting (Wizard)".to_string())
@@ -2002,13 +1993,13 @@ mod tests {
     }
 
     fn caster_ctx(ch: &mut Character) -> ApplyContext<'_> {
-        let feature_index = ch
+        let feature_pos = ch
             .features
             .list
             .iter()
             .position(|f| f.name == "Spellcasting (Wizard)")
             .expect("caster feature");
-        ApplyContext::new(ch, feature_index)
+        ApplyContext::new(ch, feature_pos)
     }
 
     #[wasm_bindgen_test]
@@ -2215,13 +2206,13 @@ mod tests {
     }
 
     fn named_pool_ctx<'a>(ch: &'a mut Character, feature_name: &str) -> ApplyContext<'a> {
-        let feature_index = ch
+        let feature_pos = ch
             .features
             .list
             .iter()
             .position(|f| f.name == feature_name)
             .expect("feature in list");
-        ApplyContext::new(ch, feature_index)
+        ApplyContext::new(ch, feature_pos)
     }
 
     #[wasm_bindgen_test]

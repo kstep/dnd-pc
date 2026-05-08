@@ -1,10 +1,14 @@
 use crate::{
     expr,
     model::{
-        Ability, AttrKey, Attribute, Character, ClassLevel, Die, Feature, FeatureField,
-        FeatureOption, FeatureSource, FeatureValue, Spell, SpellData, SpellSlotPool,
+        Ability, AssignInputs, AttrKey, Attribute, CharacterCore, ClassLevel, Die, Feature,
+        FeatureField, FeatureOption, FeatureSource, FeatureValue, Spell, SpellData, SpellSlotPool,
     },
-    rules::{WhenCondition, apply::args_ctx::WithArgs, feature::Assignment},
+    rules::{
+        WhenCondition,
+        apply::{IdentityChange, args_ctx::WithArgs},
+        feature::Assignment,
+    },
 };
 
 /// Apply-time context for evaluating feature assignment expressions.
@@ -15,22 +19,35 @@ use crate::{
 /// currently evaluated, so `Arg(n)` resolves to
 /// `feature.inputs[expr_index].args[n]` directly inside `resolve()`.
 pub struct ApplyContext<'a> {
-    pub character: &'a mut Character,
-    pub feature_index: usize,
+    pub character: &'a mut CharacterCore,
+    pub feature_pos: usize,
     pub expr_index: usize,
+    /// Identity mutations observed during this context's `run_assignments`
+    /// pass. Drained by the caller via [`Self::take_identity_changes`].
+    pub identity_changes: Vec<IdentityChange>,
 }
 
 impl<'a> ApplyContext<'a> {
-    pub fn new(character: &'a mut Character, feature_index: usize) -> Self {
+    pub fn new(character: &'a mut CharacterCore, feature_pos: usize) -> Self {
         Self {
             character,
-            feature_index,
+            feature_pos,
             expr_index: 0,
+            identity_changes: Vec::new(),
         }
     }
 
+    /// Drain the recorded identity changes. Outer apply layers process them
+    /// to update `applied` flags and derive feature follow-ups.
+    pub fn take_identity_changes(&mut self) -> Vec<IdentityChange> {
+        std::mem::take(&mut self.identity_changes)
+    }
+
     pub fn current_feature(&self) -> &Feature {
-        &self.character.features.list[self.feature_index]
+        self.character
+            .features
+            .at(self.feature_pos)
+            .expect("feature_pos out of bounds")
     }
 
     pub fn current_feature_name(&self) -> &str {
@@ -64,12 +81,19 @@ impl<'a> ApplyContext<'a> {
     }
 
     fn scoped_class_mut(&mut self) -> Option<&mut ClassLevel> {
-        let class_name: String = match &self.current_feature().source {
-            FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => name.to_string(),
+        // Split the &mut CharacterCore into disjoint &features + &mut identity
+        // so class name can be read from one half and classes mutated through
+        // the other without an intermediate String allocation.
+        let core = &mut *self.character;
+        let scoped_feature = core
+            .features
+            .at(self.feature_pos)
+            .expect("feature_pos out of bounds");
+        let class_name: &str = match &scoped_feature.source {
+            FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => name,
             _ => return None,
         };
-        self.character
-            .identity
+        core.identity
             .classes
             .iter_mut()
             .find(|class_level| class_level.class == class_name)
@@ -107,7 +131,7 @@ impl<'a> ApplyContext<'a> {
 
     /// Find a `FeatureField` by name across all applied features. Search
     /// order matches `features.list`, not BTreeMap key order. Returns
-    /// `(feature_index, field_index)` on first match.
+    /// `(feature_pos, field_index)` on first match.
     fn find_field_named(&self, field_name: &str) -> Option<(usize, usize)> {
         for (feat_idx, feature) in self.character.features.iter().enumerate() {
             let Some(feature_data) = self.character.features.get(feature.name.as_str()) else {
@@ -146,7 +170,7 @@ impl<'a> ApplyContext<'a> {
 
     fn named_field_value(&self, name: &str) -> Option<&FeatureValue> {
         let (feat_idx, field_idx) = self.find_field_named(name)?;
-        let feature_name = self.character.features.list[feat_idx].name.as_str();
+        let feature_name = self.character.features.at(feat_idx)?.name.as_str();
         let feature_data = self.character.features.get(feature_name)?;
         feature_data.fields.get(field_idx).map(|field| &field.value)
     }
@@ -179,8 +203,9 @@ impl<'a> ApplyContext<'a> {
     }
 
     fn scoped_pool_field_mut(&mut self) -> Option<&mut FeatureValue> {
-        let feature_name = self.current_feature_name().to_string();
-        let feature_data = self.character.features.get_mut(feature_name.as_str())?;
+        let (list, data) = self.character.features.split_mut();
+        let feature_name = list[self.feature_pos].name.as_str();
+        let feature_data = data.get_mut(feature_name)?;
         feature_data
             .fields
             .iter_mut()
@@ -502,15 +527,22 @@ impl<'a> ApplyContext<'a> {
     }
 
     fn feature_spell_data_mut(&mut self) -> Option<&mut SpellData> {
-        let name = self.current_feature_name().to_string();
-        self.character.features.spell_data_mut(&name)
+        let (list, data) = self.character.features.split_mut();
+        let name = list[self.feature_pos].name.as_str();
+        data.get_mut(name).and_then(|entry| entry.spells.as_mut())
     }
 
     /// Lazy-create the scoped feature's `SpellData` skeleton.
     fn feature_spell_data_or_create(&mut self) -> &mut SpellData {
-        let scope = self.current_feature_name().to_string();
-        let feature_data = self.character.features.entry(scope).or_default();
-        feature_data.spells.get_or_insert_with(SpellData::default)
+        let (list, data) = self.character.features.split_mut();
+        let name = list[self.feature_pos].name.as_str();
+        // BTreeMap::entry needs an owned key; the alloc is unavoidable when
+        // creating a fresh data row for a feature that hasn't been touched
+        // yet. The lookup-only path above stays zero-alloc.
+        data.entry(name.to_string())
+            .or_default()
+            .spells
+            .get_or_insert_with(SpellData::default)
     }
 
     fn resolve_sticky(&self, key: AttrKey) -> Result<i32, expr::Error> {
@@ -689,7 +721,7 @@ impl<'a> ApplyContext<'a> {
 
     /// Highest N where `spell_slots[pool][N-1].total > 0`. Default 1 if all
     /// zero. Used as the level for new placeholder spells.
-    fn highest_slot_level_for(character: &Character, pool: SpellSlotPool) -> u32 {
+    fn highest_slot_level_for(character: &CharacterCore, pool: SpellSlotPool) -> u32 {
         character
             .spell_slots
             .get(&pool)
@@ -853,12 +885,66 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                 Ok(())
             }
             Attribute::Subclass(name) => {
+                let class_name_opt = self.scoped_class().map(|cl| cl.class.clone());
                 if let Some(class) = self.scoped_class_mut() {
                     if value != 0 {
                         class.subclass = Some(name.to_string());
                     } else if class.subclass.as_deref() == Some(name) {
                         class.subclass = None;
                     }
+                }
+                if value != 0
+                    && let Some(class_name) = class_name_opt
+                {
+                    self.identity_changes.push(IdentityChange::Subclass {
+                        class: class_name.into(),
+                        name: name.into(),
+                    });
+                }
+                Ok(())
+            }
+            Attribute::ClassLevel(AttrKey::Named(name)) => {
+                let old_level = self
+                    .character
+                    .identity
+                    .classes
+                    .iter()
+                    .find(|cl| cl.class == name)
+                    .map(|cl| cl.level)
+                    .unwrap_or(0);
+                self.character.assign(var, value)?;
+                let new_level = self
+                    .character
+                    .identity
+                    .classes
+                    .iter()
+                    .find(|cl| cl.class == name)
+                    .map(|cl| cl.level)
+                    .unwrap_or(0);
+                if new_level > old_level {
+                    self.identity_changes.push(IdentityChange::ClassLevel {
+                        class: name.into(),
+                        old: old_level,
+                        new: new_level,
+                    });
+                }
+                Ok(())
+            }
+            Attribute::Species(name) => {
+                let changed = self.character.identity.species.as_str() != name;
+                self.character.assign(var, value)?;
+                if changed && !self.character.identity.species.is_empty() {
+                    self.identity_changes
+                        .push(IdentityChange::Species(name.into()));
+                }
+                Ok(())
+            }
+            Attribute::Background(name) => {
+                let changed = self.character.identity.background.as_str() != name;
+                self.character.assign(var, value)?;
+                if changed && !self.character.identity.background.is_empty() {
+                    self.identity_changes
+                        .push(IdentityChange::Background(name.into()));
                 }
                 Ok(())
             }
@@ -991,7 +1077,7 @@ pub fn apply_assignments_with_inputs<C: expr::Context<Attribute, i32>>(
     ctx: &mut C,
     assignments: &[Assignment],
     when: WhenCondition,
-    inputs: &[crate::model::AssignInputs],
+    inputs: &[AssignInputs],
     log_errors: bool,
 ) {
     let mut input_iter = inputs.iter();
@@ -1025,7 +1111,7 @@ mod tests {
     use super::*;
     use crate::{
         expr::Context as _,
-        model::{ClassLevel, Feature, FeatureSource},
+        model::{Character, ClassLevel, Feature, FeatureSource, intern},
     };
 
     fn fighter_at_5() -> Character {
@@ -1102,5 +1188,74 @@ mod tests {
         assert_eq!(ctx.resolve(Attribute::HitDiceMax).unwrap(), 0);
         assert_eq!(ctx.resolve(Attribute::HitDiceUsed).unwrap(), 0);
         assert_eq!(ctx.resolve(Attribute::HitDiceSides).unwrap(), 0);
+    }
+
+    #[wasm_bindgen_test]
+    fn assign_records_class_level_event() {
+        let mut character = Character::new();
+        character.features.list.push(Feature {
+            name: "Wizard".into(),
+            source: FeatureSource::User(1),
+            ..Default::default()
+        });
+        let mut ctx = ApplyContext::new(&mut character, 0);
+        ctx.assign(Attribute::ClassLevel(AttrKey::Named(intern("Wizard"))), 1)
+            .unwrap();
+        let events = ctx.take_identity_changes();
+        assert_eq!(events.len(), 1);
+        match &events[0] {
+            IdentityChange::ClassLevel { class, old, new } => {
+                assert_eq!(class.as_ref(), "Wizard");
+                assert_eq!(*old, 0);
+                assert_eq!(*new, 1);
+            }
+            other => panic!("expected ClassLevel event, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn assign_records_subclass_event() {
+        let mut character = Character::new();
+        character.identity.classes.push(ClassLevel {
+            class: "Fighter".into(),
+            level: 3,
+            ..ClassLevel::default()
+        });
+        character.features.list.push(Feature {
+            name: "Battle Master".into(),
+            source: FeatureSource::Class("Fighter".into(), 3),
+            ..Default::default()
+        });
+        let mut ctx = ApplyContext::new(&mut character, 0);
+        ctx.assign(Attribute::Subclass(intern("Battle Master")), 1)
+            .unwrap();
+        let events = ctx.take_identity_changes();
+        assert_eq!(events.len(), 1);
+        match &events[0] {
+            IdentityChange::Subclass { class, name } => {
+                assert_eq!(class.as_ref(), "Fighter");
+                assert_eq!(name.as_ref(), "Battle Master");
+            }
+            other => panic!("expected Subclass event, got {other:?}"),
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn assign_records_species_and_background_events() {
+        let mut character = Character::new();
+        character.features.list.push(Feature {
+            name: "Tag".into(),
+            source: FeatureSource::User(0),
+            ..Default::default()
+        });
+        let mut ctx = ApplyContext::new(&mut character, 0);
+        ctx.assign(Attribute::Species(intern("Wood Elf")), 1)
+            .unwrap();
+        ctx.assign(Attribute::Background(intern("Sage")), 1)
+            .unwrap();
+        let events = ctx.take_identity_changes();
+        assert_eq!(events.len(), 2);
+        assert!(matches!(&events[0], IdentityChange::Species(name) if name.as_ref() == "Wood Elf"));
+        assert!(matches!(&events[1], IdentityChange::Background(name) if name.as_ref() == "Sage"));
     }
 }

@@ -19,7 +19,10 @@ use crate::{
     },
     export::export_character,
     firebase,
-    model::{Avatar, Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{
+        Avatar, Character, CharacterCoreStoreFields, CharacterIdentityStoreFields,
+        CharacterStoreFields, PersonalityStoreFields,
+    },
     rules::{IndexEntry, RulesRegistry},
     storage,
 };
@@ -37,11 +40,11 @@ pub fn CharacterHeader() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
     let avatar = expect_context::<RwSignal<Option<Avatar>>>();
-    let name_signal = Signal::derive(move || store.identity().name().get());
+    let name_signal = Signal::derive(move || store.personality().name().get());
 
     let total_level = Memo::new(move |_| store.read().level());
     let prof_bonus = Memo::new(move |_| store.read().proficiency_bonus());
-    let classes = store.identity().classes();
+    let classes = store.core().identity().classes();
 
     let on_level_up = move |_| {
         let prefilled_class = store
@@ -81,7 +84,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let on_copy = move |_| {
         let mut character = store.get_untracked();
         character.id = Uuid::new_v4();
-        character.identity.name = format!("{} (Copy)", character.identity.name);
+        character.personality.name = format!("{} (Copy)", character.personality.name);
         storage::save_and_sync_character(&mut character);
         let id = character.id;
         let navigate = use_navigate();
@@ -99,6 +102,7 @@ pub fn CharacterHeader() -> impl IntoView {
             return;
         };
         store
+            .core()
             .identity()
             .classes()
             .write()
@@ -133,9 +137,9 @@ pub fn CharacterHeader() -> impl IntoView {
                         <input
                             class="header-name-input"
                             type="text"
-                            prop:value=move || store.identity().name().get()
+                            prop:value=move || store.personality().name().get()
                             on:change=move |event| {
-                                store.identity().name().set(event_target_value(&event));
+                                store.personality().name().set(event_target_value(&event));
                             }
                         />
                         <div class="header-actions">
@@ -279,7 +283,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         <div class="header-stat">
                             <span class="header-stat-label">{move_tr!("species")}</span>
                             <IdentitySlotDisplay
-                                name=Signal::derive(move || store.identity().species().get())
+                                name=Signal::derive(move || store.core().identity().species().get())
                                 kind=|species_name: &str| IndexEntry::Species(species_name)
                                 ref_prefix="species"
                             />
@@ -287,7 +291,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         <div class="header-stat">
                             <span class="header-stat-label">{move_tr!("background")}</span>
                             <IdentitySlotDisplay
-                                name=Signal::derive(move || store.identity().background().get())
+                                name=Signal::derive(move || store.core().identity().background().get())
                                 kind=|background_name: &str| IndexEntry::Background(background_name)
                                 ref_prefix="background"
                             />
@@ -306,10 +310,10 @@ pub fn CharacterHeader() -> impl IntoView {
                                 class="header-stat-input"
                                 type="number"
                                 min="0"
-                                prop:value=move || store.identity().experience_points().get()
+                                prop:value=move || store.core().identity().experience_points().get()
                                 on:change=move |event| {
                                     if let Ok(value) = event_target_value(&event).parse::<u32>() {
-                                        store.identity().experience_points().set(value);
+                                        store.core().identity().experience_points().set(value);
                                     }
                                 }
                             />

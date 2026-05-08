@@ -34,14 +34,20 @@ struct SummaryView {
     shared: bool,
     #[serde(default)]
     identity: IdentityView,
+    #[serde(default)]
+    personality: PersonalityView,
 }
 
 #[derive(Deserialize, Default)]
 struct IdentityView {
     #[serde(default)]
-    name: String,
-    #[serde(default)]
     classes: Vec<ClassLevel>,
+}
+
+#[derive(Deserialize, Default)]
+struct PersonalityView {
+    #[serde(default)]
+    name: String,
 }
 
 impl From<SummaryView> for CharacterSummary {
@@ -55,7 +61,7 @@ impl From<SummaryView> for CharacterSummary {
             .max(1);
         CharacterSummary {
             id: view.id,
-            name: view.identity.name,
+            name: view.personality.name,
             class: format_classes(&view.identity.classes),
             level,
             updated_at: view.updated_at,
@@ -208,12 +214,10 @@ pub fn save_last_sync_avatars(value: u64) {
 
 pub fn load_character(id: &Uuid) -> Option<Character> {
     let key = character_key(id);
-    if let Ok(character) = LocalStorage::get::<Character>(&key) {
-        return Some(character);
-    }
-    // Fallback: migrate legacy format
     let raw = LocalStorage::raw().get_item(&key).ok()??;
     let value: serde_json::Value = serde_json::from_str(&raw).ok()?;
+    // Direct typed deserialize defaults `core` for pre-v4 schemas, dropping
+    // top-level identity/features — always migrate.
     deserialize_character_value(value)
 }
 

@@ -1,22 +1,19 @@
 use std::collections::BTreeMap;
 
-use leptos::prelude::ReadUntracked;
-
 use crate::{
     model::{
         Character, CharacterIdentity, Feature, FeatureCategory, FeatureSource, Features,
         IdentitySlot,
     },
     rules::{
-        ClassDefinition, ClassIndexEntry, DefinitionStore, FeaturesView, RulesRegistry,
+        ClassIndexEntry, FeaturesView, RulesRegistry,
         apply::{
+            DefinitionCaches,
             collect::{class_level_sources, collect_background_features, collect_species_features},
             pending::PendingFeature,
-            primitives::apply_new_feature,
+            primitives::apply_pending,
             rebuild::{DefinitionKind, RebuildError},
         },
-        background::BackgroundDefinition,
-        species::SpeciesDefinition,
     },
 };
 
@@ -198,21 +195,17 @@ pub fn plan_from_interleaving(
     features: &Features,
     registry: &RulesRegistry,
 ) -> Result<Vec<PendingFeature>, RebuildError> {
-    let class_index = registry.classes().cache().read_untracked();
-    let species_cache = registry.species().cache().read_untracked();
-    let bg_cache = registry.backgrounds().cache().read_untracked();
-
-    registry.with_features_index_untracked(|feat_index| {
-        registry.with_class_entries(|class_entries| {
-            plan_from_interleaving_with_caches(
-                identity,
-                features,
-                feat_index,
-                &class_index,
-                class_entries,
-                &species_cache,
-                &bg_cache,
-            )
+    registry.with_definitions(|caches| {
+        registry.with_features_index_untracked(|feat_index| {
+            registry.with_class_entries(|class_entries| {
+                plan_from_interleaving_with_caches(
+                    identity,
+                    features,
+                    feat_index,
+                    caches,
+                    class_entries,
+                )
+            })
         })
     })
 }
@@ -224,10 +217,8 @@ pub fn plan_from_interleaving_with_caches(
     identity: &CharacterIdentity,
     features: &Features,
     feat_index: FeaturesView<'_>,
-    class_index: &BTreeMap<Box<str>, ClassDefinition>,
+    caches: DefinitionCaches,
     class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
-    species_cache: &BTreeMap<Box<str>, SpeciesDefinition>,
-    bg_cache: &BTreeMap<Box<str>, BackgroundDefinition>,
 ) -> Result<Vec<PendingFeature>, RebuildError> {
     let mut plan: Vec<PendingFeature> = Vec::new();
 
@@ -250,17 +241,18 @@ pub fn plan_from_interleaving_with_caches(
     if let Some(marker) = plan.get(species_marker_idx).cloned()
         && !identity.species.is_empty()
     {
-        let species_def = species_cache
+        let species_def = caches
+            .species
             .get(identity.species.as_str())
             .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Species,
                 name: identity.species.clone(),
             })?;
-        apply_new_feature(feat_index, &mut probe, &marker, &[]);
+        apply_pending(feat_index, &mut probe, &marker, &[], caches, false);
         let species_pending: Vec<PendingFeature> =
             collect_species_features(&probe, species_def, feat_index).collect();
         for pending in &species_pending {
-            apply_new_feature(feat_index, &mut probe, pending, &[]);
+            apply_pending(feat_index, &mut probe, pending, &[], caches, false);
         }
     }
 
@@ -270,17 +262,18 @@ pub fn plan_from_interleaving_with_caches(
     if let Some(marker) = plan.get(bg_marker_idx).cloned()
         && !identity.background.is_empty()
     {
-        let bg_def = bg_cache.get(identity.background.as_str()).ok_or_else(|| {
-            RebuildError::MissingDefinition {
+        let bg_def = caches
+            .backgrounds
+            .get(identity.background.as_str())
+            .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Background,
                 name: identity.background.clone(),
-            }
-        })?;
-        apply_new_feature(feat_index, &mut probe, &marker, &[]);
+            })?;
+        apply_pending(feat_index, &mut probe, &marker, &[], caches, false);
         let bg_pending: Vec<PendingFeature> =
             collect_background_features(&probe, bg_def, feat_index).collect();
         for pending in &bg_pending {
-            apply_new_feature(feat_index, &mut probe, pending, &[]);
+            apply_pending(feat_index, &mut probe, pending, &[], caches, false);
         }
     }
 
@@ -289,7 +282,7 @@ pub fn plan_from_interleaving_with_caches(
         identity,
         features,
         feat_index,
-        class_index,
+        caches,
         class_entries,
         &mut probe,
         &mut plan,
@@ -306,7 +299,7 @@ fn apply_classes_interleaved(
     identity: &CharacterIdentity,
     features: &Features,
     feat_index: FeaturesView<'_>,
-    class_index: &BTreeMap<Box<str>, ClassDefinition>,
+    caches: DefinitionCaches,
     class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
     probe: &mut Character,
     plan: &mut Vec<PendingFeature>,
@@ -328,7 +321,7 @@ fn apply_classes_interleaved(
     let mut character_level: u32 = 0;
 
     if targets[0] > 0 && !identity.classes[0].class.is_empty() {
-        emit_class_level(identity, feat_index, class_index, probe, plan, 0, 1)?;
+        emit_class_level(identity, feat_index, caches, probe, plan, 0, 1)?;
         applied[0] = 1;
         character_level = 1;
         emit_user_features(features, plan, character_level);
@@ -339,7 +332,7 @@ fn apply_classes_interleaved(
         emit_class_level(
             identity,
             feat_index,
-            class_index,
+            caches,
             probe,
             plan,
             idx,
@@ -406,19 +399,21 @@ fn pick_next_class(
 fn emit_class_level(
     identity: &CharacterIdentity,
     feat_index: FeaturesView<'_>,
-    class_index: &BTreeMap<Box<str>, ClassDefinition>,
+    caches: DefinitionCaches,
     probe: &mut Character,
     plan: &mut Vec<PendingFeature>,
     class_idx: usize,
     class_level: u32,
 ) -> Result<(), RebuildError> {
     let class_name = identity.classes[class_idx].class.as_str();
-    let class_def = class_index
-        .get(class_name)
-        .ok_or_else(|| RebuildError::MissingDefinition {
-            kind: DefinitionKind::Class,
-            name: class_name.to_owned(),
-        })?;
+    let class_def =
+        caches
+            .classes
+            .get(class_name)
+            .ok_or_else(|| RebuildError::MissingDefinition {
+                kind: DefinitionKind::Class,
+                name: class_name.to_owned(),
+            })?;
 
     // Total character level after this step = (previously-applied levels
     // across all classes) + 1. Used to source the System(Class) marker.
@@ -435,7 +430,14 @@ fn emit_class_level(
         source: FeatureSource::User(character_level),
         level: character_level,
     });
-    apply_new_feature(feat_index, probe, plan.last().expect("just pushed"), &[]);
+    apply_pending(
+        feat_index,
+        probe,
+        plan.last().expect("just pushed"),
+        &[],
+        caches,
+        false,
+    );
 
     // Subclass marker fires at the lowest level the subclass declares
     // features for (matches `class_level_sources`'s subclass surfacing).
@@ -449,7 +451,14 @@ fn emit_class_level(
                 source: FeatureSource::Class(Box::<str>::from(class_name), class_level),
                 level: class_level,
             });
-            apply_new_feature(feat_index, probe, plan.last().expect("just pushed"), &[]);
+            apply_pending(
+                feat_index,
+                probe,
+                plan.last().expect("just pushed"),
+                &[],
+                caches,
+                false,
+            );
         }
     }
 
@@ -464,7 +473,7 @@ fn emit_class_level(
             source,
             level: class_level,
         };
-        apply_new_feature(feat_index, probe, &pending, &[]);
+        apply_pending(feat_index, probe, &pending, &[], caches, false);
     }
 
     Ok(())

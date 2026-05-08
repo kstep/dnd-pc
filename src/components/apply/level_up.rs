@@ -5,7 +5,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::apply::{apply_with_prefilled_args, mark_all_applied},
-    model::{Character, FeatureSource},
+    model::{Character, CharacterCore, FeatureSource},
     rules::{
         RecomputePending, RulesRegistry,
         apply::{PendingFeature, collect_pending_features},
@@ -32,9 +32,13 @@ pub fn level_up_class(
     };
 
     let recompute_placeholder = placeholder.clone();
-    let recompute: RecomputePending = Box::new(move |speculative: &Character| {
+    let recompute: RecomputePending = Box::new(move |speculative: &CharacterCore| {
+        // Speculative cascade pushes follow-ups as `applied=false` and skips
+        // `apply_identity_flags`, so collect_pending_features re-surfaces the
+        // delta naturally without any fixup here.
+        let snapshot = speculative.clone();
         registry.with_features_index_untracked(|features_index| {
-            let class_summary: Vec<(String, u32)> = speculative
+            let class_summary: Vec<(String, u32)> = snapshot
                 .identity
                 .classes
                 .iter()
@@ -42,11 +46,11 @@ pub fn level_up_class(
                 .collect();
             log::info!(
                 "level_up recompute: speculative.classes = {class_summary:?}, total_level = {}",
-                speculative.level()
+                snapshot.level()
             );
 
             let mut pending = vec![recompute_placeholder.clone()];
-            let collected = collect_pending_features(speculative, &registry, features_index);
+            let collected = collect_pending_features(&snapshot, &registry, features_index);
             log::info!(
                 "level_up recompute: collect_pending_features returned {} entries: {:?}",
                 collected.len(),
@@ -61,7 +65,7 @@ pub fn level_up_class(
                 .into_iter()
                 .filter_map(|pending_feat| {
                     let feat_def = features_index.get(pending_feat.name.as_str())?;
-                    pending_feat.pending_inputs(feat_def, speculative)
+                    pending_feat.pending_inputs(feat_def, &snapshot)
                 })
                 .collect();
             log::info!(

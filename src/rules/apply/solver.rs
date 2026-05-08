@@ -2,10 +2,12 @@ use std::iter::once;
 
 use crate::{
     expr::{Context, Op, VarSubgroup},
-    model::{AssignInputs, Attribute, AttributeGroup, Character, Expr},
+    model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr},
     rules::{
         WhenCondition,
-        apply::{args_ctx::WithArgsRef, dry_run_apply_feature, pending::PendingFeature},
+        apply::{
+            DefinitionCaches, args_ctx::WithArgsRef, dry_run_apply_feature, pending::PendingFeature,
+        },
         feature::FeatureDefinition,
     },
 };
@@ -80,7 +82,7 @@ pub fn outer_group(expr: &Expr) -> Option<VarSubgroup<AttributeGroup>> {
     })
 }
 
-fn passes_guard(expr: &Expr, baseline: &Character, args: &[i32]) -> bool {
+fn passes_guard(expr: &Expr, baseline: &CharacterCore, args: &[i32]) -> bool {
     let ctx = WithArgsRef {
         inner: baseline,
         args,
@@ -104,8 +106,8 @@ fn enumerate_assign<'a>(
     arg_range: (i32, i32),
     arg_count: usize,
     forced: Option<&'a [i32]>,
-    baseline: &'a Character,
-    target: &'a Character,
+    baseline: &'a CharacterCore,
+    target: &'a CharacterCore,
 ) -> Box<dyn Iterator<Item = Vec<i32>> + 'a> {
     if let Some(forced_args) = forced {
         return Box::new(once(forced_args.to_vec()));
@@ -166,16 +168,17 @@ fn solve_assign(
     feats: &mut [FeatState<'_>],
     feat_idx: usize,
     assign_idx: usize,
-    baseline: &Character,
-    target: &Character,
+    baseline: &CharacterCore,
+    target: &CharacterCore,
     attempts: &mut usize,
+    caches: DefinitionCaches<'_>,
 ) -> bool {
     if feat_idx >= feats.len() {
         return baseline.eq_derived(target);
     }
     if assign_idx >= feats[feat_idx].assigns.len() {
         // All assigns solved — apply the feat and recurse to next.
-        let mut trial = baseline.clone_lean();
+        let mut trial = baseline.clone();
         let inputs: Vec<AssignInputs> = feats[feat_idx]
             .assigns
             .iter()
@@ -190,8 +193,9 @@ fn solve_assign(
             feats[feat_idx].pending,
             &inputs,
             WhenCondition::OnFeatureAdd,
+            caches,
         );
-        return solve_assign(feats, feat_idx + 1, 0, &trial, target, attempts);
+        return solve_assign(feats, feat_idx + 1, 0, &trial, target, attempts, caches);
     }
 
     // Snapshot fields up-front so the recursive `solve_assign` call can
@@ -242,12 +246,20 @@ fn solve_assign(
         // signals and disables every visible checkbox.
         if fallback.is_none()
             && !is_zero
-            && candidate_changes_baseline(feats, feat_idx, assign_idx, &candidate, baseline)
+            && candidate_changes_baseline(feats, feat_idx, assign_idx, &candidate, baseline, caches)
         {
             fallback = Some(candidate.clone());
         }
         feats[feat_idx].assigns[assign_idx].args = candidate;
-        if solve_assign(feats, feat_idx, assign_idx + 1, baseline, target, attempts) {
+        if solve_assign(
+            feats,
+            feat_idx,
+            assign_idx + 1,
+            baseline,
+            target,
+            attempts,
+            caches,
+        ) {
             return true;
         }
     }
@@ -269,7 +281,8 @@ fn candidate_changes_baseline(
     feat_idx: usize,
     assign_idx: usize,
     candidate: &[i32],
-    baseline: &Character,
+    baseline: &CharacterCore,
+    caches: DefinitionCaches<'_>,
 ) -> bool {
     let inputs: Vec<AssignInputs> = feats[feat_idx]
         .assigns
@@ -287,13 +300,14 @@ fn candidate_changes_baseline(
             }
         })
         .collect();
-    let mut trial = baseline.clone_lean();
+    let mut trial = baseline.clone();
     dry_run_apply_feature(
         feats[feat_idx].def,
         &mut trial,
         feats[feat_idx].pending,
         &inputs,
         WhenCondition::OnFeatureAdd,
+        caches,
     );
     !baseline.eq_derived(&trial)
 }
@@ -302,9 +316,14 @@ fn candidate_changes_baseline(
 /// applied feats' derived state match `target`; `false` otherwise (caller
 /// shows modal with whatever partial args remain). Capped by
 /// `MAX_TOTAL_ATTEMPTS` to bound worst-case runtime.
-pub fn solve_all(feats: &mut [FeatState<'_>], baseline: &Character, target: &Character) -> bool {
+pub fn solve_all(
+    feats: &mut [FeatState<'_>],
+    baseline: &CharacterCore,
+    target: &CharacterCore,
+    caches: DefinitionCaches<'_>,
+) -> bool {
     let mut attempts = MAX_TOTAL_ATTEMPTS;
-    solve_assign(feats, 0, 0, baseline, target, &mut attempts)
+    solve_assign(feats, 0, 0, baseline, target, &mut attempts, caches)
 }
 
 #[cfg(test)]
@@ -375,14 +394,19 @@ mod tests {
             VarSubgroup::from(AttributeGroup::Ability),
         )];
 
-        let mut baseline = Character::default();
+        let mut baseline = CharacterCore::default();
         for ability in Ability::VARIANTS {
             baseline.set_ability(*ability, 10);
         }
         let mut target = baseline.clone();
         target.set_ability(Ability::Strength, 12);
 
-        assert!(solve_all(&mut feats, &baseline, &target));
+        assert!(solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            DefinitionCaches::empty()
+        ));
         assert_eq!(feats[0].assigns[0].args[0], 2);
     }
 
@@ -418,11 +442,16 @@ mod tests {
             ),
         ];
 
-        let baseline = Character::default(); // INT=8 default
+        let baseline = CharacterCore::default(); // INT=8 default
         let mut target = baseline.clone();
         target.set_ability(Ability::Intelligence, 13);
 
-        assert!(solve_all(&mut feats, &baseline, &target));
+        assert!(solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            DefinitionCaches::empty()
+        ));
         assert_eq!(feats[0].assigns[0].args[3], 2, "ASI-L4 INT");
         assert_eq!(feats[1].assigns[0].args[0], 1, "SpellSniper INT");
         assert_eq!(feats[2].assigns[0].args[3], 2, "ASI-L8 INT");
@@ -441,7 +470,7 @@ mod tests {
             mk_feat_state(&def, &p_bard, mask),
             mk_feat_state(&def, &p_skilled, mask),
         ];
-        let baseline = Character::default();
+        let baseline = CharacterCore::default();
         let mut target = baseline.clone();
         for skill in [
             Skill::Acrobatics,
@@ -454,7 +483,12 @@ mod tests {
             target.skills.set(skill, ProficiencyLevel::Proficient);
         }
 
-        assert!(solve_all(&mut feats, &baseline, &target));
+        assert!(solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            DefinitionCaches::empty()
+        ));
         assert_eq!(feats[0].assigns[0].args.iter().sum::<i32>(), 3);
         assert_eq!(feats[1].assigns[0].args.iter().sum::<i32>(), 3);
     }
@@ -468,10 +502,15 @@ mod tests {
             &pending,
             VarSubgroup::masked(AttributeGroup::Ability, 0b1),
         )];
-        let baseline = Character::default();
+        let baseline = CharacterCore::default();
         let mut target = baseline.clone();
         target.set_ability(Ability::Dexterity, 10);
-        assert!(!solve_all(&mut feats, &baseline, &target));
+        assert!(!solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            DefinitionCaches::empty()
+        ));
     }
 
     #[wasm_bindgen_test]
@@ -525,7 +564,7 @@ mod tests {
             ],
         }];
 
-        let mut baseline = Character::default();
+        let mut baseline = CharacterCore::default();
         for ability in Ability::VARIANTS {
             baseline.set_ability(*ability, 10);
         }
@@ -535,7 +574,12 @@ mod tests {
             .skills
             .set(Skill::Intimidation, ProficiencyLevel::Proficient); // +1 Intimidation
 
-        assert!(solve_all(&mut feats, &baseline, &target));
+        assert!(solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            DefinitionCaches::empty()
+        ));
         // CHA = index 5 in ability order.
         assert_eq!(feats[0].assigns[0].args[5], 1, "CHA bump");
         assert_eq!(feats[0].assigns[0].args.iter().sum::<i32>(), 1);
@@ -614,7 +658,7 @@ mod tests {
 
         // Baseline: SleightOfHand already PROF (simulating Criminal
         // background applied earlier). Everything else zero.
-        let mut baseline = Character::default();
+        let mut baseline = CharacterCore::default();
         baseline
             .skills
             .set(Skill::SleightOfHand, ProficiencyLevel::Proficient);
@@ -642,7 +686,7 @@ mod tests {
             .set(Skill::SleightOfHand, ProficiencyLevel::Expertise);
 
         assert!(
-            solve_all(&mut feats, &baseline, &target),
+            solve_all(&mut feats, &baseline, &target, DefinitionCaches::empty()),
             "solver must find a solution when stored Expertise follows unsolved CP in pipeline"
         );
 
@@ -778,7 +822,7 @@ mod tests {
         ];
 
         // Baseline: identity only — all abilities 8, all skills 0.
-        let baseline = Character::default();
+        let baseline = CharacterCore::default();
 
         // Target matches Хельма (Copy): unreachable by this feat set.
         let mut target = baseline.clone();
@@ -816,7 +860,7 @@ mod tests {
             .skills
             .set(Skill::Stealth, ProficiencyLevel::Proficient);
 
-        let solved = solve_all(&mut feats, &baseline, &target);
+        let solved = solve_all(&mut feats, &baseline, &target, DefinitionCaches::empty());
         // Unreachable by feat set — History/Nature/Religion off-mask, and
         // DEX=18 needs +10 while Criminal(+1) + ASI(+2) max out at +3.
         assert!(

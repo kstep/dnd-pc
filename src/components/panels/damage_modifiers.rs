@@ -5,7 +5,10 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{icon::Icon, slot_box::SlotBox},
-    model::{Character, CharacterStoreFields, DamageModifier, DamageType, Translatable},
+    model::{
+        Character, CharacterCoreStoreFields, CharacterStoreFields, DamageModifier, DamageType,
+        Translatable,
+    },
 };
 
 #[component]
@@ -53,11 +56,11 @@ pub fn DamageModifiersPanel() -> impl IntoView {
                 let expanded = dmg_expanded.get();
                 DamageType::iter()
                     .filter(move |damage_type| {
-                        expanded || store.damage_modifiers().read().get_entry(*damage_type).is_active()
+                        expanded || store.core().damage_modifiers().read().get_entry(*damage_type).is_active()
                     })
                     .map(|damage_type| {
                         let current = Memo::new(move |_| {
-                            store.damage_modifiers().read().get_entry(damage_type)
+                            store.core().damage_modifiers().read().get_entry(damage_type)
                         });
                         let tr_key = damage_type.tr_key();
                         let label = Signal::derive(move || i18n.tr(tr_key));
@@ -65,7 +68,7 @@ pub fn DamageModifiersPanel() -> impl IntoView {
 
                         let toggle_field = move |field: fn(&mut DamageModifier) -> &mut bool| {
                             store
-                                .damage_modifiers()
+                                .core().damage_modifiers()
                                 .update(|dm| dm.toggle(damage_type, field));
                         };
 
@@ -99,7 +102,7 @@ pub fn DamageModifiersPanel() -> impl IntoView {
                                             .parse::<u32>()
                                             .unwrap_or(0);
                                         store
-                                            .damage_modifiers()
+                                            .core().damage_modifiers()
                                             .update(|dm| dm.set_reduction(damage_type, value));
                                     }
                                 />

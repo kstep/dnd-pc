@@ -14,12 +14,12 @@ use crate::{
         ref_link::Ref,
     },
     model::{
-        Character, CharacterStoreFields, Feature, FeatureStoreFields, FeatureValue,
-        FeaturesStoreFields,
+        Character, CharacterCoreStoreFields, CharacterStoreFields, Feature, FeatureStoreFields,
+        FeatureValue, FeaturesStoreFields,
     },
     rules::{
-        RulesRegistry,
-        apply::{FeatureKey, PendingFeature, build_cascade_base_before},
+        ApplyInputs, RulesRegistry,
+        apply::{PendingFeature, build_clean},
     },
 };
 
@@ -57,7 +57,7 @@ pub fn FeatureRow(
     // `name` is a user-typed custom feat with only `label`. See on_input below.
     let is_readonly = !feature_name.is_empty();
     let (has_spells, has_empty_choices) = store
-        .features()
+        .core().features()
         .data()
         .read_untracked()
         .get(&feature_name)
@@ -89,21 +89,29 @@ pub fn FeatureRow(
         let not_applied = !feature.applied().get();
         let (has_empty, choices, points, dies) = stored_name
             .with_value(|key| {
-                store.features().data().read().get(key).map(|feature_data| {
-                    feature_data.fields.iter().fold(
-                        (false, 0u32, 0u32, 0u32),
-                        |(has_empty, choices, points, dies), field| match &field.value {
-                            FeatureValue::Choice { options } => {
-                                let empty =
-                                    has_empty || options.iter().any(|opt| opt.label().is_empty());
-                                (empty, choices + 1, points, dies)
-                            }
-                            FeatureValue::Points { .. } => (has_empty, choices, points + 1, dies),
-                            FeatureValue::Die { .. } => (has_empty, choices, points, dies + 1),
-                            _ => (has_empty, choices, points, dies),
-                        },
-                    )
-                })
+                store
+                    .core()
+                    .features()
+                    .data()
+                    .read()
+                    .get(key)
+                    .map(|feature_data| {
+                        feature_data.fields.iter().fold(
+                            (false, 0u32, 0u32, 0u32),
+                            |(has_empty, choices, points, dies), field| match &field.value {
+                                FeatureValue::Choice { options } => {
+                                    let empty = has_empty
+                                        || options.iter().any(|opt| opt.label().is_empty());
+                                    (empty, choices + 1, points, dies)
+                                }
+                                FeatureValue::Points { .. } => {
+                                    (has_empty, choices, points + 1, dies)
+                                }
+                                FeatureValue::Die { .. } => (has_empty, choices, points, dies + 1),
+                                _ => (has_empty, choices, points, dies),
+                            },
+                        )
+                    })
             })
             .unwrap_or((false, 0, 0, 0));
         let has_pending = not_applied || has_empty;
@@ -117,6 +125,7 @@ pub fn FeatureRow(
     let field_count = Memo::new(move |_| {
         stored_name.with_value(|name| {
             store
+                .core()
                 .features()
                 .data()
                 .read()
@@ -233,20 +242,19 @@ pub fn FeatureRow(
                                 // Edit-mode: open modal with pre-edit cascade snapshot, on
                                 // submit just stash new inputs + mark dirty. Replay banner
                                 // picks it up and performs the full-character re-apply.
-                                let key = FeatureKey::new(name.clone(), source.clone());
-                                let clean = registry.with_features_index_untracked(|feat_index| {
-                                    build_cascade_base_before(
-                                        feat_index,
-                                        &store.read_untracked(),
-                                        &key,
-                                    )
-                                });
+                                // Full clone — base feeds build_clean which expects a full
+                                // Character (equipment, personality, notes survive `merge_preserved`).
+                                let mut clone = store.read_untracked().clone();
+                                clone.features.truncate(&name, &source);
+                                let clean = build_clean(&clone, &registry, &ApplyInputs::default())
+                                    .map(|outcome| outcome.character)
+                                    .unwrap_or(clone);
                                 edit_inputs_modal(
                                     store,
                                     registry,
                                     name,
                                     source,
-                                    Some(Arc::new(clean)),
+                                    Some(Arc::new(clean.core)),
                                 );
                             } else {
                                 let level = source.added_at_level();

@@ -778,6 +778,9 @@ impl Attribute {
             Self::CasterLevel(Some(pool)) => {
                 format!("{} ({})", tr!(i18n, "caster-level"), i18n.tr(pool.tr_key()))
             }
+            Self::Background(name) => format!("{} ({name})", tr!(i18n, "background")),
+            Self::Species(name) => format!("{} ({name})", tr!(i18n, "species")),
+            Self::Subclass(name) => format!("{} ({name})", tr!(i18n, "subclass")),
             Self::Points(AttrKey::Scoped) => tr!(i18n, "points"),
             Self::Points(AttrKey::Named(name)) => format!("{} ({name})", tr!(i18n, "points")),
             Self::PointsMax(AttrKey::Scoped) => tr!(i18n, "points-max"),

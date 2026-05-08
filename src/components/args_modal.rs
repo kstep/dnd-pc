@@ -13,16 +13,119 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    model::{AssignInputs, Character, Expr, Feature, FeatureCategory, FeatureSource, IdentitySlot},
+    model::{
+        AssignInputs, Character, CharacterCore, Expr, FeatureCategory, FeatureSource, IdentitySlot,
+    },
     rules::{
         ApplyInputs, DefinitionStore, FeatureKey, PendingInputs, RecomputePending, ReplaceWith,
-        RulesRegistry, WhenCondition, apply::apply_feature,
+        RulesRegistry,
+        apply::{PendingFeature, cascade},
     },
 };
 
 type ArgsCallback = Box<dyn FnOnce(ApplyInputs) + Send + Sync>;
 type ArgsSignals = BTreeMap<FeatureKey, Vec<StoredValue<Vec<RwSignal<i32>>>>>;
 type DiceSignals = BTreeMap<FeatureKey, Vec<StoredValue<DiceGroupSignals>>>;
+
+/// Reactive bundle of args-modal input signals. `Copy` — four RwSignals
+/// inside, all owned by the `ArgsModal` component scope. Methods read
+/// through `with`/`with_untracked` (controlled by `tracked` param) and
+/// never escape references; closures returning these stay synchronous
+/// inside one `cascade()` call.
+#[derive(Clone, Copy)]
+pub struct ArgsModalState {
+    pub args: RwSignal<ArgsSignals>,
+    pub dice: RwSignal<DiceSignals>,
+    pub valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>>,
+    pub replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+    /// Per-section downstream snapshots: `chain[K]` is the character after
+    /// the section keyed by `K` finishes its cascade. The section that
+    /// follows `K` reads it as its upstream. Each section owns its own
+    /// `RwSignal<Arc<CharacterCore>>` and removes itself on unmount.
+    pub chain: RwSignal<BTreeMap<FeatureKey, RwSignal<Arc<CharacterCore>>>>,
+}
+
+impl ArgsModalState {
+    pub fn new() -> Self {
+        Self {
+            args: RwSignal::new(BTreeMap::new()),
+            dice: RwSignal::new(BTreeMap::new()),
+            valid: RwSignal::new(BTreeMap::new()),
+            replacements: RwSignal::new(BTreeMap::new()),
+            chain: RwSignal::new(BTreeMap::new()),
+        }
+    }
+
+    /// Read AssignInputs for `key` by combining ARG signals with dice rolls.
+    /// Returns empty when the key isn't registered (yet).
+    pub fn inputs_for(&self, key: &FeatureKey, tracked: bool) -> Vec<AssignInputs> {
+        let read_dice = |entries: &DiceSignals| -> Vec<DicePool> {
+            entries
+                .get(key)
+                .map(|groups| {
+                    groups
+                        .iter()
+                        .map(|dice_group| dice_group.with_value(collect_dice_pool))
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        let dice_pools: Vec<DicePool> = if tracked {
+            self.dice.with(read_dice)
+        } else {
+            self.dice.with_untracked(read_dice)
+        };
+        let read_signals = |entries: &ArgsSignals| -> Vec<AssignInputs> {
+            entries
+                .get(key)
+                .map(|groups| {
+                    groups
+                        .iter()
+                        .enumerate()
+                        .map(|(idx, sig_group)| {
+                            sig_group.with_value(|signals| AssignInputs {
+                                args: signals
+                                    .iter()
+                                    .map(|signal| {
+                                        if tracked {
+                                            signal.get()
+                                        } else {
+                                            signal.get_untracked()
+                                        }
+                                    })
+                                    .collect(),
+                                dice: dice_pools.get(idx).cloned().unwrap_or_default(),
+                            })
+                        })
+                        .collect()
+                })
+                .unwrap_or_default()
+        };
+        if tracked {
+            self.args.with(read_signals)
+        } else {
+            self.args.with_untracked(read_signals)
+        }
+    }
+
+    /// Resolve a placeholder `name` → user-picked replacement.
+    pub fn replacement_for(&self, name: &str, tracked: bool) -> Option<String> {
+        let read = |map: &BTreeMap<String, RwSignal<Option<String>>>| {
+            map.get(name).and_then(|sig| {
+                if tracked {
+                    sig.get()
+                } else {
+                    sig.get_untracked()
+                }
+            })
+        };
+        if tracked {
+            self.replacements.with(read)
+        } else {
+            self.replacements.with_untracked(read)
+        }
+    }
+}
 /// Context provided in `CharacterLayout` so any child component can trigger
 /// the args-collection modal before applying a feature.
 #[derive(Clone, Copy)]
@@ -34,20 +137,15 @@ pub struct ArgsModalCtx {
     /// the live store — correct for level-up / user-add flows that apply on
     /// top of the existing character. Rebuild passes a fresh identity-only
     /// character so the cascade previews against a clean build-from-scratch
-    /// state; the feature-edit flow passes a pre-edit snapshot built via
-    /// `build_cascade_base_before`.
-    cascade_base: StoredValue<Option<Arc<Character>>>,
+    /// state; the feature-edit flow passes a `build_clean(truncated_clone)`
+    /// pre-edit snapshot.
+    cascade_base: StoredValue<Option<Arc<CharacterCore>>>,
     /// Speculative-cascade recompute closure. When set, the modal's
     /// pick-watcher Effect runs this against a speculative character (cascade
     /// base + tentative identity picks) and updates `pending` with the
     /// returned list. `None` disables speculative recomputation — the modal
     /// renders whatever pending was passed at `open` time, unchanged.
     recompute: StoredValue<Option<RecomputePending>>,
-    /// Reset hook for component-scoped state signals (all_signals, all_dice,
-    /// all_replacements, all_valid). Set once when `ArgsModal` mounts; called
-    /// from `open` so each modal session starts with fresh state, no
-    /// pollution from a previous open/close cycle.
-    reset_state: StoredValue<Option<Box<dyn Fn() + Send + Sync>>>,
 }
 
 impl ArgsModalCtx {
@@ -58,7 +156,6 @@ impl ArgsModalCtx {
             callback: StoredValue::new(None),
             cascade_base: StoredValue::new(None),
             recompute: StoredValue::new(None),
-            reset_state: StoredValue::new(None),
         }
     }
 
@@ -74,15 +171,10 @@ impl ArgsModalCtx {
     pub fn open(
         &self,
         pending: Vec<PendingInputs>,
-        base: Option<Arc<Character>>,
+        base: Option<Arc<CharacterCore>>,
         recompute: Option<RecomputePending>,
         on_complete: impl FnOnce(ApplyInputs) + Send + Sync + 'static,
     ) {
-        self.reset_state.with_value(|reset| {
-            if let Some(reset) = reset {
-                reset();
-            }
-        });
         self.pending.set(pending);
         self.callback
             .update_value(|cb| *cb = Some(Box::new(on_complete)));
@@ -102,109 +194,136 @@ impl ArgsModalCtx {
         self.show.set(false);
     }
 
-    /// Wire the component-scoped state-reset hook. Called once from
-    /// `ArgsModal` on mount; subsequent `open` invocations call the
-    /// stored closure to clear state signals before showing the new modal.
-    fn install_reset(&self, reset: impl Fn() + Send + Sync + 'static) {
-        self.reset_state.set_value(Some(Box::new(reset)));
+    /// Effective cascade base for the current modal session: the value
+    /// passed to `open()` if present, otherwise a fresh snapshot of the
+    /// live character. Resolves the `Option` and applies the fallback in
+    /// one place so callers don't repeat the pattern.
+    pub fn cascade_base(&self) -> Arc<CharacterCore> {
+        let store = expect_context::<Store<Character>>();
+        self.cascade_base
+            .with_value(|opt| opt.clone())
+            .unwrap_or_else(|| Arc::new(store.read_untracked().core.clone()))
     }
 }
 
-/// Apply one cascade step onto `prior`. `tracked` controls whether input-
-/// signal reads subscribe the calling reactive context — per-section
-/// snapshots pass `true`, outer modal watcher passes `false` (else the
-/// section-mount → `all_signals` write loops back into the watcher).
-fn apply_cascade_step(
-    prior: &Character,
-    key: &FeatureKey,
-    all_signals: RwSignal<ArgsSignals>,
-    all_dice: RwSignal<DiceSignals>,
-    all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+/// One speculative cascade step on `base`: clone, apply `pending`, recompute
+/// core. Always speculative — features pushed as `applied=false` so the modal
+/// re-collects them as pending.
+fn cascade_step(
+    base: &CharacterCore,
+    pending: &PendingFeature,
     registry: &RulesRegistry,
-    tracked: bool,
-) -> Character {
-    let mut ch = prior.clone_lean();
-    let read_replacements = |map: &BTreeMap<String, RwSignal<Option<String>>>| {
-        map.get(&key.name).and_then(|sig| {
-            if tracked {
-                sig.get()
-            } else {
-                sig.get_untracked()
+    inputs_for: &dyn Fn(&FeatureKey) -> Vec<AssignInputs>,
+    replacement_for: &dyn Fn(&str) -> Option<String>,
+) -> CharacterCore {
+    let mut snapshot = base.clone();
+    registry.with_definitions(|caches| {
+        registry.with_features_index_untracked(|idx| {
+            cascade(
+                &mut snapshot,
+                std::slice::from_ref(pending),
+                idx,
+                caches,
+                inputs_for,
+                replacement_for,
+                true,
+            );
+        });
+    });
+    registry.compute_core(&mut snapshot);
+    snapshot
+}
+
+/// Effective character level for a `PendingFeature`: source-embedded level
+/// for Class/Subclass/User, or `base.level()` for Species/Background.
+fn level_for(source: &FeatureSource, base: &CharacterCore) -> u32 {
+    match source {
+        FeatureSource::Class(_, level)
+        | FeatureSource::Subclass(_, _, level)
+        | FeatureSource::User(level) => *level,
+        FeatureSource::Species(_) | FeatureSource::Background(_) => base.level().max(1),
+    }
+}
+
+/// Wire one section into the per-section snapshot chain. Registers a
+/// downstream signal in `state.chain[section_key]`, derives an upstream
+/// from the predecessor's downstream (or cascade base for the first
+/// section), and spawns an Effect-publisher that runs `cascade_step` on
+/// every upstream or own-input change. Returns the upstream signal so
+/// the caller's analysis Memo subscribes to the same snapshot.
+fn setup_section_chain(
+    section_key: FeatureKey,
+    state: ArgsModalState,
+) -> Signal<Arc<CharacterCore>> {
+    let ctx = expect_context::<ArgsModalCtx>();
+    let registry = expect_context::<RulesRegistry>();
+
+    let downstream_signal: RwSignal<Arc<CharacterCore>> = RwSignal::new(ctx.cascade_base());
+    {
+        let section_key = section_key.clone();
+        state.chain.update(|map| {
+            map.insert(section_key, downstream_signal);
+        });
+    }
+
+    let upstream_signal: Signal<Arc<CharacterCore>> = {
+        let section_key = section_key.clone();
+        Signal::derive(move || {
+            let pending = ctx.pending.get();
+            let Some(my_idx) = pending
+                .iter()
+                .position(|entry| entry.feature_key() == section_key)
+            else {
+                return ctx.cascade_base();
+            };
+            if my_idx == 0 {
+                return ctx.cascade_base();
             }
+            let prev_key = pending[my_idx - 1].feature_key();
+            state
+                .chain
+                .with(|map| map.get(&prev_key).copied())
+                .map(|prev_downstream| prev_downstream.get())
+                .unwrap_or_else(|| ctx.cascade_base())
         })
     };
-    let replacement = if tracked {
-        all_replacements.with(read_replacements)
-    } else {
-        all_replacements.with_untracked(read_replacements)
-    };
-    let effective_key = match &replacement {
-        Some(name) => FeatureKey::new(name.clone(), key.source.clone()),
-        None => key.clone(),
-    };
-    let read_dice = |entries: &DiceSignals| -> Vec<DicePool> {
-        entries
-            .get(&effective_key)
-            .map(|groups| {
-                groups
-                    .iter()
-                    .map(|dice_group| dice_group.with_value(collect_dice_pool))
-                    .collect()
-            })
-            .unwrap_or_default()
-    };
-    let dice_pools: Vec<DicePool> = if tracked {
-        all_dice.with(read_dice)
-    } else {
-        all_dice.with_untracked(read_dice)
-    };
-    let read_signals = |entries: &ArgsSignals| -> Vec<AssignInputs> {
-        entries
-            .get(&effective_key)
-            .map(|groups| {
-                groups
-                    .iter()
-                    .enumerate()
-                    .map(|(idx, sig_group)| {
-                        sig_group.with_value(|signals| AssignInputs {
-                            args: signals
-                                .iter()
-                                .map(|signal| {
-                                    if tracked {
-                                        signal.get()
-                                    } else {
-                                        signal.get_untracked()
-                                    }
-                                })
-                                .collect(),
-                            dice: dice_pools.get(idx).cloned().unwrap_or_default(),
-                        })
-                    })
-                    .collect()
-            })
-            .unwrap_or_default()
-    };
-    let inputs: Vec<AssignInputs> = if tracked {
-        all_signals.with(read_signals)
-    } else {
-        all_signals.with_untracked(read_signals)
-    };
-    registry.with_features_index_untracked(|idx| {
-        if let Some(def) = idx.get(effective_key.name.as_str()) {
-            ch.features.list.push(Feature {
-                name: effective_key.name.clone(),
-                source: effective_key.source.clone(),
-                applied: true,
-                category: def.category,
-                inputs: inputs.clone(),
-                ..Feature::default()
-            });
-            let feature_index = ch.features.list.len() - 1;
-            apply_feature(def, &mut ch, feature_index, WhenCondition::OnFeatureAdd);
-            apply_feature(def, &mut ch, feature_index, WhenCondition::OnCompute);
-        }
+
+    {
+        let section_key = section_key.clone();
+        Effect::new(move |_| {
+            let upstream = upstream_signal.get();
+            let pending_feature = PendingFeature {
+                name: section_key.name.clone(),
+                source: section_key.source.clone(),
+                level: level_for(&section_key.source, &upstream),
+            };
+            let inputs_for = |fk: &FeatureKey| -> Vec<AssignInputs> {
+                if fk == &section_key {
+                    state.inputs_for(fk, true)
+                } else {
+                    Vec::new()
+                }
+            };
+            let replacement_for =
+                |name: &str| -> Option<String> { state.replacement_for(name, true) };
+            let new_downstream = cascade_step(
+                &upstream,
+                &pending_feature,
+                &registry,
+                &inputs_for,
+                &replacement_for,
+            );
+            downstream_signal.set(Arc::new(new_downstream));
+        });
+    }
+
+    on_cleanup(move || {
+        state.chain.update(|map| {
+            map.remove(&section_key);
+        });
     });
-    ch
+
+    upstream_signal
 }
 
 /// Register `all_signals` / `all_dice` entries for a `hidden` pending feat
@@ -236,15 +355,11 @@ fn register_hidden_signals(pending_inputs: &PendingInputs, all_signals: RwSignal
 #[component]
 fn ArgsFeatureInput(
     pending_inputs: PendingInputs,
-    /// Cascade-base seed captured at modal open. Each section computes its
-    /// own snapshot from this base + the apply-effect of every prior pending
-    /// entry currently in `ctx.pending`. Stored in a `StoredValue` so the
-    /// section can read it lazily inside its snapshot Effect.
-    shared_base: StoredValue<Arc<Character>>,
-    all_signals: RwSignal<ArgsSignals>,
-    all_dice: RwSignal<DiceSignals>,
-    all_valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>>,
-    all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+    /// Upstream snapshot — the character as seen by this section's
+    /// cascade. Owned by `setup_section_chain` in the parent For body;
+    /// the section's analysis Memo subscribes to it for view updates.
+    character: Signal<Arc<CharacterCore>>,
+    state: ArgsModalState,
 ) -> impl IntoView {
     #[cfg(feature = "perf-marks")]
     let _mount_span = tracing::info_span!(
@@ -254,55 +369,28 @@ fn ArgsFeatureInput(
     .entered();
 
     let registry = expect_context::<RulesRegistry>();
-    let ctx = expect_context::<ArgsModalCtx>();
     let feature_name = pending_inputs.feature_name.clone();
-    let (feature_label, description) = registry.feature_label_desc_untracked(&feature_name);
-    let has_description = !description.is_empty();
+    // Reactive label/description so switching locale updates the modal in place.
+    let (feature_label, description) = registry.feature_label_desc(&feature_name);
+    let has_description = {
+        let description = description.clone();
+        Memo::new(move |_| !description.read().is_empty())
+    };
     let replace_with = pending_inputs.replace_with;
+    let all_signals = state.args;
+    let all_dice = state.dice;
+    let all_valid = state.valid;
+    let all_replacements = state.replacements;
     let replaceable = pending_inputs.is_replaceable();
     let replace_only = pending_inputs.is_replace_only();
     let source = pending_inputs.source.clone();
     let prefilled_replacement = pending_inputs.prefilled_replacement.clone();
     let replacement_prefill = pending_inputs.replacement_prefill.clone();
 
-    // Per-section snapshot: shared_base + apply(pending[0..my_idx]). When
-    // `ctx.pending` mutates (speculative recompute on identity-pick change)
-    // or any prior section's inputs change, this Effect re-fires and writes
-    // a fresh snapshot. ExprArgsInput reads `character` cheaply on each
-    // re-render of expression analysis.
-    //
-    // Cost: O(N) clone_lean + apply per section, O(N²) total across all
-    // sections when any input changes. Acceptable for typical pending lists
-    // (5-20 entries); profile if it shows up at L20+ multiclass rebuilds and
-    // memoize intermediate snapshots in a parallel `Vec<RwSignal>` if so.
-    let character_signal: RwSignal<Arc<Character>> = RwSignal::new(shared_base.get_value());
     let section_key = FeatureKey::new(
         pending_inputs.feature_name.clone(),
         pending_inputs.source.clone(),
     );
-    {
-        let section_key = section_key.clone();
-        Effect::new(move |_| {
-            let pending = ctx.pending.get();
-            let Some(my_idx) = pending.iter().position(|p| p.feature_key() == section_key) else {
-                return;
-            };
-            let mut ch = (*shared_base.get_value()).clone_lean();
-            for prior in pending.iter().take(my_idx) {
-                ch = apply_cascade_step(
-                    &ch,
-                    &prior.feature_key(),
-                    all_signals,
-                    all_dice,
-                    all_replacements,
-                    &registry,
-                    true,
-                );
-            }
-            character_signal.set(Arc::new(ch));
-        });
-    }
-    let character: Signal<Arc<Character>> = character_signal.into();
 
     // Signal tracking whether user chose to replace this feature.
     // Pre-filled from AI generation if present — user can still override.
@@ -369,6 +457,11 @@ fn ArgsFeatureInput(
     let section_validity = Memo::new(move |_| {
         if replaceable && replacement_choice.get().is_some() {
             replacement_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
+        } else if replace_only {
+            // Pure placeholder (Subclass marker, ASI marker without picks):
+            // own ARG memos are empty so falling through would auto-validate.
+            // Block submit until user picks a replacement.
+            false
         } else {
             own_valids.with(|memos| memos.is_empty() || memos.iter().all(|memo| memo.get()))
         }
@@ -428,10 +521,10 @@ fn ArgsFeatureInput(
     view! {
         <div class="args-modal-feature">
             <h4>
-                {feature_label}
+                {move || feature_label.get()}
                 <span class="args-modal-source">{source_label}</span>
             </h4>
-            <Show when=move || has_description>
+            <Show when=move || has_description.get()>
                 <div class="args-modal-description">
                     <Markdown text=description.clone() />
                 </div>
@@ -457,7 +550,7 @@ fn ReplacementPicker(
     replacement_prefill: Option<AssignInputs>,
     /// Snapshot of the character BEFORE the original feature (the one
     /// being replaced) was applied.
-    character: Signal<Arc<Character>>,
+    character: Signal<Arc<CharacterCore>>,
     all_signals: RwSignal<ArgsSignals>,
     all_dice: RwSignal<DiceSignals>,
     /// Per-section validity sink owned by the parent `<ArgsFeatureInput>`.
@@ -707,44 +800,15 @@ pub fn ArgsModal() -> impl IntoView {
 
     let ctx = expect_context::<ArgsModalCtx>();
     let title = Signal::derive(move || move_tr!("apply-features-title").get());
-    let store = expect_context::<Store<Character>>();
 
-    // Component-scoped state — survives modal close/open cycles. Cleared
-    // explicitly via `install_reset` whenever a new session begins.
-    let all_signals: RwSignal<ArgsSignals> = RwSignal::new(BTreeMap::new());
-    let all_dice: RwSignal<DiceSignals> = RwSignal::new(BTreeMap::new());
-    let all_valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>> = RwSignal::new(BTreeMap::new());
-    let all_replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>> =
-        RwSignal::new(BTreeMap::new());
-
-    // Cascade-base seed captured per modal session in a StoredValue so
-    // every section's snapshot Effect can read it lazily without retriggering
-    // the watcher Effect when reading.
-    let shared_base: StoredValue<Arc<Character>> = StoredValue::new(Arc::new(Character::default()));
-
-    // Wire the state-reset hook so each `ArgsModalCtx::open` starts fresh —
-    // no stale ARG inputs, dice rolls, replacements, or validity entries
-    // from a previous modal session.
-    ctx.install_reset(move || {
-        all_signals.update(|m| m.clear());
-        all_dice.update(|m| m.clear());
-        all_valid.update(|m| m.clear());
-        all_replacements.update(|m| m.clear());
-    });
-
-    // Capture cascade base when the modal transitions to open. `open()` has
-    // already populated `ctx.cascade_base`; if absent (e.g. live-store flow),
-    // fall back to a lean clone of the live character.
-    Effect::new(move |_| {
-        if !ctx.show.get() {
-            return;
-        }
-        let base = ctx
-            .cascade_base
-            .with_value(|opt| opt.clone())
-            .unwrap_or_else(|| Arc::new(store.read_untracked().clone_lean()));
-        shared_base.set_value(base);
-    });
+    // Component-scoped state — survives modal close/open cycles. The four
+    // RwSignals stay separate (different shape per section type) but are
+    // bundled in `ArgsModalState` so cascade closures stay short.
+    let state = ArgsModalState::new();
+    let all_signals = state.args;
+    let all_dice = state.dice;
+    let all_valid = state.valid;
+    let all_replacements = state.replacements;
 
     // Replacement-watcher: an aggregator subscribes to BOTH the outer
     // `all_replacements` map and each inner replacement-choice signal (via
@@ -772,8 +836,11 @@ pub fn ArgsModal() -> impl IntoView {
         let choices = replacement_choices.get();
         let recomputed = ctx.recompute.with_value(|opt| {
             let recompute = opt.as_ref()?;
-            let mut speculative = (*shared_base.get_value()).clone_lean();
+            let mut speculative = (*ctx.cascade_base()).clone();
             let pending_now = ctx.pending.get_untracked();
+            let inputs_for = |fk: &FeatureKey| -> Vec<AssignInputs> { state.inputs_for(fk, false) };
+            let replacement_for =
+                |name: &str| -> Option<String> { state.replacement_for(name, false) };
             for entry in &pending_now {
                 // Unresolved replaceable placeholder — skip. Pushing the
                 // placeholder into speculative.features makes subsequent
@@ -783,14 +850,17 @@ pub fn ArgsModal() -> impl IntoView {
                 if entry.is_replaceable() && !choices.contains_key(&entry.feature_name) {
                     continue;
                 }
-                speculative = apply_cascade_step(
+                let pending_feature = PendingFeature {
+                    name: entry.feature_name.clone(),
+                    source: entry.source.clone(),
+                    level: level_for(&entry.source, &speculative),
+                };
+                speculative = cascade_step(
                     &speculative,
-                    &entry.feature_key(),
-                    all_signals,
-                    all_dice,
-                    all_replacements,
+                    &pending_feature,
                     &registry,
-                    false,
+                    &inputs_for,
+                    &replacement_for,
                 );
             }
             // Identity attributes just got written by the System(_) assigns.
@@ -892,21 +962,22 @@ pub fn ArgsModal() -> impl IntoView {
                     key=|pending_input| pending_input.feature_key()
                     let:pending_inputs
                 >
-                    {if pending_inputs.hidden {
-                        register_hidden_signals(&pending_inputs, all_signals);
-                        ().into_any()
-                    } else {
-                        view! {
-                            <ArgsFeatureInput
-                                pending_inputs
-                                shared_base
-                                all_signals
-                                all_dice
-                                all_valid
-                                all_replacements
-                            />
-                        }.into_any()
-                    }}
+                    {
+                        let section_key = pending_inputs.feature_key();
+                        let upstream = setup_section_chain(section_key, state);
+                        if pending_inputs.hidden {
+                            register_hidden_signals(&pending_inputs, all_signals);
+                            ().into_any()
+                        } else {
+                            view! {
+                                <ArgsFeatureInput
+                                    pending_inputs
+                                    character=upstream
+                                    state
+                                />
+                            }.into_any()
+                        }
+                    }
                 </For>
                 <button type="submit" class="btn-primary" disabled=move || !is_valid.get()>
                     {move_tr!("apply-features-title")}

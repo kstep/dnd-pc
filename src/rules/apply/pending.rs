@@ -1,13 +1,13 @@
 use std::collections::BTreeMap;
 
 use crate::{
-    model::{AssignInputs, Character, Expr, FeatureSource},
+    model::{AssignInputs, CharacterCore, Expr, FeatureSource},
     rules::{ReplaceWith, WhenCondition, feature::FeatureDefinition},
 };
 
 /// Speculative-cascade recompute closure: given a tentative character, return
 /// the pending list the modal should display. `None` disables speculation.
-pub type RecomputePending = Box<dyn Fn(&Character) -> Vec<PendingInputs> + Send + Sync>;
+pub type RecomputePending = Box<dyn Fn(&CharacterCore) -> Vec<PendingInputs> + Send + Sync>;
 
 /// Key for per-feature-instance inputs. Stackable features appear with the
 /// same `name` but different `source`, so both identify the instance.
@@ -174,7 +174,7 @@ impl PendingFeature {
     pub fn pending_inputs(
         &self,
         feat_def: &FeatureDefinition,
-        character: &Character,
+        character: &CharacterCore,
     ) -> Option<PendingInputs> {
         let prefill = character
             .features

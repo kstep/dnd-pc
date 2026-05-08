@@ -5,8 +5,8 @@ use reactive_stores::Store;
 use crate::{
     components::{icon::Icon, slot_box::SlotBox, stat_box::StatBox},
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
-        format_bonus,
+        Character, CharacterCoreStoreFields, CharacterIdentityStoreFields, CharacterStoreFields,
+        CombatStatsStoreFields, format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -16,8 +16,8 @@ pub fn CombatPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
 
-    let combat = store.combat();
-    let classes = store.identity().classes();
+    let combat = store.core().combat();
+    let classes = store.core().identity().classes();
     let initiative = Memo::new(move |_| store.read().initiative());
 
     let init_display = move || format_bonus(initiative.get());

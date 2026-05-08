@@ -14,7 +14,7 @@ use crate::{
     },
     effective::EffectiveCharacter,
     expr::DicePool,
-    model::{ActiveEffect, Character, Expr},
+    model::{ActiveEffect, Character, CharacterCore, Expr},
     rules::RulesRegistry,
 };
 
@@ -334,8 +334,8 @@ pub fn EffectsBlock() -> impl IntoView {
                         pending_expr.set(None);
                     };
 
-                    let character: Signal<Arc<Character>> =
-                        Signal::derive(move || Arc::new(store.get()));
+                    let character: Signal<Arc<CharacterCore>> =
+                        Signal::derive(move || Arc::new(store.get().core.clone()));
                     let expr_input = view! { <ExprArgsInput expr=expr character on_ready /> };
                     Some(view! {
                         <form class="dice-pool-form" on:submit=on_submit>

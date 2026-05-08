@@ -78,6 +78,7 @@ tracing-wasm = { version = "0.2", optional = true }
 [features]
 default = []
 perf-marks = ["dep:tracing", "dep:tracing-wasm", "leptos/tracing"]
+testing = []
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"

@@ -13,7 +13,7 @@ use crate::{
         ref_link::Ref,
     },
     effective::EffectiveCharacter,
-    model::{Character, CharacterIdentityStoreFields, CharacterStoreFields},
+    model::{Character, CharacterStoreFields, PersonalityStoreFields},
     rules::RulesRegistry,
     storage,
 };
@@ -127,7 +127,7 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
         });
     });
 
-    let name = Memo::new(move |_| store.identity().name().get());
+    let name = Memo::new(move |_| store.personality().name().get());
     let class_summary = Memo::new(move |_| store.read().class_summary());
     let title = move || {
         let name = name.read();

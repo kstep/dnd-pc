@@ -34,6 +34,37 @@ impl Applied {
             .or_default()
             .insert(level);
     }
+
+    /// Wipe all applied flags so pending-discovery starts from a clean
+    /// slate (otherwise a flag set on a speculative cascade snapshot
+    /// would mask features that legitimately need re-surfacing).
+    pub fn reset(&mut self) {
+        *self = Self::default();
+    }
+
+    /// Wipe per-class level flags only, preserving `species`/`background`
+    /// booleans. The targeted form for fresh discovery from a speculative
+    /// snapshot — cascade-on-clone stamps `applied.classes[X][N]=true` for
+    /// the picked level, which would otherwise mask the L_N features that
+    /// still need to surface for modal input. Resetting *all* applied flags
+    /// would also wipe species so pre-applied origin features (e.g.
+    /// Versatile already replaced by an Origin pick) would re-emerge as
+    /// pending.
+    pub fn reset_class_levels(&mut self) {
+        self.levels.clear();
+    }
+
+    /// Drop applied flags for the given (class, levels) range, leaving
+    /// every other level alone. Lets the caller surface a freshly cascaded
+    /// slice of levels without re-emitting placeholders (Subclass/ASI)
+    /// that were already resolved at lower levels.
+    pub fn forget_class_levels(&mut self, class: &str, levels: impl IntoIterator<Item = u32>) {
+        if let Some(set) = self.levels.get_mut(class) {
+            for level in levels {
+                set.remove(&level);
+            }
+        }
+    }
 }
 
 #[cfg(test)]

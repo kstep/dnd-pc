@@ -6,7 +6,8 @@ use crate::{
     components::icon::Icon,
     effective::EffectiveCharacter,
     model::{
-        Character, CharacterIdentityStoreFields, CharacterStoreFields, CombatStatsStoreFields,
+        Character, CharacterCoreStoreFields, CharacterIdentityStoreFields, CharacterStoreFields,
+        CombatStatsStoreFields, PersonalityStoreFields,
     },
     rules::{IndexEntry, RulesRegistry},
 };
@@ -17,10 +18,10 @@ pub fn SessionHeader() -> impl IntoView {
     let eff = expect_context::<EffectiveCharacter>();
     let registry = expect_context::<RulesRegistry>();
 
-    let name = Memo::new(move |_| store.identity().name().get());
+    let name = Memo::new(move |_| store.personality().name().get());
 
     let species_display = Memo::new(move |_| {
-        let species_name = store.identity().species().get();
+        let species_name = store.core().identity().species().get();
         if species_name.is_empty() {
             return String::new();
         }
@@ -47,13 +48,13 @@ pub fn SessionHeader() -> impl IntoView {
                 <span class="session-header-stat">
                     {move_tr!("prof-bonus")} ": +" <strong>{prof_bonus}</strong>
                 </span>
-                {move || store.combat().concentrating().with(|name| name.as_ref().map(|name| view! {
+                {move || store.core().combat().concentrating().with(|name| name.as_ref().map(|name| view! {
                     <span class="concentration-indicator">
                         <Icon name="crosshair" />
                         {name.clone()}
                         <button class="concentration-drop"
                             title=move_tr!("drop-concentration")
-                            on:click=move |_| store.combat().concentrating().set(None)
+                            on:click=move |_| store.core().combat().concentrating().set(None)
                         >
                             <Icon name="x" size=12 />
                         </button>

@@ -3,14 +3,17 @@ use reactive_stores::Store;
 
 use crate::{
     components::{icon::Icon, stat_box::StatBox},
-    model::{Character, CharacterStoreFields, ProficiencyLevel, Skill, Translatable, format_bonus},
+    model::{
+        Character, CharacterCoreStoreFields, CharacterStoreFields, ProficiencyLevel, Skill,
+        Translatable, format_bonus,
+    },
 };
 
 #[component]
 pub fn SkillRow(skill: Skill) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    let prof_level = Memo::new(move |_| store.skills().read().get(skill));
+    let prof_level = Memo::new(move |_| store.core().skills().read().get(skill));
 
     let bonus = Memo::new(move |_| store.read().skill_bonus(skill));
     let bonus_display = move || format_bonus(bonus.get());
@@ -28,7 +31,7 @@ pub fn SkillRow(skill: Skill) -> impl IntoView {
             class:clickable=true
             class:glow=move || prof_level.get() == ProficiencyLevel::Expertise
             on:click=move |_| {
-                store.skills().update(|skills| skills.cycle(skill));
+                store.core().skills().update(|skills| skills.cycle(skill));
             }
         >
             <span class="stat-highlight">{bonus_display}</span>

@@ -17,9 +17,9 @@ use crate::{
     },
     effective::EffectiveCharacter,
     model::{
-        Ability, ActionType, Attribute, Character, CharacterStoreFields, CombatStatsStoreFields,
-        EffectDuration, EffectRange, FeatureValue, FeaturesStoreFields, SpellSlotLevel,
-        SpellSlotPool, format_bonus,
+        Ability, ActionType, Attribute, Character, CharacterCoreStoreFields, CharacterStoreFields,
+        CombatStatsStoreFields, EffectDuration, EffectRange, FeatureValue, FeaturesStoreFields,
+        SpellSlotLevel, SpellSlotPool, format_bonus,
     },
     rules::{CastTime, RulesRegistry},
 };
@@ -39,8 +39,8 @@ pub fn SpellsBlock() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
-    let spell_slots = store.spell_slots();
-    let feature_data = store.features().data();
+    let spell_slots = store.core().spell_slots();
+    let feature_data = store.core().features().data();
 
     // Modal state
     let show_calc = RwSignal::new(false);
@@ -386,7 +386,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             spell_name.with_value(|sname| {
                                                 open_calc(sname, spell_level, key, pool, casting_ability, &opt);
                                                 if is_concentration {
-                                                    store.combat().concentrating().set(Some(sname.to_string()));
+                                                    store.core().combat().concentrating().set(Some(sname.to_string()));
                                                 }
                                             });
                                         });
