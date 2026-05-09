@@ -10,7 +10,7 @@ use crate::{
         apply::{
             DefinitionCaches,
             collect::{class_level_sources, collect_background_features, collect_species_features},
-            pending::PendingFeature,
+            pending::{PICK_BACKGROUND, PICK_SPECIES, PendingFeature},
             primitives::apply_pending,
             rebuild::{DefinitionKind, RebuildError},
         },
@@ -153,7 +153,10 @@ pub fn plan_from_markers(
 
 /// Append a System(slot) marker for `slot` (Species or Background) to `plan`.
 /// Prefers an existing marker in `features.list`; falls back to synthesizing
-/// from `identity` for legacy half-state. Other slots are no-op.
+/// from `identity` for legacy half-state. When neither marker nor identity
+/// name is set, emits the `Generation: Species` / `Generation: Background`
+/// placeholder (`replace_with: Category(System(_))`) so the args modal can
+/// surface a picker during cascade. Other slots are no-op.
 fn push_identity_marker(
     identity: &CharacterIdentity,
     features: &Features,
@@ -168,18 +171,21 @@ fn push_identity_marker(
         });
         return;
     }
-    let identity_name = match slot {
-        IdentitySlot::Species => &identity.species,
-        IdentitySlot::Background => &identity.background,
+    let (identity_name, placeholder) = match slot {
+        IdentitySlot::Species => (&identity.species, PICK_SPECIES),
+        IdentitySlot::Background => (&identity.background, PICK_BACKGROUND),
         IdentitySlot::Class | IdentitySlot::Subclass => return,
     };
-    if !identity_name.is_empty() {
-        plan.push(PendingFeature {
-            name: identity_name.clone(),
-            source: FeatureSource::User(0),
-            level: 0,
-        });
-    }
+    let name = if identity_name.is_empty() {
+        placeholder.to_string()
+    } else {
+        identity_name.clone()
+    };
+    plan.push(PendingFeature {
+        name,
+        source: FeatureSource::User(0),
+        level: 0,
+    });
 }
 
 fn find_system_marker(features: &Features, slot: IdentitySlot) -> Option<&Feature> {
@@ -627,5 +633,37 @@ mod tests {
         }];
 
         assert!(plan_from_markers(&original.identity, &original.features).is_none());
+    }
+
+    /// Empty species / background: the plan must include the
+    /// `PICK_SPECIES` / `PICK_BACKGROUND` placeholders (replace_with:
+    /// Category(System(_))) so the args modal can surface a picker during
+    /// cascade.
+    #[wasm_bindgen_test]
+    fn plan_from_markers_emits_pick_placeholders_when_identity_empty() {
+        let mut original = Character::default();
+        // Class markers exist (so plan_from_markers doesn't fall through),
+        // but species and background are blank.
+        original.identity.classes = vec![ClassLevel {
+            class: "Fighter".into(),
+            level: 1,
+            ..ClassLevel::default()
+        }];
+        original.features.list = vec![marker(
+            "Fighter",
+            IdentitySlot::Class,
+            FeatureSource::User(1),
+        )];
+
+        let plan = plan_from_markers(&original.identity, &original.features).expect("plan");
+        let names: Vec<&str> = plan.iter().map(|pending| pending.name.as_str()).collect();
+        assert!(
+            names.contains(&PICK_SPECIES),
+            "expected {PICK_SPECIES} placeholder for empty species, got {names:?}"
+        );
+        assert!(
+            names.contains(&PICK_BACKGROUND),
+            "expected {PICK_BACKGROUND} placeholder for empty background, got {names:?}"
+        );
     }
 }

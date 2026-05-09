@@ -8,7 +8,7 @@ use crate::{
     model::{Character, CharacterCore, FeatureSource},
     rules::{
         RecomputePending, RulesRegistry,
-        apply::{PendingFeature, collect_pending_features},
+        apply::{PICK_CLASS, PendingFeature, collect_pending_features},
     },
 };
 
@@ -26,7 +26,7 @@ pub fn level_up_class(
 ) {
     let target_level = store.read_untracked().level().saturating_add(1);
     let placeholder = PendingFeature {
-        name: "Class Level".into(),
+        name: PICK_CLASS.into(),
         source: FeatureSource::User(target_level),
         level: target_level,
     };
@@ -79,7 +79,7 @@ pub fn level_up_class(
 
     let mut prefilled_replacements = BTreeMap::new();
     if let Some(class_name) = prefilled_class {
-        prefilled_replacements.insert("Class Level".into(), class_name);
+        prefilled_replacements.insert(PICK_CLASS.into(), class_name);
     }
 
     apply_with_prefilled_args(

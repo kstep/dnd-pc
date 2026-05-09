@@ -20,7 +20,10 @@ pub use collect::{
 pub use compute::{assign, compute, compute_core};
 pub use context::{ApplyContext, apply_assignments_with_inputs};
 pub use item_ctx::{ItemApplyCtx, assign_items};
-pub use pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs, RecomputePending};
+pub use pending::{
+    ApplyInputs, FeatureKey, PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS,
+    PendingFeature, PendingInputs, RecomputePending,
+};
 pub use primitives::{apply_pending, cascade, dry_run_apply_feature, restore_user_state};
 pub use rebuild::{
     DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean, prepare_rebuild,
