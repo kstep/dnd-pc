@@ -228,13 +228,30 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 });
 
                 let has_cost = cost_label.is_some();
+                let opt_keys: Vec<String> = feature_name.with_value(|feat_key| {
+                    registry.with_features_index_untracked(|view| {
+                        let action_def = view
+                            .get(feat_key)
+                            .and_then(|feat_def| feat_def.actions.get(field_name.as_str()));
+                        all_options
+                            .iter()
+                            .map(|opt| match action_def {
+                                Some(action_def) => action_def
+                                    .option_locale_key(feat_key, &opt.name)
+                                    .as_str()
+                                    .to_string(),
+                                None => {
+                                    format!("{feat_key}.field.{field_name}.option.{}", opt.name)
+                                }
+                            })
+                            .collect()
+                    })
+                });
                 let suggestions: Signal<Vec<DatalistOption>> = Signal::stored(
                     all_options
                         .iter()
-                        .map(|opt| {
-                            let key = feature_name.with_value(|feat_key| {
-                                format!("{feat_key}.field.{field_name}.option.{}", opt.name)
-                            });
+                        .zip(opt_keys)
+                        .map(|(opt, key)| {
                             let (label, description) =
                                 registry.features().label_desc(key, &*opt.name);
                             DatalistOption::with_signals(&*opt.name, label, description)

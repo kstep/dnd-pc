@@ -9,7 +9,7 @@ use crate::{
         ActionType, AssignInputs, Attribute, CharacterCore, EffectDefinition, Expr,
         FeatureCategory, FeatureField, Translatable, short_name,
     },
-    rules::spells::SpellsDefinition,
+    rules::{locale::LocaleKey, spells::SpellsDefinition},
 };
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize)]
@@ -251,6 +251,17 @@ pub struct ActionDefinition {
 }
 
 impl ActionDefinition {
+    /// Locale key for one of this action's options. `Ref { from }` actions
+    /// inherit option translations from the source field, so the key is
+    /// rooted at `from` instead of this action's own name.
+    pub fn option_locale_key(&self, feat_name: &str, opt_name: &str) -> LocaleKey {
+        let field = match &self.options {
+            ChoiceOptions::Ref { from } => from.as_str(),
+            ChoiceOptions::List(_) => &self.name,
+        };
+        LocaleKey::flat_field_option(feat_name, field, opt_name)
+    }
+
     /// Resolve `ChoiceOptions` to the concrete options visible at the given
     /// class level. `Ref { from }` follows another action's stored selections.
     pub fn resolve_choice_options(

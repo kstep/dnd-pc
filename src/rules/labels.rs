@@ -179,14 +179,6 @@ impl RulesRegistry {
                             }
                         }
                         let def_options = feat_def.resolve_def_options(&action_def.options);
-                        // Ref { from } options inherit their locale entries from
-                        // the source field — the catalog stores translations
-                        // under `feat.field.{from}.option.X`, not under the
-                        // referencing field's own name.
-                        let opt_field_key = match &action_def.options {
-                            ChoiceOptions::Ref { from } => from.as_str(),
-                            ChoiceOptions::List(_) => field.name.as_str(),
-                        };
                         for opt in field.value.choices_mut() {
                             if opt.name.is_empty() {
                                 continue;
@@ -194,11 +186,8 @@ impl RulesRegistry {
                             if let Some(def_opt) =
                                 def_options.iter().find(|def| *def.name == opt.name)
                             {
-                                let opt_key = LocaleKey::flat_field_option(
-                                    &feat_def.name,
-                                    opt_field_key,
-                                    &def_opt.name,
-                                );
+                                let opt_key = action_def
+                                    .option_locale_key(&feat_def.name, &def_opt.name);
                                 let opt_text = raw_locale.and_then(|m| m.get(opt_key.as_str()));
                                 set_label(
                                     &mut opt.label,
