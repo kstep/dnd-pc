@@ -50,7 +50,6 @@ jobs:
         run: cargo test --features testing
 
   build:
-    needs: [test-wasm, test-native]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -89,7 +88,7 @@ jobs:
           path: dist
 
   deploy:
-    needs: build
+    needs: [test-wasm, test-native, build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

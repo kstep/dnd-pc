@@ -50,13 +50,15 @@ struct CoreView {
 #[derive(Deserialize, Default)]
 struct IdentityView {
     #[serde(default)]
+    name: Option<String>,
+    #[serde(default)]
     classes: Vec<ClassLevel>,
 }
 
 #[derive(Deserialize, Default)]
 struct PersonalityView {
     #[serde(default)]
-    name: String,
+    name: Option<String>,
 }
 
 impl From<SummaryView> for CharacterSummary {
@@ -66,10 +68,17 @@ impl From<SummaryView> for CharacterSummary {
         } else {
             view.identity.classes
         };
+        let name = view
+            .personality
+            .name
+            .as_deref()
+            .or(view.identity.name.as_deref())
+            .unwrap_or_default()
+            .to_owned();
         let level = classes.iter().map(|cl| cl.level).sum::<u32>().max(1);
         CharacterSummary {
             id: view.id,
-            name: view.personality.name,
+            name,
             class: format_classes(&classes),
             level,
             updated_at: view.updated_at,
