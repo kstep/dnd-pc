@@ -181,6 +181,8 @@ pub struct Feature {
     pub source: FeatureSource,
     #[serde(default)]
     pub inputs: Vec<AssignInputs>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub replaces: Option<String>,
 }
 
 impl Feature {
@@ -518,6 +520,7 @@ impl Features {
                 category,
                 source,
                 inputs,
+                replaces: None,
             });
             idx
         }

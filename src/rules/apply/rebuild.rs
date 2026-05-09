@@ -644,6 +644,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
                 args,
                 ..AssignInputs::default()
             }],
+            replaces: None,
         },
     );
 }
@@ -1150,6 +1151,45 @@ mod tests {
             .features
             .list
             .push(feature("Arcane Trickster", slot_source.clone()));
+
+        let pending = PendingFeature {
+            name: "Rogue Subclass".into(),
+            source: slot_source.clone(),
+            level: 3,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            FeaturesView::from_natural(&feat_index),
+            &pending_keys,
+            &baseline,
+        );
+        assert_eq!(found, Some("Arcane Trickster".into()));
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_uses_explicit_replaces_field() {
+        // Fast path: a feature carrying `replaces = Some(<placeholder>)` wins
+        // even when the swap def is missing from the index — the legacy
+        // heuristic needs the def to test category/prereqs, the new field
+        // doesn't.
+        let slot_source = FeatureSource::Class("Rogue".into(), 3);
+        let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
+
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((slot_def.name.clone(), slot_def.clone())).collect();
+
+        let mut original = Character::default();
+        let mut swap = feature("Arcane Trickster", slot_source.clone());
+        swap.replaces = Some("Rogue Subclass".into());
+        original.features.list.push(swap);
 
         let pending = PendingFeature {
             name: "Rogue Subclass".into(),

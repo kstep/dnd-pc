@@ -45,8 +45,17 @@ pub fn detect_replacement(
         if feature.name == pending.name {
             return None;
         }
+        if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
+            continue;
+        }
+        if feature
+            .replaces
+            .as_deref()
+            .is_some_and(|name| name == pending.name)
+        {
+            return Some(feature.name.clone());
+        }
         if candidate.is_none()
-            && !pending_keys.contains(&(feature.name.as_str(), &feature.source))
             && let Some(candidate_def) = feat_index.get(feature.name.as_str())
             && feat_def.replace_with.matches(candidate_def)
             && candidate_def.meets_prerequisites(baseline)
@@ -250,16 +259,21 @@ pub fn cascade(
     replacement_for: &dyn Fn(&str) -> Option<String>,
     speculative: bool,
 ) {
-    let resolved: Vec<PendingFeature> = pending
+    let resolved: Vec<(PendingFeature, Option<String>)> = pending
         .iter()
         .map(
             |pending_feature| match replacement_for(pending_feature.name.as_str()) {
                 Some(replacement) if features_index.contains_key(replacement.as_str()) => {
-                    PendingFeature {
-                        name: replacement,
-                        source: pending_feature.source.clone(),
-                        level: pending_feature.level,
-                    }
+                    let replaces = (replacement.as_str() != pending_feature.name.as_str())
+                        .then(|| pending_feature.name.clone());
+                    (
+                        PendingFeature {
+                            name: replacement,
+                            source: pending_feature.source.clone(),
+                            level: pending_feature.level,
+                        },
+                        replaces,
+                    )
                 }
                 Some(replacement) => {
                     log::warn!(
@@ -267,15 +281,15 @@ pub fn cascade(
                          keeping original",
                         pending_feature.name
                     );
-                    pending_feature.clone()
+                    (pending_feature.clone(), None)
                 }
-                None => pending_feature.clone(),
+                None => (pending_feature.clone(), None),
             },
         )
         .collect();
 
     let mut follow_ups = Vec::new();
-    for pending_feature in &resolved {
+    for (pending_feature, replaces) in &resolved {
         let key = FeatureKey::from_pending(pending_feature);
         let inputs = inputs_for(&key);
         let fu = apply_pending(
@@ -286,6 +300,13 @@ pub fn cascade(
             caches,
             speculative,
         );
+        if let Some(replaced_name) = replaces.as_deref()
+            && let Some(pos) = character
+                .features
+                .find_pos(&pending_feature.name, &pending_feature.source)
+        {
+            character.features.list[pos].replaces = Some(replaced_name.to_string());
+        }
         follow_ups.extend(fu);
     }
 
