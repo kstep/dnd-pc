@@ -284,14 +284,10 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                         let Ok(idx) = event_target_value(&e).parse::<u8>() else { return };
                                                         let new_category = WeaponCategory::try_from(idx).unwrap_or_default();
                                                         let mut weapons = weapons.write();
-                                                        let old_category = weapons[i].category;
                                                         let ability = weapons[i].ability;
                                                         let magic = weapons[i].magic_bonus;
                                                         weapons[i].category = new_category;
-                                                        let old_default = Weapon::default_attack_expr(old_category, ability, magic);
-                                                        if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
-                                                            weapons[i].attack_expr = Weapon::default_attack_expr(new_category, ability, magic);
-                                                        }
+                                                        weapons[i].attack_expr = Weapon::default_attack_expr(new_category, ability, magic);
                                                     }
                                                 >
                                                     {WeaponCategory::iter()
@@ -337,13 +333,9 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             let new_ability = Ability::try_from(idx).unwrap_or(Ability::Strength);
                                                             let mut weapons = weapons.write();
                                                             let category = weapons[i].category;
-                                                            let old_ability = weapons[i].ability;
                                                             let magic = weapons[i].magic_bonus;
                                                             weapons[i].ability = new_ability;
-                                                            let old_default = Weapon::default_attack_expr(category, old_ability, magic);
-                                                            if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
-                                                                weapons[i].attack_expr = Weapon::default_attack_expr(category, new_ability, magic);
-                                                            }
+                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, new_ability, magic);
                                                             for effect in weapons[i].effects.iter_mut() {
                                                                 if effect.name == DAMAGE_EFFECT_NAME && effect.expr.is_empty() {
                                                                     effect.expr = Weapon::default_damage_expr(new_ability);
@@ -374,12 +366,8 @@ pub fn EquipmentPanel() -> impl IntoView {
                                                             let mut weapons = weapons.write();
                                                             let category = weapons[i].category;
                                                             let ability = weapons[i].ability;
-                                                            let old_magic = weapons[i].magic_bonus;
                                                             weapons[i].magic_bonus = new_magic;
-                                                            let old_default = Weapon::default_attack_expr(category, ability, old_magic);
-                                                            if weapons[i].attack_expr == old_default || weapons[i].attack_expr.is_none() {
-                                                                weapons[i].attack_expr = Weapon::default_attack_expr(category, ability, new_magic);
-                                                            }
+                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, ability, new_magic);
                                                         }
                                                     />
                                                 </SlotBox>
