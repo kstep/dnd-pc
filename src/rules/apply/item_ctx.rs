@@ -1,7 +1,7 @@
 use crate::{
     expr,
-    model::{Attribute, Character, Charges, Enchantment, GearRef},
-    rules::{WhenCondition, feature::Assignment},
+    model::{Attribute, Character, Charges, Enchantment, Expr, GearRef},
+    rules::WhenCondition,
 };
 
 /// Apply-time context for evaluating gear `Enchantment.assign` expressions.
@@ -128,60 +128,16 @@ impl expr::Context<Attribute, i32> for ItemApplyCtx<'_> {
     }
 }
 
-/// Run gear-side `assign` expressions matching `when` across every item /
-/// weapon / armor with a non-empty `magic.assign` block. `OnGearActive`
-/// only fires for equipped gear, matching its "while the gear is active"
-/// semantics. Other timings (rest events) fire regardless — gear continues
-/// to live with time passing.
 pub fn assign_items(character: &mut Character, when: WhenCondition) {
-    let active_only = matches!(when, WhenCondition::OnGearActive);
-    let item_count = character.equipment.items.len();
-    for i in 0..item_count {
-        let item = &character.equipment.items[i];
-        if active_only && !item.is_active() {
-            continue;
-        }
-        let assigns = collect_assigns(&item.magic.assign, when);
-        if assigns.is_empty() {
-            continue;
-        }
-        run_assigns(character, GearRef::Item(i), &assigns);
-    }
-    let weapon_count = character.equipment.weapons.len();
-    for i in 0..weapon_count {
-        let weapon = &character.equipment.weapons[i];
-        if active_only && !weapon.is_active() {
-            continue;
-        }
-        let assigns = collect_assigns(&weapon.magic.assign, when);
-        if assigns.is_empty() {
-            continue;
-        }
-        run_assigns(character, GearRef::Weapon(i), &assigns);
-    }
-    let armor_count = character.equipment.armors.len();
-    for i in 0..armor_count {
-        let armor = &character.equipment.armors[i];
-        if active_only && !armor.is_active() {
-            continue;
-        }
-        let assigns = collect_assigns(&armor.magic.assign, when);
-        if assigns.is_empty() {
-            continue;
-        }
-        run_assigns(character, GearRef::Armor(i), &assigns);
-    }
-}
-
-fn collect_assigns(source: &[Assignment], when: WhenCondition) -> Vec<Assignment> {
-    source.iter().filter(|a| a.when == when).cloned().collect()
-}
-
-fn run_assigns(character: &mut Character, gear: GearRef, assigns: &[Assignment]) {
-    let mut ctx = ItemApplyCtx { character, gear };
-    for assignment in assigns {
-        if let Err(error) = assignment.expr.apply(&mut ctx) {
-            log::debug!("Gear assignment failed for {:?}: {error:?}", gear);
+    let work: Vec<(GearRef, Expr)> = character
+        .equipment
+        .assignments(when)
+        .map(|(gear, expr)| (gear, expr.clone()))
+        .collect();
+    for (gear, expr) in work {
+        let mut ctx = ItemApplyCtx { character, gear };
+        if let Err(error) = expr.apply(&mut ctx) {
+            log::debug!("Gear assignment failed for {gear:?}: {error:?}");
         }
     }
 }
@@ -191,7 +147,10 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::model::{Charges, Item};
+    use crate::{
+        model::{Charges, Item},
+        rules::feature::Assignment,
+    };
 
     fn item_with_assign(name: &str, max: u32, used: u32, expr: &str, when: WhenCondition) -> Item {
         let mut item = Item {
