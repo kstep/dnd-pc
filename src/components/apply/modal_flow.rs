@@ -5,7 +5,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::args_modal::ArgsModalCtx,
-    model::{AssignInputs, Character, CharacterCore, FeatureCategory, FeatureSource},
+    model::{AssignInputs, Character, CharacterCore, Feature, FeatureSource},
     rules::{
         ApplyInputs, FeaturesView, PendingInputs, RecomputePending, RulesRegistry, WhenCondition,
         apply::{FeatureKey, PendingFeature, cascade},
@@ -126,52 +126,21 @@ pub fn edit_inputs_modal(
 
     let ctx = expect_context::<ArgsModalCtx>();
     ctx.open(vec![pending_input], base, None, move |inputs| {
-        // The decision matrix is pure (`compute_edit_outcome`); this closure
-        // just threads its result into the store.
-        let outcome = registry.with_features_index_untracked(|feat_index| {
-            let character = store.read_untracked();
-            let current_inputs: Vec<AssignInputs> = character
-                .features
-                .get_inputs(&current_name, &source)
-                .to_vec();
-            let current_replaces = character
-                .features
-                .iter()
-                .find(|feature| feature.name == current_name && feature.source == source)
-                .and_then(|feature| feature.replaces.clone());
-            compute_edit_outcome(
-                &placeholder_name,
-                &current_name,
-                &current_inputs,
-                current_replaces.as_deref(),
-                &inputs,
-                feat_index,
-                &source,
-            )
-        });
-
         store.update(|character| {
-            for feature in character.features.iter_mut() {
-                if feature.name == current_name && feature.source == source {
-                    if let Some(new_category) = outcome.new_category {
-                        feature.name = outcome.new_row_name.clone();
-                        feature.category = new_category;
-                        // sync_labels repopulates label/description on the
-                        // next reactive cycle from the new def.
-                        feature.label = None;
-                        feature.description = String::new();
-                    }
-                    feature.replaces = outcome.new_replaces.clone();
-                    feature.inputs = outcome.new_inputs.clone();
-                    if outcome.dirty {
-                        feature.applied = false;
-                    }
-                    break;
+            registry.with_features_index_untracked(|feat_index| {
+                let Some(feature) = character
+                    .features
+                    .iter_mut()
+                    .find(|feature| feature.name == current_name && feature.source == source)
+                else {
+                    return;
+                };
+                if let Some(old_name) =
+                    apply_edit_to_feature(feature, &placeholder_name, &inputs, feat_index)
+                {
+                    character.features.data_mut().remove(&old_name);
                 }
-            }
-            if current_name != outcome.new_row_name {
-                character.features.data_mut().remove(&current_name);
-            }
+            });
         });
     });
 }
@@ -287,71 +256,59 @@ fn apply_batch(
     });
 }
 
-/// Outcome of an edit-modal submit. Pure data — produced by
-/// [`compute_edit_outcome`] from the modal's `ApplyInputs`, then applied to
-/// the store by the modal callback. Keeping the decision matrix in a pure
-/// function lets the rename / replaces / dirty rules be unit-tested without
-/// Leptos signals.
-#[derive(Debug, Clone, PartialEq)]
-pub struct EditOutcome {
-    pub new_row_name: String,
-    pub new_replaces: Option<String>,
-    pub new_inputs: Vec<AssignInputs>,
-    /// `Some(_)` when the row was renamed and the caller should rewrite the
-    /// row's category (and clear locale-cached label/description so
-    /// `sync_labels` repopulates from the new def).
-    pub new_category: Option<FeatureCategory>,
-    /// Set `feature.applied = false` when true — drives the Rebuild banner.
-    pub dirty: bool,
-}
-
-/// Compute the post-submit row state for the edit modal.
+/// Apply the modal's submission to an existing feature in-place.
 ///
-/// `placeholder_name` is the placeholder feat the modal was opened for (e.g.
-/// "ASI"). `current_name` is the row's actual stored name (e.g. "Lucky" for
-/// an existing swap, or "ASI" itself for a non-swap edit). The modal returns
-/// its picker choice in `submitted.replacements[placeholder_name]`:
+/// `placeholder_name` is the placeholder the modal was opened for (e.g.
+/// "ASI"). `feature` is the feature being edited — its current name may
+/// equal `placeholder_name` (non-swap edit) or be a previously-picked
+/// replacement (swap edit, where `feature.replaces == Some(placeholder_name)`).
 ///
-/// - `Some(name)` — keep / change the swap; the row ends up named `name`,
-///   `replaces = Some(placeholder_name)` if `name != placeholder_name`.
-/// - `None` — picker unchecked or never set; the row ends up named
-///   `placeholder_name`, `replaces = None`.
-pub fn compute_edit_outcome(
+/// The modal returns its picker choice in `submitted.replacements[placeholder_name]`:
+/// `Some(name)` keeps or changes the swap; absent / `None` reverts to the
+/// placeholder. New inputs land under `(effective_name, feature.source)`.
+///
+/// Mutates `feature.{name, category, label, description, replaces, inputs,
+/// applied}` and returns the previous name when renamed (caller cleans up
+/// `features.data` under that key); returns `None` otherwise.
+pub fn apply_edit_to_feature(
+    feature: &mut Feature,
     placeholder_name: &str,
-    current_name: &str,
-    current_inputs: &[AssignInputs],
-    current_replaces: Option<&str>,
     submitted: &ApplyInputs,
     feat_index: FeaturesView<'_>,
-    source: &FeatureSource,
-) -> EditOutcome {
-    let replacement_name = submitted.replacements.get(placeholder_name).cloned();
-    let new_row_name = replacement_name
-        .clone()
+) -> Option<String> {
+    let new_name = submitted
+        .replacements
+        .get(placeholder_name)
+        .cloned()
         .unwrap_or_else(|| placeholder_name.to_string());
-    let new_replaces = (new_row_name != placeholder_name).then(|| placeholder_name.to_string());
-    let effective_key = FeatureKey::new(&new_row_name, source.clone());
+    let new_replaces = (new_name != placeholder_name).then(|| placeholder_name.to_string());
+    let effective_key = FeatureKey::new(&new_name, feature.source.clone());
     let new_inputs = submitted
         .feature_inputs
         .get(&effective_key)
         .cloned()
         .unwrap_or_default();
 
-    let renamed = new_row_name != current_name;
-    let new_category = renamed
-        .then(|| feat_index.get(new_row_name.as_str()).map(|def| def.category))
-        .flatten();
-    let replaces_changed = new_replaces.as_deref() != current_replaces;
-    let inputs_changed = new_inputs != current_inputs;
+    let renamed = new_name != feature.name;
+    let replaces_changed = new_replaces != feature.replaces;
+    let inputs_changed = new_inputs != feature.inputs;
     let dirty = renamed || replaces_changed || inputs_changed;
 
-    EditOutcome {
-        new_row_name,
-        new_replaces,
-        new_inputs,
-        new_category,
-        dirty,
+    let old_name = renamed.then(|| std::mem::replace(&mut feature.name, new_name.clone()));
+    if renamed {
+        if let Some(new_def) = feat_index.get(new_name.as_str()) {
+            feature.category = new_def.category;
+        }
+        // sync_labels repopulates from the new def on the next reactive cycle.
+        feature.label = None;
+        feature.description = String::new();
     }
+    feature.replaces = new_replaces;
+    feature.inputs = new_inputs;
+    if dirty {
+        feature.applied = false;
+    }
+    old_name
 }
 
 #[cfg(test)]
@@ -361,7 +318,10 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::rules::{FeatureDefinition, ReplaceWith};
+    use crate::{
+        model::FeatureCategory,
+        rules::{FeatureDefinition, ReplaceWith},
+    };
 
     fn feat_def(
         name: &str,
@@ -380,9 +340,7 @@ mod tests {
         }
     }
 
-    fn make_index(
-        defs: Vec<FeatureDefinition>,
-    ) -> BTreeMap<Box<str>, FeatureDefinition> {
+    fn make_index(defs: Vec<FeatureDefinition>) -> BTreeMap<Box<str>, FeatureDefinition> {
         defs.into_iter().map(|def| (def.name.clone(), def)).collect()
     }
 
@@ -397,8 +355,26 @@ mod tests {
         FeatureSource::Class("Fighter".into(), 4)
     }
 
+    fn feature(
+        name: &str,
+        category: FeatureCategory,
+        source: FeatureSource,
+        inputs: Vec<AssignInputs>,
+        replaces: Option<String>,
+    ) -> Feature {
+        Feature {
+            name: name.into(),
+            category,
+            source,
+            inputs,
+            replaces,
+            applied: true,
+            ..Default::default()
+        }
+    }
+
     #[wasm_bindgen_test]
-    fn non_swap_keeps_inputs_and_stays_clean() {
+    fn non_swap_keeps_inputs_and_stays_applied() {
         let index = make_index(vec![feat_def(
             "Tough",
             FeatureCategory::General,
@@ -406,28 +382,20 @@ mod tests {
         )]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
-        let current_inputs = vec![args(&[1, 2])];
+        let inputs = vec![args(&[1, 2])];
+        let mut feature = feature("Tough", FeatureCategory::General, source.clone(), inputs.clone(), None);
         let mut submitted = ApplyInputs::default();
-        submitted.feature_inputs.insert(
-            FeatureKey::new("Tough", source.clone()),
-            current_inputs.clone(),
-        );
+        submitted
+            .feature_inputs
+            .insert(FeatureKey::new("Tough", source.clone()), inputs.clone());
 
-        let outcome = compute_edit_outcome(
-            "Tough",
-            "Tough",
-            &current_inputs,
-            None,
-            &submitted,
-            view,
-            &source,
-        );
+        let renamed_from = apply_edit_to_feature(&mut feature, "Tough", &submitted, view);
 
-        assert_eq!(outcome.new_row_name, "Tough");
-        assert_eq!(outcome.new_replaces, None);
-        assert_eq!(outcome.new_inputs, current_inputs);
-        assert_eq!(outcome.new_category, None);
-        assert!(!outcome.dirty);
+        assert_eq!(renamed_from, None);
+        assert_eq!(feature.name, "Tough");
+        assert_eq!(feature.replaces, None);
+        assert_eq!(feature.inputs, inputs);
+        assert!(feature.applied);
     }
 
     #[wasm_bindgen_test]
@@ -439,60 +407,54 @@ mod tests {
         )]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
-        let current_inputs = vec![args(&[1, 2])];
+        let mut feature = feature(
+            "Tough",
+            FeatureCategory::General,
+            source.clone(),
+            vec![args(&[1, 2])],
+            None,
+        );
         let new_inputs = vec![args(&[3, 4])];
         let mut submitted = ApplyInputs::default();
-        submitted.feature_inputs.insert(
-            FeatureKey::new("Tough", source.clone()),
-            new_inputs.clone(),
-        );
+        submitted
+            .feature_inputs
+            .insert(FeatureKey::new("Tough", source.clone()), new_inputs.clone());
 
-        let outcome = compute_edit_outcome(
-            "Tough",
-            "Tough",
-            &current_inputs,
-            None,
-            &submitted,
-            view,
-            &source,
-        );
+        let renamed_from = apply_edit_to_feature(&mut feature, "Tough", &submitted, view);
 
-        assert!(outcome.dirty);
-        assert_eq!(outcome.new_inputs, new_inputs);
+        assert_eq!(renamed_from, None);
+        assert_eq!(feature.inputs, new_inputs);
+        assert!(!feature.applied);
     }
 
     #[wasm_bindgen_test]
-    fn swap_picker_unchanged_stays_clean_when_inputs_match() {
+    fn swap_picker_unchanged_stays_applied_when_inputs_match() {
         let index = make_index(vec![
             feat_def("ASI", FeatureCategory::Class, ReplaceWith::Any),
             feat_def("Lucky", FeatureCategory::General, ReplaceWith::None),
         ]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
-        let current_inputs = vec![args(&[7])];
-        let mut submitted = ApplyInputs::default();
-        submitted
-            .replacements
-            .insert("ASI".into(), "Lucky".into());
-        submitted.feature_inputs.insert(
-            FeatureKey::new("Lucky", source.clone()),
-            current_inputs.clone(),
-        );
-
-        let outcome = compute_edit_outcome(
-            "ASI",
+        let inputs = vec![args(&[7])];
+        let mut feature = feature(
             "Lucky",
-            &current_inputs,
-            Some("ASI"),
-            &submitted,
-            view,
-            &source,
+            FeatureCategory::General,
+            source.clone(),
+            inputs.clone(),
+            Some("ASI".into()),
         );
+        let mut submitted = ApplyInputs::default();
+        submitted.replacements.insert("ASI".into(), "Lucky".into());
+        submitted
+            .feature_inputs
+            .insert(FeatureKey::new("Lucky", source.clone()), inputs.clone());
 
-        assert_eq!(outcome.new_row_name, "Lucky");
-        assert_eq!(outcome.new_replaces, Some("ASI".into()));
-        assert_eq!(outcome.new_category, None); // no rename
-        assert!(!outcome.dirty);
+        let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
+
+        assert_eq!(renamed_from, None);
+        assert_eq!(feature.name, "Lucky");
+        assert_eq!(feature.replaces, Some("ASI".into()));
+        assert!(feature.applied);
     }
 
     #[wasm_bindgen_test]
@@ -504,32 +466,28 @@ mod tests {
         ]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
-        let current_inputs = vec![args(&[7])];
+        let mut feature = feature(
+            "Lucky",
+            FeatureCategory::General,
+            source.clone(),
+            vec![args(&[7])],
+            Some("ASI".into()),
+        );
         let new_inputs = vec![args(&[9])];
         let mut submitted = ApplyInputs::default();
+        submitted.replacements.insert("ASI".into(), "Tough".into());
         submitted
-            .replacements
-            .insert("ASI".into(), "Tough".into());
-        submitted.feature_inputs.insert(
-            FeatureKey::new("Tough", source.clone()),
-            new_inputs.clone(),
-        );
+            .feature_inputs
+            .insert(FeatureKey::new("Tough", source.clone()), new_inputs.clone());
 
-        let outcome = compute_edit_outcome(
-            "ASI",
-            "Lucky",
-            &current_inputs,
-            Some("ASI"),
-            &submitted,
-            view,
-            &source,
-        );
+        let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
-        assert_eq!(outcome.new_row_name, "Tough");
-        assert_eq!(outcome.new_replaces, Some("ASI".into()));
-        assert_eq!(outcome.new_category, Some(FeatureCategory::General));
-        assert_eq!(outcome.new_inputs, new_inputs);
-        assert!(outcome.dirty);
+        assert_eq!(renamed_from, Some("Lucky".into()));
+        assert_eq!(feature.name, "Tough");
+        assert_eq!(feature.replaces, Some("ASI".into()));
+        assert_eq!(feature.category, FeatureCategory::General);
+        assert_eq!(feature.inputs, new_inputs);
+        assert!(!feature.applied);
     }
 
     #[wasm_bindgen_test]
@@ -540,8 +498,14 @@ mod tests {
         ]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
-        let current_inputs = vec![args(&[7])];
-        let placeholder_inputs = vec![args(&[1])]; // ASI's own picks
+        let mut feature = feature(
+            "Lucky",
+            FeatureCategory::General,
+            source.clone(),
+            vec![args(&[7])],
+            Some("ASI".into()),
+        );
+        let placeholder_inputs = vec![args(&[1])];
         let mut submitted = ApplyInputs::default();
         // No replacement key — picker unchecked. Inputs land under placeholder.
         submitted.feature_inputs.insert(
@@ -549,56 +513,44 @@ mod tests {
             placeholder_inputs.clone(),
         );
 
-        let outcome = compute_edit_outcome(
-            "ASI",
-            "Lucky",
-            &current_inputs,
-            Some("ASI"),
-            &submitted,
-            view,
-            &source,
-        );
+        let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
-        assert_eq!(outcome.new_row_name, "ASI");
-        assert_eq!(outcome.new_replaces, None);
-        assert_eq!(outcome.new_category, Some(FeatureCategory::Class));
-        assert_eq!(outcome.new_inputs, placeholder_inputs);
-        assert!(outcome.dirty);
+        assert_eq!(renamed_from, Some("Lucky".into()));
+        assert_eq!(feature.name, "ASI");
+        assert_eq!(feature.replaces, None);
+        assert_eq!(feature.category, FeatureCategory::Class);
+        assert_eq!(feature.inputs, placeholder_inputs);
+        assert!(!feature.applied);
     }
 
     #[wasm_bindgen_test]
     fn swap_changed_uses_replacement_inputs_from_modal() {
         // Inputs under (placeholder, source) must be ignored — the modal
-        // submits new inputs under (replacement, source). Confirms the
-        // effective_key lookup.
+        // submits new inputs under (replacement, source).
         let index = make_index(vec![
             feat_def("ASI", FeatureCategory::Class, ReplaceWith::Any),
             feat_def("Tough", FeatureCategory::General, ReplaceWith::None),
         ]);
         let view = FeaturesView::from_natural(&index);
         let source = fighter_l4();
+        let mut feature = feature(
+            "Lucky",
+            FeatureCategory::General,
+            source.clone(),
+            vec![args(&[7])],
+            Some("ASI".into()),
+        );
         let mut submitted = ApplyInputs::default();
-        submitted
-            .replacements
-            .insert("ASI".into(), "Tough".into());
+        submitted.replacements.insert("ASI".into(), "Tough".into());
         submitted
             .feature_inputs
             .insert(FeatureKey::new("ASI", source.clone()), vec![args(&[99])]);
-        submitted.feature_inputs.insert(
-            FeatureKey::new("Tough", source.clone()),
-            vec![args(&[5])],
-        );
+        submitted
+            .feature_inputs
+            .insert(FeatureKey::new("Tough", source.clone()), vec![args(&[5])]);
 
-        let outcome = compute_edit_outcome(
-            "ASI",
-            "Lucky",
-            &[args(&[7])],
-            Some("ASI"),
-            &submitted,
-            view,
-            &source,
-        );
+        apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
-        assert_eq!(outcome.new_inputs, vec![args(&[5])]);
+        assert_eq!(feature.inputs, vec![args(&[5])]);
     }
 }

@@ -73,11 +73,11 @@ pub fn FeatureRow(
         .unwrap_or((false, false));
     // Reactive — features.json may not be loaded at mount, but arrives later.
     // Reading via `feature.read()` also tracks rename + `replaces` writes so
-    // the pencil appears/disappears when the row changes shape (e.g. an
+    // the pencil appears/disappears when the feature changes shape (e.g. an
     // edit-mode rename Lucky → ASI clears `replaces` and may hide the
     // pencil if the placeholder has no interactive inputs).
     let is_editable = Memo::new(move |_| {
-        // Swap rows are always editable — the placeholder modal hosts a
+        // Swap features are always editable — the placeholder modal hosts a
         // replacement picker even when the placeholder itself has no
         // interactive exprs.
         if feature.read().replaces.is_some() {
@@ -262,10 +262,9 @@ pub fn FeatureRow(
                                     build_clean(&truncated_clone, &registry, &ApplyInputs::default())
                                         .map(|outcome| outcome.character)
                                         .unwrap_or(truncated_clone);
-                                // For a swap row (`replaces = Some(orig)`), open the modal
-                                // for the placeholder so its picker shows the current swap
-                                // pre-selected. Non-swap edits open for the row's name as
-                                // before.
+                                // For a swap (`replaces = Some(orig)`), open the modal for
+                                // the placeholder so its picker shows the current swap
+                                // pre-selected. Non-swap edits open for the feature's own name.
                                 let placeholder_name =
                                     replaces.clone().unwrap_or_else(|| current_name.clone());
                                 let current_name_for_modal =
