@@ -1,6 +1,9 @@
 use crate::{
     model::{Character, CharacterCore},
-    rules::{FeaturesView, WhenCondition, apply::context::ApplyContext},
+    rules::{
+        FeaturesView, WhenCondition,
+        apply::{context::ApplyContext, item_ctx::assign_items},
+    },
 };
 
 /// Recompute derived character state. Call after any apply pipeline step
@@ -10,6 +13,7 @@ use crate::{
 pub fn compute(character: &mut Character, feat_index: FeaturesView<'_>) {
     character.compute();
     assign(character, feat_index, WhenCondition::OnCompute);
+    assign_items(character, WhenCondition::OnGearActive);
     character.compute_armor_class();
 }
 

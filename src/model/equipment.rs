@@ -1,7 +1,10 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::{Ability, ArmorType, DamageType, Enchantment, Expr, Money, WeaponCategory};
+use crate::{
+    model::{Ability, ArmorType, DamageType, Enchantment, Expr, Money, WeaponCategory},
+    rules::WhenCondition,
+};
 
 /// Stable reference to a gear slot inside `Equipment`. Used by the
 /// enchantment editor, gear-actions UI, and `ItemApplyCtx` to address a
@@ -23,6 +26,47 @@ pub struct Equipment {
     pub items: Vec<Item>,
     #[serde(default)]
     pub currency: Currency,
+}
+
+impl Equipment {
+    /// `OnGearActive` only fires for equipped gear; other timings run on all gear.
+    pub fn assignments(
+        &self,
+        when: WhenCondition,
+    ) -> impl Iterator<Item = (GearRef, &Expr)> + '_ {
+        let active_only = matches!(when, WhenCondition::OnGearActive);
+        let items = self.items.iter().enumerate().flat_map(move |(i, item)| {
+            let gate = !active_only || item.is_active();
+            item.magic
+                .assign
+                .iter()
+                .filter(move |a| gate && a.when == when)
+                .map(move |a| (GearRef::Item(i), &a.expr))
+        });
+        let weapons = self
+            .weapons
+            .iter()
+            .enumerate()
+            .flat_map(move |(i, weapon)| {
+                let gate = !active_only || weapon.is_active();
+                weapon
+                    .magic
+                    .assign
+                    .iter()
+                    .filter(move |a| gate && a.when == when)
+                    .map(move |a| (GearRef::Weapon(i), &a.expr))
+            });
+        let armors = self.armors.iter().enumerate().flat_map(move |(i, armor)| {
+            let gate = !active_only || armor.is_active();
+            armor
+                .magic
+                .assign
+                .iter()
+                .filter(move |a| gate && a.when == when)
+                .map(move |a| (GearRef::Armor(i), &a.expr))
+        });
+        items.chain(weapons).chain(armors)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
