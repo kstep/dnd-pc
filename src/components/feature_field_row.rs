@@ -14,7 +14,7 @@ use crate::{
         Character, CharacterCoreStoreFields, CharacterIdentityStoreFields, CharacterStoreFields,
         FeatureOption, FeatureValue, FeaturesStoreFields, Translatable, format_bonus,
     },
-    rules::{RulesRegistry, feature::ChoiceOptions},
+    rules::RulesRegistry,
 };
 
 #[component]
@@ -228,26 +228,30 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 });
 
                 let has_cost = cost_label.is_some();
-                // Ref { from } actions inherit option locale entries from the
-                // source field — translations live under `feat.field.{from}`.
-                let opt_locale_field = feature_name.with_value(|feat_key| {
+                let opt_keys: Vec<String> = feature_name.with_value(|feat_key| {
                     registry.with_features_index_untracked(|view| {
-                        view.get(feat_key).and_then(|feat_def| {
-                            match &feat_def.actions.get(field_name.as_str())?.options {
-                                ChoiceOptions::Ref { from } => Some(from.clone()),
-                                ChoiceOptions::List(_) => None,
-                            }
-                        })
+                        let action_def = view
+                            .get(feat_key)
+                            .and_then(|feat_def| feat_def.actions.get(field_name.as_str()));
+                        all_options
+                            .iter()
+                            .map(|opt| match action_def {
+                                Some(action_def) => action_def
+                                    .option_locale_key(feat_key, &opt.name)
+                                    .as_str()
+                                    .to_string(),
+                                None => {
+                                    format!("{feat_key}.field.{field_name}.option.{}", opt.name)
+                                }
+                            })
+                            .collect()
                     })
-                })
-                .unwrap_or_else(|| field_name.clone());
+                });
                 let suggestions: Signal<Vec<DatalistOption>> = Signal::stored(
                     all_options
                         .iter()
-                        .map(|opt| {
-                            let key = feature_name.with_value(|feat_key| {
-                                format!("{feat_key}.field.{opt_locale_field}.option.{}", opt.name)
-                            });
+                        .zip(opt_keys)
+                        .map(|(opt, key)| {
                             let (label, description) =
                                 registry.features().label_desc(key, &*opt.name);
                             DatalistOption::with_signals(&*opt.name, label, description)
