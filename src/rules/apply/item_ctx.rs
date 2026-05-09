@@ -128,14 +128,20 @@ impl expr::Context<Attribute, i32> for ItemApplyCtx<'_> {
     }
 }
 
-/// Run gear-side `assign` expressions matching `when` across every active
-/// item / weapon / armor with a non-empty `magic.assign` block. Note: the
-/// pass is _not_ filtered by `is_active()` — gear continues to live with
-/// time passing (rest events refill charges even on items in the backpack).
+/// Run gear-side `assign` expressions matching `when` across every item /
+/// weapon / armor with a non-empty `magic.assign` block. `OnGearActive`
+/// only fires for equipped gear, matching its "while the gear is active"
+/// semantics. Other timings (rest events) fire regardless — gear continues
+/// to live with time passing.
 pub fn assign_items(character: &mut Character, when: WhenCondition) {
+    let active_only = matches!(when, WhenCondition::OnGearActive);
     let item_count = character.equipment.items.len();
     for i in 0..item_count {
-        let assigns = collect_assigns(&character.equipment.items[i].magic.assign, when);
+        let item = &character.equipment.items[i];
+        if active_only && !item.is_active() {
+            continue;
+        }
+        let assigns = collect_assigns(&item.magic.assign, when);
         if assigns.is_empty() {
             continue;
         }
@@ -143,7 +149,11 @@ pub fn assign_items(character: &mut Character, when: WhenCondition) {
     }
     let weapon_count = character.equipment.weapons.len();
     for i in 0..weapon_count {
-        let assigns = collect_assigns(&character.equipment.weapons[i].magic.assign, when);
+        let weapon = &character.equipment.weapons[i];
+        if active_only && !weapon.is_active() {
+            continue;
+        }
+        let assigns = collect_assigns(&weapon.magic.assign, when);
         if assigns.is_empty() {
             continue;
         }
@@ -151,7 +161,11 @@ pub fn assign_items(character: &mut Character, when: WhenCondition) {
     }
     let armor_count = character.equipment.armors.len();
     for i in 0..armor_count {
-        let assigns = collect_assigns(&character.equipment.armors[i].magic.assign, when);
+        let armor = &character.equipment.armors[i];
+        if active_only && !armor.is_active() {
+            continue;
+        }
+        let assigns = collect_assigns(&armor.magic.assign, when);
         if assigns.is_empty() {
             continue;
         }
