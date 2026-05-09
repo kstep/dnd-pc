@@ -128,11 +128,7 @@ pub fn edit_inputs_modal(
     ctx.open(vec![pending_input], base, None, move |inputs| {
         store.update(|character| {
             registry.with_features_index_untracked(|feat_index| {
-                let Some(feature) = character
-                    .features
-                    .iter_mut()
-                    .find(|feature| feature.name == current_name && feature.source == source)
-                else {
+                let Some(feature) = character.features.find_mut(&current_name, &source) else {
                     return;
                 };
                 if let Some(old_name) =
@@ -290,19 +286,17 @@ pub fn apply_edit_to_feature(
         .unwrap_or_default();
 
     let renamed = new_name != feature.name;
-    let replaces_changed = new_replaces != feature.replaces;
-    let inputs_changed = new_inputs != feature.inputs;
-    let dirty = renamed || replaces_changed || inputs_changed;
+    let dirty = renamed || new_replaces != feature.replaces || new_inputs != feature.inputs;
 
-    let old_name = renamed.then(|| std::mem::replace(&mut feature.name, new_name.clone()));
-    if renamed {
+    let old_name = renamed.then(|| {
         if let Some(new_def) = feat_index.get(new_name.as_str()) {
             feature.category = new_def.category;
         }
         // sync_labels repopulates from the new def on the next reactive cycle.
         feature.label = None;
         feature.description = String::new();
-    }
+        std::mem::replace(&mut feature.name, new_name)
+    });
     feature.replaces = new_replaces;
     feature.inputs = new_inputs;
     if dirty {
