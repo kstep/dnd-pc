@@ -264,7 +264,7 @@ pub fn cascade(
         .map(
             |pending_feature| match replacement_for(pending_feature.name.as_str()) {
                 Some(replacement) if features_index.contains_key(replacement.as_str()) => {
-                    let replaces = (replacement.as_str() != pending_feature.name.as_str())
+                    let replaces = (replacement != pending_feature.name)
                         .then(|| pending_feature.name.clone());
                     (
                         PendingFeature {
@@ -292,6 +292,10 @@ pub fn cascade(
     for (pending_feature, replaces) in &resolved {
         let key = FeatureKey::from_pending(pending_feature);
         let inputs = inputs_for(&key);
+        let was_applied_before = character
+            .features
+            .find_pos(&pending_feature.name, &pending_feature.source)
+            .is_some_and(|pos| character.features.list[pos].applied);
         let fu = apply_pending(
             features_index,
             character,
@@ -300,12 +304,13 @@ pub fn cascade(
             caches,
             speculative,
         );
-        if let Some(replaced_name) = replaces.as_deref()
+        if !was_applied_before
+            && let Some(replaced_name) = replaces
             && let Some(pos) = character
                 .features
                 .find_pos(&pending_feature.name, &pending_feature.source)
         {
-            character.features.list[pos].replaces = Some(replaced_name.to_string());
+            character.features.list[pos].replaces = Some(replaced_name.clone());
         }
         follow_ups.extend(fu);
     }

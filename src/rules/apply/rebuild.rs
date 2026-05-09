@@ -1175,6 +1175,50 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn detect_replacement_fast_path_wins_over_fallback_heuristic() {
+        // Two features at the slot's source: A carries `replaces = Some(slot)`,
+        // B is registered in the index with a matching category and would win
+        // the legacy heuristic. Fast path must return A.
+        let slot_source = FeatureSource::Class("Fighter".into(), 4);
+        let slot_def = feat_def("ASI", FeatureCategory::Class, ReplaceWith::Any);
+        let fallback_pick = feat_def("Tough", FeatureCategory::Class, ReplaceWith::None);
+
+        let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        feat_index.insert(slot_def.name.clone(), slot_def.clone());
+        feat_index.insert(fallback_pick.name.clone(), fallback_pick.clone());
+
+        let mut original = Character::default();
+        original
+            .features
+            .list
+            .push(feature("Tough", slot_source.clone()));
+        let mut explicit = feature("Lucky", slot_source.clone());
+        explicit.replaces = Some("ASI".into());
+        original.features.list.push(explicit);
+
+        let pending = PendingFeature {
+            name: "ASI".into(),
+            source: slot_source.clone(),
+            level: 4,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            FeaturesView::from_natural(&feat_index),
+            &pending_keys,
+            &baseline,
+        );
+        assert_eq!(found, Some("Lucky".into()));
+    }
+
+    #[wasm_bindgen_test]
     fn detect_replacement_uses_explicit_replaces_field() {
         // Fast path: a feature carrying `replaces = Some(<placeholder>)` wins
         // even when the swap def is missing from the index — the legacy
