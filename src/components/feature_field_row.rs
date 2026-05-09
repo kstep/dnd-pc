@@ -14,7 +14,7 @@ use crate::{
         Character, CharacterCoreStoreFields, CharacterIdentityStoreFields, CharacterStoreFields,
         FeatureOption, FeatureValue, FeaturesStoreFields, Translatable, format_bonus,
     },
-    rules::RulesRegistry,
+    rules::{RulesRegistry, feature::ChoiceOptions},
 };
 
 #[component]
@@ -228,12 +228,25 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 });
 
                 let has_cost = cost_label.is_some();
+                // Ref { from } actions inherit option locale entries from the
+                // source field — translations live under `feat.field.{from}`.
+                let opt_locale_field = feature_name.with_value(|feat_key| {
+                    registry.with_features_index_untracked(|view| {
+                        view.get(feat_key).and_then(|feat_def| {
+                            match &feat_def.actions.get(field_name.as_str())?.options {
+                                ChoiceOptions::Ref { from } => Some(from.clone()),
+                                ChoiceOptions::List(_) => None,
+                            }
+                        })
+                    })
+                })
+                .unwrap_or_else(|| field_name.clone());
                 let suggestions: Signal<Vec<DatalistOption>> = Signal::stored(
                     all_options
                         .iter()
                         .map(|opt| {
                             let key = feature_name.with_value(|feat_key| {
-                                format!("{feat_key}.field.{field_name}.option.{}", opt.name)
+                                format!("{feat_key}.field.{opt_locale_field}.option.{}", opt.name)
                             });
                             let (label, description) =
                                 registry.features().label_desc(key, &*opt.name);
