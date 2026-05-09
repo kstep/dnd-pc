@@ -128,11 +128,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                             advanced_on
                                 || !matches!(
                                     feature.category,
-                                    FeatureCategory::System(
-                                        IdentitySlot::Class
-                                            | IdentitySlot::Species
-                                            | IdentitySlot::Background
-                                    )
+                                    FeatureCategory::System(IdentitySlot::Class)
                                 )
                         })
                         .rev()
@@ -158,11 +154,7 @@ pub fn FeaturesPanel() -> impl IntoView {
                                 advanced.get()
                                     || !matches!(
                                         next.category,
-                                        FeatureCategory::System(
-                                            IdentitySlot::Class
-                                                | IdentitySlot::Species
-                                                | IdentitySlot::Background
-                                        )
+                                        FeatureCategory::System(IdentitySlot::Class)
                                     )
                             })
                             .is_none_or(|next| next.source != feature.source);

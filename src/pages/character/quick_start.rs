@@ -20,7 +20,10 @@ use crate::{
     names::{self, NamesData},
     rules::{
         FeaturesView, RecomputePending, RulesRegistry,
-        apply::{PendingFeature, collect_pending_features},
+        apply::{
+            PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS, PendingFeature,
+            collect_pending_features,
+        },
     },
 };
 
@@ -207,7 +210,7 @@ fn build_quick_start_pending_features(
             level,
         });
     }
-    for placeholder_name in ["Generation: Species", "Generation: Background"] {
+    for placeholder_name in [PICK_SPECIES, PICK_BACKGROUND] {
         pending.push(PendingFeature {
             name: placeholder_name.into(),
             source: FeatureSource::User(0),
@@ -218,7 +221,7 @@ fn build_quick_start_pending_features(
     // resulting System(Class) marker lands on User(1) for the first class,
     // matching what level_up_class emits for subsequent level-ups.
     pending.push(PendingFeature {
-        name: "Class Level".into(),
+        name: PICK_CLASS.into(),
         source: FeatureSource::User(level),
         level,
     });
@@ -353,12 +356,12 @@ fn apply_ai_result(
     // assigns set the values when the placeholders swap.
     let mut replacements = result.replacements;
     if !concept.class.is_empty() {
-        replacements.insert("Class Level".into(), concept.class.clone());
+        replacements.insert(PICK_CLASS.into(), concept.class.clone());
     }
     if let Some(subclass) = concept.subclass.as_deref()
         && !subclass.is_empty()
     {
-        replacements.insert("Subclass".into(), subclass.to_string());
+        replacements.insert(PICK_SUBCLASS.into(), subclass.to_string());
     }
 
     let recompute = quick_start_recompute(registry, preset_name);

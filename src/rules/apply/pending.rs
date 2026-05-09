@@ -5,6 +5,15 @@ use crate::{
     rules::{ReplaceWith, WhenCondition, feature::FeatureDefinition},
 };
 
+/// Names of the identity-slot picker placeholder features defined in
+/// `public/data/features.json`. Each carries a
+/// `replace_with: Category(System(_))` so the args modal can swap it for the
+/// user's pick during cascade.
+pub const PICK_SPECIES: &str = "Generation: Species";
+pub const PICK_BACKGROUND: &str = "Generation: Background";
+pub const PICK_CLASS: &str = "Class Level";
+pub const PICK_SUBCLASS: &str = "Subclass";
+
 /// Speculative-cascade recompute closure: given a tentative character, return
 /// the pending list the modal should display. `None` disables speculation.
 pub type RecomputePending = Box<dyn Fn(&CharacterCore) -> Vec<PendingInputs> + Send + Sync>;
