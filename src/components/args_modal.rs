@@ -544,10 +544,11 @@ fn ArgsFeatureInput(
 fn ReplacementPicker(
     replace_with: ReplaceWith,
     replacement_choice: RwSignal<Option<String>>,
-    /// Pre-filled ARG values for the replacement feature's expressions (AI
-    /// generation). Broadcast to every interactive expr of the chosen
-    /// replacement — same semantics as the non-replacement `prefill`.
-    replacement_prefill: Option<AssignInputs>,
+    /// Pre-filled inputs for the replacement's interactive exprs, indexed by
+    /// expr position. Empty Vec = no prefill; out-of-bounds positions render
+    /// as `AssignInputs::default()`. No broadcast — short Vec leaves later
+    /// exprs explicitly empty.
+    replacement_prefill: Vec<AssignInputs>,
     /// Snapshot of the character BEFORE the original feature (the one
     /// being replaced) was applied.
     character: Signal<Arc<CharacterCore>>,
@@ -664,7 +665,7 @@ fn ReplacementPicker(
         // Any user switch to a different choice invalidates it. A no-op
         // re-select of the same name preserves the prefill.
         if selection_changed {
-            replacement_prefill.set_value(None);
+            replacement_prefill.set_value(Vec::new());
         }
 
         // Clean up stale signal/dice entries from previous replacement.
@@ -756,8 +757,13 @@ fn ReplacementPicker(
 
                     let expr_views: Vec<_> = exprs
                         .into_iter()
-                        .map(|expr| {
-                            let prefill = replacement_prefill.get_value().unwrap_or_default();
+                        .enumerate()
+                        .map(|(expr_idx, expr)| {
+                            // Per-expr indexing: a short prefill Vec leaves
+                            // later exprs explicitly empty. No broadcast.
+                            let prefill = replacement_prefill.with_value(|prefills| {
+                                prefills.get(expr_idx).cloned().unwrap_or_default()
+                            });
                             let on_ready = move |parts: ExprArgsInputParts| {
                                 signal_groups.update_value(|groups| {
                                     groups.push(StoredValue::new(parts.arg_signals));
