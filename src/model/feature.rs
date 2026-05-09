@@ -484,6 +484,7 @@ impl Features {
     /// Add a feature with its inputs. Reuses an existing unapplied row with
     /// the same name (fills it in), otherwise pushes a fresh applied row.
     /// Returns the row's position so callers can index `inputs` against it.
+    #[allow(clippy::too_many_arguments)]
     pub fn add(
         &mut self,
         name: &str,

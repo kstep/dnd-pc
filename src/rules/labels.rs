@@ -160,6 +160,24 @@ impl RulesRegistry {
 
                     // Choice option enrichment requires a matching ActionDefinition.
                     if let Some(action_def) = feat_def.actions.get(field.name.as_str()) {
+                        // Auto-fill: when count == listed-options count and every
+                        // slot is empty, every option is implicitly picked — copy
+                        // the definition list in directly. Skipped for Ref blocks.
+                        if let ChoiceOptions::List(def_list) = &action_def.options {
+                            let choices = field.value.choices_mut();
+                            if !def_list.is_empty()
+                                && choices.len() == def_list.len()
+                                && choices
+                                    .iter()
+                                    .all(|opt| opt.name.is_empty() && opt.label.is_none())
+                            {
+                                for (slot, def_opt) in choices.iter_mut().zip(def_list) {
+                                    slot.name = def_opt.name.to_string();
+                                    slot.cost = def_opt.cost;
+                                    slot.action = def_opt.action;
+                                }
+                            }
+                        }
                         let def_options = feat_def.resolve_def_options(&action_def.options);
                         for opt in field.value.choices_mut() {
                             if opt.name.is_empty() {
