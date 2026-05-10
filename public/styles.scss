@@ -1807,6 +1807,18 @@ select.entry-name {
   font-weight: var(--font-weight-7);
 }
 
+.entry-replaces-placeholder {
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+
+  &::after {
+    content: "→";
+    margin: 0 var(--size-1);
+    color: var(--text-tertiary);
+  }
+}
+
 .entry-badge {
   display: inline-flex;
   align-items: center;
