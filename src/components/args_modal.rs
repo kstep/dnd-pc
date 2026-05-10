@@ -658,6 +658,29 @@ fn ReplacementPicker(
         (description, exprs)
     };
 
+    // Drop the entries `ReplacementPicker` registered for the
+    // previously-chosen replacement. The replacement's ARG inputs are
+    // mounted inside `<Show when=replacing>` (or selected by
+    // `replacement_choice`), so unmounting them disposes their
+    // `StoredValue<Vec<RwSignal<i32>>>`. `on_submit` walks every entry
+    // in `all_signals` / `all_dice` with non-`try_` `with_value` /
+    // `get_untracked` — leaving the disposed entries in the map panics
+    // submit and aborts the modal handler. Both the picker swap path
+    // (`on_input`) and the uncheck path must call this before letting
+    // the inner view drop.
+    let clear_replacement_registrations = move || {
+        if let Some(old_name) = prev_replacement.get_untracked() {
+            let stale_key = FeatureKey::new(old_name, source.get_value());
+            all_signals.update(|entries| {
+                entries.remove(&stale_key);
+            });
+            all_dice.update(|entries| {
+                entries.remove(&stale_key);
+            });
+        }
+        replacement_valids.set(Vec::new());
+    };
+
     let on_input = move |text: String, resolved: Option<String>| {
         let prev = prev_replacement.get_untracked();
         let selection_changed = prev != resolved;
@@ -669,18 +692,7 @@ fn ReplacementPicker(
             replacement_prefill.set_value(Vec::new());
         }
 
-        // Clean up stale signal/dice entries from previous replacement.
-        // Same source as the section — exact key, direct remove.
-        if let Some(old_name) = prev {
-            let stale_key = FeatureKey::new(old_name, source.get_value());
-            all_signals.update(|entries| {
-                entries.remove(&stale_key);
-            });
-            all_dice.update(|entries| {
-                entries.remove(&stale_key);
-            });
-        }
-        replacement_valids.set(Vec::new());
+        clear_replacement_registrations();
 
         input_value.set(text);
         if let Some(name) = &resolved {
@@ -720,8 +732,16 @@ fn ReplacementPicker(
                         let checked = event_target_checked(&ev);
                         replacing.set(checked);
                         if !checked {
+                            // Same disposed-signal hazard as `on_input(_, None)` —
+                            // the inner view about to drop owns the replacement's
+                            // ARG signals. Clean their registrations before
+                            // `<Show>` unmounts.
+                            clear_replacement_registrations();
+                            replacement_prefill.set_value(Vec::new());
+                            prev_replacement.set(None);
                             replacement_choice.set(None);
                             input_value.set(String::new());
+                            replacement_description.set(String::new());
                             replacement_exprs.set(Vec::new());
                         }
                     }
