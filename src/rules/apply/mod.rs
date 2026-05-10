@@ -21,13 +21,13 @@ pub use compute::{assign, compute, compute_core};
 pub use context::{ApplyContext, apply_assignments_with_inputs};
 pub use item_ctx::{ItemApplyCtx, assign_items};
 pub use pending::{
-    ApplyInputs, FeatureKey, PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS,
+    ApplyInput, ApplyInputs, FeatureKey, PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS,
     PendingFeature, PendingInputs, RecomputePending,
 };
 pub use primitives::{apply_pending, cascade, dry_run_apply_feature, restore_user_state};
 pub use rebuild::{
-    DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean, prepare_rebuild,
-    rebuild_recompute,
+    DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean, make_inputs_for,
+    make_replacement_for, prepare_rebuild, rebuild_recompute,
 };
 pub use reconcile::reconcile_user_feature_sources;
 pub use registry_ext::apply_feature;

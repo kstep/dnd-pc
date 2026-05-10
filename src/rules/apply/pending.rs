@@ -39,28 +39,30 @@ impl FeatureKey {
     }
 }
 
-/// Bundled user inputs from the args/dice modal, keyed by `FeatureKey`.
-/// Using `(name, source)` as the key lets stackable features with multiple
-/// instances (e.g. ASI at Monk L4 and Monk L8) carry distinct inputs —
-/// a name-only map would collapse them into one. Each inner `Vec` has one
-/// entry per interactive assignment expression of the feature instance.
-#[derive(Clone, Default)]
-pub struct ApplyInputs {
-    pub feature_inputs: BTreeMap<FeatureKey, Vec<AssignInputs>>,
-    /// Original feature name → replacement feature name.
-    pub replacements: BTreeMap<String, String>,
+/// Per-feature submit data: stored args + optional replacement pick.
+/// Keyed by `FeatureKey` in [`ApplyInputs`].
+///
+/// Records sit at two kinds of keys:
+/// - **Placeholder key** (`(ASI, L8)`): when the user (or a recovered prior
+///   decision) replaces this slot, `replacement = Some(name)`. Own `inputs` are
+///   unused — they belong to the resolved feature, not the placeholder.
+/// - **Resolved key** (`(Spell Sniper, L8)`): `inputs` carry the user's
+///   ARG/dice picks for the actually-applied feat; `replacement = None`.
+///
+/// Plain (non-swap) features have a single record at their own key with
+/// `replacement = None` and `inputs` populated.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct ApplyInput {
+    pub inputs: Vec<AssignInputs>,
+    pub replacement: Option<String>,
 }
 
-impl ApplyInputs {
-    pub fn get(&self, feature_name: &str, source: &FeatureSource) -> &[AssignInputs] {
-        // Lookup allocates once to build the key — acceptable: `get` is
-        // called only a handful of times per apply flow, not in any hot
-        // path. In exchange we get O(log n) BTreeMap lookup and a clean
-        // owned-key storage model.
-        let key = FeatureKey::new(feature_name, source.clone());
-        self.feature_inputs.get(&key).map_or(&[], Vec::as_slice)
-    }
-}
+/// Bundled user inputs from the args/dice modal, keyed by `FeatureKey`.
+/// Using `(name, source)` as the key lets stackable features with multiple
+/// instances (e.g. ASI at Monk L4 and Monk L8) carry distinct inputs and
+/// distinct replacement decisions — a name-only map would collapse them
+/// into one.
+pub type ApplyInputs = BTreeMap<FeatureKey, ApplyInput>;
 
 /// A feature whose assignment expressions require user interaction (ARG values
 /// and/or dice rolls). Each expression in `exprs` gets its own independent
@@ -178,6 +180,12 @@ pub struct PendingFeature {
     pub level: u32,
     /// Placeholder name to record on the resulting row's `replaces`.
     pub replaces: Option<String>,
+}
+
+impl PendingFeature {
+    pub fn feature_key(&self) -> FeatureKey {
+        FeatureKey::new(&self.name, self.source.clone())
+    }
 }
 
 impl PendingFeature {

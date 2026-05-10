@@ -180,11 +180,21 @@ pub fn build_clean(
             };
             let plan = level_up_plan(&original.identity, &original.features, registry)?;
 
+            // Pending keys span the entire plan — `detect_replacement`
+            // needs to know which plan entries are also being applied so a
+            // candidate that's already on the plan isn't mistaken for a
+            // free-floating swap. Source borrows from `plan`, which
+            // outlives the cascade calls below.
+            let pending_keys: BTreeSet<(&str, &FeatureSource)> = plan
+                .iter()
+                .map(|pending| (pending.name.as_str(), &pending.source))
+                .collect();
+
             // Closures over Copy bits of ctx so cascade() can read while
             // ctx still hands out `&mut` for apply_user_pending below.
             let inputs_for = make_inputs_for(feat_index, original, extra_inputs);
             let replacement_for =
-                |name: &str| -> Option<String> { extra_inputs.replacements.get(name).cloned() };
+                make_replacement_for(feat_index, original, extra_inputs, &pending_keys);
 
             // Cascade the User(0) prefix as one slice — single-pending
             // cascade would interleave Species follow-ups between Human and
@@ -500,7 +510,7 @@ fn collect_rebuild_pending_inputs(
                         .collect();
 
                     let prefilled_replacement = detect_replacement(
-                        state.pending,
+                        &state.pending.feature_key(),
                         state.def,
                         original,
                         feat_index,
@@ -542,7 +552,7 @@ fn collect_rebuild_pending_inputs(
                     // replacement pick, pre-filled from `detect_replacement` if
                     // original has a sibling at this slot.
                     let prefilled_replacement = detect_replacement(
-                        pending,
+                        &pending.feature_key(),
                         feat_def,
                         original,
                         feat_index,
@@ -702,6 +712,39 @@ pub fn make_inputs_for<'a>(
     }
 }
 
+/// Build a `cascade()`-compatible `replacement_for` closure. Modal-supplied
+/// `extra_inputs` win — the user's just-submitted pick is authoritative —
+/// otherwise falls back to `detect_replacement` against `original.features`
+/// to recover prior swap decisions (e.g. ASI L8 → Spell Sniper from a
+/// previous level-up). The fallback is source-aware: each ASI placeholder
+/// at a different level resolves to its own stored replacement, so
+/// rebuild can preserve mixed setups (vanilla ASI at one level, swap at
+/// another).
+pub fn make_replacement_for<'a>(
+    feat_index: FeaturesView<'a>,
+    original: &'a Character,
+    extra_inputs: &'a ApplyInputs,
+    pending_keys: &'a BTreeSet<(&str, &FeatureSource)>,
+) -> impl Fn(&FeatureKey) -> Option<String> + 'a {
+    move |key| {
+        if let Some(replacement) = extra_inputs
+            .get(key)
+            .and_then(|input| input.replacement.clone())
+        {
+            return Some(replacement);
+        }
+        let feat_def = feat_index.get(key.name.as_str())?;
+        detect_replacement(
+            key,
+            feat_def,
+            &original.core,
+            feat_index,
+            pending_keys,
+            &original.core,
+        )
+    }
+}
+
 /// Resolve inputs for a single pending feature. Modal-supplied
 /// `extra_inputs` win over `original`'s stored inputs — the modal
 /// pre-fills its forms from stored (or solver-solved args) and lets the
@@ -721,10 +764,10 @@ pub fn inputs_for_pending(
     stackable: bool,
 ) -> Vec<AssignInputs> {
     let key = FeatureKey::from_pending(pending_feature);
-    if let Some(inputs) = extra_inputs.feature_inputs.get(&key)
-        && !inputs.is_empty()
+    if let Some(input) = extra_inputs.get(&key)
+        && !input.inputs.is_empty()
     {
-        return inputs.clone();
+        return input.inputs.clone();
     }
     original
         .features
@@ -792,9 +835,12 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
-    use crate::model::{
-        AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue,
-        IdentitySlot, Note, ProficiencyLevel, Skill,
+    use crate::{
+        model::{
+            AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue,
+            IdentitySlot, Note, ProficiencyLevel, Skill,
+        },
+        rules::apply::pending::ApplyInput,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
@@ -1071,9 +1117,12 @@ mod tests {
             ..AssignInputs::default()
         }];
         let mut extra = ApplyInputs::default();
-        extra.feature_inputs.insert(
+        extra.insert(
             FeatureKey::new("Mystery", FeatureSource::User(0)),
-            modal_inputs.clone(),
+            ApplyInput {
+                inputs: modal_inputs.clone(),
+                replacement: None,
+            },
         );
 
         let inputs = inputs_for_pending(
@@ -1104,9 +1153,12 @@ mod tests {
             dice: Default::default(),
         }];
         let mut extra = ApplyInputs::default();
-        extra.feature_inputs.insert(
+        extra.insert(
             FeatureKey::new("Mystery", FeatureSource::User(0)),
-            modal_inputs.clone(),
+            ApplyInput {
+                inputs: modal_inputs.clone(),
+                replacement: None,
+            },
         );
 
         let inputs = inputs_for_pending(
@@ -1190,7 +1242,7 @@ mod tests {
         let baseline = Character::default();
 
         let found = detect_replacement(
-            &pending,
+            &pending.feature_key(),
             &slot_def,
             &original,
             FeaturesView::from_natural(&feat_index),
@@ -1235,7 +1287,7 @@ mod tests {
         let baseline = Character::default();
 
         let found = detect_replacement(
-            &pending,
+            &pending.feature_key(),
             &slot_def,
             &original,
             FeaturesView::from_natural(&feat_index),
@@ -1275,7 +1327,7 @@ mod tests {
         let baseline = Character::default();
 
         let found = detect_replacement(
-            &pending,
+            &pending.feature_key(),
             &slot_def,
             &original,
             FeaturesView::from_natural(&feat_index),
@@ -1312,7 +1364,7 @@ mod tests {
         let baseline = Character::default();
 
         let found = detect_replacement(
-            &pending,
+            &pending.feature_key(),
             &slot_def,
             &original,
             FeaturesView::from_natural(&feat_index),
@@ -1399,9 +1451,9 @@ mod tests {
             accum,
             user_seen: BTreeMap::new(),
         };
+        let pending_keys = BTreeSet::new();
         let inputs_for = make_inputs_for(feat_index, original, &extra);
-        let replacement_for =
-            |name: &str| -> Option<String> { extra.replacements.get(name).cloned() };
+        let replacement_for = make_replacement_for(feat_index, original, &extra, &pending_keys);
         for pending in &pendings {
             if feat_index.contains_key(pending.name.as_str()) {
                 cascade(
@@ -1576,7 +1628,7 @@ mod tests {
 
         assert!(
             detect_replacement(
-                &pending,
+                &pending.feature_key(),
                 &slot_def,
                 &original,
                 FeaturesView::from_natural(&feat_index),
@@ -1584,6 +1636,138 @@ mod tests {
                 &baseline
             )
             .is_none()
+        );
+    }
+
+    /// Source-aware fallback: an `original.features` row that explicitly
+    /// `replaces` a placeholder at a specific source resolves only for
+    /// that source — not for siblings of the same placeholder name at
+    /// other sources. The user-reported case: ASI L4 vanilla + ASI L8
+    /// swapped to Spell Sniper. After rebuild, L4 must remain ASI and
+    /// only L8 must turn into Spell Sniper.
+    #[wasm_bindgen_test]
+    fn make_replacement_for_resolves_only_at_matching_source() {
+        let asi_def = feat_def(
+            "Ability Score Improvement",
+            FeatureCategory::Class,
+            ReplaceWith::Any,
+        );
+        let spell_sniper_def =
+            feat_def("Spell Sniper", FeatureCategory::General, ReplaceWith::None);
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> = [&asi_def, &spell_sniper_def]
+            .into_iter()
+            .map(|def| (def.name.clone(), def.clone()))
+            .collect();
+        let view = FeaturesView::from_natural(&feat_index);
+
+        let l4_source = FeatureSource::Class("Sorcerer".into(), 4);
+        let l8_source = FeatureSource::Class("Sorcerer".into(), 8);
+
+        let mut original = Character::default();
+        // L4: vanilla ASI (no `replaces`).
+        original.features.list.push(Feature {
+            name: "Ability Score Improvement".into(),
+            source: l4_source.clone(),
+            category: FeatureCategory::Class,
+            applied: true,
+            inputs: vec![AssignInputs {
+                args: vec![0, 1, 0, 0, 0, 1],
+                ..AssignInputs::default()
+            }],
+            ..Feature::default()
+        });
+        // L8: Spell Sniper swap recorded via `replaces`.
+        original.features.list.push(Feature {
+            name: "Spell Sniper".into(),
+            source: l8_source.clone(),
+            category: FeatureCategory::General,
+            applied: true,
+            inputs: vec![AssignInputs {
+                args: vec![0, 0, 1],
+                ..AssignInputs::default()
+            }],
+            replaces: Some("Ability Score Improvement".into()),
+            ..Feature::default()
+        });
+
+        let extra = ApplyInputs::default();
+        let pending_keys = BTreeSet::new();
+        let resolve = make_replacement_for(view, &original, &extra, &pending_keys);
+
+        // L4: no swap stored at this source → the closure must NOT bleed
+        // L8's pick across.
+        assert_eq!(
+            resolve(&FeatureKey::new("Ability Score Improvement", l4_source)),
+            None,
+            "L4 ASI should stay vanilla — no swap at this source"
+        );
+
+        // L8: explicit `replaces` chain → must resolve to Spell Sniper.
+        assert_eq!(
+            resolve(&FeatureKey::new("Ability Score Improvement", l8_source)),
+            Some("Spell Sniper".into()),
+            "L8 ASI should rebuild as Spell Sniper from stored replacement"
+        );
+
+        // Unrelated source (L12) without any matching record → None.
+        assert_eq!(
+            resolve(&FeatureKey::new(
+                "Ability Score Improvement",
+                FeatureSource::Class("Sorcerer".into(), 12),
+            )),
+            None,
+            "L12 ASI has no stored swap — must not pick up L8's"
+        );
+    }
+
+    /// Modal-supplied (`extra_inputs`) wins over `original.features`. The
+    /// modal contract: a fresh user pick at submit time must override any
+    /// prior stored decision at the same key.
+    #[wasm_bindgen_test]
+    fn make_replacement_for_extra_inputs_wins() {
+        let asi_def = feat_def(
+            "Ability Score Improvement",
+            FeatureCategory::Class,
+            ReplaceWith::Any,
+        );
+        let spell_sniper_def =
+            feat_def("Spell Sniper", FeatureCategory::General, ReplaceWith::None);
+        let lucky_def = feat_def("Lucky", FeatureCategory::General, ReplaceWith::None);
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
+            [&asi_def, &spell_sniper_def, &lucky_def]
+                .into_iter()
+                .map(|def| (def.name.clone(), def.clone()))
+                .collect();
+        let view = FeaturesView::from_natural(&feat_index);
+
+        let l8_source = FeatureSource::Class("Sorcerer".into(), 8);
+        let l8_key = FeatureKey::new("Ability Score Improvement", l8_source.clone());
+
+        let mut original = Character::default();
+        original.features.list.push(Feature {
+            name: "Spell Sniper".into(),
+            source: l8_source.clone(),
+            applied: true,
+            replaces: Some("Ability Score Improvement".into()),
+            ..Feature::default()
+        });
+
+        // User just submitted modal with Lucky picked instead.
+        let mut extra = ApplyInputs::default();
+        extra.insert(
+            l8_key.clone(),
+            ApplyInput {
+                inputs: vec![],
+                replacement: Some("Lucky".into()),
+            },
+        );
+
+        let pending_keys = BTreeSet::new();
+        let resolve = make_replacement_for(view, &original, &extra, &pending_keys);
+        assert_eq!(
+            resolve(&l8_key),
+            Some("Lucky".into()),
+            "modal submit must override prior stored swap"
         );
     }
 
@@ -1667,9 +1851,9 @@ mod tests {
             accum: &mut accum,
             user_seen: BTreeMap::new(),
         };
+        let pending_keys = BTreeSet::new();
         let inputs_for = make_inputs_for(feat_index, original, &extra);
-        let replacement_for =
-            |name: &str| -> Option<String> { extra.replacements.get(name).cloned() };
+        let replacement_for = make_replacement_for(feat_index, original, &extra, &pending_keys);
         for pending in plan {
             if feat_index.contains_key(pending.name.as_str()) {
                 cascade(

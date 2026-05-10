@@ -15,18 +15,19 @@ use crate::{
     },
 };
 
-/// Find a replacement feature in `original.features` that fills `pending`'s
-/// placeholder slot. Returns the stored feature's name when:
+/// Find a replacement feature in `original.features` that fills the
+/// placeholder slot identified by `key`. Returns the stored feature's name
+/// when:
 ///
-/// 1. `pending` has a non-`None` `replace_with` filter.
-/// 2. `(pending.name, pending.source)` is not already in `original.features`
-///    (if it is, the placeholder itself is present and wasn't replaced).
+/// 1. `feat_def.replace_with` is not `None`.
+/// 2. `(key.name, key.source)` is not already in `original.features` (if it is,
+///    the placeholder itself is present and wasn't replaced).
 /// 3. Another feature X at the same source has a def matching `replace_with`,
 ///    isn't in `pending_keys`, and meets prerequisites.
 ///
 /// First match wins. Insertion order in `original.features` is preserved.
 pub fn detect_replacement(
-    pending: &PendingFeature,
+    key: &FeatureKey,
     feat_def: &FeatureDefinition,
     original: &CharacterCore,
     feat_index: FeaturesView<'_>,
@@ -40,9 +41,9 @@ pub fn detect_replacement(
     for feature in original
         .features
         .iter()
-        .filter(|feature| feature.source == pending.source)
+        .filter(|feature| feature.source == key.source)
     {
-        if feature.name == pending.name {
+        if feature.name == key.name {
             return None;
         }
         if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
@@ -51,7 +52,7 @@ pub fn detect_replacement(
         if feature
             .replaces
             .as_deref()
-            .is_some_and(|name| name == pending.name)
+            .is_some_and(|name| name == key.name)
         {
             return Some(feature.name.clone());
         }
@@ -261,13 +262,14 @@ pub fn cascade(
     features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
     inputs_for: &dyn Fn(&FeatureKey) -> Vec<AssignInputs>,
-    replacement_for: &dyn Fn(&str) -> Option<String>,
+    replacement_for: &dyn Fn(&FeatureKey) -> Option<String>,
     speculative: bool,
 ) {
     let resolved: Vec<PendingFeature> = pending
         .iter()
-        .map(
-            |pending_feature| match replacement_for(pending_feature.name.as_str()) {
+        .map(|pending_feature| {
+            let key = FeatureKey::from_pending(pending_feature);
+            match replacement_for(&key) {
                 Some(replacement) if features_index.contains_key(replacement.as_str()) => {
                     // Pending's own `replaces` (set by plan for marker-direct
                     // emission) wins; otherwise derive from name mismatch.
@@ -290,8 +292,8 @@ pub fn cascade(
                     pending_feature.clone()
                 }
                 None => pending_feature.clone(),
-            },
-        )
+            }
+        })
         .collect();
 
     let mut follow_ups = Vec::new();

@@ -6,7 +6,10 @@ use crate::{
     model::{CharacterCore, ClassLevel, FeatureSource},
     rules::{
         DefinitionStore, FeaturesView, RulesRegistry,
-        apply::{pending::PendingFeature, primitives::detect_replacement},
+        apply::{
+            pending::{FeatureKey, PendingFeature},
+            primitives::detect_replacement,
+        },
         background::BackgroundDefinition,
         class::ClassDefinition,
         species::SpeciesDefinition,
@@ -72,14 +75,9 @@ pub fn collect_class_features<'a>(
             // applied=false, so the modal section stays mounted while the
             // user is mid-pick; once real apply lands the replacement
             // applied=true, subsequent level-ups skip the placeholder.
-            let pending = PendingFeature {
-                name: feat.name.to_string(),
-                source: source.clone(),
-                level,
-                replaces: None,
-            };
+            let key = FeatureKey::new(feat.name.as_ref(), source.clone());
             let Some(replacement) = detect_replacement(
-                &pending,
+                &key,
                 feat,
                 character,
                 features_index,
@@ -386,8 +384,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |name: &str| -> Option<String> {
-            (name == "Class Level").then(|| "Fighter".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<String> {
+            (key.name == "Class Level").then(|| "Fighter".to_string())
         };
         cascade(
             &mut speculative,
@@ -515,8 +513,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |name: &str| -> Option<String> {
-            (name == "Class Level").then(|| "Cleric".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<String> {
+            (key.name == "Class Level").then(|| "Cleric".to_string())
         };
         cascade(
             &mut character,
@@ -627,8 +625,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |name: &str| -> Option<String> {
-            (name == "Class Level").then(|| "Cleric".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<String> {
+            (key.name == "Class Level").then(|| "Cleric".to_string())
         };
         cascade(
             &mut character,
@@ -783,8 +781,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |name: &str| -> Option<String> {
-            match name {
+        let replacement_for = |key: &FeatureKey| -> Option<String> {
+            match key.name.as_str() {
                 "Class Level" => Some("Cleric".to_string()),
                 "Subclass" => Some("Death Domain".to_string()),
                 _ => None,

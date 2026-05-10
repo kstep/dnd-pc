@@ -192,23 +192,28 @@ pub fn apply_with_prefilled_args(
         })
         .collect();
 
-    let seeded_inputs = ApplyInputs {
-        feature_inputs: BTreeMap::new(),
-        replacements: prefilled_replacements,
-    };
+    // Convert AI-seeded name-keyed replacements into FeatureKey-keyed
+    // entries by matching each name against the pending list (gives us
+    // the source). When a name is absent from pending, the seed is
+    // dropped — pending is the authoritative target list.
+    let mut seeded_inputs = ApplyInputs::new();
+    for pending_feature in &pending {
+        if let Some(replacement) = prefilled_replacements.get(&pending_feature.name) {
+            seeded_inputs
+                .entry(pending_feature.feature_key())
+                .or_default()
+                .replacement = Some(replacement.clone());
+        }
+    }
 
     if all_inputs.is_empty() {
         apply_batch(store, registry, &pending, &seeded_inputs, &callback);
     } else {
         let ctx = expect_context::<ArgsModalCtx>();
         ctx.open(all_inputs, None, recompute, move |modal_inputs| {
-            // Merge AI-seeded replacements with user-submitted (user wins).
-            // `seeded_inputs.feature_inputs` is always empty here — the modal
-            // owns all feature_inputs — so this is an assignment rather than
-            // a merge.
+            // Merge: modal overwrites seeded entries by key (user wins).
             let mut merged = seeded_inputs;
-            merged.replacements.extend(modal_inputs.replacements);
-            merged.feature_inputs = modal_inputs.feature_inputs;
+            merged.extend(modal_inputs);
             apply_batch(store, registry, &pending, &merged, &callback);
         });
     }
@@ -226,9 +231,14 @@ fn apply_batch(
     callback: &impl Fn(&mut Character),
 ) {
     let inputs_for = |key: &FeatureKey| -> Vec<AssignInputs> {
-        inputs.feature_inputs.get(key).cloned().unwrap_or_default()
+        inputs
+            .get(key)
+            .map(|input| input.inputs.clone())
+            .unwrap_or_default()
     };
-    let replacement_for = |name: &str| -> Option<String> { inputs.replacements.get(name).cloned() };
+    let replacement_for = |key: &FeatureKey| -> Option<String> {
+        inputs.get(key).and_then(|input| input.replacement.clone())
+    };
     store.update(|character| {
         registry.with_definitions(|caches| {
             registry.with_features_index_untracked(|feat_index| {
@@ -273,17 +283,16 @@ pub fn apply_edit_to_feature(
     submitted: &ApplyInputs,
     feat_index: FeaturesView<'_>,
 ) -> Option<String> {
+    let placeholder_key = FeatureKey::new(placeholder_name, feature.source.clone());
     let new_name = submitted
-        .replacements
-        .get(placeholder_name)
-        .cloned()
+        .get(&placeholder_key)
+        .and_then(|input| input.replacement.clone())
         .unwrap_or_else(|| placeholder_name.to_string());
     let new_replaces = (new_name != placeholder_name).then(|| placeholder_name.to_string());
     let effective_key = FeatureKey::new(&new_name, feature.source.clone());
     let new_inputs = submitted
-        .feature_inputs
         .get(&effective_key)
-        .cloned()
+        .map(|input| input.inputs.clone())
         .unwrap_or_default();
 
     let renamed = new_name != feature.name;
@@ -315,7 +324,7 @@ mod tests {
     use super::*;
     use crate::{
         model::FeatureCategory,
-        rules::{FeatureDefinition, ReplaceWith},
+        rules::{ApplyInput, FeatureDefinition, ReplaceWith},
     };
 
     fn feat_def(
@@ -387,10 +396,14 @@ mod tests {
             inputs.clone(),
             None,
         );
-        let mut submitted = ApplyInputs::default();
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("Tough", source.clone()), inputs.clone());
+        let mut submitted = ApplyInputs::new();
+        submitted.insert(
+            FeatureKey::new("Tough", source.clone()),
+            ApplyInput {
+                inputs: inputs.clone(),
+                replacement: None,
+            },
+        );
 
         let renamed_from = apply_edit_to_feature(&mut feature, "Tough", &submitted, view);
 
@@ -418,10 +431,14 @@ mod tests {
             None,
         );
         let new_inputs = vec![args(&[3, 4])];
-        let mut submitted = ApplyInputs::default();
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("Tough", source.clone()), new_inputs.clone());
+        let mut submitted = ApplyInputs::new();
+        submitted.insert(
+            FeatureKey::new("Tough", source.clone()),
+            ApplyInput {
+                inputs: new_inputs.clone(),
+                replacement: None,
+            },
+        );
 
         let renamed_from = apply_edit_to_feature(&mut feature, "Tough", &submitted, view);
 
@@ -446,11 +463,21 @@ mod tests {
             inputs.clone(),
             Some("ASI".into()),
         );
-        let mut submitted = ApplyInputs::default();
-        submitted.replacements.insert("ASI".into(), "Lucky".into());
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("Lucky", source.clone()), inputs.clone());
+        let mut submitted = ApplyInputs::new();
+        submitted.insert(
+            FeatureKey::new("ASI", source.clone()),
+            ApplyInput {
+                inputs: vec![],
+                replacement: Some("Lucky".into()),
+            },
+        );
+        submitted.insert(
+            FeatureKey::new("Lucky", source.clone()),
+            ApplyInput {
+                inputs: inputs.clone(),
+                replacement: None,
+            },
+        );
 
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
@@ -477,11 +504,21 @@ mod tests {
             Some("ASI".into()),
         );
         let new_inputs = vec![args(&[9])];
-        let mut submitted = ApplyInputs::default();
-        submitted.replacements.insert("ASI".into(), "Tough".into());
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("Tough", source.clone()), new_inputs.clone());
+        let mut submitted = ApplyInputs::new();
+        submitted.insert(
+            FeatureKey::new("ASI", source.clone()),
+            ApplyInput {
+                inputs: vec![],
+                replacement: Some("Tough".into()),
+            },
+        );
+        submitted.insert(
+            FeatureKey::new("Tough", source.clone()),
+            ApplyInput {
+                inputs: new_inputs.clone(),
+                replacement: None,
+            },
+        );
 
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
@@ -509,11 +546,14 @@ mod tests {
             Some("ASI".into()),
         );
         let placeholder_inputs = vec![args(&[1])];
-        let mut submitted = ApplyInputs::default();
-        // No replacement key — picker unchecked. Inputs land under placeholder.
-        submitted.feature_inputs.insert(
+        let mut submitted = ApplyInputs::new();
+        // No replacement — picker unchecked. Inputs land under placeholder.
+        submitted.insert(
             FeatureKey::new("ASI", source.clone()),
-            placeholder_inputs.clone(),
+            ApplyInput {
+                inputs: placeholder_inputs.clone(),
+                replacement: None,
+            },
         );
 
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
@@ -543,14 +583,21 @@ mod tests {
             vec![args(&[7])],
             Some("ASI".into()),
         );
-        let mut submitted = ApplyInputs::default();
-        submitted.replacements.insert("ASI".into(), "Tough".into());
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("ASI", source.clone()), vec![args(&[99])]);
-        submitted
-            .feature_inputs
-            .insert(FeatureKey::new("Tough", source.clone()), vec![args(&[5])]);
+        let mut submitted = ApplyInputs::new();
+        submitted.insert(
+            FeatureKey::new("ASI", source.clone()),
+            ApplyInput {
+                inputs: vec![args(&[99])],
+                replacement: Some("Tough".into()),
+            },
+        );
+        submitted.insert(
+            FeatureKey::new("Tough", source.clone()),
+            ApplyInput {
+                inputs: vec![args(&[5])],
+                replacement: None,
+            },
+        );
 
         apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
