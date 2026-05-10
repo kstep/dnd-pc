@@ -553,14 +553,9 @@ fn rebuild_recovers_per_source_replacement_from_original() {
     );
 }
 
-/// User-reported regression: in the rebuild modal, the user UNCHECKED the
-/// existing L4 Spell Sniper swap (back to vanilla ASI) and CHECKED L8 with
-/// Spell Sniper. Submit produced `extra_inputs` with `replacement = None`
-/// for L4 and `replacement = Some("Spell Sniper")` for L8. The buggy
-/// `make_replacement_for` collapsed the explicit `None` and fell through
-/// to `detect_replacement`, which still saw the prior swap in `original`
-/// and resurrected it at L4 — leaving Spell Sniper non-stackable-applied
-/// at L4, blocking L8 from landing at all.
+/// Rebuild modal: user unchecks L4 Spell-Sniper-replaces-ASI swap and
+/// moves it to L8. Explicit `replacement = None` at L4 must not fall back
+/// to `original.features`.
 #[wasm_bindgen_test]
 fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
     use dnd_pc::rules::ApplyInput;
@@ -571,7 +566,6 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         level: 8,
         ..ClassLevel::default()
     }];
-    // Original state: Spell Sniper replaces ASI at L4, no L8 ASI yet.
     original.features.list.push(Feature {
         name: "Spell Sniper".into(),
         source: FeatureSource::Class("Wizard".into(), 4),
@@ -619,7 +613,6 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         FeatureSource::Class("Wizard".into(), 8),
     );
 
-    // Modal submit: L4 reverted to vanilla ASI; L8 swapped to Spell Sniper.
     let mut extra = ApplyInputs::default();
     extra.insert(
         l4_key,
@@ -685,7 +678,6 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         false,
     );
 
-    // L4 must end up as vanilla ASI (user unchecked the swap).
     let l4 = clean
         .features
         .list
@@ -696,18 +688,16 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         })
         .expect("L4 must land as vanilla ASI");
     assert!(l4.applied);
-    assert_eq!(l4.replaces, None, "L4 must not be tagged as replaced");
+    assert_eq!(l4.replaces, None);
 
-    // No Spell Sniper leaked into L4 source.
     assert!(
         !clean.features.list.iter().any(|feature| {
             feature.name == "Spell Sniper"
                 && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
         }),
-        "Spell Sniper must not be applied at L4 — user unchecked"
+        "Spell Sniper must not be applied at L4"
     );
 
-    // L8 must land as Spell Sniper with the placeholder recorded in `replaces`.
     let l8 = clean
         .features
         .list
@@ -718,9 +708,5 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         })
         .expect("L8 must land as Spell Sniper");
     assert!(l8.applied);
-    assert_eq!(
-        l8.replaces.as_deref(),
-        Some("Ability Score Improvement"),
-        "L8 swap row must record the replaced placeholder"
-    );
+    assert_eq!(l8.replaces.as_deref(), Some("Ability Score Improvement"));
 }

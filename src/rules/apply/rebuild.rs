@@ -712,20 +712,10 @@ pub fn make_inputs_for<'a>(
     }
 }
 
-/// Build a `cascade()`-compatible `replacement_for` closure. Modal-supplied
-/// `extra_inputs` win — the user's just-submitted pick is authoritative —
-/// otherwise falls back to `detect_replacement` against `original.features`
-/// to recover prior swap decisions (e.g. ASI L8 → Spell Sniper from a
-/// previous level-up). The fallback is source-aware: each ASI placeholder
-/// at a different level resolves to its own stored replacement, so
-/// rebuild can preserve mixed setups (vanilla ASI at one level, swap at
-/// another).
-///
-/// Presence of an entry in `extra_inputs` means the user actively resolved
-/// that section in the modal — its `replacement` field is final, including
-/// `None` (the user explicitly unchecked "replace"). Falling back to
-/// `detect_replacement` in that case would resurrect the prior swap from
-/// `original.features` and ignore the user's intent.
+/// Build a `cascade()`-compatible `replacement_for` closure. Presence in
+/// `extra_inputs` is authoritative (including `replacement = None` for an
+/// explicit uncheck); only absent keys fall back to `detect_replacement`
+/// against `original.features` for prior-swap recovery.
 pub fn make_replacement_for<'a>(
     feat_index: FeaturesView<'a>,
     original: &'a Character,
@@ -1774,13 +1764,7 @@ mod tests {
         );
     }
 
-    /// User-reported regression: rebuild modal had a swap stored in
-    /// `original.features` (Spell Sniper replaces ASI at L4); user unchecked
-    /// the swap in the modal and filled vanilla ASI inputs; submit recorded
-    /// `replacement = None` for the L4 ASI key. `make_replacement_for` must
-    /// honor the explicit `None` and not fall back to `detect_replacement`,
-    /// which would still see the prior Spell Sniper in `original` and
-    /// resurrect the swap.
+    /// `replacement = None` in submit must override prior swap in `original`.
     #[wasm_bindgen_test]
     fn make_replacement_for_extra_inputs_explicit_none_wins() {
         let asi_def = feat_def(
@@ -1799,9 +1783,6 @@ mod tests {
         let l4_source = FeatureSource::Class("Sorcerer".into(), 4);
         let l4_key = FeatureKey::new("Ability Score Improvement", l4_source.clone());
 
-        // `original` still has the prior swap (Spell Sniper at L4 with
-        // `replaces = ASI`) — this is exactly what `detect_replacement`
-        // would key off if the closure fell through.
         let mut original = Character::default();
         original.features.list.push(Feature {
             name: "Spell Sniper".into(),
@@ -1811,8 +1792,6 @@ mod tests {
             ..Feature::default()
         });
 
-        // User unchecked replace in the modal: submitted entry exists with
-        // ASI inputs but `replacement = None`.
         let mut extra = ApplyInputs::default();
         extra.insert(
             l4_key.clone(),
@@ -1827,11 +1806,7 @@ mod tests {
 
         let pending_keys = BTreeSet::new();
         let resolve = make_replacement_for(view, &original, &extra, &pending_keys);
-        assert_eq!(
-            resolve(&l4_key),
-            None,
-            "explicit None in modal submit must override prior stored swap"
-        );
+        assert_eq!(resolve(&l4_key), None);
     }
 
     use crate::rules::{
