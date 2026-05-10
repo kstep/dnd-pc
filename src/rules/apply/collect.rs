@@ -76,6 +76,7 @@ pub fn collect_class_features<'a>(
                 name: feat.name.to_string(),
                 source: source.clone(),
                 level,
+                replaces: None,
             };
             let Some(replacement) = detect_replacement(
                 &pending,
@@ -95,6 +96,7 @@ pub fn collect_class_features<'a>(
             name: name.to_string(),
             source,
             level,
+            replaces: None,
         })
 }
 
@@ -121,6 +123,7 @@ pub fn collect_species_features<'a>(
             name: feat_name.clone(),
             source: source.clone(),
             level: total_level,
+            replaces: None,
         })
 }
 
@@ -147,6 +150,7 @@ pub fn collect_background_features<'a>(
             name: feat_name.clone(),
             source: source.clone(),
             level: total_level,
+            replaces: None,
         })
 }
 
@@ -379,6 +383,7 @@ mod tests {
             name: "Class Level".into(),
             source: FeatureSource::User(target_level),
             level: target_level,
+            replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
         let replacement_for = |name: &str| -> Option<String> {
@@ -507,6 +512,7 @@ mod tests {
             name: "Class Level".into(),
             source: FeatureSource::User(target_level),
             level: target_level,
+            replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
         let replacement_for = |name: &str| -> Option<String> {
@@ -618,6 +624,7 @@ mod tests {
             name: "Class Level".into(),
             source: FeatureSource::User(target_level),
             level: target_level,
+            replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
         let replacement_for = |name: &str| -> Option<String> {
@@ -773,6 +780,7 @@ mod tests {
             name: "Class Level".into(),
             source: FeatureSource::User(target_level),
             level: target_level,
+            replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
         let replacement_for = |name: &str| -> Option<String> {

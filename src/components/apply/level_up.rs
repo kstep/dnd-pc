@@ -29,6 +29,7 @@ pub fn level_up_class(
         name: PICK_CLASS.into(),
         source: FeatureSource::User(target_level),
         level: target_level,
+        replaces: None,
     };
 
     let recompute_placeholder = placeholder.clone();

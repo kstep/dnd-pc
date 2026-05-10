@@ -120,6 +120,7 @@ fn speculative_cascade_pushes_followups_as_unapplied() {
         name: "Wizard".into(),
         source: FeatureSource::User(1),
         level: 1,
+        replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
     let replacement_for = |_: &str| -> Option<String> { None };
@@ -220,6 +221,7 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
         name: "Class Level".into(),
         source: FeatureSource::User(6),
         level: 6,
+        replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
     let replacement_for =
@@ -342,6 +344,7 @@ fn asi_replacement_keeps_prior_asi_intact() {
         name: "Ability Score Improvement".into(),
         source: FeatureSource::Class("Wizard".into(), 8),
         level: 8,
+        replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
     let replacement_for = |name: &str| -> Option<String> {

@@ -920,6 +920,7 @@ impl Character {
                         category: FeatureCategory::Class,
                         source: FeatureSource::Class("Bard".into(), 1),
                         inputs: Vec::new(),
+                        replaces: None,
                     }],
                     BTreeMap::from([(
                         "Spellcasting (Bard)".to_string(),
@@ -1969,7 +1970,7 @@ mod tests {
             level: 5,
             ..ClassLevel::default()
         };
-        ch.features.add(
+        ch.features.put(
             "Spellcasting (Wizard)",
             None,
             String::new(),

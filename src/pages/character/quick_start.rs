@@ -208,6 +208,7 @@ fn build_quick_start_pending_features(
             name: gen_name.to_string(),
             source: FeatureSource::User(0),
             level,
+            replaces: None,
         });
     }
     for placeholder_name in [PICK_SPECIES, PICK_BACKGROUND] {
@@ -215,6 +216,7 @@ fn build_quick_start_pending_features(
             name: placeholder_name.into(),
             source: FeatureSource::User(0),
             level: 0,
+            replaces: None,
         });
     }
     // Class Level placeholder: source = User(target_total_level) so the
@@ -224,6 +226,7 @@ fn build_quick_start_pending_features(
         name: PICK_CLASS.into(),
         source: FeatureSource::User(level),
         level,
+        replaces: None,
     });
     pending.extend(collect_pending_features(
         character,

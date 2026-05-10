@@ -138,6 +138,7 @@ pub fn rebuild_recompute(registry: RulesRegistry, original: &Character) -> Recom
                         name: feature.name.clone(),
                         source: feature.source.clone(),
                         level: feature.source.added_at_level(),
+                        replaces: None,
                     });
             user_pending
                 .chain(identity_pending)
@@ -185,7 +186,24 @@ pub fn build_clean(
             let replacement_for =
                 |name: &str| -> Option<String> { extra_inputs.replacements.get(name).cloned() };
 
-            for pending in &plan {
+            // Cascade the User(0) prefix as one slice — single-pending
+            // cascade would interleave Species follow-ups between Human and
+            // Noble, tearing the User(0) block apart.
+            let base_end = plan
+                .iter()
+                .position(|pending| !matches!(pending.source, FeatureSource::User(0)))
+                .unwrap_or(plan.len());
+            cascade(
+                &mut clean,
+                &plan[..base_end],
+                feat_index,
+                caches,
+                &inputs_for,
+                &replacement_for,
+                false,
+            );
+
+            for pending in &plan[base_end..] {
                 if feat_index.contains_key(pending.name.as_str()) {
                     cascade(
                         &mut clean,
@@ -309,6 +327,7 @@ fn collect_rebuild_pending_inputs(
                     name: feature.name.clone(),
                     source: feature.source.clone(),
                     level: feature.source.added_at_level(),
+                    replaces: None,
                 });
 
             let all_pending: Vec<PendingFeature> = user_pending.chain(identity_pending).collect();
@@ -565,6 +584,7 @@ fn stored_inputs_effective(
         name: feat_def.name.to_string(),
         source: FeatureSource::User(level),
         level,
+        replaces: None,
     };
     dry_run_apply_feature(
         feat_def,
@@ -644,6 +664,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
                 args,
                 ..AssignInputs::default()
             }],
+            replaces: None,
         },
     );
 }
@@ -675,6 +696,7 @@ pub fn make_inputs_for<'a>(
             name: key.name.clone(),
             source: key.source.clone(),
             level: key.source.added_at_level(),
+            replaces: None,
         };
         inputs_for_pending(&proxy, original, extra_inputs, stackable)
     }
@@ -1008,6 +1030,7 @@ mod tests {
                 name: "Ability Score Improvement".into(),
                 source: FeatureSource::Class("Monk".into(), 4),
                 level: 4,
+                replaces: None,
             },
             &original,
             &empty,
@@ -1018,6 +1041,7 @@ mod tests {
                 name: "Ability Score Improvement".into(),
                 source: FeatureSource::Class("Monk".into(), 8),
                 level: 8,
+                replaces: None,
             },
             &original,
             &empty,
@@ -1057,6 +1081,7 @@ mod tests {
                 name: "Mystery".into(),
                 source: FeatureSource::User(0),
                 level: 0,
+                replaces: None,
             },
             &original,
             &extra,
@@ -1089,6 +1114,7 @@ mod tests {
                 name: "Mystery".into(),
                 source: FeatureSource::User(0),
                 level: 0,
+                replaces: None,
             },
             &original,
             &extra,
@@ -1155,6 +1181,92 @@ mod tests {
             name: "Rogue Subclass".into(),
             source: slot_source.clone(),
             level: 3,
+            replaces: None,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            FeaturesView::from_natural(&feat_index),
+            &pending_keys,
+            &baseline,
+        );
+        assert_eq!(found, Some("Arcane Trickster".into()));
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_fast_path_wins_over_fallback_heuristic() {
+        // Two features at the slot's source: A carries `replaces = Some(slot)`,
+        // B is registered in the index with a matching category and would win
+        // the legacy heuristic. Fast path must return A.
+        let slot_source = FeatureSource::Class("Fighter".into(), 4);
+        let slot_def = feat_def("ASI", FeatureCategory::Class, ReplaceWith::Any);
+        let fallback_pick = feat_def("Tough", FeatureCategory::Class, ReplaceWith::None);
+
+        let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        feat_index.insert(slot_def.name.clone(), slot_def.clone());
+        feat_index.insert(fallback_pick.name.clone(), fallback_pick.clone());
+
+        let mut original = Character::default();
+        original
+            .features
+            .list
+            .push(feature("Tough", slot_source.clone()));
+        let mut explicit = feature("Lucky", slot_source.clone());
+        explicit.replaces = Some("ASI".into());
+        original.features.list.push(explicit);
+
+        let pending = PendingFeature {
+            name: "ASI".into(),
+            source: slot_source.clone(),
+            level: 4,
+            replaces: None,
+        };
+        let pending_keys: BTreeSet<(&str, &FeatureSource)> =
+            [(pending.name.as_str(), &pending.source)]
+                .into_iter()
+                .collect();
+        let baseline = Character::default();
+
+        let found = detect_replacement(
+            &pending,
+            &slot_def,
+            &original,
+            FeaturesView::from_natural(&feat_index),
+            &pending_keys,
+            &baseline,
+        );
+        assert_eq!(found, Some("Lucky".into()));
+    }
+
+    #[wasm_bindgen_test]
+    fn detect_replacement_uses_explicit_replaces_field() {
+        // Fast path: a feature carrying `replaces = Some(<placeholder>)` wins
+        // even when the swap def is missing from the index — the legacy
+        // heuristic needs the def to test category/prereqs, the new field
+        // doesn't.
+        let slot_source = FeatureSource::Class("Rogue".into(), 3);
+        let slot_def = feat_def("Rogue Subclass", FeatureCategory::Class, ReplaceWith::Any);
+
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> =
+            std::iter::once((slot_def.name.clone(), slot_def.clone())).collect();
+
+        let mut original = Character::default();
+        let mut swap = feature("Arcane Trickster", slot_source.clone());
+        swap.replaces = Some("Rogue Subclass".into());
+        original.features.list.push(swap);
+
+        let pending = PendingFeature {
+            name: "Rogue Subclass".into(),
+            source: slot_source.clone(),
+            level: 3,
+            replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
             [(pending.name.as_str(), &pending.source)]
@@ -1191,6 +1303,7 @@ mod tests {
             name: "Rogue Subclass".into(),
             source: slot_source.clone(),
             level: 3,
+            replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
             [(pending.name.as_str(), &pending.source)]
@@ -1275,6 +1388,7 @@ mod tests {
                 name: feature.name.clone(),
                 source: feature.source.clone(),
                 level,
+                replaces: None,
             })
             .collect();
         let empty_caches = DefinitionCaches::empty();
@@ -1452,6 +1566,7 @@ mod tests {
             name: "Cunning Action".into(),
             source: slot_source.clone(),
             level: 3,
+            replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
             [(pending.name.as_str(), &pending.source)]

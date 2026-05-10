@@ -10,7 +10,7 @@ use crate::{
         apply::{
             DefinitionCaches,
             collect::{class_level_sources, collect_background_features, collect_species_features},
-            pending::{PICK_BACKGROUND, PICK_SPECIES, PendingFeature},
+            pending::{PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS, PendingFeature},
             primitives::apply_pending,
             rebuild::{DefinitionKind, RebuildError},
         },
@@ -32,8 +32,8 @@ pub fn level_up_plan(
 }
 
 /// Build a plan straight from the System(_) markers in `features.list`.
-/// Returns `None` when markers don't cover every level implied by
-/// `identity.classes` — caller falls back to interleaving.
+/// Returns `None` when no class markers exist (legacy chars) — caller
+/// falls back to interleaving.
 pub fn plan_from_markers(
     identity: &CharacterIdentity,
     features: &Features,
@@ -123,6 +123,7 @@ pub fn plan_from_markers(
             name: class_marker.name.clone(),
             source: class_marker.source.clone(),
             level: character_level,
+            replaces: Some(PICK_CLASS.to_string()),
         });
 
         // Subclass marker for this class+level, if present.
@@ -142,6 +143,7 @@ pub fn plan_from_markers(
                 name: subclass.name.clone(),
                 source: subclass.source.clone(),
                 level: class_level,
+                replaces: Some(PICK_SUBCLASS.to_string()),
             });
         }
 
@@ -151,40 +153,38 @@ pub fn plan_from_markers(
     Some(plan)
 }
 
-/// Append a System(slot) marker for `slot` (Species or Background) to `plan`.
-/// Prefers an existing marker in `features.list`; falls back to synthesizing
-/// from `identity` for legacy half-state. When neither marker nor identity
-/// name is set, emits the `Generation: Species` / `Generation: Background`
-/// placeholder (`replace_with: Category(System(_))`) so the args modal can
-/// surface a picker during cascade. Other slots are no-op.
+/// Emit the marker + `replaces=Some(placeholder)` so cascade records the
+/// swap. Empty identity emits the placeholder so the modal asks.
 fn push_identity_marker(
     identity: &CharacterIdentity,
     features: &Features,
     plan: &mut Vec<PendingFeature>,
     slot: IdentitySlot,
 ) {
-    if let Some(marker) = find_system_marker(features, slot) {
-        plan.push(PendingFeature {
-            name: marker.name.clone(),
-            source: marker.source.clone(),
-            level: 0,
-        });
-        return;
-    }
     let (identity_name, placeholder) = match slot {
         IdentitySlot::Species => (&identity.species, PICK_SPECIES),
         IdentitySlot::Background => (&identity.background, PICK_BACKGROUND),
         IdentitySlot::Class | IdentitySlot::Subclass => return,
     };
-    let name = if identity_name.is_empty() {
-        placeholder.to_string()
-    } else {
-        identity_name.clone()
+    let marker = find_system_marker(features, slot);
+    let (name, source, replaces) = match (marker, identity_name.is_empty()) {
+        (Some(marker), _) => (
+            marker.name.clone(),
+            marker.source.clone(),
+            Some(placeholder.to_string()),
+        ),
+        (None, false) => (
+            identity_name.clone(),
+            FeatureSource::User(0),
+            Some(placeholder.to_string()),
+        ),
+        (None, true) => (placeholder.to_string(), FeatureSource::User(0), None),
     };
     plan.push(PendingFeature {
         name,
-        source: FeatureSource::User(0),
+        source,
         level: 0,
+        replaces,
     });
 }
 
@@ -435,6 +435,7 @@ fn emit_class_level(
         name: class_name.to_owned(),
         source: FeatureSource::User(character_level),
         level: character_level,
+        replaces: Some(PICK_CLASS.to_string()),
     });
     apply_pending(
         feat_index,
@@ -456,6 +457,7 @@ fn emit_class_level(
                 name: subclass_name.to_owned(),
                 source: FeatureSource::Class(Box::<str>::from(class_name), class_level),
                 level: class_level,
+                replaces: Some(PICK_SUBCLASS.to_string()),
             });
             apply_pending(
                 feat_index,
@@ -478,6 +480,7 @@ fn emit_class_level(
             name: name.to_owned(),
             source,
             level: class_level,
+            replaces: None,
         };
         apply_pending(feat_index, probe, &pending, &[], caches, false);
     }
@@ -499,6 +502,7 @@ fn emit_user_features(features: &Features, plan: &mut Vec<PendingFeature>, level
             name: feature.name.clone(),
             source: feature.source.clone(),
             level,
+            replaces: None,
         });
     }
 }

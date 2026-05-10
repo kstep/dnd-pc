@@ -74,16 +74,18 @@ pub struct PendingInputs {
     /// pre-fill ARG and dice signals so re-apply behaves as edit.
     pub prefill: Vec<AssignInputs>,
     pub replace_with: ReplaceWith,
-    /// Pre-chosen replacement feature name (e.g. from AI generation). When set,
-    /// `ReplacementPicker` initializes `replacement_choice` with this value and
-    /// shows the replacement UI expanded. User can still override.
+    /// Pre-chosen replacement feature name (e.g. from AI generation,
+    /// edit-of-swap-row). When set, `ReplacementPicker` initializes
+    /// `replacement_choice` with this value and shows the replacement UI
+    /// expanded. User can still override.
     pub prefilled_replacement: Option<String>,
-    /// Pre-filled ARG values for the replacement feature's expressions. Used
-    /// only when `prefilled_replacement` is `Some`. Same value broadcast to
-    /// every expr of the replacement (matches non-replacement `prefill`
-    /// semantics — one AI-supplied `args` vec applies to all interactive
-    /// exprs of the feature).
-    pub replacement_prefill: Option<AssignInputs>,
+    /// Pre-filled inputs for the replacement feature's expressions, indexed
+    /// by expr position (`replacement_prefill[i]` feeds expr `i`). Empty Vec
+    /// = no prefill; positions past the Vec end render as
+    /// `AssignInputs::default()`. There is no broadcast or fallthrough — a
+    /// short Vec leaves the rest of the exprs explicitly empty rather than
+    /// silently reusing one value across multiple exprs.
+    pub replacement_prefill: Vec<AssignInputs>,
     /// Source of the feature being added. Used by the replacement picker to
     /// determine if a stackable replacement is a new addition.
     pub source: FeatureSource,
@@ -137,7 +139,7 @@ impl PendingInputs {
             prefill,
             replace_with,
             prefilled_replacement: None,
-            replacement_prefill: None,
+            replacement_prefill: Vec::new(),
             source,
             hidden: false,
         })
@@ -159,7 +161,7 @@ impl PendingInputs {
             prefill: Vec::new(),
             replace_with: feat_def.replace_with,
             prefilled_replacement: None,
-            replacement_prefill: None,
+            replacement_prefill: Vec::new(),
             source,
             hidden: true,
         }
@@ -169,11 +171,13 @@ impl PendingInputs {
 /// A feature pending application. Owned and cheap — survives move closure
 /// boundaries (modal callbacks). Produced by collect functions, consumed by
 /// apply primitives.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct PendingFeature {
     pub name: String,
     pub source: FeatureSource,
     pub level: u32,
+    /// Placeholder name to record on the resulting row's `replaces`.
+    pub replaces: Option<String>,
 }
 
 impl PendingFeature {

@@ -181,6 +181,8 @@ pub struct Feature {
     pub source: FeatureSource,
     #[serde(default)]
     pub inputs: Vec<AssignInputs>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub replaces: Option<String>,
 }
 
 impl Feature {
@@ -306,7 +308,7 @@ impl FeatureSource {
 /// so map-style access (`.get()`, `.get_mut()`, `.insert()`, `.keys()`,
 /// `.values()`, `.clear()`) works through the container directly. List
 /// iteration and list-specific queries go through inherent methods
-/// (`iter`, `contains`, `has`, `is_pending`, `add`, `get_inputs`,
+/// (`iter`, `contains`, `has`, `is_pending`, `put`, `get_inputs`,
 /// `has_category`) which override the BTreeMap accessors where names
 /// clash.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
@@ -473,7 +475,7 @@ impl Features {
     }
 
     /// Push a fully-formed `Feature` row as-is and return its position.
-    /// Skip the unapplied-row reuse that `add` does — caller owns the
+    /// Skip the slot-keyed upsert that `put` does — caller owns the
     /// `Feature` and intends to land it verbatim.
     pub fn push(&mut self, feature: Feature) -> usize {
         let idx = self.list.len();
@@ -481,11 +483,10 @@ impl Features {
         idx
     }
 
-    /// Add a feature with its inputs. Reuses an existing unapplied row with
-    /// the same name (fills it in), otherwise pushes a fresh applied row.
-    /// Returns the row's position so callers can index `inputs` against it.
+    /// Reuse an existing `(name, source)` slot if present, otherwise push a
+    /// fresh row. Returns its position.
     #[allow(clippy::too_many_arguments)]
-    pub fn add(
+    pub fn put(
         &mut self,
         name: &str,
         label: Option<String>,
@@ -499,7 +500,7 @@ impl Features {
             .list
             .iter_mut()
             .enumerate()
-            .rfind(|(_, feature)| feature.name == name && !feature.applied)
+            .rfind(|(_, feature)| feature.name == name && feature.source == source)
         {
             feature.applied = applied;
             feature.label = label;
@@ -518,6 +519,7 @@ impl Features {
                 category,
                 source,
                 inputs,
+                replaces: None,
             });
             idx
         }
@@ -781,9 +783,9 @@ mod tests {
     }
 
     #[test]
-    fn features_add_returns_position() {
+    fn features_put_returns_position() {
         let mut features = Features::default();
-        let pos = features.add(
+        let pos = features.put(
             "Alert",
             None,
             String::new(),
@@ -795,7 +797,7 @@ mod tests {
         assert_eq!(pos, 0);
         assert_eq!(features.at(pos).unwrap().name, "Alert");
 
-        let pos2 = features.add(
+        let pos2 = features.put(
             "Tough",
             None,
             String::new(),
@@ -811,7 +813,7 @@ mod tests {
     #[test]
     fn features_find_pos_locates_stackable() {
         let mut features = Features::default();
-        features.add(
+        features.put(
             "ASI",
             None,
             String::new(),
@@ -820,7 +822,7 @@ mod tests {
             Vec::new(),
             true,
         );
-        features.add(
+        features.put(
             "ASI",
             None,
             String::new(),
@@ -843,7 +845,7 @@ mod tests {
         assert_eq!(features.last_pos(), None);
         assert!(features.at(0).is_none());
 
-        let pos = features.add(
+        let pos = features.put(
             "Tough",
             None,
             String::new(),
@@ -855,5 +857,77 @@ mod tests {
         assert_eq!(features.last_pos(), Some(pos));
         assert!(!features.is_empty());
         assert_eq!(features.len(), 1);
+    }
+
+    #[test]
+    fn features_put_overwrites_existing_slot_idempotently() {
+        // `(name, source)` is a unique slot. A second `put` to the same slot
+        // — applied or not — must overwrite that single row, never duplicate.
+        let mut features = Features::default();
+        let source = FeatureSource::Class("Fighter".into(), 4);
+        features.put(
+            "Tough",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            source.clone(),
+            Vec::new(),
+            true,
+        );
+        let pos = features.put(
+            "Tough",
+            None,
+            "updated".into(),
+            FeatureCategory::General,
+            source.clone(),
+            vec![AssignInputs::default()],
+            true,
+        );
+        assert_eq!(features.len(), 1);
+        assert_eq!(pos, 0);
+        let row = features.at(pos).unwrap();
+        assert_eq!(row.description, "updated");
+        assert_eq!(row.inputs.len(), 1);
+    }
+
+    #[test]
+    fn features_put_does_not_reuse_unapplied_at_different_source() {
+        // Stackable feat (e.g. Skilled) lands on two slots: a Species(Human)
+        // swap pending insufficient inputs (applied=false) and a
+        // Background(Noble) original. The second `put` must NOT silently
+        // adopt the first slot — otherwise both instances collapse onto one
+        // row and one source is lost.
+        let mut features = Features::default();
+        let species = FeatureSource::Species("Human".into());
+        let background = FeatureSource::Background("Noble".into());
+
+        // First put: pending swap, applied=false (inputs insufficient).
+        features.put(
+            "Skilled",
+            None,
+            String::new(),
+            FeatureCategory::Origin,
+            species.clone(),
+            Vec::new(),
+            false,
+        );
+        // Second put: same name, different source, applied=true.
+        features.put(
+            "Skilled",
+            None,
+            String::new(),
+            FeatureCategory::Origin,
+            background.clone(),
+            Vec::new(),
+            true,
+        );
+
+        assert_eq!(features.len(), 2);
+        let species_row = features.find("Skilled", &species).expect("species row");
+        assert!(!species_row.applied);
+        let background_row = features
+            .find("Skilled", &background)
+            .expect("background row");
+        assert!(background_row.applied);
     }
 }

@@ -347,6 +347,7 @@ mod tests {
             name: name.into(),
             source: FeatureSource::User(0),
             level: 1,
+            replaces: None,
         }
     }
 
@@ -778,6 +779,7 @@ mod tests {
             name: "Ability Score Improvement".into(),
             source: FeatureSource::Class("Rogue".into(), 4),
             level: 4,
+            replaces: None,
         };
 
         let expertise_expr = expertise_def.assign.as_ref().unwrap()[0].expr.clone();

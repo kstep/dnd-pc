@@ -186,8 +186,8 @@ impl RulesRegistry {
                             if let Some(def_opt) =
                                 def_options.iter().find(|def| *def.name == opt.name)
                             {
-                                let opt_key = action_def
-                                    .option_locale_key(&feat_def.name, &def_opt.name);
+                                let opt_key =
+                                    action_def.option_locale_key(&feat_def.name, &def_opt.name);
                                 let opt_text = raw_locale.and_then(|m| m.get(opt_key.as_str()));
                                 set_label(
                                     &mut opt.label,

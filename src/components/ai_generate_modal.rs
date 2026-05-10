@@ -134,6 +134,7 @@ async fn run_ai_generation(
                 name: input.preset_name.clone(),
                 source: FeatureSource::User(0),
                 level,
+                replaces: None,
             }
         });
         registry.with_features_index_untracked(|fi| {

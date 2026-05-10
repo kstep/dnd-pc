@@ -29,11 +29,9 @@ pub struct Equipment {
 }
 
 impl Equipment {
-    /// `OnGearActive` only fires for equipped gear; other timings run on all gear.
-    pub fn assignments(
-        &self,
-        when: WhenCondition,
-    ) -> impl Iterator<Item = (GearRef, &Expr)> + '_ {
+    /// `OnGearActive` only fires for equipped gear; other timings run on all
+    /// gear.
+    pub fn assignments(&self, when: WhenCondition) -> impl Iterator<Item = (GearRef, &Expr)> + '_ {
         let active_only = matches!(when, WhenCondition::OnGearActive);
         let items = self.items.iter().enumerate().flat_map(move |(i, item)| {
             let gate = !active_only || item.is_active();

@@ -45,8 +45,17 @@ pub fn detect_replacement(
         if feature.name == pending.name {
             return None;
         }
+        if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
+            continue;
+        }
+        if feature
+            .replaces
+            .as_deref()
+            .is_some_and(|name| name == pending.name)
+        {
+            return Some(feature.name.clone());
+        }
         if candidate.is_none()
-            && !pending_keys.contains(&(feature.name.as_str(), &feature.source))
             && let Some(candidate_def) = feat_index.get(feature.name.as_str())
             && feat_def.replace_with.matches(candidate_def)
             && candidate_def.meets_prerequisites(baseline)
@@ -116,6 +125,7 @@ pub fn derive_identity_follow_ups(
                         name: feat_name.clone(),
                         source: source.clone(),
                         level: total_level,
+                        replaces: None,
                     });
                 }
             }
@@ -130,6 +140,7 @@ pub fn derive_identity_follow_ups(
                         name: feat_name.clone(),
                         source: source.clone(),
                         level: total_level,
+                        replaces: None,
                     });
                 }
             }
@@ -152,6 +163,7 @@ pub fn derive_identity_follow_ups(
                                 name: feat_name.clone(),
                                 source: class_source.clone(),
                                 level,
+                                replaces: None,
                             });
                         }
                     }
@@ -169,6 +181,7 @@ pub fn derive_identity_follow_ups(
                                 name: feat_name.clone(),
                                 source: sc_source.clone(),
                                 level,
+                                replaces: None,
                             });
                         }
                     }
@@ -198,6 +211,7 @@ pub fn derive_identity_follow_ups(
                                 name: feat_name.clone(),
                                 source: sc_source.clone(),
                                 level,
+                                replaces: None,
                             });
                         }
                     }
@@ -255,10 +269,16 @@ pub fn cascade(
         .map(
             |pending_feature| match replacement_for(pending_feature.name.as_str()) {
                 Some(replacement) if features_index.contains_key(replacement.as_str()) => {
+                    // Pending's own `replaces` (set by plan for marker-direct
+                    // emission) wins; otherwise derive from name mismatch.
+                    let replaces = pending_feature.replaces.clone().or_else(|| {
+                        (replacement != pending_feature.name).then(|| pending_feature.name.clone())
+                    });
                     PendingFeature {
                         name: replacement,
                         source: pending_feature.source.clone(),
                         level: pending_feature.level,
+                        replaces,
                     }
                 }
                 Some(replacement) => {
@@ -278,6 +298,10 @@ pub fn cascade(
     for pending_feature in &resolved {
         let key = FeatureKey::from_pending(pending_feature);
         let inputs = inputs_for(&key);
+        let was_applied_before = character
+            .features
+            .find_pos(&pending_feature.name, &pending_feature.source)
+            .is_some_and(|pos| character.features.list[pos].applied);
         let fu = apply_pending(
             features_index,
             character,
@@ -286,6 +310,14 @@ pub fn cascade(
             caches,
             speculative,
         );
+        if !was_applied_before
+            && let Some(replaced_name) = &pending_feature.replaces
+            && let Some(pos) = character
+                .features
+                .find_pos(&pending_feature.name, &pending_feature.source)
+        {
+            character.features.list[pos].replaces = Some(replaced_name.clone());
+        }
         follow_ups.extend(fu);
     }
 
@@ -350,7 +382,7 @@ pub fn apply_pending(
     // Speculative cascade keeps everything as placeholders so the modal's
     // recompute / chain re-collect cleanly via the same `applied=false` path.
     let applied = !speculative && inputs_sufficient;
-    let feature_pos = character.features.add(
+    let feature_pos = character.features.put(
         &pending_feature.name,
         None,
         String::new(),

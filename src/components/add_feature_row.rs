@@ -100,6 +100,7 @@ pub fn AddFeatureRow(options: Memo<Vec<DatalistOption>>) -> impl IntoView {
             name: key,
             source,
             level,
+            replaces: None,
         }];
         apply_with_modal(store, registry, pending, None, None, |_| {});
 

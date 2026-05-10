@@ -72,18 +72,24 @@ pub fn FeatureRow(
         })
         .unwrap_or((false, false));
     // Reactive — features.json may not be loaded at mount, but arrives later.
-    // `_untracked` would freeze the value to `false` for the row's lifetime
-    // and the edit button would never appear after a rebuild that re-mounts
-    // the row before the index resource resolves.
-    let has_interactive_inputs = {
-        let feature_name = feature_name.clone();
-        Memo::new(move |_| {
-            registry.with_features_index(|idx| {
-                idx.get(feature_name.as_str())
-                    .is_some_and(|feat_def| feat_def.has_interactive_inputs())
-            })
+    // Reading via `feature.read()` also tracks rename + `replaces` writes so
+    // the pencil appears/disappears when the feature changes shape (e.g. an
+    // edit-mode rename Lucky → ASI clears `replaces` and may hide the
+    // pencil if the placeholder has no interactive inputs).
+    let is_editable = Memo::new(move |_| {
+        // Swap features are always editable — the placeholder modal hosts a
+        // replacement picker even when the placeholder itself has no
+        // interactive exprs.
+        if feature.read().replaces.is_some() {
+            return true;
+        }
+        let current_name = feature.read().name.clone();
+        registry.with_features_index(|feat_index| {
+            feat_index
+                .get(current_name.as_str())
+                .is_some_and(|feat_def| feat_def.has_interactive_inputs())
         })
-    };
+    });
 
     let row_info = Memo::new(move |_| {
         let not_applied = !feature.applied().get();
@@ -230,35 +236,55 @@ pub fn FeatureRow(
                 })}
             </div>
             <div class="entry-actions">
-                <Show when=move || has_interactive_inputs.get()>
+                <Show when=move || is_editable.get()>
                     <button
                         class="btn-apply-level"
                         title=move_tr!("btn-edit-feature")
                         on:click=move |_| {
-                            let (name, source, is_applied) = feature.with_untracked(
-                                |feature| (feature.name.clone(), feature.source.clone(), feature.applied),
-                            );
+                            let (current_name, source, is_applied, replaces) = feature
+                                .with_untracked(|feature| {
+                                    (
+                                        feature.name.clone(),
+                                        feature.source.clone(),
+                                        feature.applied,
+                                        feature.replaces.clone(),
+                                    )
+                                });
                             if is_applied {
                                 // Edit-mode: open modal with pre-edit cascade snapshot, on
-                                // submit just stash new inputs + mark dirty. Replay banner
+                                // submit just stash new inputs + mark dirty. Rebuild banner
                                 // picks it up and performs the full-character re-apply.
                                 // Full clone — base feeds build_clean which expects a full
                                 // Character (equipment, personality, notes survive `merge_preserved`).
-                                let mut clone = store.read_untracked().clone();
-                                clone.features.truncate(&name, &source);
-                                let clean = build_clean(&clone, &registry, &ApplyInputs::default())
-                                    .map(|outcome| outcome.character)
-                                    .unwrap_or(clone);
+                                let mut truncated_clone = store.read_untracked().clone();
+                                truncated_clone.features.truncate(&current_name, &source);
+                                let pre_edit_character =
+                                    build_clean(&truncated_clone, &registry, &ApplyInputs::default())
+                                        .map(|outcome| outcome.character)
+                                        .unwrap_or(truncated_clone);
+                                // For a swap (`replaces = Some(orig)`), open the modal for
+                                // the placeholder so its picker shows the current swap
+                                // pre-selected. Non-swap edits open for the feature's own name.
+                                let placeholder_name =
+                                    replaces.clone().unwrap_or_else(|| current_name.clone());
+                                let current_name_for_modal =
+                                    replaces.is_some().then(|| current_name.clone());
                                 edit_inputs_modal(
                                     store,
                                     registry,
-                                    name,
+                                    placeholder_name,
                                     source,
-                                    Some(Arc::new(clean.core)),
+                                    Some(Arc::new(pre_edit_character.core)),
+                                    current_name_for_modal,
                                 );
                             } else {
                                 let level = source.added_at_level();
-                                let pending = vec![PendingFeature { name, source, level }];
+                                let pending = vec![PendingFeature {
+                                    name: current_name,
+                                    source,
+                                    level,
+                                    replaces: None,
+                                }];
                                 apply_with_modal(store, registry, pending, None, None, |_| {});
                             }
                         }
