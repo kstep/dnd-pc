@@ -181,12 +181,8 @@ pub fn FeatureRow(
                                 let replaces = feat.replaces.as_deref()?;
                                 let (label, _) = registry.feature_label_desc(replaces);
                                 Some(view! {
-                                    <span
-                                        class="entry-replaces-placeholder"
-                                        on:click=move |_| toggle()
-                                    >
-                                        {label.get()}
-                                    </span>
+                                    <span class="entry-replaces-placeholder">{label.get()}</span>
+                                    <wbr/>
                                 })
                             }}
                             {move || feature.read().label().to_string()}
