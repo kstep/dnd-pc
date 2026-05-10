@@ -552,3 +552,175 @@ fn rebuild_recovers_per_source_replacement_from_original() {
         "L8 ASI placeholder must not survive"
     );
 }
+
+/// User-reported regression: in the rebuild modal, the user UNCHECKED the
+/// existing L4 Spell Sniper swap (back to vanilla ASI) and CHECKED L8 with
+/// Spell Sniper. Submit produced `extra_inputs` with `replacement = None`
+/// for L4 and `replacement = Some("Spell Sniper")` for L8. The buggy
+/// `make_replacement_for` collapsed the explicit `None` and fell through
+/// to `detect_replacement`, which still saw the prior swap in `original`
+/// and resurrected it at L4 — leaving Spell Sniper non-stackable-applied
+/// at L4, blocking L8 from landing at all.
+#[wasm_bindgen_test]
+fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
+    use dnd_pc::rules::ApplyInput;
+
+    let mut original = Character::default();
+    original.identity.classes = vec![ClassLevel {
+        class: "Wizard".into(),
+        level: 8,
+        ..ClassLevel::default()
+    }];
+    // Original state: Spell Sniper replaces ASI at L4, no L8 ASI yet.
+    original.features.list.push(Feature {
+        name: "Spell Sniper".into(),
+        source: FeatureSource::Class("Wizard".into(), 4),
+        category: FeatureCategory::General,
+        applied: true,
+        inputs: vec![AssignInputs {
+            args: vec![0, 0, 1],
+            ..AssignInputs::default()
+        }],
+        replaces: Some("Ability Score Improvement".into()),
+        ..Feature::default()
+    });
+
+    let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+    feat_index.insert(
+        "Ability Score Improvement".into(),
+        FeatureDefinition {
+            name: "Ability Score Improvement".into(),
+            stackable: true,
+            category: FeatureCategory::General,
+            replace_with: ReplaceWith::Any,
+            spells: None,
+            actions: BTreeMap::new(),
+            assign: None,
+            prerequisites: None,
+        },
+    );
+    feat_index.insert("Spell Sniper".into(), plain_feat("Spell Sniper"));
+    let view = FeaturesView::from_natural(&feat_index);
+    let class_index: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+    let species: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+    let bgs: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+    let caches = empty_caches(&class_index, &species, &bgs);
+
+    let l4_key = FeatureKey::new(
+        "Ability Score Improvement",
+        FeatureSource::Class("Wizard".into(), 4),
+    );
+    let l8_placeholder_key = FeatureKey::new(
+        "Ability Score Improvement",
+        FeatureSource::Class("Wizard".into(), 8),
+    );
+    let l8_swap_key = FeatureKey::new(
+        "Spell Sniper",
+        FeatureSource::Class("Wizard".into(), 8),
+    );
+
+    // Modal submit: L4 reverted to vanilla ASI; L8 swapped to Spell Sniper.
+    let mut extra = ApplyInputs::default();
+    extra.insert(
+        l4_key,
+        ApplyInput {
+            inputs: vec![AssignInputs {
+                args: vec![0, 1, 0, 0, 0, 1],
+                ..AssignInputs::default()
+            }],
+            replacement: None,
+        },
+    );
+    extra.insert(
+        l8_placeholder_key,
+        ApplyInput {
+            inputs: vec![],
+            replacement: Some("Spell Sniper".into()),
+        },
+    );
+    extra.insert(
+        l8_swap_key,
+        ApplyInput {
+            inputs: vec![AssignInputs {
+                args: vec![0, 0, 1],
+                ..AssignInputs::default()
+            }],
+            replacement: None,
+        },
+    );
+
+    let pending_keys = BTreeSet::new();
+    let inputs_for = make_inputs_for(view, &original, &extra);
+    let replacement_for = make_replacement_for(view, &original, &extra, &pending_keys);
+
+    let mut clean = CharacterCore::default();
+    let l4_pending = PendingFeature {
+        name: "Ability Score Improvement".into(),
+        source: FeatureSource::Class("Wizard".into(), 4),
+        level: 4,
+        replaces: None,
+    };
+    cascade(
+        &mut clean,
+        std::slice::from_ref(&l4_pending),
+        view,
+        caches,
+        &inputs_for,
+        &replacement_for,
+        false,
+    );
+    let l8_pending = PendingFeature {
+        name: "Ability Score Improvement".into(),
+        source: FeatureSource::Class("Wizard".into(), 8),
+        level: 8,
+        replaces: None,
+    };
+    cascade(
+        &mut clean,
+        std::slice::from_ref(&l8_pending),
+        view,
+        caches,
+        &inputs_for,
+        &replacement_for,
+        false,
+    );
+
+    // L4 must end up as vanilla ASI (user unchecked the swap).
+    let l4 = clean
+        .features
+        .list
+        .iter()
+        .find(|feature| {
+            feature.name == "Ability Score Improvement"
+                && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
+        })
+        .expect("L4 must land as vanilla ASI");
+    assert!(l4.applied);
+    assert_eq!(l4.replaces, None, "L4 must not be tagged as replaced");
+
+    // No Spell Sniper leaked into L4 source.
+    assert!(
+        !clean.features.list.iter().any(|feature| {
+            feature.name == "Spell Sniper"
+                && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
+        }),
+        "Spell Sniper must not be applied at L4 — user unchecked"
+    );
+
+    // L8 must land as Spell Sniper with the placeholder recorded in `replaces`.
+    let l8 = clean
+        .features
+        .list
+        .iter()
+        .find(|feature| {
+            feature.name == "Spell Sniper"
+                && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
+        })
+        .expect("L8 must land as Spell Sniper");
+    assert!(l8.applied);
+    assert_eq!(
+        l8.replaces.as_deref(),
+        Some("Ability Score Improvement"),
+        "L8 swap row must record the replaced placeholder"
+    );
+}
