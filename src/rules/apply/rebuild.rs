@@ -712,14 +712,10 @@ pub fn make_inputs_for<'a>(
     }
 }
 
-/// Build a `cascade()`-compatible `replacement_for` closure. Modal-supplied
-/// `extra_inputs` win — the user's just-submitted pick is authoritative —
-/// otherwise falls back to `detect_replacement` against `original.features`
-/// to recover prior swap decisions (e.g. ASI L8 → Spell Sniper from a
-/// previous level-up). The fallback is source-aware: each ASI placeholder
-/// at a different level resolves to its own stored replacement, so
-/// rebuild can preserve mixed setups (vanilla ASI at one level, swap at
-/// another).
+/// Build a `cascade()`-compatible `replacement_for` closure. Presence in
+/// `extra_inputs` is authoritative (including `replacement = None` for an
+/// explicit uncheck); only absent keys fall back to `detect_replacement`
+/// against `original.features` for prior-swap recovery.
 pub fn make_replacement_for<'a>(
     feat_index: FeaturesView<'a>,
     original: &'a Character,
@@ -727,11 +723,8 @@ pub fn make_replacement_for<'a>(
     pending_keys: &'a BTreeSet<(&str, &FeatureSource)>,
 ) -> impl Fn(&FeatureKey) -> Option<String> + 'a {
     move |key| {
-        if let Some(replacement) = extra_inputs
-            .get(key)
-            .and_then(|input| input.replacement.clone())
-        {
-            return Some(replacement);
+        if let Some(input) = extra_inputs.get(key) {
+            return input.replacement.clone();
         }
         let feat_def = feat_index.get(key.name.as_str())?;
         detect_replacement(
@@ -1769,6 +1762,51 @@ mod tests {
             Some("Lucky".into()),
             "modal submit must override prior stored swap"
         );
+    }
+
+    /// `replacement = None` in submit must override prior swap in `original`.
+    #[wasm_bindgen_test]
+    fn make_replacement_for_extra_inputs_explicit_none_wins() {
+        let asi_def = feat_def(
+            "Ability Score Improvement",
+            FeatureCategory::Class,
+            ReplaceWith::Any,
+        );
+        let spell_sniper_def =
+            feat_def("Spell Sniper", FeatureCategory::General, ReplaceWith::None);
+        let feat_index: BTreeMap<Box<str>, FeatureDefinition> = [&asi_def, &spell_sniper_def]
+            .into_iter()
+            .map(|def| (def.name.clone(), def.clone()))
+            .collect();
+        let view = FeaturesView::from_natural(&feat_index);
+
+        let l4_source = FeatureSource::Class("Sorcerer".into(), 4);
+        let l4_key = FeatureKey::new("Ability Score Improvement", l4_source.clone());
+
+        let mut original = Character::default();
+        original.features.list.push(Feature {
+            name: "Spell Sniper".into(),
+            source: l4_source.clone(),
+            applied: true,
+            replaces: Some("Ability Score Improvement".into()),
+            ..Feature::default()
+        });
+
+        let mut extra = ApplyInputs::default();
+        extra.insert(
+            l4_key.clone(),
+            ApplyInput {
+                inputs: vec![AssignInputs {
+                    args: vec![0, 1, 0, 0, 0, 1],
+                    ..AssignInputs::default()
+                }],
+                replacement: None,
+            },
+        );
+
+        let pending_keys = BTreeSet::new();
+        let resolve = make_replacement_for(view, &original, &extra, &pending_keys);
+        assert_eq!(resolve(&l4_key), None);
     }
 
     use crate::rules::{
