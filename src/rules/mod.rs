@@ -1,5 +1,5 @@
 pub mod apply;
-pub use apply::{ApplyInputs, FeatureKey, PendingInputs, RecomputePending};
+pub use apply::{ApplyInput, ApplyInputs, FeatureKey, PendingInputs, RecomputePending};
 pub mod background;
 mod cache;
 pub mod class;

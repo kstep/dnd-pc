@@ -37,7 +37,7 @@ pub struct ArgsModalState {
     pub args: RwSignal<ArgsSignals>,
     pub dice: RwSignal<DiceSignals>,
     pub valid: RwSignal<BTreeMap<FeatureKey, Memo<bool>>>,
-    pub replacements: RwSignal<BTreeMap<String, RwSignal<Option<String>>>>,
+    pub replacements: RwSignal<BTreeMap<FeatureKey, RwSignal<Option<String>>>>,
     /// Per-section downstream snapshots: `chain[K]` is the character after
     /// the section keyed by `K` finishes its cascade. The section that
     /// follows `K` reads it as its upstream. Each section owns its own
@@ -108,10 +108,10 @@ impl ArgsModalState {
         }
     }
 
-    /// Resolve a placeholder `name` → user-picked replacement.
-    pub fn replacement_for(&self, name: &str, tracked: bool) -> Option<String> {
-        let read = |map: &BTreeMap<String, RwSignal<Option<String>>>| {
-            map.get(name).and_then(|sig| {
+    /// Resolve a placeholder `key` → user-picked replacement.
+    pub fn replacement_for(&self, key: &FeatureKey, tracked: bool) -> Option<String> {
+        let read = |map: &BTreeMap<FeatureKey, RwSignal<Option<String>>>| {
+            map.get(key).and_then(|sig| {
                 if tracked {
                     sig.get()
                 } else {
@@ -214,7 +214,7 @@ fn cascade_step(
     pending: &PendingFeature,
     registry: &RulesRegistry,
     inputs_for: &dyn Fn(&FeatureKey) -> Vec<AssignInputs>,
-    replacement_for: &dyn Fn(&str) -> Option<String>,
+    replacement_for: &dyn Fn(&FeatureKey) -> Option<String>,
 ) -> CharacterCore {
     let mut snapshot = base.clone();
     registry.with_definitions(|caches| {
@@ -306,7 +306,7 @@ fn setup_section_chain(
                 }
             };
             let replacement_for =
-                |name: &str| -> Option<String> { state.replacement_for(name, true) };
+                |key: &FeatureKey| -> Option<String> { state.replacement_for(key, true) };
             let new_downstream = cascade_step(
                 &upstream,
                 &pending_feature,
@@ -398,7 +398,7 @@ fn ArgsFeatureInput(
     let replacement_choice: RwSignal<Option<String>> = RwSignal::new(prefilled_replacement);
     if replaceable {
         all_replacements.update(|map| {
-            map.insert(feature_name.clone(), replacement_choice);
+            map.insert(section_key.clone(), replacement_choice);
         });
     }
 
@@ -484,7 +484,6 @@ fn ArgsFeatureInput(
     // under a different name with the same source by `ReplacementPicker`)
     // both need clearing.
     let cleanup_key = section_key.clone();
-    let cleanup_feature_name = section_key.name.clone();
     let cleanup_source = section_key.source.clone();
     on_cleanup(move || {
         let replacement_key = replacement_choice
@@ -494,7 +493,7 @@ fn ArgsFeatureInput(
             map.remove(&cleanup_key);
         });
         all_replacements.update(|map| {
-            map.remove(&cleanup_feature_name);
+            map.remove(&cleanup_key);
         });
         all_signals.update(|map| {
             map.remove(&cleanup_key);
@@ -852,8 +851,8 @@ pub fn ArgsModal() -> impl IntoView {
     let replacement_choices = Memo::new(move |_| {
         all_replacements.with(|map| {
             map.iter()
-                .filter_map(|(name, sig)| sig.get().map(|chosen| (name.clone(), chosen)))
-                .collect::<BTreeMap<String, String>>()
+                .filter_map(|(key, sig)| sig.get().map(|chosen| (key.clone(), chosen)))
+                .collect::<BTreeMap<FeatureKey, String>>()
         })
     });
     Effect::new(move |_| {
@@ -867,14 +866,14 @@ pub fn ArgsModal() -> impl IntoView {
             let pending_now = ctx.pending.get_untracked();
             let inputs_for = |fk: &FeatureKey| -> Vec<AssignInputs> { state.inputs_for(fk, false) };
             let replacement_for =
-                |name: &str| -> Option<String> { state.replacement_for(name, false) };
+                |key: &FeatureKey| -> Option<String> { state.replacement_for(key, false) };
             for entry in &pending_now {
                 // Unresolved replaceable placeholder — skip. Pushing the
                 // placeholder into speculative.features makes subsequent
                 // collect_pending_features think it's already applied,
                 // creating a recompute oscillation between "placeholder
                 // pending" and "placeholder absorbed".
-                if entry.is_replaceable() && !choices.contains_key(&entry.feature_name) {
+                if entry.is_replaceable() && !choices.contains_key(&entry.feature_key()) {
                     continue;
                 }
                 let pending_feature = PendingFeature {
@@ -934,52 +933,55 @@ pub fn ArgsModal() -> impl IntoView {
     let on_submit = move |event: web_sys::SubmitEvent| {
         event.prevent_default();
 
-        let replacements: BTreeMap<String, String> = all_replacements.with_untracked(|entries| {
-            entries
-                .iter()
-                .filter_map(|(original_name, signal)| {
-                    signal
-                        .get_untracked()
-                        .map(|replacement| (original_name.clone(), replacement))
-                })
-                .collect()
+        // Build a single per-FeatureKey record. Placeholder section's
+        // entry holds the replacement choice with empty inputs (its own
+        // ARG signals are unused once the user swaps); the resolved
+        // section's entry holds the user's actual ARG/dice picks.
+        let mut submitted = ApplyInputs::new();
+
+        all_replacements.with_untracked(|entries| {
+            for (key, signal) in entries {
+                if let Some(replacement) = signal.get_untracked() {
+                    submitted.entry(key.clone()).or_default().replacement = Some(replacement);
+                }
+            }
         });
 
-        let inputs_map: BTreeMap<FeatureKey, Vec<AssignInputs>> =
-            all_signals.with_untracked(|sig_entries| {
-                all_dice.with_untracked(|dice_entries| {
-                    sig_entries
+        all_signals.with_untracked(|sig_entries| {
+            all_dice.with_untracked(|dice_entries| {
+                for (key, signal_groups) in sig_entries {
+                    // Placeholder section — its inputs are unused; the
+                    // resolved feat carries the real picks at its own key.
+                    if submitted
+                        .get(key)
+                        .is_some_and(|input| input.replacement.is_some())
+                    {
+                        continue;
+                    }
+                    let dice_groups = dice_entries.get(key);
+                    let inputs: Vec<AssignInputs> = signal_groups
                         .iter()
-                        .filter(|(key, _)| !replacements.contains_key(&key.name))
-                        .map(|(key, signal_groups)| {
-                            let dice_groups = dice_entries.get(key);
-                            let feature_inputs: Vec<AssignInputs> = signal_groups
-                                .iter()
-                                .enumerate()
-                                .map(|(i, sigs)| {
-                                    let args = sigs.with_value(|signals| {
-                                        signals
-                                            .iter()
-                                            .map(|signal| signal.get_untracked())
-                                            .collect()
-                                    });
-                                    let dice = dice_groups
-                                        .and_then(|groups| groups.get(i))
-                                        .map(|dice_sv| dice_sv.with_value(collect_dice_pool))
-                                        .unwrap_or_default();
-                                    AssignInputs { args, dice }
-                                })
-                                .collect();
-                            (key.clone(), feature_inputs)
+                        .enumerate()
+                        .map(|(i, sigs)| {
+                            let args = sigs.with_value(|signals| {
+                                signals
+                                    .iter()
+                                    .map(|signal| signal.get_untracked())
+                                    .collect()
+                            });
+                            let dice = dice_groups
+                                .and_then(|groups| groups.get(i))
+                                .map(|dice_sv| dice_sv.with_value(collect_dice_pool))
+                                .unwrap_or_default();
+                            AssignInputs { args, dice }
                         })
-                        .collect()
-                })
+                        .collect();
+                    submitted.entry(key.clone()).or_default().inputs = inputs;
+                }
             });
-
-        ctx.complete(ApplyInputs {
-            feature_inputs: inputs_map,
-            replacements,
         });
+
+        ctx.complete(submitted);
     };
 
     view! {

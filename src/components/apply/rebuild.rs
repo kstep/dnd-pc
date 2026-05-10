@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, sync::Arc};
+use std::sync::Arc;
 
 use leptos::prelude::*;
 use leptos_fluent::tr;
@@ -10,7 +10,7 @@ use crate::{
     components::{args_modal::ArgsModalCtx, toast::Toast},
     model::Character,
     rules::{
-        ApplyInputs, RulesRegistry,
+        ApplyInput, ApplyInputs, RulesRegistry,
         apply::{
             DefinitionKind, FeatureKey, PendingInputs, RebuildError, RebuildOutcome,
             RebuildPreview, build_clean, prepare_rebuild, rebuild_recompute,
@@ -116,32 +116,22 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
 }
 
 /// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
-/// trial `build_clean`. `replacements` carries over `prefilled_replacement`
-/// so subclass/Epic-Boon swaps recovered from `original.features` feed
-/// back into `resolve_replacements` and the simulated character mirrors
-/// the user's original choice.
+/// trial `build_clean`. Each pending lands as a single record at its own
+/// `(name, source)` key, carrying both the prefilled args and the
+/// detected replacement (if any) — so the rebuild cascade reproduces
+/// the user's original swap decisions.
 fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
-    let replacements: BTreeMap<String, String> = pending
+    pending
         .iter()
-        .filter_map(|pending| {
-            pending
-                .prefilled_replacement
-                .clone()
-                .map(|replacement| (pending.feature_name.clone(), replacement))
+        .map(|pending| {
+            let key = FeatureKey::new(&pending.feature_name, pending.source.clone());
+            let input = ApplyInput {
+                inputs: pending.prefill.clone(),
+                replacement: pending.prefilled_replacement.clone(),
+            };
+            (key, input)
         })
-        .collect();
-    ApplyInputs {
-        feature_inputs: pending
-            .iter()
-            .map(|pending| {
-                (
-                    FeatureKey::new(&pending.feature_name, pending.source.clone()),
-                    pending.prefill.clone(),
-                )
-            })
-            .collect(),
-        replacements,
-    }
+        .collect()
 }
 
 /// Build a callback that navigates to this character's Build tab. Captured at

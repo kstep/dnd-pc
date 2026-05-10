@@ -123,7 +123,7 @@ fn speculative_cascade_pushes_followups_as_unapplied() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for = |_: &str| -> Option<String> { None };
+    let replacement_for = |_: &FeatureKey| -> Option<String> { None };
     cascade(
         &mut snapshot,
         std::slice::from_ref(&pending),
@@ -224,8 +224,9 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for =
-        |name: &str| -> Option<String> { (name == "Class Level").then(|| "Fighter".to_string()) };
+    let replacement_for = |key: &FeatureKey| -> Option<String> {
+        (key.name == "Class Level").then(|| "Fighter".to_string())
+    };
     cascade(
         &mut snapshot,
         std::slice::from_ref(&placeholder),
@@ -347,8 +348,8 @@ fn asi_replacement_keeps_prior_asi_intact() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for = |name: &str| -> Option<String> {
-        (name == "Ability Score Improvement").then(|| "Tough".to_string())
+    let replacement_for = |key: &FeatureKey| -> Option<String> {
+        (key.name == "Ability Score Improvement").then(|| "Tough".to_string())
     };
     cascade(
         &mut character.core,
