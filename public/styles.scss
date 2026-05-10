@@ -1808,6 +1808,7 @@ select.entry-name {
 }
 
 .entry-replaces-placeholder {
+  font-size: var(--font-size-1);
   color: var(--text-secondary);
   white-space: nowrap;
   cursor: pointer;

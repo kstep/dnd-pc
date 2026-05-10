@@ -172,23 +172,23 @@ pub fn FeatureRow(
             <div class="entry-content">
                 {if is_readonly {
                     Either::Left(view! {
-                        {move || {
-                            let feat = feature.read();
-                            let replaces = feat.replaces.as_deref()?;
-                            let (label, _) = registry.feature_label_desc(replaces);
-                            Some(view! {
-                                <span
-                                    class="entry-replaces-placeholder"
-                                    on:click=move |_| toggle()
-                                >
-                                    {label.get()}
-                                </span>
-                            })
-                        }}
                         <span
                             class="entry-name entry-name-readonly"
                             on:click=move |_| toggle()
                         >
+                            {move || {
+                                let feat = feature.read();
+                                let replaces = feat.replaces.as_deref()?;
+                                let (label, _) = registry.feature_label_desc(replaces);
+                                Some(view! {
+                                    <span
+                                        class="entry-replaces-placeholder"
+                                        on:click=move |_| toggle()
+                                    >
+                                        {label.get()}
+                                    </span>
+                                })
+                            }}
                             {move || feature.read().label().to_string()}
                         </span>
                     })
