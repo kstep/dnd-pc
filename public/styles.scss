@@ -808,7 +808,8 @@ input.inline-input {
     &:hover { text-decoration: underline; }
   }
 
-  .class-tag-level {
+  .class-tag-level,
+  input.class-tag-level {
     color: var(--accent);
     font-weight: var(--font-weight-7);
   }

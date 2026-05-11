@@ -21,7 +21,7 @@ use crate::{
     firebase,
     model::{
         Avatar, Character, CharacterCoreStoreFields, CharacterIdentityStoreFields,
-        CharacterStoreFields, PersonalityStoreFields,
+        CharacterStoreFields, MAX_CLASS_LEVEL, PersonalityStoreFields,
     },
     rules::{IndexEntry, RulesRegistry},
     storage,
@@ -228,8 +228,9 @@ pub fn CharacterHeader() -> impl IntoView {
                         {move || classes
                             .read()
                             .iter()
-                            .filter(|cl| !cl.class.is_empty())
-                            .map(|cl| {
+                            .enumerate()
+                            .filter(|(_, cl)| !cl.class.is_empty())
+                            .map(|(index, cl)| {
                                 let class_key = cl.class.clone();
                                 let class_label = cl.class_label().to_string();
                                 let subclass_key = cl.subclass.clone().unwrap_or_default();
@@ -247,6 +248,12 @@ pub fn CharacterHeader() -> impl IntoView {
                                     </Ref>
                                 });
                                 let remove_target = class_key.clone();
+                                let on_level_change = move |event| {
+                                    if let Ok(value) = event_target_value(&event).parse::<u32>() {
+                                        let clamped = value.clamp(1, MAX_CLASS_LEVEL);
+                                        store.core().identity().classes().write()[index].level = clamped;
+                                    }
+                                };
                                 view! {
                                     <span class="class-tag">
                                         <Ref
@@ -256,7 +263,14 @@ pub fn CharacterHeader() -> impl IntoView {
                                             {class_label}
                                         </Ref>
                                         {subclass_view}
-                                        <span class="class-tag-level">{level}</span>
+                                        <input
+                                            class="class-tag-level inline-input"
+                                            type="number"
+                                            min="1"
+                                            max=MAX_CLASS_LEVEL
+                                            prop:value=level
+                                            on:change=on_level_change
+                                        />
                                         <Show when=move || multiclass.get()>
                                             <button
                                                 class="class-tag-remove"
