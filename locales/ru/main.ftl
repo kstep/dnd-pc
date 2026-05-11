@@ -33,6 +33,7 @@ rebuild-reason-background = изменена предыстория
 rebuild-reason-class-removed = удалён класс «{$class}»
 rebuild-reason-level-lowered = понижен уровень класса «{$class}» (было {$applied}, стало {$current})
 rebuild-reason-subclass-changed = изменён подкласс класса «{$class}»
+rebuild-reason-feature-removed = удалена особенность «{$name}»
 rebuild-reason-legacy-system-markers = устаревший формат данных
 replace-with-feat = Заменить на…
 no-eligible-options = Нет доступных вариантов

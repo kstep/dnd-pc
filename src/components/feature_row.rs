@@ -19,7 +19,7 @@ use crate::{
     },
     rules::{
         ApplyInputs, RulesRegistry,
-        apply::{PendingFeature, build_clean},
+        apply::{PendingFeature, build_clean, level_up_plan},
     },
 };
 
@@ -46,7 +46,7 @@ pub fn FeatureRow(
 
     let (feature_name, initial_label, initial_desc) = feature.with_untracked(|feature| {
         (
-            feature.name.clone(),
+            feature.name.to_string(),
             feature.label().to_string(),
             feature.description.clone(),
         )
@@ -60,7 +60,7 @@ pub fn FeatureRow(
         .core().features()
         .data()
         .read_untracked()
-        .get(&feature_name)
+        .get(feature_name.as_str())
         .map(|feature_data| {
             let has_empty = feature_data.fields.iter().any(|field| {
                 matches!(
@@ -86,7 +86,7 @@ pub fn FeatureRow(
         let current_name = feature.read().name.clone();
         registry.with_features_index(|feat_index| {
             feat_index
-                .get(current_name.as_str())
+                .get(&current_name)
                 .is_some_and(|feat_def| feat_def.has_interactive_inputs())
         })
     });
@@ -100,7 +100,7 @@ pub fn FeatureRow(
                     .features()
                     .data()
                     .read()
-                    .get(key)
+                    .get(key.as_str())
                     .map(|feature_data| {
                         feature_data.fields.iter().fold(
                             (false, 0u32, 0u32, 0u32),
@@ -135,7 +135,7 @@ pub fn FeatureRow(
                 .features()
                 .data()
                 .read()
-                .get(name)
+                .get(name.as_str())
                 .map(|feature_data| feature_data.fields.len())
                 .unwrap_or(0)
         })
@@ -203,7 +203,7 @@ pub fn FeatureRow(
                                     // Resolved to a real feat: bind name to
                                     // the registry key and pull canonical
                                     // label/description from the index.
-                                    w.name = key.clone();
+                                    w.name = key.as_str().into();
                                     let (label, description) = registry
                                         .features()
                                         .lookup_untracked(key.as_str(), |loc| {
@@ -220,7 +220,7 @@ pub fn FeatureRow(
                                     // Free text: keep label only, drop any
                                     // prior registry binding so this row
                                     // stops being treated as an indexed feat.
-                                    w.name.clear();
+                                    w.name = Box::default();
                                     w.set_label(input);
                                     w.description.clear();
                                 }
@@ -267,10 +267,21 @@ pub fn FeatureRow(
                                 // Character (equipment, personality, notes survive `merge_preserved`).
                                 let mut truncated_clone = store.read_untracked().clone();
                                 truncated_clone.features.truncate(&current_name, &source);
-                                let pre_edit_character =
-                                    build_clean(&truncated_clone, &registry, &ApplyInputs::default())
-                                        .map(|outcome| outcome.character)
-                                        .unwrap_or(truncated_clone);
+                                let pre_edit_character = level_up_plan(
+                                    &truncated_clone.identity,
+                                    &truncated_clone.features,
+                                    &registry,
+                                )
+                                .and_then(|plan| {
+                                    build_clean(
+                                        &truncated_clone,
+                                        &plan,
+                                        &registry,
+                                        &ApplyInputs::default(),
+                                    )
+                                })
+                                .map(|outcome| outcome.character)
+                                .unwrap_or(truncated_clone);
                                 // For a swap (`replaces = Some(orig)`), open the modal for
                                 // the placeholder so its picker shows the current swap
                                 // pre-selected. Non-swap edits open for the feature's own name.

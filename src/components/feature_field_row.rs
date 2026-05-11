@@ -30,7 +30,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                 .features()
                 .data()
                 .read()
-                .get(key)
+                .get(key.as_str())
                 .and_then(|e| e.fields.get(field_idx).cloned())
         })?;
 
@@ -44,7 +44,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                     on:change=move |e| {
                         feature_name.with_value(|key| {
                             store.core().features().data().update(|m| {
-                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                     && let Some(f) = fields.get_mut(field_idx)
                                 {
                                     f.description = event_target_value(&e);
@@ -73,7 +73,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                     feature_name.with_value(|key| {
                                         store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                 && let Some(f) = fields.get_mut(field_idx)
                                                 && let FeatureValue::Die { used, .. } = &mut f.value
                                             {
@@ -120,7 +120,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                     feature_name.with_value(|key| {
                                         store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                 && let Some(f) = fields.get_mut(field_idx)
                                                 && let FeatureValue::Points { used, .. } = &mut f.value
                                             {
@@ -141,7 +141,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                     feature_name.with_value(|key| {
                                         store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                 && let Some(f) = fields.get_mut(field_idx)
                                                 && let FeatureValue::Points { max, .. } = &mut f.value
                                             {
@@ -219,7 +219,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                     store.core().features().data().with(|feature_data| {
                         feature_name.with_value(|key| {
                             let char_fields = feature_data
-                                .get(key)
+                                .get(key.as_str())
                                 .map(|entry| entry.fields.as_slice())
                                 .unwrap_or(&[]);
                             registry.get_choice_options(classes, key, &field_name, char_fields)
@@ -286,7 +286,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                         .map(|name| {
                                                             let classes = store.core().identity().classes().read();
                                                             let data = store.core().features().data().read();
-                                                            let char_fields = data.get(key)
+                                                            let char_fields = data.get(key.as_str())
                                                                 .map(|e| e.fields.as_slice())
                                                                 .unwrap_or(&[]);
                                                             registry
@@ -298,7 +298,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                         })
                                                         .unwrap_or_default();
                                                     store.core().features().data().update(|m| {
-                                                        if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                        if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                             && let Some(f) = fields.get_mut(field_idx)
                                                             && let FeatureValue::Choice { options } = &mut f.value
                                                             && let Some(opt) = options.get_mut(opt_idx)
@@ -328,7 +328,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
                                                     feature_name.with_value(|key| {
                                                         store.core().features().data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Choice { options } = &mut f.value
                                                                 && let Some(opt) = options.get_mut(opt_idx)
@@ -348,7 +348,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                         on:click=move |_| {
                                             feature_name.with_value(|key| {
                                                 store.core().features().data().update(|m| {
-                                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                    if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                         && let Some(f) = fields.get_mut(field_idx)
                                                         && let FeatureValue::Choice { options } = &mut f.value
                                                         && opt_idx < options.len()
@@ -369,7 +369,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                     on:change=move |e| {
                                         feature_name.with_value(|key| {
                                             store.core().features().data().update(|m| {
-                                                if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                                if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                                     && let Some(f) = fields.get_mut(field_idx)
                                                     && let FeatureValue::Choice { options } = &mut f.value
                                                     && let Some(opt) = options.get_mut(opt_idx)
@@ -409,7 +409,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         on:click=move |_| {
                             feature_name.with_value(|key| {
                                 store.core().features().data().update(|m| {
-                                    if let Some(fields) = m.get_mut(key).map(|e| &mut e.fields)
+                                    if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
                                         && let Some(f) = fields.get_mut(field_idx)
                                         && let FeatureValue::Choice { options } = &mut f.value
                                     {

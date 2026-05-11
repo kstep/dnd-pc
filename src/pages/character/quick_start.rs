@@ -205,7 +205,7 @@ fn build_quick_start_pending_features(
     let mut pending: Vec<PendingFeature> = Vec::new();
     if !gen_name.is_empty() {
         pending.push(PendingFeature {
-            name: gen_name.to_string(),
+            name: gen_name.into(),
             source: FeatureSource::User(0),
             level,
             replaces: None,
@@ -309,7 +309,7 @@ fn quick_start_recompute(registry: RulesRegistry, gen_name: String) -> Recompute
             build_quick_start_pending_features(&snapshot, &registry, fi, &gen_name)
                 .into_iter()
                 .filter_map(|pf| {
-                    let feat_def = fi.get(pf.name.as_str())?;
+                    let feat_def = fi.get(&pf.name)?;
                     pf.pending_inputs(feat_def, &snapshot)
                 })
                 .collect()

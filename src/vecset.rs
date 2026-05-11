@@ -78,6 +78,14 @@ impl<T> VecSet<T> {
     pub fn clear(&mut self) {
         self.0.clear();
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 }
 
 impl<T> Deref for VecSet<T> {

@@ -33,6 +33,7 @@ rebuild-reason-background = background changed
 rebuild-reason-class-removed = class "{$class}" removed
 rebuild-reason-level-lowered = class "{$class}" level lowered (was {$applied}, now {$current})
 rebuild-reason-subclass-changed = subclass changed for class "{$class}"
+rebuild-reason-feature-removed = feature "{$name}" removed
 rebuild-reason-legacy-system-markers = legacy data format
 replace-with-feat = Replace with…
 no-eligible-options = No eligible options available

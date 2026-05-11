@@ -21,7 +21,7 @@ pub(super) fn feature_class_level_from_classes(
     class_cache: &BTreeMap<Box<str>, ClassDefinition>,
 ) -> Option<u32> {
     classes.iter().find_map(|cl| {
-        let def = class_cache.get(cl.class.as_str())?;
+        let def = class_cache.get(cl.class.as_ref())?;
         def.feature_names(cl.subclass.as_deref())
             .any(|n| n == feature_name)
             .then_some(cl.level)

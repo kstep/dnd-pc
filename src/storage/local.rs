@@ -444,8 +444,7 @@ mod avatar_tests {
 
     #[wasm_bindgen_test]
     fn save_avatar_reflects_in_summary() {
-        let mut character = Character::default();
-        character.id = uuid::Uuid::new_v4();
+        let character = Character::default();
         save_character(&character);
 
         let avatar = Avatar {

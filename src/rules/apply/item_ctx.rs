@@ -235,7 +235,7 @@ mod tests {
     fn quantity_writes_are_no_op() {
         let mut character = Character::new();
         let mut item = Item {
-            name: "Bag".to_string(),
+            name: "Bag".into(),
             quantity: 3,
             ..Default::default()
         };

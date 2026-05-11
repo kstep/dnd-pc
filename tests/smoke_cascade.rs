@@ -51,7 +51,7 @@ fn plain_feat(name: &str) -> FeatureDefinition {
 
 fn applied_feature(name: &str, source: FeatureSource) -> Feature {
     Feature {
-        name: name.to_string(),
+        name: name.into(),
         source,
         applied: true,
         ..Feature::default()
@@ -126,7 +126,7 @@ fn speculative_cascade_pushes_followups_as_unapplied() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for = |_: &FeatureKey| -> Option<String> { None };
+    let replacement_for = |_: &FeatureKey| -> Option<Box<str>> { None };
     cascade(
         &mut snapshot,
         std::slice::from_ref(&pending),
@@ -141,7 +141,7 @@ fn speculative_cascade_pushes_followups_as_unapplied() {
         .features
         .list
         .iter()
-        .find(|feature| feature.name == "Class Proficiencies (Wizard)")
+        .find(|feature| &*feature.name == "Class Proficiencies (Wizard)")
         .expect("speculative cascade emits Wizard L1 follow-up");
     assert!(
         !prof.applied,
@@ -227,8 +227,8 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for = |key: &FeatureKey| -> Option<String> {
-        (key.name == "Class Level").then(|| "Fighter".to_string())
+    let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+        (&*key.name == "Class Level").then(|| "Fighter".into())
     };
     cascade(
         &mut snapshot,
@@ -245,7 +245,7 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
             .identity
             .classes
             .iter()
-            .any(|class_level| class_level.class == "Fighter" && class_level.level == 1),
+            .any(|class_level| &*class_level.class == "Fighter" && class_level.level == 1),
         "Fighter L1 must enter identity after speculative cascade: {:?}",
         snapshot.identity.classes
     );
@@ -253,7 +253,7 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
         .features
         .list
         .iter()
-        .find(|feature| feature.name == "Class Proficiencies (Fighter)")
+        .find(|feature| &*feature.name == "Class Proficiencies (Fighter)")
         .expect("Fighter L1 follow-up surfaced");
     assert!(
         !l1_follow_up.applied,
@@ -351,8 +351,8 @@ fn asi_replacement_keeps_prior_asi_intact() {
         replaces: None,
     };
     let inputs_for = |_: &FeatureKey| Vec::<AssignInputs>::new();
-    let replacement_for = |key: &FeatureKey| -> Option<String> {
-        (key.name == "Ability Score Improvement").then(|| "Tough".to_string())
+    let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+        (&*key.name == "Ability Score Improvement").then(|| "Tough".into())
     };
     cascade(
         &mut character.core,
@@ -370,7 +370,7 @@ fn asi_replacement_keeps_prior_asi_intact() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Ability Score Improvement"
+            &*feature.name == "Ability Score Improvement"
                 && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
         })
         .expect("L4 ASI preserved");
@@ -382,14 +382,14 @@ fn asi_replacement_keeps_prior_asi_intact() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Tough"
+            &*feature.name == "Tough"
                 && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
         })
         .expect("Tough lands at Wizard L8 source");
     assert!(tough_l8.applied);
 
     let stray_l8_asi = character.core.features.list.iter().find(|feature| {
-        feature.name == "Ability Score Improvement"
+        &*feature.name == "Ability Score Improvement"
             && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
     });
     assert!(
@@ -508,7 +508,7 @@ fn rebuild_recovers_per_source_replacement_from_original() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Ability Score Improvement"
+            &*feature.name == "Ability Score Improvement"
                 && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
         })
         .expect("L4 ASI preserved");
@@ -527,7 +527,7 @@ fn rebuild_recovers_per_source_replacement_from_original() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Spell Sniper"
+            &*feature.name == "Spell Sniper"
                 && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
         })
         .expect("Spell Sniper recovered at Wizard L8 source");
@@ -546,7 +546,7 @@ fn rebuild_recovers_per_source_replacement_from_original() {
     // No leftover vanilla ASI at L8.
     assert!(
         !clean.features.list.iter().any(|feature| {
-            feature.name == "Ability Score Improvement"
+            &*feature.name == "Ability Score Improvement"
                 && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
         }),
         "L8 ASI placeholder must not survive"
@@ -608,10 +608,7 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         "Ability Score Improvement",
         FeatureSource::Class("Wizard".into(), 8),
     );
-    let l8_swap_key = FeatureKey::new(
-        "Spell Sniper",
-        FeatureSource::Class("Wizard".into(), 8),
-    );
+    let l8_swap_key = FeatureKey::new("Spell Sniper", FeatureSource::Class("Wizard".into(), 8));
 
     let mut extra = ApplyInputs::default();
     extra.insert(
@@ -683,7 +680,7 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Ability Score Improvement"
+            &*feature.name == "Ability Score Improvement"
                 && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
         })
         .expect("L4 must land as vanilla ASI");
@@ -692,7 +689,7 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
 
     assert!(
         !clean.features.list.iter().any(|feature| {
-            feature.name == "Spell Sniper"
+            &*feature.name == "Spell Sniper"
                 && matches!(&feature.source, FeatureSource::Class(name, 4) if name.as_ref() == "Wizard")
         }),
         "Spell Sniper must not be applied at L4"
@@ -703,7 +700,7 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
         .list
         .iter()
         .find(|feature| {
-            feature.name == "Spell Sniper"
+            &*feature.name == "Spell Sniper"
                 && matches!(&feature.source, FeatureSource::Class(name, 8) if name.as_ref() == "Wizard")
         })
         .expect("L8 must land as Spell Sniper");

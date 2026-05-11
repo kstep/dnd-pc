@@ -34,12 +34,12 @@ pub struct SectionState {
     pub args: RwSignal<Vec<StoredValue<Vec<RwSignal<i32>>>>>,
     pub dice: RwSignal<Vec<StoredValue<DiceGroupSignals>>>,
     pub valid: RwSignal<Option<Memo<bool>>>,
-    pub replacement: RwSignal<Option<String>>,
+    pub replacement: RwSignal<Option<Box<str>>>,
     pub downstream: RwSignal<Arc<CharacterCore>>,
 }
 
 impl SectionState {
-    fn new(initial_core: Arc<CharacterCore>, prefilled_replacement: Option<String>) -> Self {
+    fn new(initial_core: Arc<CharacterCore>, prefilled_replacement: Option<Box<str>>) -> Self {
         Self {
             args: RwSignal::new(Vec::new()),
             dice: RwSignal::new(Vec::new()),
@@ -112,7 +112,7 @@ impl ArgsModalState {
         &self,
         key: FeatureKey,
         initial_core: Arc<CharacterCore>,
-        prefilled_replacement: Option<String>,
+        prefilled_replacement: Option<Box<str>>,
     ) -> SectionState {
         let section = SectionState::new(initial_core, prefilled_replacement);
         self.sections.update(|sections| {
@@ -142,7 +142,7 @@ impl ArgsModalState {
             .map_or(Vec::new(), |section| section.inputs(tracked))
     }
 
-    pub fn replacement_for(&self, key: &FeatureKey, tracked: bool) -> Option<String> {
+    pub fn replacement_for(&self, key: &FeatureKey, tracked: bool) -> Option<Box<str>> {
         self.section(key, tracked).and_then(|section| {
             if tracked {
                 section.replacement.get()
@@ -203,7 +203,7 @@ impl ArgsModalState {
                     }
                 };
                 let replacement_for =
-                    |key: &FeatureKey| -> Option<String> { state.replacement_for(key, true) };
+                    |key: &FeatureKey| -> Option<Box<str>> { state.replacement_for(key, true) };
                 let new_downstream = cascade_step(
                     &upstream,
                     &pending_feature,
@@ -311,7 +311,7 @@ fn cascade_step(
     pending: &PendingFeature,
     registry: &RulesRegistry,
     inputs_for: &dyn Fn(&FeatureKey) -> Vec<AssignInputs>,
-    replacement_for: &dyn Fn(&FeatureKey) -> Option<String>,
+    replacement_for: &dyn Fn(&FeatureKey) -> Option<Box<str>>,
 ) -> CharacterCore {
     let mut snapshot = base.clone();
     registry.with_definitions(|caches| {
@@ -508,7 +508,7 @@ fn ArgsFeatureInput(
 #[component]
 fn ReplacementPicker(
     replace_with: ReplaceWith,
-    replacement_choice: RwSignal<Option<String>>,
+    replacement_choice: RwSignal<Option<Box<str>>>,
     /// Pre-filled inputs for the replacement's interactive exprs, indexed by
     /// expr position. Empty Vec = no prefill; out-of-bounds positions render
     /// as `AssignInputs::default()`. No broadcast — short Vec leaves later
@@ -564,7 +564,7 @@ fn ReplacementPicker(
                                 .identity
                                 .classes
                                 .iter()
-                                .any(|class_level| class_level.class.as_str() == &*feat.name);
+                                .any(|class_level| class_level.class.as_ref() == &*feat.name);
                             is_own || (class_prereqs_ok && feat.meets_prerequisites(&character))
                         }
                         FeatureCategory::System(IdentitySlot::Subclass) => {
@@ -601,7 +601,7 @@ fn ReplacementPicker(
 
     // Track previous replacement name to clean up the prior swap-section
     // when the user switches replacement choice.
-    let prev_replacement: RwSignal<Option<String>> = RwSignal::new(None);
+    let prev_replacement: RwSignal<Option<Box<str>>> = RwSignal::new(None);
 
     // Load (description, exprs) for a replacement feature name. Used by both
     // the initial-seed path (pre-filled from AI generation) and by `on_input`
@@ -637,6 +637,7 @@ fn ReplacementPicker(
     };
 
     let on_input = move |text: String, resolved: Option<String>| {
+        let resolved: Option<Box<str>> = resolved.map(Into::into);
         let prev = prev_replacement.get_untracked();
         let selection_changed = prev != resolved;
 
@@ -667,8 +668,8 @@ fn ReplacementPicker(
     if let Some(name) = initial_replacement {
         let label = registry
             .features()
-            .lookup_untracked(name.as_str(), |loc| loc.label().to_string())
-            .unwrap_or_else(|| name.clone());
+            .lookup_untracked(&name, |loc| loc.label().to_string())
+            .unwrap_or_else(|| name.to_string());
         let (description, exprs) = load_replacement_data(&name);
         input_value.set(label);
         replacement_description.set(description);
@@ -809,7 +810,7 @@ pub fn ArgsModal() -> impl IntoView {
                         .get()
                         .map(|chosen| (key.clone(), chosen))
                 })
-                .collect::<BTreeMap<FeatureKey, String>>()
+                .collect::<BTreeMap<FeatureKey, Box<str>>>()
         })
     });
     Effect::new(move |_| {
@@ -824,7 +825,7 @@ pub fn ArgsModal() -> impl IntoView {
             let inputs_for =
                 |key: &FeatureKey| -> Vec<AssignInputs> { state.inputs_for(key, false) };
             let replacement_for =
-                |key: &FeatureKey| -> Option<String> { state.replacement_for(key, false) };
+                |key: &FeatureKey| -> Option<Box<str>> { state.replacement_for(key, false) };
             for entry in &pending_now {
                 // Unresolved replaceable placeholder — skip. Pushing the
                 // placeholder into speculative.features makes subsequent

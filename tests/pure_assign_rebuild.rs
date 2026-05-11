@@ -38,7 +38,7 @@ fn apply_all(
 ) {
     for (feat_def, source, _level) in defs {
         character.features.list.push(Feature {
-            name: feat_def.name.to_string(),
+            name: feat_def.name.clone(),
             source: source.clone(),
             applied: true,
             inputs: vec![AssignInputs::default()],
@@ -132,13 +132,8 @@ fn build_index(defs: &[FeatureDefinition]) -> BTreeMap<Box<str>, FeatureDefiniti
 /// fields, same spells with same sticky/free_uses/cost. Labels/descriptions
 /// come from sync_labels and aren't compared (registry not loaded in tests).
 fn assert_features_data_eq(rebuilt: &Character, original: &Character) {
-    let original_keys: Vec<&str> = original
-        .features
-        .data()
-        .keys()
-        .map(String::as_str)
-        .collect();
-    let rebuilt_keys: Vec<&str> = rebuilt.features.data().keys().map(String::as_str).collect();
+    let original_keys: Vec<&str> = original.features.data().keys().map(|key| &**key).collect();
+    let rebuilt_keys: Vec<&str> = rebuilt.features.data().keys().map(|key| &**key).collect();
     assert_eq!(
         rebuilt_keys, original_keys,
         "features.data keys differ between rebuild runs"

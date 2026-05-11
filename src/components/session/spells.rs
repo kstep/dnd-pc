@@ -148,14 +148,14 @@ pub fn SpellsBlock() -> impl IntoView {
                             .unwrap_or_default();
                         (label, cost_name, cost_short)
                     })
-                    .unwrap_or_else(|| (name.clone(), String::new(), String::new()));
+                    .unwrap_or_else(|| (name.to_string(), String::new(), String::new()));
                 let has_cost_field = !cost_short.is_empty();
                 let cost_field_name = StoredValue::new(cost_field_name);
 
                 let spell_slots_map = spell_slots.read();
                 let pool = spell_data.pool;
                 let pool_slots = spell_slots_map.get(&pool);
-                let fname = StoredValue::new(name.clone());
+                let fname = StoredValue::new(name.to_string());
                 let casting_ability = spell_data.casting_ability;
                 let all_spells = spell_data
                     .spells
@@ -397,7 +397,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                             CastOption::FreeUse { .. } => {
                                                 fname.with_value(|key| {
                                                     feature_data.update(|map| {
-                                                        if let Some(spell) = map.get_mut(key)
+                                                        if let Some(spell) = map.get_mut(key.as_str())
                                                             .and_then(|e| e.spells.as_mut())
                                                             .and_then(|sc| sc.spells.get_mut(spell_idx))
                                                             && let Some(fu) = &mut spell.free_uses
@@ -414,7 +414,7 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 fname.with_value(|key| {
                                                     cost_field_name.with_value(|cost_name| {
                                                         feature_data.update(|map| {
-                                                            if let Some(entry) = map.get_mut(key)
+                                                            if let Some(entry) = map.get_mut(key.as_str())
                                                                 && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
                                                                 && let FeatureValue::Points { used, max } = &mut field.value
                                                             {

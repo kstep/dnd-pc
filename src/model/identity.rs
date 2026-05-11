@@ -18,11 +18,11 @@ pub struct CharacterIdentity {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct ClassLevel {
     #[serde(default)]
-    pub class: String,
+    pub class: Box<str>,
     #[serde(default)]
     pub class_label: Option<String>,
     #[serde(default)]
-    pub subclass: Option<String>,
+    pub subclass: Option<Box<str>>,
     #[serde(default)]
     pub subclass_label: Option<String>,
     #[serde(default)]
@@ -67,7 +67,7 @@ pub fn format_classes(classes: &[ClassLevel]) -> String {
 impl Default for ClassLevel {
     fn default() -> Self {
         Self {
-            class: String::new(),
+            class: Box::default(),
             class_label: None,
             subclass: None,
             subclass_label: None,

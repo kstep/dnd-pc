@@ -23,7 +23,7 @@ fn collect_all_inputs(
         pending
             .iter()
             .filter_map(|pending_feature| {
-                let feat_def = fi.get(pending_feature.name.as_str())?;
+                let feat_def = fi.get(&pending_feature.name)?;
                 pending_feature.pending_inputs(feat_def, &character)
             })
             .collect()
@@ -81,16 +81,16 @@ pub fn apply_with_modal(
 pub fn edit_inputs_modal(
     store: Store<Character>,
     registry: RulesRegistry,
-    placeholder_name: String,
+    placeholder_name: Box<str>,
     source: FeatureSource,
     base: Option<Arc<CharacterCore>>,
-    current_name: Option<String>,
+    current_name: Option<Box<str>>,
 ) {
     let current_name = current_name.unwrap_or_else(|| placeholder_name.clone());
     let is_swap = current_name != placeholder_name;
 
     let pending_input = registry.with_features_index_untracked(|feat_index| {
-        let placeholder_def = feat_index.get(placeholder_name.as_str())?;
+        let placeholder_def = feat_index.get(&placeholder_name)?;
         let character = store.read_untracked();
         let stored_inputs = character
             .features
@@ -134,7 +134,7 @@ pub fn edit_inputs_modal(
                 if let Some(old_name) =
                     apply_edit_to_feature(feature, &placeholder_name, &inputs, feat_index)
                 {
-                    character.features.data_mut().remove(&old_name);
+                    character.features.data_mut().remove(old_name.as_ref());
                 }
             });
         });
@@ -163,9 +163,9 @@ pub fn apply_with_prefilled_args(
         .into_iter()
         .map(|mut pending_input| {
             if pending_input.is_replaceable()
-                && let Some(replacement) = prefilled_replacements.get(&pending_input.feature_name)
+                && let Some(replacement) = prefilled_replacements.get(&*pending_input.feature_name)
             {
-                pending_input.prefilled_replacement = Some(replacement.clone());
+                pending_input.prefilled_replacement = Some(replacement.as_str().into());
                 if let Some(args) = prefilled.get(replacement) {
                     // Replacement's exprs aren't known here (they depend on
                     // the chosen replacement feat). One-element Vec with
@@ -178,7 +178,7 @@ pub fn apply_with_prefilled_args(
                         dice: Default::default(),
                     }];
                 }
-            } else if let Some(args) = prefilled.get(&pending_input.feature_name) {
+            } else if let Some(args) = prefilled.get(&*pending_input.feature_name) {
                 pending_input.prefill = pending_input
                     .exprs
                     .iter()
@@ -198,11 +198,11 @@ pub fn apply_with_prefilled_args(
     // dropped — pending is the authoritative target list.
     let mut seeded_inputs = ApplyInputs::new();
     for pending_feature in &pending {
-        if let Some(replacement) = prefilled_replacements.get(&pending_feature.name) {
+        if let Some(replacement) = prefilled_replacements.get(&*pending_feature.name) {
             seeded_inputs
                 .entry(pending_feature.feature_key())
                 .or_default()
-                .replacement = Some(replacement.clone());
+                .replacement = Some(replacement.as_str().into());
         }
     }
 
@@ -236,8 +236,10 @@ fn apply_batch(
             .map(|input| input.inputs.clone())
             .unwrap_or_default()
     };
-    let replacement_for = |key: &FeatureKey| -> Option<String> {
-        inputs.get(key).and_then(|input| input.replacement.clone())
+    let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+        inputs
+            .get(key)
+            .and_then(|input| input.replacement.as_deref().map(Box::from))
     };
     store.update(|character| {
         registry.with_definitions(|caches| {
@@ -282,13 +284,13 @@ pub fn apply_edit_to_feature(
     placeholder_name: &str,
     submitted: &ApplyInputs,
     feat_index: FeaturesView<'_>,
-) -> Option<String> {
+) -> Option<Box<str>> {
     let placeholder_key = FeatureKey::new(placeholder_name, feature.source.clone());
-    let new_name = submitted
+    let new_name: Box<str> = submitted
         .get(&placeholder_key)
         .and_then(|input| input.replacement.clone())
-        .unwrap_or_else(|| placeholder_name.to_string());
-    let new_replaces = (new_name != placeholder_name).then(|| placeholder_name.to_string());
+        .unwrap_or_else(|| placeholder_name.into());
+    let new_replaces = (&*new_name != placeholder_name).then(|| placeholder_name.into());
     let effective_key = FeatureKey::new(&new_name, feature.source.clone());
     let new_inputs = submitted
         .get(&effective_key)
@@ -299,7 +301,7 @@ pub fn apply_edit_to_feature(
     let dirty = renamed || new_replaces != feature.replaces || new_inputs != feature.inputs;
 
     let old_name = renamed.then(|| {
-        if let Some(new_def) = feat_index.get(new_name.as_str()) {
+        if let Some(new_def) = feat_index.get(&new_name) {
             feature.category = new_def.category;
         }
         // sync_labels repopulates from the new def on the next reactive cycle.
@@ -366,7 +368,7 @@ mod tests {
         category: FeatureCategory,
         source: FeatureSource,
         inputs: Vec<AssignInputs>,
-        replaces: Option<String>,
+        replaces: Option<Box<str>>,
     ) -> Feature {
         Feature {
             name: name.into(),
@@ -408,7 +410,7 @@ mod tests {
         let renamed_from = apply_edit_to_feature(&mut feature, "Tough", &submitted, view);
 
         assert_eq!(renamed_from, None);
-        assert_eq!(feature.name, "Tough");
+        assert_eq!(&*feature.name, "Tough");
         assert_eq!(feature.replaces, None);
         assert_eq!(feature.inputs, inputs);
         assert!(feature.applied);
@@ -482,7 +484,7 @@ mod tests {
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
         assert_eq!(renamed_from, None);
-        assert_eq!(feature.name, "Lucky");
+        assert_eq!(&*feature.name, "Lucky");
         assert_eq!(feature.replaces, Some("ASI".into()));
         assert!(feature.applied);
     }
@@ -523,7 +525,7 @@ mod tests {
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
         assert_eq!(renamed_from, Some("Lucky".into()));
-        assert_eq!(feature.name, "Tough");
+        assert_eq!(&*feature.name, "Tough");
         assert_eq!(feature.replaces, Some("ASI".into()));
         assert_eq!(feature.category, FeatureCategory::General);
         assert_eq!(feature.inputs, new_inputs);
@@ -559,7 +561,7 @@ mod tests {
         let renamed_from = apply_edit_to_feature(&mut feature, "ASI", &submitted, view);
 
         assert_eq!(renamed_from, Some("Lucky".into()));
-        assert_eq!(feature.name, "ASI");
+        assert_eq!(&*feature.name, "ASI");
         assert_eq!(feature.replaces, None);
         assert_eq!(feature.category, FeatureCategory::Class);
         assert_eq!(feature.inputs, placeholder_inputs);

@@ -18,19 +18,21 @@ pub struct Applied {
         default,
         deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
     )]
-    pub levels: BTreeMap<String, VecSet<u32>>,
+    pub levels: BTreeMap<Box<str>, VecSet<u32>>,
 }
 
 impl Applied {
     /// True if `level` has already been applied for the given class.
     pub fn contains_level(&self, class: &str, level: u32) -> bool {
-        self.levels.get(class).is_some_and(|s| s.contains(&level))
+        self.levels
+            .get(class)
+            .is_some_and(|levels| levels.contains(&level))
     }
 
     /// Record `level` as applied for `class`.
     pub fn mark_level(&mut self, class: &str, level: u32) {
         self.levels
-            .entry(class.to_string())
+            .entry(Box::from(class))
             .or_default()
             .insert(level);
     }

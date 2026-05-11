@@ -36,7 +36,7 @@ impl RulesRegistry {
     pub fn apply(&self, character: &mut Character, feature_pos: usize, when: WhenCondition) {
         let feature_name = character.features.list[feature_pos].name.clone();
         self.with_features_index_untracked(|feat_index| {
-            let Some(feat_def) = feat_index.get(feature_name.as_str()) else {
+            let Some(feat_def) = feat_index.get(&feature_name) else {
                 return;
             };
             apply_feature(feat_def, character, feature_pos, when);
@@ -78,7 +78,7 @@ impl RulesRegistry {
         self.with_features_index_untracked(|features_index| {
             let feat = features_index.get(name)?;
             PendingInputs::from_feature(
-                name.to_string(),
+                name.into(),
                 feat,
                 source.cloned().unwrap_or_default(),
                 WhenCondition::OnFeatureAdd,
@@ -94,7 +94,7 @@ impl RulesRegistry {
     pub fn trigger_spell_list_fetches(&self, character: &CharacterCore) {
         self.with_features_index_untracked(|features_index| {
             for key in character.features.keys() {
-                if let Some(feat_def) = features_index.get(key.as_str())
+                if let Some(feat_def) = features_index.get(key)
                     && let Some(spells_def) = &feat_def.spells
                     && let SpellsList::Ref { from } = &spells_def.list
                 {
@@ -117,10 +117,7 @@ pub fn apply_feature(
 ) -> Vec<IdentityChange> {
     // 1. Ensure feature data entry exists so downstream code (UI, labels)
     // can address it by name even if no spells/assigns populate it.
-    let feature_data = character
-        .features
-        .entry(feat_def.name.to_string())
-        .or_default();
+    let feature_data = character.features.entry(feat_def.name.clone()).or_default();
 
     // 2. Spells skeleton (idempotent — `get_or_insert`).
     if feat_def.spells.is_some() {

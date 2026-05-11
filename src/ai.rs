@@ -886,7 +886,7 @@ pub fn describe_pending_replacements(
                     .unwrap_or_default();
 
                 Some(PendingReplacementDescription {
-                    feature_name: input.feature_name.clone(),
+                    feature_name: input.feature_name.to_string(),
                     feature_description,
                     eligible,
                 })
@@ -1246,7 +1246,7 @@ pub fn describe_pending_args(
                 .lookup_untracked(&inputs.feature_name, |loc| loc.description().to_string())
                 .unwrap_or_default();
             Some(PendingArgDescription {
-                feature_name: inputs.feature_name.clone(),
+                feature_name: inputs.feature_name.to_string(),
                 feature_description,
                 args_description: description,
             })

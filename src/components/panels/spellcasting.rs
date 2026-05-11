@@ -35,7 +35,10 @@ fn update_spells(
 ) {
     feat_name.with_value(|key| {
         store.core().features().data().update(|map| {
-            if let Some(sc) = map.get_mut(key).and_then(|entry| entry.spells.as_mut()) {
+            if let Some(sc) = map
+                .get_mut(key.as_str())
+                .and_then(|entry| entry.spells.as_mut())
+            {
                 f(sc);
             }
         });
@@ -67,7 +70,7 @@ fn read_spell<T: Default>(
             .features()
             .data()
             .read()
-            .get(key)
+            .get(key.as_str())
             .and_then(|entry| entry.spells.as_ref())
             .and_then(|sc| sc.spells.get(index))
             .map(f)
@@ -136,7 +139,7 @@ fn read_known_spell<T: Default>(
             .features()
             .data()
             .read()
-            .get(key)
+            .get(key.as_str())
             .and_then(|entry| entry.spells.as_ref())
             .and_then(|sc| sc.known.as_ref())
             .and_then(|known| known.get(index))
@@ -176,7 +179,7 @@ fn FeatureSpellcastingSection(
                 .features()
                 .data()
                 .read()
-                .get(key)
+                .get(key.as_str())
                 .and_then(|e| e.spells.as_ref())
                 .map(|sc| sc.casting_ability)
                 .unwrap_or(default_ability)
@@ -192,7 +195,7 @@ fn FeatureSpellcastingSection(
                 .features()
                 .data()
                 .read()
-                .get(key)
+                .get(key.as_str())
                 .and_then(|e| e.spells.as_ref())
                 .is_some_and(|sc| sc.is_two_tier())
         })
@@ -216,7 +219,7 @@ fn FeatureSpellcastingSection(
                 .features()
                 .data()
                 .read()
-                .get(key)
+                .get(key.as_str())
                 .and_then(|e| e.spells.as_ref())
                 .map(|sc| sc.pool)
                 .unwrap_or(SpellSlotPool::Arcane)
@@ -297,7 +300,7 @@ fn FeatureSpellcastingSection(
         let guard = store.core().features().data().read();
         let known = feat_name.with_value(|key| {
             guard
-                .get(key)
+                .get(key.as_str())
                 .and_then(|e| e.spells.as_ref())
                 .and_then(|sc| sc.known.as_ref())
         });
@@ -327,7 +330,7 @@ fn FeatureSpellcastingSection(
             .read_untracked()
             .features
             .iter()
-            .find(|f| f.name.as_str() == n.as_str())
+            .find(|f| &*f.name == n.as_str())
             .map(|f| f.dom_id())
             .unwrap_or_else(|| n.clone())
     });
@@ -409,7 +412,7 @@ fn FeatureSpellcastingSection(
                         let guard = store.core().features().data().read();
                         feat_name.with_value(|key| {
                             guard
-                                .get(key)
+                                .get(key.as_str())
                                 .and_then(|e| e.spells.as_ref())
                                 .and_then(|sc| sc.known.as_ref())
                         }).map(|known| known
@@ -555,7 +558,7 @@ fn FeatureSpellcastingSection(
                     let two_tier = is_two_tier.get();
                     feat_name.with_value(|key| {
                         guard
-                            .get(key)
+                            .get(key.as_str())
                             .and_then(|e| e.spells.as_ref())
                     }).map(|sc| sc.spells
                         .iter()

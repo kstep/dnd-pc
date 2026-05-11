@@ -51,7 +51,7 @@ impl<'a> ApplyContext<'a> {
     }
 
     pub fn current_feature_name(&self) -> &str {
-        self.current_feature().name.as_str()
+        &self.current_feature().name
     }
 
     /// Current level of the class that owns the scoped feature, looked up
@@ -77,7 +77,7 @@ impl<'a> ApplyContext<'a> {
             .identity
             .classes
             .iter()
-            .find(|class_level| class_level.class == class_name)
+            .find(|class_level| &*class_level.class == class_name)
     }
 
     fn scoped_class_mut(&mut self) -> Option<&mut ClassLevel> {
@@ -96,7 +96,7 @@ impl<'a> ApplyContext<'a> {
         core.identity
             .classes
             .iter_mut()
-            .find(|class_level| class_level.class == class_name)
+            .find(|class_level| &*class_level.class == class_name)
     }
 
     /// Iterate `assignments`, evaluating each whose `when` matches. For
@@ -134,7 +134,7 @@ impl<'a> ApplyContext<'a> {
     /// `(feature_pos, field_index)` on first match.
     fn find_field_named(&self, field_name: &str) -> Option<(usize, usize)> {
         for (feat_idx, feature) in self.character.features.iter().enumerate() {
-            let Some(feature_data) = self.character.features.get(feature.name.as_str()) else {
+            let Some(feature_data) = self.character.features.get(&*feature.name) else {
                 continue;
             };
             for (field_idx, field) in feature_data.fields.iter().enumerate() {
@@ -157,7 +157,7 @@ impl<'a> ApplyContext<'a> {
         let feature_data = self
             .character
             .features
-            .entry(feature_name.to_string())
+            .entry(Box::from(feature_name))
             .or_default();
         feature_data.fields.push(FeatureField {
             name: field_name.to_string(),
@@ -170,7 +170,7 @@ impl<'a> ApplyContext<'a> {
 
     fn named_field_value(&self, name: &str) -> Option<&FeatureValue> {
         let (feat_idx, field_idx) = self.find_field_named(name)?;
-        let feature_name = self.character.features.at(feat_idx)?.name.as_str();
+        let feature_name = self.character.features.at(feat_idx)?.name.as_ref();
         let feature_data = self.character.features.get(feature_name)?;
         feature_data.fields.get(field_idx).map(|field| &field.value)
     }
@@ -178,7 +178,7 @@ impl<'a> ApplyContext<'a> {
     fn named_field_value_mut(&mut self, name: &str) -> Option<&mut FeatureValue> {
         let (feat_idx, field_idx) = self.find_field_named(name)?;
         let (list, data) = self.character.features.split_mut();
-        let feature_name = list[feat_idx].name.as_str();
+        let feature_name = &*list[feat_idx].name;
         let feature_data = data.get_mut(feature_name)?;
         feature_data
             .fields
@@ -204,7 +204,7 @@ impl<'a> ApplyContext<'a> {
 
     fn scoped_pool_field_mut(&mut self) -> Option<&mut FeatureValue> {
         let (list, data) = self.character.features.split_mut();
-        let feature_name = list[self.feature_pos].name.as_str();
+        let feature_name = &*list[self.feature_pos].name;
         let feature_data = data.get_mut(feature_name)?;
         feature_data
             .fields
@@ -528,18 +528,18 @@ impl<'a> ApplyContext<'a> {
 
     fn feature_spell_data_mut(&mut self) -> Option<&mut SpellData> {
         let (list, data) = self.character.features.split_mut();
-        let name = list[self.feature_pos].name.as_str();
+        let name = &*list[self.feature_pos].name;
         data.get_mut(name).and_then(|entry| entry.spells.as_mut())
     }
 
     /// Lazy-create the scoped feature's `SpellData` skeleton.
     fn feature_spell_data_or_create(&mut self) -> &mut SpellData {
         let (list, data) = self.character.features.split_mut();
-        let name = list[self.feature_pos].name.as_str();
+        let name = &*list[self.feature_pos].name;
         // BTreeMap::entry needs an owned key; the alloc is unavoidable when
         // creating a fresh data row for a feature that hasn't been touched
         // yet. The lookup-only path above stays zero-alloc.
-        data.entry(name.to_string())
+        data.entry(Box::from(name))
             .or_default()
             .spells
             .get_or_insert_with(SpellData::default)
@@ -888,7 +888,7 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                 let class_name_opt = self.scoped_class().map(|cl| cl.class.clone());
                 if let Some(class) = self.scoped_class_mut() {
                     if value != 0 {
-                        class.subclass = Some(name.to_string());
+                        class.subclass = Some(name.into());
                     } else if class.subclass.as_deref() == Some(name) {
                         class.subclass = None;
                     }
@@ -897,7 +897,7 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                     && let Some(class_name) = class_name_opt
                 {
                     self.identity_changes.push(IdentityChange::Subclass {
-                        class: class_name.into(),
+                        class: class_name,
                         name: name.into(),
                     });
                 }
@@ -909,7 +909,7 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                     .identity
                     .classes
                     .iter()
-                    .find(|cl| cl.class == name)
+                    .find(|cl| &*cl.class == name)
                     .map(|cl| cl.level)
                     .unwrap_or(0);
                 self.character.assign(var, value)?;
@@ -918,7 +918,7 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
                     .identity
                     .classes
                     .iter()
-                    .find(|cl| cl.class == name)
+                    .find(|cl| &*cl.class == name)
                     .map(|cl| cl.level)
                     .unwrap_or(0);
                 if new_level > old_level {
@@ -1117,14 +1117,14 @@ mod tests {
     fn fighter_at_5() -> Character {
         let mut character = Character::new();
         character.identity.classes.push(ClassLevel {
-            class: "Fighter".to_string(),
+            class: "Fighter".into(),
             level: 5,
             hit_die_sides: 10,
             hit_dice_used: 2,
             ..ClassLevel::default()
         });
         character.features.list.push(Feature {
-            name: "Second Wind".to_string(),
+            name: "Second Wind".into(),
             source: FeatureSource::Class("Fighter".into(), 1),
             ..Default::default()
         });
@@ -1177,7 +1177,7 @@ mod tests {
     fn hit_dice_zero_for_non_class_features() {
         let mut character = Character::new();
         character.features.list.push(Feature {
-            name: "Common".to_string(),
+            name: "Common".into(),
             source: FeatureSource::Species("Human".into()),
             ..Default::default()
         });

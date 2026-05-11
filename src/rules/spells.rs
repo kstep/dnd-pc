@@ -252,11 +252,7 @@ impl SpellsDefinition {
     /// pool tracking are now expressed as OnCompute STICKY/FREE_USES
     /// assigns, materialized lazily by the Context handlers.
     pub fn apply(&self, feat_def: &FeatureDefinition, character: &mut Character) {
-        let feature_name: &str = &feat_def.name;
-        let entry = character
-            .features
-            .entry(feature_name.to_string())
-            .or_default();
+        let entry = character.features.entry(feat_def.name.clone()).or_default();
         entry.spells.get_or_insert_with(SpellData::default);
     }
 }

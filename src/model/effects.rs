@@ -345,23 +345,23 @@ fn eval_features_on_effect(
     scoped_overrides: &mut BTreeMap<Box<str>, BTreeMap<Attribute, i32>>,
 ) {
     for feature in character.features.iter() {
-        let Some(def) = feat_index.get(feature.name.as_str()) else {
+        let Some(def) = feat_index.get(&feature.name) else {
             continue;
         };
         let Some(assigns) = def.assign.as_deref() else {
             continue;
         };
-        let scope_name = feature.name.to_string();
+        let scope_name = feature.name.clone();
         let casting_ability = character
             .features
-            .get(&scope_name)
+            .get(&*scope_name)
             .and_then(|e| e.spells.as_ref())
             .map(|s| s.casting_ability);
         let mut ctx = Ctx {
             character,
             gear: None,
             global: overrides,
-            scoped: Some(scoped_overrides.entry(scope_name.into()).or_default()),
+            scoped: Some(scoped_overrides.entry(scope_name).or_default()),
             casting_ability,
         };
         for assign in assigns.iter().filter(|a| a.when == WhenCondition::OnEffect) {
@@ -627,7 +627,7 @@ mod tests {
     fn character_with_spellcasting(feature: &str, ability: Ability) -> Character {
         let mut character = Character::new();
         character.features.insert(
-            feature.to_string(),
+            feature.into(),
             FeatureData {
                 spells: Some(SpellData {
                     casting_ability: ability,

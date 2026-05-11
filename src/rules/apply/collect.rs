@@ -91,7 +91,7 @@ pub fn collect_class_features<'a>(
             })
         })
         .map(move |(name, source)| PendingFeature {
-            name: name.to_string(),
+            name: name.into(),
             source,
             level,
             replaces: None,
@@ -118,7 +118,7 @@ pub fn collect_species_features<'a>(
             })
         })
         .map(move |feat_name| PendingFeature {
-            name: feat_name.clone(),
+            name: feat_name.as_str().into(),
             source: source.clone(),
             level: total_level,
             replaces: None,
@@ -145,7 +145,7 @@ pub fn collect_background_features<'a>(
             })
         })
         .map(move |feat_name| PendingFeature {
-            name: feat_name.clone(),
+            name: feat_name.as_str().into(),
             source: source.clone(),
             level: total_level,
             replaces: None,
@@ -187,7 +187,7 @@ pub fn collect_pending_features(
             .iter()
             .enumerate()
             .flat_map(|(idx, class_level)| {
-                let class_def = class_cache.get(class_level.class.as_str());
+                let class_def = class_cache.get(class_level.class.as_ref());
                 (1..=class_level.level).flat_map(move |lvl| {
                     class_def.into_iter().flat_map(move |def| {
                         collect_class_features(character, idx, lvl, def, features_index)
@@ -218,7 +218,7 @@ mod tests {
 
     fn applied_feature(name: &str, source: FeatureSource) -> Feature {
         Feature {
-            name: name.to_string(),
+            name: name.into(),
             source,
             applied: true,
             ..Feature::default()
@@ -265,6 +265,7 @@ mod tests {
 
     /// Like `class_def_levels`, but also defines subclasses. Each subclass
     /// entry is `(name, [(level, features)])`.
+    #[allow(clippy::type_complexity)]
     fn class_def_with_subclasses(
         name: &str,
         levels: &[(u32, &[&str])],
@@ -384,8 +385,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |key: &FeatureKey| -> Option<String> {
-            (key.name == "Class Level").then(|| "Fighter".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+            (&*key.name == "Class Level").then(|| "Fighter".into())
         };
         cascade(
             &mut speculative,
@@ -403,7 +404,7 @@ mod tests {
                 .identity
                 .classes
                 .iter()
-                .any(|class_level| class_level.class == "Fighter" && class_level.level == 1),
+                .any(|class_level| &*class_level.class == "Fighter" && class_level.level == 1),
             "speculative.identity.classes should include Fighter L1: {:?}",
             speculative.identity.classes
         );
@@ -418,13 +419,13 @@ mod tests {
             .identity
             .classes
             .iter()
-            .position(|class_level| class_level.class == "Fighter")
+            .position(|class_level| &*class_level.class == "Fighter")
             .expect("Fighter in identity");
         let fighter_def = caches.classes.get("Fighter").expect("Fighter def");
         let pending: Vec<PendingFeature> =
             collect_class_features(&snapshot, fighter_idx, 1, fighter_def, view).collect();
 
-        let names: Vec<&str> = pending.iter().map(|p| p.name.as_str()).collect();
+        let names: Vec<&str> = pending.iter().map(|p| &*p.name).collect();
         assert!(
             names.contains(&"Class Proficiencies (Fighter)"),
             "expected Fighter L1 grants in pending after class swap, got {names:?}"
@@ -513,8 +514,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |key: &FeatureKey| -> Option<String> {
-            (key.name == "Class Level").then(|| "Cleric".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+            (&*key.name == "Class Level").then(|| "Cleric".into())
         };
         cascade(
             &mut character,
@@ -531,7 +532,7 @@ mod tests {
             .identity
             .classes
             .iter()
-            .find(|class_level| class_level.class == "Cleric")
+            .find(|class_level| &*class_level.class == "Cleric")
             .map(|class_level| class_level.level)
             .unwrap_or(0);
         assert_eq!(
@@ -546,7 +547,7 @@ mod tests {
                 .features
                 .list
                 .iter()
-                .any(|feature| feature.name == "Channel Divinity" && feature.applied),
+                .any(|feature| &*feature.name == "Channel Divinity" && feature.applied),
             "expected Channel Divinity (Cleric L2 grant) applied, got: {:?}",
             character
                 .features
@@ -625,8 +626,8 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |key: &FeatureKey| -> Option<String> {
-            (key.name == "Class Level").then(|| "Cleric".to_string())
+        let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+            (&*key.name == "Class Level").then(|| "Cleric".into())
         };
         cascade(
             &mut character,
@@ -642,7 +643,7 @@ mod tests {
             .identity
             .classes
             .iter()
-            .find(|class_level| class_level.class == "Cleric")
+            .find(|class_level| &*class_level.class == "Cleric")
             .map(|class_level| class_level.level)
             .unwrap_or(0);
         assert_eq!(
@@ -781,10 +782,10 @@ mod tests {
             replaces: None,
         };
         let inputs_for = |_: &FeatureKey| Vec::new();
-        let replacement_for = |key: &FeatureKey| -> Option<String> {
-            match key.name.as_str() {
-                "Class Level" => Some("Cleric".to_string()),
-                "Subclass" => Some("Death Domain".to_string()),
+        let replacement_for = |key: &FeatureKey| -> Option<Box<str>> {
+            match &*key.name {
+                "Class Level" => Some("Cleric".into()),
+                "Subclass" => Some("Death Domain".into()),
                 _ => None,
             }
         };
@@ -803,7 +804,7 @@ mod tests {
             .identity
             .classes
             .iter()
-            .find(|class_level| class_level.class == "Cleric")
+            .find(|class_level| &*class_level.class == "Cleric")
             .expect("Cleric in identity");
         assert_eq!(
             cleric.subclass.as_deref(),
@@ -818,7 +819,7 @@ mod tests {
             .features
             .list
             .iter()
-            .map(|feature| feature.name.as_str())
+            .map(|feature| &*feature.name)
             .collect();
         assert!(
             feature_names.contains(&"Bonus Proficiency"),
@@ -875,7 +876,7 @@ mod tests {
 
         let pending: Vec<PendingFeature> =
             collect_class_features(&character, 0, 1, &class_def, view).collect();
-        let names: Vec<&str> = pending.iter().map(|p| p.name.as_str()).collect();
+        let names: Vec<&str> = pending.iter().map(|p| &*p.name).collect();
         assert!(
             names.contains(&"Bonus Proficiency"),
             "subclass L1 features must be emitted even when class level is \

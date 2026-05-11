@@ -84,7 +84,7 @@
     "category": "Origin",
     "assign": [
       {
-        "expr": "POINTS.`Luck Points`.MAX = if(LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Luck Points`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ]
@@ -776,7 +776,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "POINTS.`Free Uses`.MAX = if(LEVEL >= 19, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Free Uses`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -813,7 +813,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "DIE.`Recovery Pool`.SIDES = if(LEVEL >= 19, 10, 0); DIE.`Recovery Pool`.COUNT = if(LEVEL >= 19, 10, 0)",
+        "expr": "DIE.`Recovery Pool`.SIDES = 10; DIE.`Recovery Pool`.COUNT = 10",
         "when": "OnCompute"
       }
     ],
@@ -1377,7 +1377,7 @@
     ],
     "assign": [
       {
-        "expr": "CHOICE.`Elixir Recipes`.COUNT = if(CLASS.LEVEL >= 3, 5, 0)",
+        "expr": "CHOICE.`Elixir Recipes`.COUNT = 5",
         "when": "OnCompute"
       },
       {
@@ -1861,7 +1861,7 @@
     "name": "Zealous Presence",
     "assign": [
       {
-        "expr": "POINTS.`Zealous Presence`.MAX = if(CLASS.LEVEL >= 10, 1, 0)",
+        "expr": "POINTS.`Zealous Presence`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -2210,7 +2210,7 @@
     "name": "Mantle of Majesty",
     "assign": [
       {
-        "expr": "POINTS.`Mantle of Majesty`.MAX = if(CLASS.LEVEL >= 6, 1, 0)",
+        "expr": "POINTS.`Mantle of Majesty`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -2420,7 +2420,7 @@
     "name": "Infectious Inspiration",
     "assign": [
       {
-        "expr": "POINTS.`Infectious Inspiration`.MAX = if(CLASS.LEVEL >= 14, (max(1, CHA.MOD)), 0)",
+        "expr": "POINTS.`Infectious Inspiration`.MAX = max(1, CHA.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -2572,7 +2572,7 @@
     "name": "Divine Intervention",
     "assign": [
       {
-        "expr": "POINTS.`Divine Intervention`.MAX = if(CLASS.LEVEL >= 10, 1, 0)",
+        "expr": "POINTS.`Divine Intervention`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -2754,7 +2754,7 @@
     "name": "Corona of Light",
     "assign": [
       {
-        "expr": "POINTS.`Corona of Light`.MAX = if(CLASS.LEVEL >= 17, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Corona of Light`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -2840,7 +2840,7 @@
     "name": "Wrath of the Storm",
     "assign": [
       {
-        "expr": "POINTS.`Wrath of the Storm`.MAX = if(CLASS.LEVEL >= 1, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Wrath of the Storm`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -2987,7 +2987,7 @@
     "name": "War Priest",
     "assign": [
       {
-        "expr": "POINTS.`War Priest`.MAX = if(CLASS.LEVEL >= 3, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`War Priest`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3098,7 +3098,7 @@
     "name": "Solidarity's Action",
     "assign": [
       {
-        "expr": "POINTS.`Solidarity's Action`.MAX = if(CLASS.LEVEL >= 1, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Solidarity's Action`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3191,7 +3191,7 @@
     "name": "Priest of Zeal",
     "assign": [
       {
-        "expr": "POINTS.`Priest of Zeal`.MAX = if(CLASS.LEVEL >= 1, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Priest of Zeal`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3230,7 +3230,7 @@
     "name": "Blaze of Glory",
     "assign": [
       {
-        "expr": "POINTS.`Blaze of Glory`.MAX = if(CLASS.LEVEL >= 17, 1, 0)",
+        "expr": "POINTS.`Blaze of Glory`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -3304,7 +3304,7 @@
     "name": "Sentinel at Death's Door",
     "assign": [
       {
-        "expr": "POINTS.`Sentinel at Death's Door`.MAX = if(CLASS.LEVEL >= 6, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Sentinel at Death's Door`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3417,7 +3417,7 @@
     "name": "Steps of Night",
     "assign": [
       {
-        "expr": "POINTS.`Steps of Night`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Steps of Night`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -3653,7 +3653,7 @@
     "name": "Moonlight Step",
     "assign": [
       {
-        "expr": "POINTS.`Moonlight Step`.MAX = if(CLASS.LEVEL >= 10, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Moonlight Step`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3710,7 +3710,7 @@
     "name": "Hidden Paths",
     "assign": [
       {
-        "expr": "POINTS.`Hidden Paths`.MAX = if(CLASS.LEVEL >= 10, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Hidden Paths`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -3743,7 +3743,7 @@
     "name": "Spirit Totem",
     "assign": [
       {
-        "expr": "POINTS.`Spirit Totem`.MAX = if(CLASS.LEVEL >= 2, 1, 0)",
+        "expr": "POINTS.`Spirit Totem`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -3799,7 +3799,7 @@
     "name": "Fungal Infestation",
     "assign": [
       {
-        "expr": "POINTS.`Fungal Infestation`.MAX = if(CLASS.LEVEL >= 6, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Fungal Infestation`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -4096,7 +4096,7 @@
     "name": "Know Your Enemy",
     "assign": [
       {
-        "expr": "POINTS.`Know Your Enemy`.MAX = if(CLASS.LEVEL >= 7, 1, 0)",
+        "expr": "POINTS.`Know Your Enemy`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -4205,7 +4205,7 @@
         "when": "OnCompute"
       },
       {
-        "expr": "POINTS.`Uses`.MAX = if(CLASS.LEVEL >= 3, (max(1, INT.MOD)), 0)",
+        "expr": "POINTS.`Uses`.MAX = max(1, INT.MOD)",
         "when": "OnCompute"
       },
       {
@@ -4284,7 +4284,7 @@
     "name": "Warding Maneuver",
     "assign": [
       {
-        "expr": "POINTS.`Warding Maneuver`.MAX = if(CLASS.LEVEL >= 7, (max(1, CON.MOD)), 0)",
+        "expr": "POINTS.`Warding Maneuver`.MAX = max(1, CON.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -4322,7 +4322,7 @@
     "name": "Fighting Spirit",
     "assign": [
       {
-        "expr": "POINTS.`Fighting Spirit`.MAX = if(CLASS.LEVEL >= 3, 3, 0)",
+        "expr": "POINTS.`Fighting Spirit`.MAX = 3",
         "when": "OnCompute"
       }
     ],
@@ -4366,7 +4366,7 @@
     "name": "Strength before Death",
     "assign": [
       {
-        "expr": "POINTS.`Strength before Death`.MAX = if(CLASS.LEVEL >= 18, 1, 0)",
+        "expr": "POINTS.`Strength before Death`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -4407,7 +4407,7 @@
     "name": "Shadow Martyr",
     "assign": [
       {
-        "expr": "POINTS.`Shadow Martyr`.MAX = if(CLASS.LEVEL >= 10, 1, 0)",
+        "expr": "POINTS.`Shadow Martyr`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -4457,7 +4457,7 @@
     "name": "Psi-Powered Leap",
     "assign": [
       {
-        "expr": "POINTS.`Psi-Powered Leap`.MAX = if(CLASS.LEVEL >= 7, 1, 0)",
+        "expr": "POINTS.`Psi-Powered Leap`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -4493,7 +4493,7 @@
     "name": "Bulwark of Force",
     "assign": [
       {
-        "expr": "POINTS.`Bulwark of Force`.MAX = if(CLASS.LEVEL >= 15, 1, 0)",
+        "expr": "POINTS.`Bulwark of Force`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -4528,7 +4528,7 @@
     "name": "Giant's Might",
     "assign": [
       {
-        "expr": "POINTS.`Giant's Might`.MAX = if(CLASS.LEVEL >= 3, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Giant's Might`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -4561,7 +4561,7 @@
     "name": "Runic Shield",
     "assign": [
       {
-        "expr": "POINTS.`Runic Shield`.MAX = if(CLASS.LEVEL >= 7, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Runic Shield`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -5197,7 +5197,7 @@
     "name": "Wholeness of Body",
     "assign": [
       {
-        "expr": "POINTS.`Wholeness of Body`.MAX = if(CLASS.LEVEL >= 6, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Wholeness of Body`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -5374,7 +5374,7 @@
     "name": "Holy Nimbus",
     "assign": [
       {
-        "expr": "POINTS.`Holy Nimbus`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Holy Nimbus`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -5529,7 +5529,7 @@
     "name": "Avenging Angel",
     "assign": [
       {
-        "expr": "POINTS.`Avenging Angel`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Avenging Angel`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -5657,7 +5657,7 @@
     "name": "Exalted Champion",
     "assign": [
       {
-        "expr": "POINTS.`Exalted Champion`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Exalted Champion`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -5833,7 +5833,7 @@
     "name": "Living Legend",
     "assign": [
       {
-        "expr": "POINTS.`Living Legend`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Living Legend`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -5893,7 +5893,7 @@
     "name": "Mortal Bulwark",
     "assign": [
       {
-        "expr": "POINTS.`Mortal Bulwark`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Mortal Bulwark`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -5996,7 +5996,7 @@
     "name": "Noble Scion",
     "assign": [
       {
-        "expr": "POINTS.`Noble Scion`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Noble Scion`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -6087,7 +6087,7 @@
     "name": "Tireless",
     "assign": [
       {
-        "expr": "POINTS.`Tireless`.MAX = if(CLASS.LEVEL >= 10, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Tireless`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -6098,7 +6098,13 @@
           {
             "name": "Tireless",
             "action": "Action",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Tireless",
+                "expr": "HP.TEMP = 1d8 + WIS.MOD"
+              }
+            ]
           }
         ]
       }
@@ -6111,7 +6117,7 @@
     "name": "Nature's Veil",
     "assign": [
       {
-        "expr": "POINTS.`Nature's Veil`.MAX = if(CLASS.LEVEL >= 14, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Nature's Veil`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -6172,7 +6178,7 @@
     ],
     "assign": [
       {
-        "expr": "CHOICE.`Hunter's Prey`.COUNT = if(CLASS.LEVEL >= 3, 1, 0)",
+        "expr": "CHOICE.`Hunter's Prey`.COUNT = 1",
         "when": "OnCompute"
       }
     ]
@@ -6266,7 +6272,7 @@
     "name": "Ethereal Step",
     "assign": [
       {
-        "expr": "POINTS.`Ethereal Step`.MAX = if(CLASS.LEVEL >= 7, 1, 0)",
+        "expr": "POINTS.`Ethereal Step`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -6327,7 +6333,7 @@
     "name": "Magic-User's Nemesis",
     "assign": [
       {
-        "expr": "POINTS.`Magic-User's Nemesis`.MAX = if(CLASS.LEVEL >= 7, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Magic-User's Nemesis`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -6418,7 +6424,7 @@
     "name": "Writhing Tide",
     "assign": [
       {
-        "expr": "POINTS.`Writhing Tide`.MAX = if(CLASS.LEVEL >= 7, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Writhing Tide`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -6442,7 +6448,7 @@
     "name": "Swarming Dispersal",
     "assign": [
       {
-        "expr": "POINTS.`Swarming Dispersal`.MAX = if(CLASS.LEVEL >= 11, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Swarming Dispersal`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -6519,7 +6525,7 @@
     "name": "Fortifying Soul",
     "assign": [
       {
-        "expr": "POINTS.`Fortifying Soul`.MAX = if(CLASS.LEVEL >= 11, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Fortifying Soul`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -6722,7 +6728,7 @@
     "name": "Stroke of Luck",
     "assign": [
       {
-        "expr": "POINTS.`Stroke of Luck`.MAX = if(CLASS.LEVEL >= 20, 1, 0)",
+        "expr": "POINTS.`Stroke of Luck`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -6977,7 +6983,7 @@
     "name": "Tokens of the Departed",
     "assign": [
       {
-        "expr": "POINTS.`Tokens of the Departed`.MAX = if(CLASS.LEVEL >= 9, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Tokens of the Departed`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -6998,7 +7004,7 @@
     "name": "Ghost Walk",
     "assign": [
       {
-        "expr": "POINTS.`Ghost Walk`.MAX = if(CLASS.LEVEL >= 13, 1, 0)",
+        "expr": "POINTS.`Ghost Walk`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7059,7 +7065,7 @@
     "name": "Psychic Veil",
     "assign": [
       {
-        "expr": "POINTS.`Psychic Veil`.MAX = if(CLASS.LEVEL >= 13, 1, 0)",
+        "expr": "POINTS.`Psychic Veil`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7273,7 +7279,7 @@
     "name": "Unearthly Recovery",
     "assign": [
       {
-        "expr": "POINTS.`Unearthly Recovery`.MAX = if(CLASS.LEVEL >= 18, 1, 0)",
+        "expr": "POINTS.`Unearthly Recovery`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7442,7 +7448,7 @@
     "name": "Lunar Phenomenon",
     "assign": [
       {
-        "expr": "POINTS.`Lunar Phenomenon`.MAX = if(CLASS.LEVEL >= 14, 1, 0)",
+        "expr": "POINTS.`Lunar Phenomenon`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7578,7 +7584,7 @@
     "name": "Warping Implosion",
     "assign": [
       {
-        "expr": "POINTS.`Warping Implosion`.MAX = if(CLASS.LEVEL >= 18, 1, 0)",
+        "expr": "POINTS.`Warping Implosion`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7649,7 +7655,7 @@
     "name": "Trance of Order",
     "assign": [
       {
-        "expr": "POINTS.`Trance of Order`.MAX = if(CLASS.LEVEL >= 14, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Trance of Order`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -7670,7 +7676,7 @@
     "name": "Clockwork Cavalcade",
     "assign": [
       {
-        "expr": "POINTS.`Clockwork Cavalcade`.MAX = if(CLASS.LEVEL >= 18, 1, 0)",
+        "expr": "POINTS.`Clockwork Cavalcade`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7738,7 +7744,7 @@
     "name": "Dragon Wings",
     "assign": [
       {
-        "expr": "POINTS.`Dragon Wings`.MAX = if(CLASS.LEVEL >= 14, 1, 0)",
+        "expr": "POINTS.`Dragon Wings`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -7980,7 +7986,7 @@
         "expr": "SPELL.READY = 1"
       },
       {
-        "expr": "POINTS.`Mystic Arcanum (6th)`.MAX = if(CLASS.LEVEL >= 11, 1, 0)",
+        "expr": "POINTS.`Mystic Arcanum (6th)`.MAX = 1",
         "when": "OnCompute"
       }
     ]
@@ -8002,7 +8008,7 @@
         "expr": "SPELL.READY = 1"
       },
       {
-        "expr": "POINTS.`Mystic Arcanum (7th)`.MAX = if(CLASS.LEVEL >= 13, 1, 0)",
+        "expr": "POINTS.`Mystic Arcanum (7th)`.MAX = 1",
         "when": "OnCompute"
       }
     ]
@@ -8024,7 +8030,7 @@
         "expr": "SPELL.READY = 1"
       },
       {
-        "expr": "POINTS.`Mystic Arcanum (8th)`.MAX = if(CLASS.LEVEL >= 15, 1, 0)",
+        "expr": "POINTS.`Mystic Arcanum (8th)`.MAX = 1",
         "when": "OnCompute"
       }
     ]
@@ -8046,7 +8052,7 @@
         "expr": "SPELL.READY = 1"
       },
       {
-        "expr": "POINTS.`Mystic Arcanum (9th)`.MAX = if(CLASS.LEVEL >= 17, 1, 0)",
+        "expr": "POINTS.`Mystic Arcanum (9th)`.MAX = 1",
         "when": "OnCompute"
       }
     ]
@@ -8067,7 +8073,7 @@
     "name": "Indestructible Life",
     "assign": [
       {
-        "expr": "POINTS.`Indestructible Life`.MAX = if(CLASS.LEVEL >= 14, 1, 0)",
+        "expr": "POINTS.`Indestructible Life`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -8141,7 +8147,7 @@
     "name": "Tentacle of the Deeps",
     "assign": [
       {
-        "expr": "POINTS.`Tentacle of the Deeps`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Tentacle of the Deeps`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -8206,7 +8212,7 @@
     "name": "Elemental Gift",
     "assign": [
       {
-        "expr": "POINTS.`Elemental Gift`.MAX = if(CLASS.LEVEL >= 6, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Elemental Gift`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -8244,7 +8250,7 @@
     "name": "Form of Dread",
     "assign": [
       {
-        "expr": "POINTS.`Form of Dread`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Form of Dread`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -8274,7 +8280,7 @@
     "name": "Necrotic Husk",
     "assign": [
       {
-        "expr": "POINTS.`Necrotic Husk`.MAX = if(CLASS.LEVEL >= 10, 1, 0)",
+        "expr": "POINTS.`Necrotic Husk`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -8381,7 +8387,7 @@
     "name": "Healing Light",
     "assign": [
       {
-        "expr": "POINTS.`Healing Pool`.MAX = if(CLASS.LEVEL >= 3, (1 + CLASS.LEVEL), 0)",
+        "expr": "POINTS.`Healing Pool`.MAX = 1 + CLASS.LEVEL",
         "when": "OnCompute"
       }
     ],
@@ -8727,7 +8733,7 @@
     "name": "Instinctive Charm",
     "assign": [
       {
-        "expr": "POINTS.`Instinctive Charm`.MAX = if(CLASS.LEVEL >= 6, 1, 0)",
+        "expr": "POINTS.`Instinctive Charm`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -8781,7 +8787,7 @@
     "name": "Master Transmuter",
     "assign": [
       {
-        "expr": "POINTS.`Master Transmuter`.MAX = if(CLASS.LEVEL >= 14, 1, 0)",
+        "expr": "POINTS.`Master Transmuter`.MAX = 1",
         "when": "OnCompute"
       }
     ],
@@ -8834,7 +8840,7 @@
     "name": "Chronal Shift",
     "assign": [
       {
-        "expr": "POINTS.`Chronal Shift`.MAX = if(CLASS.LEVEL >= 2, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Chronal Shift`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -8864,7 +8870,7 @@
     "name": "Momentary Stasis",
     "assign": [
       {
-        "expr": "POINTS.`Momentary Stasis`.MAX = if(CLASS.LEVEL >= 6, (max(1, INT.MOD)), 0)",
+        "expr": "POINTS.`Momentary Stasis`.MAX = max(1, INT.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -8908,7 +8914,7 @@
     "name": "Violent Attraction",
     "assign": [
       {
-        "expr": "POINTS.`Violent Attraction`.MAX = if(CLASS.LEVEL >= 10, (max(1, INT.MOD)), 0)",
+        "expr": "POINTS.`Violent Attraction`.MAX = max(1, INT.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -8944,7 +8950,7 @@
     "name": "Manifest Mind",
     "assign": [
       {
-        "expr": "POINTS.`Manifest Mind`.MAX = if(CLASS.LEVEL >= 6, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Manifest Mind`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -9115,7 +9121,7 @@
     "name": "Cosmic Omen",
     "assign": [
       {
-        "expr": "POINTS.`Cosmic Omen`.MAX = if(CLASS.LEVEL >= 6, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Cosmic Omen`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -9478,7 +9484,7 @@
     "name": "Warding Flare (Light Domain)",
     "assign": [
       {
-        "expr": "POINTS.`Warding Flare`.MAX = if(CLASS.LEVEL >= 3, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Warding Flare`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -9499,7 +9505,7 @@
     "name": "Warding Flare (Ambition Domain)",
     "assign": [
       {
-        "expr": "POINTS.`Warding Flare (Ambition Domain)`.MAX = if(CLASS.LEVEL >= 1, (max(1, WIS.MOD)), 0)",
+        "expr": "POINTS.`Warding Flare (Ambition Domain)`.MAX = max(1, WIS.MOD)",
         "when": "OnCompute"
       }
     ],
@@ -10067,7 +10073,11 @@
     "name": "Background Abilities (Acolyte)",
     "assign": [
       {
-        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10076,7 +10086,11 @@
     "name": "Background Abilities (Artisan)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, DEX, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10085,7 +10099,11 @@
     "name": "Background Abilities (Charlatan)",
     "assign": [
       {
-        "expr": "with(@ABILITY(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10094,7 +10112,11 @@
     "name": "Background Abilities (Criminal)",
     "assign": [
       {
-        "expr": "with(@ABILITY(DEX, CON, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, INT), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10103,7 +10125,11 @@
     "name": "Background Abilities (Entertainer)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10112,7 +10138,11 @@
     "name": "Background Abilities (Farmer)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+        "expr": "with(@ABILITY(STR, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10121,7 +10151,11 @@
     "name": "Background Abilities (Guard)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(STR, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10130,7 +10164,11 @@
     "name": "Background Abilities (Guide)",
     "assign": [
       {
-        "expr": "with(@ABILITY(DEX, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
+        "expr": "with(@ABILITY(DEX, CON, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10139,7 +10177,11 @@
     "name": "Background Abilities (Hermit)",
     "assign": [
       {
-        "expr": "with(@ABILITY(CON, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "with(@ABILITY(CON, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10148,7 +10190,11 @@
     "name": "Background Abilities (Merchant)",
     "assign": [
       {
-        "expr": "with(@ABILITY(CON, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(CON, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ANIM.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10157,7 +10203,11 @@
     "name": "Background Abilities (Noble)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "with(@ABILITY(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10166,7 +10216,11 @@
     "name": "Background Abilities (Sage)",
     "assign": [
       {
-        "expr": "with(@ABILITY(CON, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+        "expr": "with(@ABILITY(CON, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10175,7 +10229,11 @@
     "name": "Background Abilities (Sailor)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, DEX, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10184,7 +10242,11 @@
     "name": "Background Abilities (Scribe)",
     "assign": [
       {
-        "expr": "with(@ABILITY(DEX, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "with(@ABILITY(DEX, INT, WIS), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10193,7 +10255,11 @@
     "name": "Background Abilities (Soldier)",
     "assign": [
       {
-        "expr": "with(@ABILITY(STR, DEX, CON), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
+        "expr": "with(@ABILITY(STR, DEX, CON), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10202,7 +10268,11 @@
     "name": "Background Abilities (Wayfarer)",
     "assign": [
       {
-        "expr": "with(@ABILITY(DEX, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "with(@ABILITY(DEX, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10440,7 +10510,7 @@
     "name": "Shifting",
     "assign": [
       {
-        "expr": "POINTS.`Shifting`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Shifting`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],
@@ -10480,13 +10550,22 @@
     "name": "Sentry's Rest"
   },
   {
-    "name": "Specialized Design"
+    "name": "Specialized Design",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+      }
+    ]
+  },
+  {
+    "name": "Constructed Endurance"
   },
   {
     "name": "Fury of the Small",
     "assign": [
       {
-        "expr": "POINTS.`Fury of the Small`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Fury of the Small`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ]
@@ -10549,11 +10628,11 @@
     "name": "Vampiric Bite",
     "assign": [
       {
-        "expr": "POINTS.`Drain`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Drain`.MAX = PROF.BONUS",
         "when": "OnCompute"
       },
       {
-        "expr": "POINTS.`Strengthen`.MAX = if(CLASS.LEVEL >= 1, (PROF.BONUS), 0)",
+        "expr": "POINTS.`Strengthen`.MAX = PROF.BONUS",
         "when": "OnCompute"
       }
     ],

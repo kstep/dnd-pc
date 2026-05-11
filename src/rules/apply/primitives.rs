@@ -33,31 +33,31 @@ pub fn detect_replacement(
     feat_index: FeaturesView<'_>,
     pending_keys: &BTreeSet<(&str, &FeatureSource)>,
     baseline: &CharacterCore,
-) -> Option<String> {
+) -> Option<Box<str>> {
     if matches!(feat_def.replace_with, ReplaceWith::None) {
         return None;
     }
-    let mut candidate: Option<String> = None;
+    let mut candidate: Option<Box<str>> = None;
     for feature in original
         .features
         .iter()
         .filter(|feature| feature.source == key.source)
     {
-        if feature.name == key.name {
+        if *feature.name == *key.name {
             return None;
         }
-        if pending_keys.contains(&(feature.name.as_str(), &feature.source)) {
+        if pending_keys.contains(&(&*feature.name, &feature.source)) {
             continue;
         }
         if feature
             .replaces
             .as_deref()
-            .is_some_and(|name| name == key.name)
+            .is_some_and(|name| name == &*key.name)
         {
             return Some(feature.name.clone());
         }
         if candidate.is_none()
-            && let Some(candidate_def) = feat_index.get(feature.name.as_str())
+            && let Some(candidate_def) = feat_index.get(&feature.name)
             && feat_def.replace_with.matches(candidate_def)
             && candidate_def.meets_prerequisites(baseline)
         {
@@ -123,7 +123,7 @@ pub fn derive_identity_follow_ups(
                 let source = FeatureSource::Species(name.clone());
                 for feat_name in &species_def.features {
                     follow_ups.push(PendingFeature {
-                        name: feat_name.clone(),
+                        name: feat_name.as_str().into(),
                         source: source.clone(),
                         level: total_level,
                         replaces: None,
@@ -138,7 +138,7 @@ pub fn derive_identity_follow_ups(
                 let source = FeatureSource::Background(name.clone());
                 for feat_name in &bg_def.features {
                     follow_ups.push(PendingFeature {
-                        name: feat_name.clone(),
+                        name: feat_name.as_str().into(),
                         source: source.clone(),
                         level: total_level,
                         replaces: None,
@@ -154,14 +154,14 @@ pub fn derive_identity_follow_ups(
                     .identity
                     .classes
                     .iter()
-                    .find(|cl| cl.class.as_str() == &*class)
+                    .find(|cl| cl.class.as_ref() == &*class)
                     .and_then(|cl| cl.subclass.clone());
                 for level in (old + 1)..=new {
                     if let Some(rules) = class_def.levels.get(&level) {
                         let class_source = FeatureSource::Class(class_def_name.clone(), level);
                         for feat_name in &rules.features {
                             follow_ups.push(PendingFeature {
-                                name: feat_name.clone(),
+                                name: feat_name.as_str().into(),
                                 source: class_source.clone(),
                                 level,
                                 replaces: None,
@@ -169,17 +169,14 @@ pub fn derive_identity_follow_ups(
                         }
                     }
                     if let Some(ref sc) = subclass_name
-                        && let Some(subclass_def) = class_def.subclasses.get(sc.as_str())
+                        && let Some(subclass_def) = class_def.subclasses.get(sc)
                         && let Some(rules) = subclass_def.levels.get(&level)
                     {
-                        let sc_source = FeatureSource::Subclass(
-                            class_def_name.clone(),
-                            sc.as_str().into(),
-                            level,
-                        );
+                        let sc_source =
+                            FeatureSource::Subclass(class_def_name.clone(), sc.clone(), level);
                         for feat_name in &rules.features {
                             follow_ups.push(PendingFeature {
-                                name: feat_name.clone(),
+                                name: feat_name.as_str().into(),
                                 source: sc_source.clone(),
                                 level,
                                 replaces: None,
@@ -200,7 +197,7 @@ pub fn derive_identity_follow_ups(
                     .identity
                     .classes
                     .iter()
-                    .find(|cl| cl.class.as_str() == &*class)
+                    .find(|cl| cl.class.as_ref() == &*class)
                     .map(|cl| cl.level)
                     .unwrap_or(0);
                 for level in 1..=class_level {
@@ -209,7 +206,7 @@ pub fn derive_identity_follow_ups(
                             FeatureSource::Subclass(class_def_name.clone(), name.clone(), level);
                         for feat_name in &rules.features {
                             follow_ups.push(PendingFeature {
-                                name: feat_name.clone(),
+                                name: feat_name.as_str().into(),
                                 source: sc_source.clone(),
                                 level,
                                 replaces: None,
@@ -262,7 +259,7 @@ pub fn cascade(
     features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
     inputs_for: &dyn Fn(&FeatureKey) -> Vec<AssignInputs>,
-    replacement_for: &dyn Fn(&FeatureKey) -> Option<String>,
+    replacement_for: &dyn Fn(&FeatureKey) -> Option<Box<str>>,
     speculative: bool,
 ) {
     let resolved: Vec<PendingFeature> = pending
@@ -270,7 +267,7 @@ pub fn cascade(
         .map(|pending_feature| {
             let key = FeatureKey::from_pending(pending_feature);
             match replacement_for(&key) {
-                Some(replacement) if features_index.contains_key(replacement.as_str()) => {
+                Some(replacement) if features_index.contains_key(&replacement) => {
                     // Pending's own `replaces` (set by plan for marker-direct
                     // emission) wins; otherwise derive from name mismatch.
                     let replaces = pending_feature.replaces.clone().or_else(|| {
@@ -349,7 +346,7 @@ pub fn apply_pending(
     caches: DefinitionCaches<'_>,
     speculative: bool,
 ) -> Vec<PendingFeature> {
-    let Some(feat_def) = features_index.get(pending_feature.name.as_str()) else {
+    let Some(feat_def) = features_index.get(&pending_feature.name) else {
         log::warn!("apply_pending: skipping feature with no definition: {pending_feature:?}");
         return Vec::new();
     };
@@ -359,7 +356,7 @@ pub fn apply_pending(
     {
         if !inputs.is_empty()
             && let Some(feature) = character.features.iter_mut().find(|feature| {
-                feature.name.as_str() == &*feat_def.name
+                *feature.name == *feat_def.name
                     && feature.applied
                     && (!feat_def.stackable || feature.source == pending_feature.source)
             })
@@ -371,10 +368,10 @@ pub fn apply_pending(
     // Drop dead placeholders at the same source: any sibling whose
     // `replace_with` selects this feat was waiting to be replaced.
     character.features.list.retain(|other| {
-        if other.source != pending_feature.source || other.name == pending_feature.name {
+        if other.source != pending_feature.source || other.name.as_ref() == &*pending_feature.name {
             return true;
         }
-        let Some(other_def) = features_index.get(other.name.as_str()) else {
+        let Some(other_def) = features_index.get(&other.name) else {
             return true;
         };
         !other_def.replace_with.matches(feat_def)
@@ -416,8 +413,8 @@ pub fn apply_pending(
 /// `merge_preserved` use this after they've finished building the
 /// structural shape.
 pub fn restore_user_state(
-    original_feature_data: &BTreeMap<String, FeatureData>,
-    target_feature_data: &mut BTreeMap<String, FeatureData>,
+    original_feature_data: &BTreeMap<Box<str>, FeatureData>,
+    target_feature_data: &mut BTreeMap<Box<str>, FeatureData>,
 ) {
     restore_field_picks(original_feature_data, target_feature_data);
     restore_all_spell_selections(original_feature_data, target_feature_data);
@@ -463,8 +460,8 @@ fn restore_spell_list(original: &[Spell], target: &mut [Spell]) {
 /// Empty Choice slots in `target` are filled from `original` only when the
 /// definition still has at least that many slots.
 pub fn restore_field_picks(
-    original: &BTreeMap<String, FeatureData>,
-    target: &mut BTreeMap<String, FeatureData>,
+    original: &BTreeMap<Box<str>, FeatureData>,
+    target: &mut BTreeMap<Box<str>, FeatureData>,
 ) {
     for (name, target_data) in target.iter_mut() {
         let Some(orig_data) = original.get(name) else {
@@ -523,8 +520,8 @@ pub fn restore_field_picks(
 /// Iterates entries present in both, calling `restore_spell_selections` for
 /// matching spells blocks. Shared by rebuild's `merge_preserved` and replay.
 pub fn restore_all_spell_selections(
-    original_feature_data: &BTreeMap<String, FeatureData>,
-    target_feature_data: &mut BTreeMap<String, FeatureData>,
+    original_feature_data: &BTreeMap<Box<str>, FeatureData>,
+    target_feature_data: &mut BTreeMap<Box<str>, FeatureData>,
 ) {
     for (name, original_data) in original_feature_data {
         if let (Some(original_spells), Some(target_spells)) = (

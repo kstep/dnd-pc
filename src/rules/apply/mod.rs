@@ -22,8 +22,9 @@ pub use context::{ApplyContext, apply_assignments_with_inputs};
 pub use item_ctx::{ItemApplyCtx, assign_items};
 pub use pending::{
     ApplyInput, ApplyInputs, FeatureKey, PICK_BACKGROUND, PICK_CLASS, PICK_SPECIES, PICK_SUBCLASS,
-    PendingFeature, PendingInputs, RecomputePending,
+    PendingFeature, PendingInputs, RecomputePending, synthesize_apply_inputs,
 };
+pub use plan::level_up_plan;
 pub use primitives::{apply_pending, cascade, dry_run_apply_feature, restore_user_state};
 pub use rebuild::{
     DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean, make_inputs_for,

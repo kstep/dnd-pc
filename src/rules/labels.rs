@@ -34,7 +34,7 @@ impl RulesRegistry {
             if class_level.class.is_empty() {
                 continue;
             }
-            if let Some(map) = class_locales.get(class_level.class.as_str()) {
+            if let Some(map) = class_locales.get(class_level.class.as_ref()) {
                 let class_text = map.get("");
                 set_label(
                     &mut class_level.class_label,
@@ -83,7 +83,7 @@ impl RulesRegistry {
                 if feature.name.is_empty() {
                     continue;
                 }
-                let Some(feat_def) = view.get(feature.name.as_str()) else {
+                let Some(feat_def) = view.get(&feature.name) else {
                     continue;
                 };
                 let (label, description) = self.feature_label_desc_untracked(&feature.name);
@@ -95,7 +95,7 @@ impl RulesRegistry {
             // 3. Feature data: fields, choices, spells
             let char_level = character.level();
             for (key, entry) in character.features.data_mut() {
-                let Some(feat_def) = view.get(key.as_str()) else {
+                let Some(feat_def) = view.get(key) else {
                     continue;
                 };
 

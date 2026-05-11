@@ -38,7 +38,7 @@ pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches) 
         if feature.source.is_user() {
             continue;
         }
-        if let Some(queue) = slots.get_mut(feature.name.as_str()) {
+        if let Some(queue) = slots.get_mut(&*feature.name) {
             queue.retain(|source| *source != feature.source);
         }
     }
@@ -55,7 +55,7 @@ pub fn reconcile_with_defs(character: &mut Character, caches: DefinitionCaches) 
         if matches!(feature.category, FeatureCategory::System(_)) {
             continue;
         }
-        if let Some(queue) = slots.get_mut(feature.name.as_str())
+        if let Some(queue) = slots.get_mut(&*feature.name)
             && let Some(canonical) = queue.pop_front()
         {
             feature.source = canonical;
@@ -99,7 +99,7 @@ pub fn build_canonical_slots(
         if class_level.class.is_empty() {
             continue;
         }
-        let Some(class_def) = caches.classes.get(class_level.class.as_str()) else {
+        let Some(class_def) = caches.classes.get(class_level.class.as_ref()) else {
             continue;
         };
         for level in 1..=class_level.level {
@@ -228,7 +228,7 @@ mod tests {
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
         Feature {
-            name: name.to_string(),
+            name: name.into(),
             source,
             applied: true,
             ..Feature::default()
@@ -481,7 +481,7 @@ mod tests {
             .features
             .list
             .iter()
-            .find(|feature| feature.name == "Fighter")
+            .find(|feature| &*feature.name == "Fighter")
             .expect("marker preserved");
         assert_eq!(marker.source, FeatureSource::User(3));
         assert!(matches!(

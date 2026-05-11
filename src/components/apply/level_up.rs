@@ -39,7 +39,7 @@ pub fn level_up_class(
         // delta naturally without any fixup here.
         let snapshot = speculative.clone();
         registry.with_features_index_untracked(|features_index| {
-            let class_summary: Vec<(String, u32)> = snapshot
+            let class_summary: Vec<(Box<str>, u32)> = snapshot
                 .identity
                 .classes
                 .iter()
@@ -65,7 +65,7 @@ pub fn level_up_class(
             let result: Vec<_> = pending
                 .into_iter()
                 .filter_map(|pending_feat| {
-                    let feat_def = features_index.get(pending_feat.name.as_str())?;
+                    let feat_def = features_index.get(&pending_feat.name)?;
                     pending_feat.pending_inputs(feat_def, &snapshot)
                 })
                 .collect();

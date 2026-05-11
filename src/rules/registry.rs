@@ -275,7 +275,7 @@ impl RulesRegistry {
             character.identity.classes.iter().all(|cl| {
                 cl.class.is_empty()
                     || entries
-                        .get(cl.class.as_str())
+                        .get(cl.class.as_ref())
                         .is_none_or(|entry| entry.meets_prerequisites(character))
             })
         })

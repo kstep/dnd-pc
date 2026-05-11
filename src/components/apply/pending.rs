@@ -52,7 +52,7 @@ pub fn mark_all_applied(character: &mut Character) {
     if !character.identity.background.is_empty() {
         character.applied.background = true;
     }
-    let snapshot: Vec<(String, u32)> = character
+    let snapshot: Vec<(Box<str>, u32)> = character
         .identity
         .classes
         .iter()

@@ -275,8 +275,8 @@ impl Character {
 
         // --- Features (names only, descriptions stripped during sharing) ---
         let sec = "panel-features";
-        let local_val = format_names(&self.features.list, |f| f.name.as_str());
-        let imported_val = format_names(&imported.features.list, |f| f.name.as_str());
+        let local_val = format_names(&self.features.list, |f| &*f.name);
+        let imported_val = format_names(&imported.features.list, |f| &*f.name);
         push_if_diff(&mut rows, sec, "panel-features", local_val, imported_val);
 
         // --- Equipment ---
@@ -308,14 +308,17 @@ impl Character {
             format_spell_slots(imported, i18n),
         );
         {
-            let all_keys: BTreeSet<&String> = self
+            let all_keys: BTreeSet<&Box<str>> = self
                 .features
                 .keys()
                 .chain(imported.features.keys())
                 .collect();
             for key in all_keys {
-                let local_sc = self.features.get(key).and_then(|e| e.spells.as_ref());
-                let imported_sc = imported.features.get(key).and_then(|e| e.spells.as_ref());
+                let local_sc = self.features.get(&**key).and_then(|e| e.spells.as_ref());
+                let imported_sc = imported
+                    .features
+                    .get(&**key)
+                    .and_then(|e| e.spells.as_ref());
                 match (local_sc, imported_sc) {
                     (Some(local_sc), Some(imported_sc)) => {
                         if local_sc.casting_ability != imported_sc.casting_ability {

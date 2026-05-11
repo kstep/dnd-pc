@@ -10,9 +10,7 @@ use crate::{
     rules::{
         FeaturesView, RecomputePending, RulesRegistry, WhenCondition,
         apply::{
-            DefinitionCaches,
-            collect::collect_pending_features,
-            compute, dry_run_apply_feature,
+            DefinitionCaches, compute, dry_run_apply_feature,
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
             plan::level_up_plan,
             primitives::{apply_pending, cascade, detect_replacement, restore_user_state},
@@ -35,8 +33,13 @@ pub enum DefinitionKind {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RebuildError {
-    MissingDefinition { kind: DefinitionKind, name: String },
-    MulticlassPrereq { class: String },
+    MissingDefinition {
+        kind: DefinitionKind,
+        name: Box<str>,
+    },
+    MulticlassPrereq {
+        class: Box<str>,
+    },
 }
 
 /// `build_clean` result: rebuilt character + per-feature drift accounting.
@@ -73,6 +76,9 @@ pub struct RebuildCtx<'a> {
 pub struct RebuildPreview {
     /// Reconciled original character — feeds into `build_clean`.
     pub original: Character,
+    /// Canonical plan walked by `build_clean`. Built once in `prepare_rebuild`
+    /// and threaded through to avoid re-derivation.
+    pub plan: Vec<PendingFeature>,
     /// Feats the modal cascade walks, in pipeline order. Starts at the first
     /// unsolved / rejected feat; `hidden=true` entries between editable
     /// ones are effective-stored feats the cascade applies silently.
@@ -82,73 +88,93 @@ pub struct RebuildPreview {
     /// The modal layers `pending` on top of this, so `expr.analyze` on the
     /// first editable feat sees a correct baseline out of the gate.
     pub cascade_base: CharacterCore,
-    /// `true` when pre-validation discarded non-empty stored inputs as
-    /// ineffective — forces the modal to open even if `build_clean` would
-    /// silent-match.
+    /// `true` when an interactive feat lacks usable stored inputs in the
+    /// original (rejected as ineffective, or simply empty) — forces the
+    /// modal to open even if `build_clean` would silent-match on
+    /// solver-derived zeros.
     pub had_rejections: bool,
 }
 
 /// Snapshot-level step 1: reconcile User-sourced features against identity
-/// slots, then collect pending inputs that need user interaction.
+/// slots, run a dry-run cascade to discover what will end up in the rebuilt
+/// character, then collect pending inputs that need user interaction.
+///
+/// The dry-run uses the same `build_clean` path the real apply takes — no
+/// parallel discovery logic that can drift from cascade semantics.
 #[cfg_attr(
     feature = "perf-marks",
     tracing::instrument(name = "rebuild.prepare", skip_all)
 )]
-pub fn prepare_rebuild(mut original: Character, registry: &RulesRegistry) -> RebuildPreview {
+pub fn prepare_rebuild(
+    mut original: Character,
+    registry: &RulesRegistry,
+) -> Result<RebuildPreview, RebuildError> {
     reconcile_user_feature_sources(&mut original, registry);
+    let plan = level_up_plan(&original.identity, &original.features, registry)?;
+
+    // Dry-run with empty inputs: cascade resolves identity-changing assigns
+    // canonically and emits follow-ups via the same path the real rebuild
+    // will take. The result's features.list is the authoritative
+    // post-rebuild feature roster.
+    let dry_run = build_clean(&original, &plan, registry, &ApplyInputs::default())?;
+    let all_pending = features_to_pending(&dry_run.character.features.list);
+
     let (pending, had_rejections, cascade_base) =
-        collect_rebuild_pending_inputs(&original, registry);
-    RebuildPreview {
+        collect_rebuild_pending_inputs(&original, &all_pending, registry);
+    Ok(RebuildPreview {
         original,
+        plan,
         pending,
         cascade_base,
         had_rejections,
-    }
+    })
 }
 
-/// Speculative recompute closure for the rebuild modal cascade. Plan is
-/// derived from `original` (which has full identity); speculative supplies
-/// per-section prefill via `pending_inputs(_, speculative)` so the user's
-/// in-modal picks land in the prefill values. Cascade base is identity-
-/// stripped, so feeding speculative directly to `level_up_plan` would
-/// collapse to an empty plan for legacy chars.
+/// Speculative recompute closure for the rebuild modal cascade. Runs a
+/// dry-run `build_clean` against `original` to discover the post-rebuild
+/// feature list; speculative supplies per-section prefill via
+/// `pending_inputs(_, speculative)` so the user's in-modal picks land in the
+/// prefill values.
 pub fn rebuild_recompute(registry: RulesRegistry, original: &Character) -> RecomputePending {
-    let original = original.clone();
+    // Discovery (plan + dry-run) is deterministic given the captured
+    // `original` and frozen registry — run once at construction. Per-tick
+    // recompute only filters `all_pending` against `speculative` for prefill
+    // lookups; on a L20 multiclass that saves a full cascade per picker tick.
+    let all_pending = match level_up_plan(&original.identity, &original.features, &registry)
+        .and_then(|plan| build_clean(original, &plan, &registry, &ApplyInputs::default()))
+    {
+        Ok(outcome) => features_to_pending(&outcome.character.features.list),
+        Err(error) => {
+            log::warn!("rebuild_recompute: discovery failed: {error:?}");
+            Vec::new()
+        }
+    };
     Box::new(move |speculative: &CharacterCore| {
-        // Mirror collect_rebuild_pending_inputs's discovery: snapshot of
-        // `original` with User-only features and applied stripped, plus
-        // collect_pending_features. Walking the level_up_plan instead would
-        // miss class-level interactive feats (ASI, Class Proficiencies) that
-        // live inside class definitions, not in the plan's marker stream.
-        let mut snapshot = original.clone();
-        snapshot
-            .features
-            .list
-            .retain(|feature| feature.source.is_user());
-        snapshot.applied.reset();
-
         registry.with_features_index_untracked(|feat_index| {
-            let identity_pending = collect_pending_features(&snapshot, &registry, feat_index);
-            let user_pending =
-                original
-                    .features
-                    .iter()
-                    .filter(|f| f.source.is_user())
-                    .map(|feature| PendingFeature {
-                        name: feature.name.clone(),
-                        source: feature.source.clone(),
-                        level: feature.source.added_at_level(),
-                        replaces: None,
-                    });
-            user_pending
-                .chain(identity_pending)
+            all_pending
+                .iter()
                 .filter_map(|pending| {
-                    let feat_def = feat_index.get(pending.name.as_str())?;
+                    let feat_def = feat_index.get(&pending.name)?;
                     pending.pending_inputs(feat_def, speculative)
                 })
                 .collect()
         })
     })
+}
+
+/// Convert the dry-run's `features.list` back into a `PendingFeature` list
+/// in pipeline order. `applied` and `inputs` are intentionally dropped — they
+/// live on the `original` and are looked up per-pending downstream.
+fn features_to_pending(features: &[Feature]) -> Vec<PendingFeature> {
+    features
+        .iter()
+        .map(|feature| PendingFeature {
+            name: feature.name.clone(),
+            source: feature.source.clone(),
+            level: feature.source.added_at_level(),
+            replaces: feature.replaces.clone(),
+        })
+        .collect()
 }
 
 /// Snapshot-level step 2: build a fresh `Character` from `default()`,
@@ -164,6 +190,7 @@ pub fn rebuild_recompute(registry: RulesRegistry, original: &Character) -> Recom
 )]
 pub fn build_clean(
     original: &Character,
+    plan: &[PendingFeature],
     registry: &RulesRegistry,
     extra_inputs: &ApplyInputs,
 ) -> Result<RebuildOutcome, RebuildError> {
@@ -178,7 +205,6 @@ pub fn build_clean(
                 accum: &mut accum,
                 user_seen: BTreeMap::new(),
             };
-            let plan = level_up_plan(&original.identity, &original.features, registry)?;
 
             // Pending keys span the entire plan — `detect_replacement`
             // needs to know which plan entries are also being applied so a
@@ -187,7 +213,7 @@ pub fn build_clean(
             // outlives the cascade calls below.
             let pending_keys: BTreeSet<(&str, &FeatureSource)> = plan
                 .iter()
-                .map(|pending| (pending.name.as_str(), &pending.source))
+                .map(|pending| (&*pending.name, &pending.source))
                 .collect();
 
             // Closures over Copy bits of ctx so cascade() can read while
@@ -214,7 +240,7 @@ pub fn build_clean(
             );
 
             for pending in &plan[base_end..] {
-                if feat_index.contains_key(pending.name.as_str()) {
+                if feat_index.contains_key(&pending.name) {
                     cascade(
                         &mut clean,
                         std::slice::from_ref(pending),
@@ -277,10 +303,10 @@ fn rebuild_skeleton(original: &Character) -> Character {
 /// placeholders all land in `clean`.
 fn apply_user_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: &PendingFeature) {
     debug_assert!(
-        !ctx.feat_index.contains_key(pending.name.as_str()),
+        !ctx.feat_index.contains_key(&pending.name),
         "apply_user_pending: known-def feat must go through cascade"
     );
-    let key = (pending.name.clone(), pending.source.clone());
+    let key = (pending.name.to_string(), pending.source.clone());
     let occurrence = ctx.user_seen.entry(key).or_insert(0);
     let nth = *occurrence;
     *occurrence += 1;
@@ -289,7 +315,7 @@ fn apply_user_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: 
         .features
         .iter()
         .filter(|feature| {
-            feature.name == pending.name
+            *feature.name == *pending.name
                 && feature.source == pending.source
                 && feature.source.is_user()
         })
@@ -299,56 +325,31 @@ fn apply_user_pending(ctx: &mut RebuildCtx<'_>, clean: &mut Character, pending: 
     };
     if !original_feature.name.is_empty() {
         log::warn!("rebuild: preserving user feature with no definition: {original_feature:?}");
-        ctx.accum.skipped.push(original_feature.name.clone());
+        ctx.accum.skipped.push(original_feature.name.to_string());
     }
     clean.features.push(original_feature.clone());
 }
 
-/// Collect features scheduled for the rebuild that still need user input
-/// (OnFeatureAdd interactive exprs and no stored inputs in the original).
-/// Covers both User features already in `original.features` and identity
-/// features (species/background/classes) that will be added during rebuild.
+/// Walk the dry-run-derived `all_pending` to identify which feats need user
+/// input (OnFeatureAdd interactive exprs and no stored inputs in the
+/// original). Stored-input validation rejects entries that no longer fit the
+/// current derived state (`had_rejections`), forcing the modal open even when
+/// silent-commit would otherwise match.
 fn collect_rebuild_pending_inputs(
     original: &Character,
+    all_pending: &[PendingFeature],
     registry: &RulesRegistry,
 ) -> (Vec<PendingInputs>, bool, CharacterCore) {
     // Returns (pending, had_rejections, cascade_base).
     registry.with_definitions(|caches| {
         registry.with_features_index_untracked(|feat_index| {
-            // Identity pending: what `collect_pending_features` would add if no
-            // identity feature were yet applied. Snapshot keeps only User features
-            // and resets applied flags so the collect functions see a clean slate.
-            // Full Character clone is wasteful (most fields unused by collect) but
-            // this runs once per Rebuild button click — not worth the mem::replace
-            // gymnastics to save ~20µs on a user action.
-            let mut snapshot = original.clone();
-            snapshot
-                .features
-                .list
-                .retain(|feature| feature.source.is_user());
-            snapshot.applied.reset();
-            let identity_pending = collect_pending_features(&snapshot, registry, feat_index);
-
-            let user_pending = original
-                .features
-                .iter()
-                .filter(|feature| feature.source.is_user())
-                .map(|feature| PendingFeature {
-                    name: feature.name.clone(),
-                    source: feature.source.clone(),
-                    level: feature.source.added_at_level(),
-                    replaces: None,
-                });
-
-            let all_pending: Vec<PendingFeature> = user_pending.chain(identity_pending).collect();
-
             // Precompute keys of every pending (name, source) so
             // `detect_replacement` can tell "not in the rebuilt list" from "in
             // the list under a different slot". Borrows from `all_pending` which
             // outlives this closure's inputs list.
             let pending_keys: BTreeSet<(&str, &FeatureSource)> = all_pending
                 .iter()
-                .map(|pending| (pending.name.as_str(), &pending.source))
+                .map(|pending| (&*pending.name, &pending.source))
                 .collect();
 
             // Pipeline-order walk: dry-run each feat against `validation_baseline`
@@ -370,8 +371,8 @@ fn collect_rebuild_pending_inputs(
             let mut state_idx_by_pending: Vec<Option<usize>> =
                 Vec::with_capacity(all_pending.len());
             let mut had_rejections = false;
-            for pending in &all_pending {
-                let Some(feat_def) = feat_index.get(pending.name.as_str()) else {
+            for pending in all_pending {
+                let Some(feat_def) = feat_index.get(&pending.name) else {
                     state_idx_by_pending.push(None);
                     continue;
                 };
@@ -403,9 +404,11 @@ fn collect_rebuild_pending_inputs(
                         stored,
                         caches,
                     );
-                if has_interactive_onadd && !effective && !stored.is_empty() {
-                    // Corrupt stored (e.g. Expertise on now non-proficient skills).
-                    // Silent-commit would replay it; caller opens the modal instead.
+                if has_interactive_onadd && !effective {
+                    // Either corrupt stored (e.g. Expertise on now non-proficient
+                    // skills) or no stored at all (fresh interactive feat). Both
+                    // cases must surface the modal — silent-commit with solver
+                    // zeros would bypass the user.
                     had_rejections = true;
                 }
 
@@ -486,7 +489,7 @@ fn collect_rebuild_pending_inputs(
             let mut inputs: Vec<PendingInputs> = Vec::new();
             let mut emit_started = false;
             for (pending_idx, pending) in all_pending.iter().enumerate() {
-                let Some(feat_def) = feat_index.get(pending.name.as_str()) else {
+                let Some(feat_def) = feat_index.get(&pending.name) else {
                     continue;
                 };
                 if let Some(state_idx) = state_idx_by_pending[pending_idx] {
@@ -591,7 +594,7 @@ fn stored_inputs_effective(
     }
     let mut trial = baseline.clone();
     let pending = PendingFeature {
-        name: feat_def.name.to_string(),
+        name: feat_def.name.clone(),
         source: FeatureSource::User(level),
         level,
         replaces: None,
@@ -664,7 +667,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
     clean.features.list.insert(
         0,
         Feature {
-            name: name.to_string(),
+            name: name.into(),
             label: None,
             description: String::new(),
             applied: true,
@@ -699,8 +702,8 @@ pub fn make_inputs_for<'a>(
 ) -> impl Fn(&FeatureKey) -> Vec<AssignInputs> + 'a {
     move |key| {
         let stackable = feat_index
-            .get(key.name.as_str())
-            .map(|d| d.stackable)
+            .get(&key.name)
+            .map(|definition| definition.stackable)
             .unwrap_or(false);
         let proxy = PendingFeature {
             name: key.name.clone(),
@@ -721,12 +724,12 @@ pub fn make_replacement_for<'a>(
     original: &'a Character,
     extra_inputs: &'a ApplyInputs,
     pending_keys: &'a BTreeSet<(&str, &FeatureSource)>,
-) -> impl Fn(&FeatureKey) -> Option<String> + 'a {
+) -> impl Fn(&FeatureKey) -> Option<Box<str>> + 'a {
     move |key| {
         if let Some(input) = extra_inputs.get(key) {
-            return input.replacement.clone();
+            return input.replacement.as_deref().map(Box::from);
         }
-        let feat_def = feat_index.get(key.name.as_str())?;
+        let feat_def = feat_index.get(&key.name)?;
         detect_replacement(
             key,
             feat_def,
@@ -766,7 +769,7 @@ pub fn inputs_for_pending(
         .features
         .iter()
         .find(|feature| {
-            feature.name == pending_feature.name
+            *feature.name == *pending_feature.name
                 && feature.applied
                 && (!stackable || feature.source == pending_feature.source)
         })
@@ -830,15 +833,15 @@ mod tests {
     use super::*;
     use crate::{
         model::{
-            AssignInputs, ClassLevel, Die, Feature, FeatureData, FeatureField, FeatureValue,
-            IdentitySlot, Note, ProficiencyLevel, Skill,
+            AssignInputs, CharacterCore, ClassLevel, CombatStats, Die, Feature, FeatureData,
+            FeatureField, FeatureValue, IdentitySlot, Note, Personality, ProficiencyLevel, Skill,
         },
         rules::apply::pending::ApplyInput,
     };
 
     fn feature(name: &str, source: FeatureSource) -> Feature {
         Feature {
-            name: name.to_string(),
+            name: name.into(),
             source,
             applied: true,
             ..Feature::default()
@@ -847,18 +850,20 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn merge_preserves_equipment_personality_notes() {
-        let mut original = Character::default();
-        original.notes = vec![Note {
-            created_at: 42,
-            level: 3,
-            text: "important notes".into(),
-        }];
-        original.personality.history = "backstory".into();
+        let original = Character {
+            personality: Personality {
+                history: "backstory".into(),
+                ..Default::default()
+            },
+            notes: vec![Note {
+                created_at: 42,
+                level: 3,
+                text: "important notes".into(),
+            }],
+            ..Default::default()
+        };
 
         let mut clean = Character::default();
-        clean.notes = Vec::new();
-        clean.personality.history = String::new();
-
         merge_preserved(&mut clean, &original);
 
         assert_eq!(clean.notes.len(), 1);
@@ -869,15 +874,31 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn merge_preserves_hp_current_and_death_saves() {
-        let mut original = Character::default();
-        original.combat.hp_current = 7;
-        original.combat.hp_temp = 3;
-        original.combat.death_save_successes = 2;
-        original.combat.death_save_failures = 1;
+        let original = Character {
+            core: CharacterCore {
+                combat: CombatStats {
+                    hp_current: 7,
+                    hp_temp: 3,
+                    death_save_successes: 2,
+                    death_save_failures: 1,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            ..Default::default()
+        };
 
-        let mut clean = Character::default();
-        clean.combat.hp_max = 20;
-        clean.combat.hp_current = 20;
+        let mut clean = Character {
+            core: CharacterCore {
+                combat: CombatStats {
+                    hp_max: 20,
+                    hp_current: 20,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+            ..Default::default()
+        };
 
         merge_preserved(&mut clean, &original);
 
@@ -1229,9 +1250,7 @@ mod tests {
             replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
-            [(pending.name.as_str(), &pending.source)]
-                .into_iter()
-                .collect();
+            [(&*pending.name, &pending.source)].into_iter().collect();
         let baseline = Character::default();
 
         let found = detect_replacement(
@@ -1274,9 +1293,7 @@ mod tests {
             replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
-            [(pending.name.as_str(), &pending.source)]
-                .into_iter()
-                .collect();
+            [(&*pending.name, &pending.source)].into_iter().collect();
         let baseline = Character::default();
 
         let found = detect_replacement(
@@ -1314,9 +1331,7 @@ mod tests {
             replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
-            [(pending.name.as_str(), &pending.source)]
-                .into_iter()
-                .collect();
+            [(&*pending.name, &pending.source)].into_iter().collect();
         let baseline = Character::default();
 
         let found = detect_replacement(
@@ -1351,9 +1366,7 @@ mod tests {
             replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
-            [(pending.name.as_str(), &pending.source)]
-                .into_iter()
-                .collect();
+            [(&*pending.name, &pending.source)].into_iter().collect();
         let baseline = Character::default();
 
         let found = detect_replacement(
@@ -1448,7 +1461,7 @@ mod tests {
         let inputs_for = make_inputs_for(feat_index, original, &extra);
         let replacement_for = make_replacement_for(feat_index, original, &extra, &pending_keys);
         for pending in &pendings {
-            if feat_index.contains_key(pending.name.as_str()) {
+            if feat_index.contains_key(&pending.name) {
                 cascade(
                     clean,
                     std::slice::from_ref(pending),
@@ -1472,13 +1485,13 @@ mod tests {
         // and must not surface them as "skipped" — the user already knows.
         let mut original = Character::default();
         original.features.list.push(Feature {
-            name: String::new(),
+            name: Box::default(),
             source: FeatureSource::User(0),
             applied: false,
             ..Feature::default()
         });
         original.features.list.push(Feature {
-            name: String::new(),
+            name: Box::default(),
             source: FeatureSource::User(0),
             applied: false,
             ..Feature::default()
@@ -1534,7 +1547,7 @@ mod tests {
             .features
             .list
             .iter()
-            .find(|feature| feature.name == "Generation: Custom")
+            .find(|feature| &*feature.name == "Generation: Custom")
             .expect("preserved in clean");
         assert_eq!(preserved.inputs, inputs, "user inputs survive");
         assert_eq!(accum.skipped, vec!["Generation: Custom".to_string()]);
@@ -1552,7 +1565,7 @@ mod tests {
 
         let mut original = Character::default();
         original.features.list.push(Feature {
-            name: String::new(),
+            name: Box::default(),
             source: FeatureSource::User(0),
             applied: false,
             ..Feature::default()
@@ -1588,14 +1601,14 @@ mod tests {
                 .features
                 .list
                 .iter()
-                .any(|feature| feature.name == "Homebrew Smite")
+                .any(|feature| &*feature.name == "Homebrew Smite")
         );
         assert!(
             clean
                 .features
                 .list
                 .iter()
-                .any(|feature| feature.name == "Known Feat" && feature.applied)
+                .any(|feature| &*feature.name == "Known Feat" && feature.applied)
         );
     }
 
@@ -1614,9 +1627,7 @@ mod tests {
             replaces: None,
         };
         let pending_keys: BTreeSet<(&str, &FeatureSource)> =
-            [(pending.name.as_str(), &pending.source)]
-                .into_iter()
-                .collect();
+            [(&*pending.name, &pending.source)].into_iter().collect();
         let baseline = Character::default();
 
         assert!(
@@ -1893,7 +1904,7 @@ mod tests {
         let inputs_for = make_inputs_for(feat_index, original, &extra);
         let replacement_for = make_replacement_for(feat_index, original, &extra, &pending_keys);
         for pending in plan {
-            if feat_index.contains_key(pending.name.as_str()) {
+            if feat_index.contains_key(&pending.name) {
                 cascade(
                     &mut clean,
                     std::slice::from_ref(pending),
@@ -1967,7 +1978,7 @@ mod tests {
             .list
             .iter()
             .filter(|feature| {
-                feature.name == "Fighter"
+                &*feature.name == "Fighter"
                     && matches!(
                         feature.category,
                         FeatureCategory::System(IdentitySlot::Class)
@@ -2016,7 +2027,7 @@ mod tests {
             .list
             .iter()
             .filter(|feature| {
-                feature.name == "Battle Master"
+                &*feature.name == "Battle Master"
                     && matches!(
                         feature.category,
                         FeatureCategory::System(IdentitySlot::Subclass)
@@ -2078,7 +2089,7 @@ mod tests {
             .list
             .iter()
             .find(|feature| {
-                feature.name == "Human"
+                &*feature.name == "Human"
                     && matches!(
                         feature.category,
                         FeatureCategory::System(IdentitySlot::Species)
@@ -2092,7 +2103,7 @@ mod tests {
             .list
             .iter()
             .find(|feature| {
-                feature.name == "Soldier"
+                &*feature.name == "Soldier"
                     && matches!(
                         feature.category,
                         FeatureCategory::System(IdentitySlot::Background)
@@ -2215,7 +2226,7 @@ mod tests {
         // species/background entries — none here).
         let class_steps = plan
             .iter()
-            .filter(|pending| pending.name == "Fighter")
+            .filter(|pending| &*pending.name == "Fighter")
             .count();
         assert_eq!(class_steps, 3);
 
@@ -2237,7 +2248,7 @@ mod tests {
             .identity
             .classes
             .iter()
-            .find(|class_level| class_level.class == "Fighter")
+            .find(|class_level| &*class_level.class == "Fighter")
             .expect("Fighter class created from markers");
         assert_eq!(fighter.level, 3);
 
@@ -2325,7 +2336,7 @@ mod tests {
             let feature = clean
                 .features
                 .iter()
-                .find(|feature| feature.name == name)
+                .find(|feature| &*feature.name == name)
                 .unwrap_or_else(|| panic!("subclass feature {name} missing after rebuild"));
             assert_eq!(feature.source, subclass_source);
         }

@@ -146,7 +146,7 @@ pub fn ChoicesBlock() -> impl IntoView {
             extra_vars.insert(Attribute::ClassLevel(AttrKey::Scoped), class_level as i32);
 
             // Inject Points field values if feature has one
-            if let Some(entry) = character.features.get(&feature_name) {
+            if let Some(entry) = character.features.get(feature_name.as_str()) {
                 inject_resource_vars(&mut extra_vars, entry);
             }
 
@@ -328,7 +328,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                                     cost: opt.cost,
                                     action: opt.action,
                                     effects,
-                                    feature_name: feat_name.clone(),
+                                    feature_name: feat_name.to_string(),
                                 }
                             }),
                             points,
@@ -363,7 +363,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                             continue;
                         };
                         let from_options = StoredValue::new(from_options.clone());
-                        let feat_name = StoredValue::new(feat_name.clone());
+                        let feat_name = StoredValue::new(feat_name.to_string());
 
                         let choice_entry_factory = move |(index, current): (
                             usize,
@@ -381,7 +381,7 @@ pub fn ChoicesBlock() -> impl IntoView {
                                                 };
                                                 feat_name.with_value(|name| {
                                                     feature_data.update(|features| {
-                                                        if let Some(entry) = features.get_mut(name)
+                                                        if let Some(entry) = features.get_mut(name.as_str())
                                                             && let Some(field) = entry.fields.get_mut(field_index)
                                                             && let FeatureValue::Choice { options } = &mut field.value
                                                             && let Some(option) = options.get_mut(index)

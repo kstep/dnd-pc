@@ -13,6 +13,7 @@ use strum::{Display, EnumString};
 use crate::{
     expr::DicePool,
     model::{ActionType, Die, SpellData, Translatable},
+    vecset::VecSet,
 };
 
 /// Identity slot a feature writes to when applied. Used both as the inner
@@ -168,7 +169,7 @@ impl Translatable for FeatureCategory {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Feature {
     #[serde(default)]
-    pub name: String,
+    pub name: Box<str>,
     #[serde(default)]
     pub label: Option<String>,
     #[serde(default)]
@@ -182,7 +183,7 @@ pub struct Feature {
     #[serde(default)]
     pub inputs: Vec<AssignInputs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub replaces: Option<String>,
+    pub replaces: Option<Box<str>>,
 }
 
 impl Feature {
@@ -304,7 +305,7 @@ impl FeatureSource {
 /// `data` entries are keyed by feature name and should exist for every
 /// applied feature that has fields or spells.
 ///
-/// `Deref`/`DerefMut` target the `BTreeMap<String, FeatureData>` data map
+/// `Deref`/`DerefMut` target the `BTreeMap<Box<str>, FeatureData>` data map
 /// so map-style access (`.get()`, `.get_mut()`, `.insert()`, `.keys()`,
 /// `.values()`, `.clear()`) works through the container directly. List
 /// iteration and list-specific queries go through inherent methods
@@ -319,11 +320,16 @@ pub struct Features {
         default,
         deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
     )]
-    data: BTreeMap<String, FeatureData>,
+    data: BTreeMap<Box<str>, FeatureData>,
+    /// Names physically removed by the user through the trash icon. Surfaces
+    /// as `RebuildReason::FeatureRemoved` until the next rebuild clears
+    /// `Features` wholesale.
+    #[serde(default, skip_serializing_if = "VecSet::is_empty")]
+    pub removed: VecSet<Box<str>>,
 }
 
 impl Deref for Features {
-    type Target = BTreeMap<String, FeatureData>;
+    type Target = BTreeMap<Box<str>, FeatureData>;
 
     fn deref(&self) -> &Self::Target {
         &self.data
@@ -359,8 +365,12 @@ impl Features {
     /// struct literals would otherwise need access to the private `data`
     /// field.
     #[cfg(test)]
-    pub fn from_parts(list: Vec<Feature>, data: BTreeMap<String, FeatureData>) -> Self {
-        Self { list, data }
+    pub fn from_parts(list: Vec<Feature>, data: BTreeMap<Box<str>, FeatureData>) -> Self {
+        Self {
+            list,
+            data,
+            removed: VecSet::default(),
+        }
     }
 
     /// Iterate applied feature list (overrides BTreeMap::iter from Deref).
@@ -399,21 +409,21 @@ impl Features {
     pub fn find(&self, name: &str, source: &FeatureSource) -> Option<&Feature> {
         self.list
             .iter()
-            .find(|feature| feature.name == name && &feature.source == source)
+            .find(|feature| &*feature.name == name && &feature.source == source)
     }
 
     /// Mutable variant of [`find`].
     pub fn find_mut(&mut self, name: &str, source: &FeatureSource) -> Option<&mut Feature> {
         self.list
             .iter_mut()
-            .find(|feature| feature.name == name && &feature.source == source)
+            .find(|feature| &*feature.name == name && &feature.source == source)
     }
 
     /// Position of the first row matching `(name, source)`.
     pub fn find_pos(&self, name: &str, source: &FeatureSource) -> Option<usize> {
         self.list
             .iter()
-            .position(|feature| feature.name == name && &feature.source == source)
+            .position(|feature| &*feature.name == name && &feature.source == source)
     }
 
     /// Position of the last row, if any.
@@ -426,20 +436,20 @@ impl Features {
     /// Stackable: applied with same name AND source → true.
     pub fn contains(&self, name: &str, stackable: bool, source: &FeatureSource) -> bool {
         if stackable {
-            self.list
-                .iter()
-                .any(|feature| feature.name == name && feature.applied && feature.source == *source)
+            self.list.iter().any(|feature| {
+                &*feature.name == name && feature.applied && feature.source == *source
+            })
         } else {
             self.list
                 .iter()
-                .any(|feature| feature.name == name && feature.applied)
+                .any(|feature| &*feature.name == name && feature.applied)
         }
     }
 
     pub fn has(&self, name: &str) -> bool {
         self.list
             .iter()
-            .any(|feature| feature.name == name && feature.applied)
+            .any(|feature| &*feature.name == name && feature.applied)
     }
 
     pub fn has_category(&self, category: FeatureCategory) -> bool {
@@ -453,7 +463,7 @@ impl Features {
         let mut has_applied = false;
         let mut has_unapplied = false;
         for feature in &self.list {
-            if feature.name == name {
+            if &*feature.name == name {
                 if feature.applied {
                     has_applied = true;
                 } else {
@@ -469,7 +479,7 @@ impl Features {
     pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
         self.list
             .iter()
-            .find(|feature| feature.name == name && &feature.source == source)
+            .find(|feature| &*feature.name == name && &feature.source == source)
             .map(|feature| feature.inputs.as_slice())
             .unwrap_or_default()
     }
@@ -500,7 +510,7 @@ impl Features {
             .list
             .iter_mut()
             .enumerate()
-            .rfind(|(_, feature)| feature.name == name && feature.source == source)
+            .rfind(|(_, feature)| &*feature.name == name && feature.source == source)
         {
             feature.applied = applied;
             feature.label = label;
@@ -512,7 +522,7 @@ impl Features {
         } else {
             let idx = self.list.len();
             self.list.push(Feature {
-                name: name.to_string(),
+                name: name.into(),
                 label,
                 description,
                 applied,
@@ -525,26 +535,19 @@ impl Features {
         }
     }
 
-    /// Remove the feature instance matching `name` + `source` from the
-    /// list. If no other entries share the name, also drop its `data`
-    /// entry (fields + spells). Returns `true` if a match was found.
-    pub fn remove(&mut self, name: &str, source: &FeatureSource) -> bool {
-        let Some(idx) = self
-            .list
-            .iter()
-            .position(|feature| feature.name == name && &feature.source == source)
-        else {
-            return false;
+    /// User-initiated removal of the row at `idx`. Records the name in
+    /// `removed` so `rebuild_reasons` can surface the drift; evicts the
+    /// `data[name]` entry when no other live row carries that name.
+    pub fn remove(&mut self, idx: usize) {
+        let Some(feature) = self.list.get(idx) else {
+            return;
         };
+        let name = feature.name.clone();
         self.list.remove(idx);
-        if !self
-            .list
-            .iter()
-            .any(|feature| feature.name == name && feature.applied)
-        {
-            self.data.remove(name);
+        if !self.list.iter().any(|other| other.name == name) {
+            self.data.remove(&name);
         }
-        true
+        self.removed.insert(name);
     }
 
     /// Truncate the feature list at the position of the entry matching
@@ -554,7 +557,7 @@ impl Features {
         let Some(idx) = self
             .list
             .iter()
-            .position(|feature| feature.name == name && &feature.source == source)
+            .position(|feature| &*feature.name == name && &feature.source == source)
         else {
             return false;
         };
@@ -565,34 +568,37 @@ impl Features {
     // Raw data accessors for explicit BTreeMap access where Deref coercion
     // isn't convenient (e.g. cloning, passing as function argument).
 
-    pub fn data(&self) -> &BTreeMap<String, FeatureData> {
+    pub fn data(&self) -> &BTreeMap<Box<str>, FeatureData> {
         &self.data
     }
 
-    pub fn data_mut(&mut self) -> &mut BTreeMap<String, FeatureData> {
+    pub fn data_mut(&mut self) -> &mut BTreeMap<Box<str>, FeatureData> {
         &mut self.data
     }
 
     /// Split-borrow `list` and `data` simultaneously so callers can read a
     /// feature name from `list` while mutating its `data` entry.
-    pub fn split_mut(&mut self) -> (&[Feature], &mut BTreeMap<String, FeatureData>) {
+    pub fn split_mut(&mut self) -> (&[Feature], &mut BTreeMap<Box<str>, FeatureData>) {
         (&self.list, &mut self.data)
     }
 
     // Per-feature data helpers.
 
-    /// Shorthand for `data.get(name).and_then(|e| e.spells.as_ref())`.
+    /// Shorthand for `data.get(name).and_then(|entry| entry.spells.as_ref())`.
     pub fn spell_data(&self, name: &str) -> Option<&SpellData> {
-        self.data.get(name).and_then(|e| e.spells.as_ref())
+        self.data.get(name).and_then(|entry| entry.spells.as_ref())
     }
 
-    /// Shorthand for `data.get_mut(name).and_then(|e| e.spells.as_mut())`.
+    /// Shorthand for `data.get_mut(name).and_then(|entry|
+    /// entry.spells.as_mut())`.
     pub fn spell_data_mut(&mut self, name: &str) -> Option<&mut SpellData> {
-        self.data.get_mut(name).and_then(|e| e.spells.as_mut())
+        self.data
+            .get_mut(name)
+            .and_then(|entry| entry.spells.as_mut())
     }
 
     /// Zero `used` on every Points/Die field and every spell's `free_uses`
-    /// across all data entries. Used by `Character::long_rest`.
+    /// across all data entries.
     pub fn reset_uses(&mut self) {
         for entry in self.data.values_mut() {
             for field in &mut entry.fields {
@@ -614,7 +620,7 @@ impl Features {
     }
 
     /// Clear labels and descriptions on list entries and all data fields/
-    /// spells. Used by `Character::clear_all_labels`.
+    /// spells.
     pub fn clear_all_labels(&mut self) {
         for feature in &mut self.list {
             feature.label = None;
@@ -795,7 +801,7 @@ mod tests {
             true,
         );
         assert_eq!(pos, 0);
-        assert_eq!(features.at(pos).unwrap().name, "Alert");
+        assert_eq!(&*features.at(pos).unwrap().name, "Alert");
 
         let pos2 = features.put(
             "Tough",
@@ -807,7 +813,7 @@ mod tests {
             true,
         );
         assert_eq!(pos2, 1);
-        assert_eq!(features.at(pos2).unwrap().name, "Tough");
+        assert_eq!(&*features.at(pos2).unwrap().name, "Tough");
     }
 
     #[test]
@@ -929,5 +935,119 @@ mod tests {
             .find("Skilled", &background)
             .expect("background row");
         assert!(background_row.applied);
+    }
+
+    #[test]
+    fn remove_records_tombstone_and_evicts_data() {
+        let mut features = Features::default();
+        let pos = features.put(
+            "Tough",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(0),
+            Vec::new(),
+            true,
+        );
+        features.data.insert("Tough".into(), FeatureData::default());
+
+        features.remove(pos);
+
+        assert!(features.is_empty(), "row physically removed");
+        assert!(
+            !features.data.contains_key("Tough"),
+            "data evicted when no other live row carries the name"
+        );
+        assert!(
+            features.removed.contains("Tough"),
+            "tombstone records the removed name"
+        );
+    }
+
+    #[test]
+    fn remove_keeps_data_when_other_live_row_shares_name() {
+        // Two ASI instances (stackable). Removing one must keep data alive
+        // for the other.
+        let mut features = Features::default();
+        features.put(
+            "ASI",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(4),
+            Vec::new(),
+            true,
+        );
+        features.put(
+            "ASI",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(8),
+            Vec::new(),
+            true,
+        );
+        features.data.insert("ASI".into(), FeatureData::default());
+
+        features.remove(0);
+
+        assert_eq!(features.len(), 1);
+        assert!(
+            features.data.contains_key("ASI"),
+            "data preserved because the second ASI still lives"
+        );
+        assert!(features.removed.contains("ASI"));
+    }
+
+    #[test]
+    fn remove_out_of_bounds_is_noop() {
+        let mut features = Features::default();
+        features.remove(0);
+        features.remove(99);
+        assert!(features.removed.is_empty());
+        assert!(features.is_empty());
+    }
+
+    #[test]
+    fn removed_field_json_roundtrip() {
+        let mut features = Features::default();
+        features.put(
+            "Tough",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(0),
+            Vec::new(),
+            true,
+        );
+        features.remove(0);
+
+        let json = serde_json::to_value(&features).expect("serialize");
+        assert_eq!(
+            json.get("removed").and_then(|removed| removed.as_array()),
+            Some(&vec![serde_json::Value::String("Tough".into())]),
+        );
+
+        let restored: Features = serde_json::from_value(json).expect("deserialize");
+        assert!(restored.removed.contains("Tough"));
+    }
+
+    #[test]
+    fn removed_field_omitted_when_empty() {
+        // Back-compat: characters that never lost a feature serialize without
+        // a `removed` key — old clients reading the JSON see no extra field.
+        let features = Features::default();
+        let json = serde_json::to_value(&features).expect("serialize");
+        assert!(
+            json.get("removed").is_none(),
+            "skip_serializing_if drops the empty VecSet"
+        );
+    }
+
+    #[test]
+    fn removed_field_default_when_absent_in_json() {
+        let json = serde_json::json!({ "list": [], "data": {} });
+        let features: Features = serde_json::from_value(json).expect("deserialize");
+        assert!(features.removed.is_empty());
     }
 }

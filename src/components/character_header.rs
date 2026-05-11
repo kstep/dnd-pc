@@ -53,7 +53,7 @@ pub fn CharacterHeader() -> impl IntoView {
             .classes
             .iter()
             .find(|class_level| !class_level.class.is_empty())
-            .map(|class_level| class_level.class.clone());
+            .map(|class_level| class_level.class.to_string());
         level_up_class(store, registry, prefilled_class);
     };
 
@@ -95,7 +95,7 @@ pub fn CharacterHeader() -> impl IntoView {
     let show_reset_confirm = RwSignal::new(false);
     let show_avatar_generate = RwSignal::new(false);
     let show_remove_class = RwSignal::new(false);
-    let remove_class_target: RwSignal<Option<String>> = RwSignal::new(None);
+    let remove_class_target: RwSignal<Option<Box<str>>> = RwSignal::new(None);
 
     let confirm_remove_class = move || {
         let Some(class_name) = remove_class_target.get_untracked() else {
@@ -237,7 +237,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 let subclass_label = cl
                                     .subclass_label()
                                     .map(str::to_string)
-                                    .or_else(|| cl.subclass.clone());
+                                    .or_else(|| cl.subclass.as_deref().map(str::to_string));
                                 let level = cl.level;
                                 let subclass_view = subclass_label.map(|label| view! {
                                     <Ref

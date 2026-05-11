@@ -34,21 +34,7 @@ pub fn FeaturesPanel() -> impl IntoView {
     let features = store.core().features();
 
     let remove_feature = move |idx: usize| {
-        let evict = {
-            let list_signal = features.list();
-            let mut list = list_signal.write();
-            if idx >= list.len() {
-                return;
-            }
-            let name = list.remove(idx).name;
-            let still_applied = list
-                .iter()
-                .any(|feature| feature.name == name && feature.applied);
-            (!still_applied).then_some(name)
-        };
-        if let Some(name) = evict {
-            features.data().write().remove(&name);
-        }
+        features.update(|features| features.remove(idx));
     };
 
     // Pipeline-order preview: shared `blank` accumulates across features so an

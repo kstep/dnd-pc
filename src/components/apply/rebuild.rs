@@ -10,10 +10,10 @@ use crate::{
     components::{args_modal::ArgsModalCtx, toast::Toast},
     model::Character,
     rules::{
-        ApplyInput, ApplyInputs, RulesRegistry,
+        ApplyInputs, RulesRegistry,
         apply::{
-            DefinitionKind, FeatureKey, PendingInputs, RebuildError, RebuildOutcome,
-            RebuildPreview, build_clean, prepare_rebuild, rebuild_recompute,
+            DefinitionKind, RebuildError, RebuildOutcome, RebuildPreview, build_clean,
+            prepare_rebuild, rebuild_recompute, synthesize_apply_inputs,
         },
     },
 };
@@ -34,21 +34,30 @@ use crate::{
     tracing::instrument(name = "rebuild.total", skip_all)
 )]
 pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
+    let character = store.get_untracked();
+    let character_id = character.id;
+    let open_build_tab = build_tab_action(character_id);
     let RebuildPreview {
         original,
+        plan,
         pending,
         cascade_base,
         had_rejections,
-    } = prepare_rebuild(store.get_untracked(), &registry);
-
-    let open_build_tab = build_tab_action(original.id);
+    } = match prepare_rebuild(character, &registry) {
+        Ok(preview) => preview,
+        Err(error) => {
+            show_rebuild_error(&error, &open_build_tab);
+            return;
+        }
+    };
 
     let do_rebuild = {
         let original = original.clone();
+        let plan = plan.clone();
         move |modal_inputs: Option<&ApplyInputs>| {
             let empty = ApplyInputs::default();
             let extra = modal_inputs.unwrap_or(&empty);
-            match build_clean(&original, &registry, extra) {
+            match build_clean(&original, &plan, &registry, extra) {
                 Ok(outcome) => commit_rebuild(store, outcome, false, &open_build_tab),
                 Err(error) => show_rebuild_error(&error, &open_build_tab),
             }
@@ -84,7 +93,7 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
     // replay that corruption without giving the user a chance to fix it.
     if !had_rejections && !needs_replacement_choice {
         let guessed = synthesize_apply_inputs(&pending);
-        if let Ok(simulated) = build_clean(&original, &registry, &guessed)
+        if let Ok(simulated) = build_clean(&original, &plan, &registry, &guessed)
             && simulated.character.eq_derived(&original)
         {
             log::info!("rebuild: silent-applied; derived state matches original");
@@ -113,25 +122,6 @@ pub fn rebuild(store: Store<Character>, registry: RulesRegistry) {
     ctx.open(pending, Some(base), Some(recompute), move |inputs| {
         do_rebuild(Some(&inputs))
     });
-}
-
-/// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
-/// trial `build_clean`. Each pending lands as a single record at its own
-/// `(name, source)` key, carrying both the prefilled args and the
-/// detected replacement (if any) — so the rebuild cascade reproduces
-/// the user's original swap decisions.
-fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
-    pending
-        .iter()
-        .map(|pending| {
-            let key = FeatureKey::new(&pending.feature_name, pending.source.clone());
-            let input = ApplyInput {
-                inputs: pending.prefill.clone(),
-                replacement: pending.prefilled_replacement.clone(),
-            };
-            (key, input)
-        })
-        .collect()
 }
 
 /// Build a callback that navigates to this character's Build tab. Captured at
@@ -201,7 +191,7 @@ fn show_rebuild_error(error: &RebuildError, open_build_tab: &Callback<()>) {
     let (toast, with_action) = match error {
         RebuildError::MissingDefinition { kind, name } => {
             log::error!("rebuild aborted: missing {kind:?} definition '{name}'");
-            let name = name.as_str();
+            let name = name.to_string();
             let toast = match kind {
                 DefinitionKind::Class => {
                     Toast::error(tr!("toast-rebuild-failed-class", { "name" => name }))
@@ -219,7 +209,7 @@ fn show_rebuild_error(error: &RebuildError, open_build_tab: &Callback<()>) {
             log::error!("rebuild aborted: multiclass prereq for '{class}' never satisfied");
             let toast = Toast::error(tr!(
                 "toast-rebuild-failed-multiclass",
-                { "class" => class.as_str() }
+                { "class" => class.to_string() }
             ));
             (toast, true)
         }

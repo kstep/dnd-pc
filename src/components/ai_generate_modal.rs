@@ -121,7 +121,7 @@ async fn run_ai_generation(
         concept.subclass = canonical.clone();
         store.update(|character| {
             if let Some(class_level) = character.identity.classes.first_mut() {
-                class_level.subclass = canonical.clone();
+                class_level.subclass = canonical.as_deref().map(Box::from);
             }
         });
     }
@@ -131,7 +131,7 @@ async fn run_ai_generation(
         let gen_pending = (!input.preset_name.is_empty()).then(|| {
             let level = character.level().max(1);
             PendingFeature {
-                name: input.preset_name.clone(),
+                name: input.preset_name.as_str().into(),
                 source: FeatureSource::User(0),
                 level,
                 replaces: None,
@@ -150,7 +150,7 @@ async fn run_ai_generation(
         all_pending
             .iter()
             .filter_map(|pending_feature| {
-                let feat_def = fi.get(pending_feature.name.as_str())?;
+                let feat_def = fi.get(&pending_feature.name)?;
                 pending_feature.pending_inputs(feat_def, &character)
             })
             .collect()
@@ -190,7 +190,7 @@ async fn run_ai_generation(
             for (original, replacement) in &raw_replacements {
                 let valid = pending_inputs
                     .iter()
-                    .find(|pending_input| pending_input.feature_name == *original)
+                    .find(|pending_input| &*pending_input.feature_name == original.as_str())
                     .and_then(|pending_input| {
                         fi.get(replacement.as_str())
                             .filter(|feat_def| pending_input.replace_with.matches(feat_def))
@@ -212,7 +212,7 @@ async fn run_ai_generation(
                         .filter_map(|replacement_name| {
                             let feat_def = fi.get(replacement_name.as_str())?;
                             PendingInputs::from_feature(
-                                replacement_name.clone(),
+                                replacement_name.as_str().into(),
                                 feat_def,
                                 FeatureSource::User(0),
                                 WhenCondition::OnFeatureAdd,
@@ -336,9 +336,9 @@ fn validate_feature_choices(
 ) -> Vec<ChoiceValidationError> {
     let mut errors = Vec::new();
     for pending_input in pending_inputs {
-        let Some(args) = choices.get(&pending_input.feature_name) else {
+        let Some(args) = choices.get(&*pending_input.feature_name) else {
             errors.push(ChoiceValidationError {
-                feature_name: pending_input.feature_name.clone(),
+                feature_name: pending_input.feature_name.to_string(),
                 message: format!(
                     "missing from response (expected {} ARG values)",
                     pending_input
@@ -364,7 +364,7 @@ fn validate_feature_choices(
         for expression in &pending_input.exprs {
             if expression.eval_lenient(&ctx).is_err() {
                 errors.push(ChoiceValidationError {
-                    feature_name: pending_input.feature_name.clone(),
+                    feature_name: pending_input.feature_name.to_string(),
                     message: format!("guard constraint failed with ARG values {args:?}"),
                 });
                 break;

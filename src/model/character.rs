@@ -34,15 +34,16 @@ pub const MAX_CLASS_LEVEL: u32 = 40;
 pub enum RebuildReason {
     SpeciesChanged,
     BackgroundChanged,
-    ClassRemoved(String),
+    ClassRemoved(Box<str>),
     LevelLowered {
-        class: String,
+        class: Box<str>,
         applied: u32,
         current: u32,
     },
     SubclassChanged {
-        class: String,
+        class: Box<str>,
     },
+    FeatureRemoved(Box<str>),
     /// Built character with no `System(Class)` markers — needs the
     /// rebuild flow to emit them before further drift detection works.
     LegacyMissingSystemMarkers,
@@ -54,19 +55,22 @@ impl RebuildReason {
             Self::SpeciesChanged => tr!(i18n, "rebuild-reason-species"),
             Self::BackgroundChanged => tr!(i18n, "rebuild-reason-background"),
             Self::ClassRemoved(class) => {
-                tr!(i18n, "rebuild-reason-class-removed", { "class" => class.clone() })
+                tr!(i18n, "rebuild-reason-class-removed", { "class" => class.to_string() })
             }
             Self::LevelLowered {
                 class,
                 applied,
                 current,
             } => tr!(i18n, "rebuild-reason-level-lowered", {
-                "class" => class.clone(),
+                "class" => class.to_string(),
                 "applied" => *applied,
                 "current" => *current,
             }),
             Self::SubclassChanged { class } => {
-                tr!(i18n, "rebuild-reason-subclass-changed", { "class" => class.clone() })
+                tr!(i18n, "rebuild-reason-subclass-changed", { "class" => class.to_string() })
+            }
+            Self::FeatureRemoved(name) => {
+                tr!(i18n, "rebuild-reason-feature-removed", { "name" => name.to_string() })
             }
             Self::LegacyMissingSystemMarkers => tr!(i18n, "rebuild-reason-legacy-system-markers"),
         }
@@ -188,7 +192,7 @@ impl CharacterCore {
                 .identity
                 .classes
                 .iter()
-                .find(|cl| cl.class.as_str() == &**class_name)
+                .find(|cl| cl.class.as_ref() == &**class_name)
                 .map_or(0, |cl| cl.level),
             FeatureSource::Species(_) | FeatureSource::Background(_) | FeatureSource::User(_) => {
                 self.level()
@@ -264,7 +268,7 @@ impl CharacterCore {
                     .features
                     .iter()
                     .filter_map(|feature| {
-                        if feature.source.as_class() != Some(cl.class.as_str()) {
+                        if feature.source.as_class() != Some(cl.class.as_ref()) {
                             return None;
                         }
                         let spell_data = self.features.get(&feature.name)?.spells.as_ref()?;
@@ -387,89 +391,90 @@ impl CharacterCore {
     /// when applied state matches identity. UI surfaces this list in the
     /// rebuild banner so the user knows what triggered it.
     pub fn rebuild_reasons(&self) -> Vec<RebuildReason> {
-        let mut reasons = Vec::new();
+        self.rebuild_reasons_iter().collect()
+    }
+
+    /// Iterator equivalent of `rebuild_reasons` — `needs_rebuild` short-
+    /// circuits on the first match without allocating the `Vec`.
+    fn rebuild_reasons_iter(&self) -> impl Iterator<Item = RebuildReason> {
         let has_features = !self.features.is_empty();
 
-        if !self.identity.species.is_empty() && !self.applied.species && has_features {
-            reasons.push(RebuildReason::SpeciesChanged);
-        }
-        if !self.identity.background.is_empty() && !self.applied.background && has_features {
-            reasons.push(RebuildReason::BackgroundChanged);
-        }
-        // Applied levels for a class no longer present in identity (deleted or
-        // renamed). Empty level sets are tolerated — they may be tombstones.
-        for (class, lvls) in &self.applied.levels {
-            if lvls.is_empty() {
-                continue;
-            }
-            if !self.identity.classes.iter().any(|cl| &cl.class == class) {
-                reasons.push(RebuildReason::ClassRemoved(class.clone()));
-            }
-        }
-        // Class level lowered: applied retains levels above the current
-        // identity level.
-        for cl in &self.identity.classes {
-            if cl.class.is_empty() {
-                continue;
-            }
-            if let Some(lvls) = self.applied.levels.get(&cl.class)
-                && let Some(&max) = lvls.iter().max()
-                && max > cl.level
-            {
-                reasons.push(RebuildReason::LevelLowered {
-                    class: cl.class.clone(),
-                    applied: max,
-                    current: cl.level,
-                });
-            }
-        }
-        // Subclass picked changed: features.list still carries entries from a
-        // previously-applied subclass that no longer matches the identity
-        // pick. Replay would re-run those stale features as-is — wrong; we
-        // need rebuild to drop them and apply the new subclass progression.
-        for cl in &self.identity.classes {
-            if cl.class.is_empty() {
-                continue;
-            }
-            let Some(picked) = cl.subclass.as_deref() else {
-                continue;
-            };
-            let drift = self.features.iter().any(|feature| {
-                matches!(
-                    &feature.source,
-                    FeatureSource::Subclass(class_name, sub, _)
-                        if class_name.as_ref() == cl.class.as_str()
-                            && sub.as_ref() != picked
-                )
-            });
-            if drift {
-                reasons.push(RebuildReason::SubclassChanged {
-                    class: cl.class.clone(),
-                });
-            }
-        }
-        // Legacy: a built character (applied.levels populated, features
-        // already materialized) carrying no System(Class) markers needs to
-        // migrate through the rebuild modal so the marker-driven path can
-        // take over on subsequent rebuilds.
-        let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
-        let has_features = !self.features.is_empty();
-        let has_class_markers = self.features.iter().any(|feature| {
-            matches!(
-                feature.category,
-                FeatureCategory::System(IdentitySlot::Class)
+        (!self.identity.species.is_empty() && !self.applied.species && has_features)
+            .then_some(RebuildReason::SpeciesChanged)
+            .into_iter()
+            .chain(
+                (!self.identity.background.is_empty() && !self.applied.background && has_features)
+                    .then_some(RebuildReason::BackgroundChanged),
             )
-        });
-        if has_levels && has_features && !has_class_markers {
-            reasons.push(RebuildReason::LegacyMissingSystemMarkers);
-        }
-        reasons
+            .chain(
+                self.applied
+                    .levels
+                    .iter()
+                    .filter(|(_, lvls)| !lvls.is_empty())
+                    .filter(|&(class, _)| {
+                        !self.identity.classes.iter().any(|cl| &cl.class == class)
+                    })
+                    .map(|(class, _)| RebuildReason::ClassRemoved(class.clone())),
+            )
+            .chain(self.identity.classes.iter().filter_map(|cl| {
+                if !cl.class.is_empty()
+                    && let Some(lvls) = self.applied.levels.get(&cl.class)
+                    && let Some(&max) = lvls.iter().max()
+                    && max > cl.level
+                {
+                    return Some(RebuildReason::LevelLowered {
+                        class: cl.class.as_ref().into(),
+                        applied: max,
+                        current: cl.level,
+                    });
+                }
+
+                None
+            }))
+            .chain(
+                self.identity
+                    .classes
+                    .iter()
+                    .filter(|cl| {
+                        !cl.class.is_empty()
+                            && cl.subclass.as_deref().is_some_and(|picked| {
+                                self.features.iter().any(|feature| {
+                                    matches!(
+                                        &feature.source,
+                                        FeatureSource::Subclass(class_name, sub, _)
+                                            if class_name.as_ref() == cl.class.as_ref()
+                                                && sub.as_ref() != picked
+                                    )
+                                })
+                            })
+                    })
+                    .map(|cl| RebuildReason::SubclassChanged {
+                        class: cl.class.as_ref().into(),
+                    }),
+            )
+            .chain(
+                self.features
+                    .removed
+                    .iter()
+                    .map(|name| RebuildReason::FeatureRemoved(name.clone())),
+            )
+            .chain({
+                let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
+                let has_class_markers = self.features.iter().any(|feature| {
+                    matches!(
+                        feature.category,
+                        FeatureCategory::System(IdentitySlot::Class)
+                    )
+                });
+                (has_levels && has_features && !has_class_markers)
+                    .then_some(RebuildReason::LegacyMissingSystemMarkers)
+            })
     }
 
     /// True if `applied` references slots that no longer match `identity`.
     /// See `rebuild_reasons` for the breakdown.
     pub fn needs_rebuild(&self) -> bool {
-        !self.rebuild_reasons().is_empty()
+        self.rebuild_reasons_iter().next().is_some()
     }
 
     /// Clear all labels and descriptions (blanket clear).
@@ -513,12 +518,14 @@ impl Character {
         identity
             .classes
             .retain(|class_level| !class_level.class.is_empty());
+        let personality = mem::take(&mut self.personality);
         *self = Self {
             id,
             core: CharacterCore {
                 identity,
                 ..CharacterCore::default()
             },
+            personality,
             ..Default::default()
         };
     }
@@ -758,7 +765,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                     .identity
                     .classes
                     .iter()
-                    .position(|class_level| class_level.class == name);
+                    .position(|class_level| &*class_level.class == name);
                 match (existing, new_level) {
                     (Some(idx), 0) => {
                         self.identity.classes.remove(idx);
@@ -769,7 +776,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                     (None, 0) => {}
                     (None, level) => {
                         self.identity.classes.push(ClassLevel {
-                            class: name.to_string(),
+                            class: name.into(),
                             level,
                             ..ClassLevel::default()
                         });
@@ -837,7 +844,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 .identity
                 .classes
                 .iter()
-                .find(|cl| cl.class == name)
+                .find(|cl| &*cl.class == name)
                 .map(|cl| cl.level as i32)
                 .unwrap_or(0)),
             Attribute::ClassCount => Ok(self
@@ -873,7 +880,7 @@ impl Character {
             core: CharacterCore {
                 identity: CharacterIdentity {
                     classes: vec![ClassLevel {
-                        class: "Bard".to_string(),
+                        class: "Bard".into(),
                         class_label: None,
                         subclass: None,
                         subclass_label: None,
@@ -913,7 +920,7 @@ impl Character {
                 },
                 features: Features::from_parts(
                     vec![Feature {
-                        name: "Bardic Inspiration".to_string(),
+                        name: "Bardic Inspiration".into(),
                         label: None,
                         description: "Use a bonus action...".to_string(),
                         applied: true,
@@ -923,7 +930,7 @@ impl Character {
                         replaces: None,
                     }],
                     BTreeMap::from([(
-                        "Spellcasting (Bard)".to_string(),
+                        "Spellcasting (Bard)".into(),
                         FeatureData {
                             fields: Vec::new(),
                             spells: Some(SpellData {
@@ -931,7 +938,7 @@ impl Character {
                                 caster_coef: 1,
                                 pool: SpellSlotPool::Arcane,
                                 spells: vec![Spell {
-                                    name: "Vicious Mockery".to_string(),
+                                    name: "Vicious Mockery".into(),
                                     label: None,
                                     level: 0,
                                     description: "Unleash a string of insults...".to_string(),
@@ -956,7 +963,7 @@ impl Character {
             },
             equipment: Equipment::default(),
             personality: Personality {
-                name: "Share Test".to_string(),
+                name: "Share Test".into(),
                 alignment: Alignment::ChaoticGood,
                 ..Personality::default()
             },
@@ -974,6 +981,7 @@ mod tests {
 
     use super::*;
     use crate::{
+        expr::Context as _,
         model::{
             Armor, AttrKey, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureData,
             FeatureField, FeatureSource, FeatureValue, FreeUses, Money, Spell, SpellData,
@@ -990,7 +998,7 @@ mod tests {
             core: CharacterCore {
                 identity: CharacterIdentity {
                     classes: vec![ClassLevel {
-                        class: "Fighter".to_string(),
+                        class: "Fighter".into(),
                         class_label: None,
                         subclass: None,
                         subclass_label: None,
@@ -1048,7 +1056,7 @@ mod tests {
                 applied: Applied::default(),
             },
             personality: Personality {
-                name: "Test".to_string(),
+                name: "Test".into(),
                 ..Personality::default()
             },
             equipment: Equipment::default(),
@@ -1068,13 +1076,13 @@ mod tests {
         pool: SpellSlotPool,
     ) {
         ch.features.list.push(Feature {
-            name: feature_name.to_string(),
+            name: feature_name.into(),
             source: FeatureSource::Class(class_name.into(), 1),
             applied: true,
             ..Default::default()
         });
         ch.features.insert(
-            feature_name.to_string(),
+            feature_name.into(),
             FeatureData {
                 spells: Some(SpellData {
                     casting_ability: Ability::Intelligence,
@@ -1100,7 +1108,7 @@ mod tests {
     fn level_multiclass() {
         let mut ch = test_character();
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 3,
             ..ClassLevel::default()
         });
@@ -1288,7 +1296,7 @@ mod tests {
             SpellSlotPool::Arcane,
         );
         ch.identity.classes.push(ClassLevel {
-            class: "Paladin".to_string(),
+            class: "Paladin".into(),
             level: 4,
             ..ClassLevel::default()
         });
@@ -1314,7 +1322,7 @@ mod tests {
             SpellSlotPool::Arcane,
         );
         ch.identity.classes.push(ClassLevel {
-            class: "Warlock".to_string(),
+            class: "Warlock".into(),
             level: 3,
             ..ClassLevel::default()
         });
@@ -1336,7 +1344,7 @@ mod tests {
     #[wasm_bindgen_test]
     fn class_summary_with_subclass() {
         let mut ch = test_character();
-        ch.identity.classes[0].subclass = Some("Champion".to_string());
+        ch.identity.classes[0].subclass = Some("Champion".into());
         assert_eq!(ch.class_summary(), "Fighter (Champion) 5");
     }
 
@@ -1344,7 +1352,7 @@ mod tests {
     fn class_summary_multiclass() {
         let mut ch = test_character();
         ch.identity.classes.push(ClassLevel {
-            class: "Rogue".to_string(),
+            class: "Rogue".into(),
             level: 3,
             ..ClassLevel::default()
         });
@@ -1363,14 +1371,14 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_exact_denomination() {
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 10,
             sp: 5,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(50))); // 5 sp
+        assert!(currency.spend(Money::from_cp(50))); // 5 sp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 gp: 10,
                 ..Default::default()
@@ -1381,13 +1389,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_breaks_higher_coin() {
         // 10 gp 0 sp — spend 5 sp should exchange 1 gp → 10 sp, leaving 9 gp 5 sp
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 10,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(50))); // 5 sp
+        assert!(currency.spend(Money::from_cp(50))); // 5 sp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 gp: 9,
                 sp: 5,
@@ -1398,14 +1406,14 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_insufficient_returns_false() {
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 1,
             ..Default::default()
         };
-        assert!(!c.spend(Money::from_gp(2)));
+        assert!(!currency.spend(Money::from_gp(2)));
         // Currency unchanged
         assert_eq!(
-            c,
+            currency,
             Currency {
                 gp: 1,
                 ..Default::default()
@@ -1415,27 +1423,27 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn currency_spend_exact_total() {
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 1,
             sp: 5,
             cp: 3,
             ..Default::default()
         };
-        let total = c.as_money();
-        assert!(c.spend(total));
-        assert_eq!(c, Currency::default());
+        let total = currency.as_money();
+        assert!(currency.spend(total));
+        assert_eq!(currency, Currency::default());
     }
 
     #[wasm_bindgen_test]
     fn currency_spend_cp_from_sp() {
         // 0 cp, 1 sp → spend 5 cp → break 1 sp, return 5 cp change
-        let mut c = Currency {
+        let mut currency = Currency {
             sp: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(5)));
+        assert!(currency.spend(Money::from_cp(5)));
         assert_eq!(
-            c,
+            currency,
             Currency {
                 cp: 5,
                 ..Default::default()
@@ -1446,13 +1454,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_cp_exact() {
         // Spend CP when CP is available
-        let mut c = Currency {
+        let mut currency = Currency {
             cp: 10,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(7)));
+        assert!(currency.spend(Money::from_cp(7)));
         assert_eq!(
-            c,
+            currency,
             Currency {
                 cp: 3,
                 ..Default::default()
@@ -1463,13 +1471,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_sp_from_ep() {
         // 1 ep 0 sp → spend 3 sp (30 cp) → break 1 ep, return 2 sp change
-        let mut c = Currency {
+        let mut currency = Currency {
             ep: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(30))); // 3 sp
+        assert!(currency.spend(Money::from_cp(30))); // 3 sp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 sp: 2,
                 ..Default::default()
@@ -1480,14 +1488,14 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_ep_exact() {
         // 2 ep → spend 1 ep (50 cp) → 1 ep (exact match, no break needed)
-        let mut c = Currency {
+        let mut currency = Currency {
             ep: 2,
             sp: 3,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(50))); // 1 ep
+        assert!(currency.spend(Money::from_cp(50))); // 1 ep
         assert_eq!(
-            c,
+            currency,
             Currency {
                 ep: 1,
                 sp: 3,
@@ -1499,13 +1507,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_cp_from_gp() {
         // 1 gp → spend 7 cp → break 1 gp, return 9 sp 3 cp change (no EP)
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(7)));
+        assert!(currency.spend(Money::from_cp(7)));
         assert_eq!(
-            c,
+            currency,
             Currency {
                 sp: 9,
                 cp: 3,
@@ -1517,13 +1525,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_sp_from_pp_no_ep_in_change() {
         // 1 pp → spend 3 sp (30 cp) → break 1 pp, return 9 gp 7 sp (no EP)
-        let mut c = Currency {
+        let mut currency = Currency {
             pp: 1,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(30))); // 3 sp
+        assert!(currency.spend(Money::from_cp(30))); // 3 sp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 gp: 9,
                 sp: 7,
@@ -1536,14 +1544,14 @@ mod tests {
     fn currency_spend_partial_then_break() {
         // 2 gp 3 sp → spend 15 sp (150 cp) → spend 1 gp + 3 sp, break 1 gp for 8 sp
         // change
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 2,
             sp: 3,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(150))); // 15 sp
+        assert!(currency.spend(Money::from_cp(150))); // 15 sp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 sp: 8,
                 ..Default::default()
@@ -1554,13 +1562,13 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_pp_exact() {
         // 2 pp → spend 1 pp (1000 cp) → 1 pp
-        let mut c = Currency {
+        let mut currency = Currency {
             pp: 2,
             ..Default::default()
         };
-        assert!(c.spend(Money::from_cp(1000))); // 1 pp
+        assert!(currency.spend(Money::from_cp(1000))); // 1 pp
         assert_eq!(
-            c,
+            currency,
             Currency {
                 pp: 1,
                 ..Default::default()
@@ -1571,14 +1579,14 @@ mod tests {
     #[wasm_bindgen_test]
     fn currency_spend_zero() {
         // Spending 0 always succeeds and leaves currency unchanged
-        let mut c = Currency {
+        let mut currency = Currency {
             gp: 5,
             sp: 3,
             ..Default::default()
         };
-        assert!(c.spend(Money::default()));
+        assert!(currency.spend(Money::default()));
         assert_eq!(
-            c,
+            currency,
             Currency {
                 gp: 5,
                 sp: 3,
@@ -1714,7 +1722,7 @@ mod tests {
         // total = 51
         let mut ch = test_character();
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             class_label: None,
             subclass: None,
             subclass_label: None,
@@ -1784,13 +1792,13 @@ mod tests {
         ch.identity.background = "Sage".to_string();
         ch.applied.background = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 1,
             ..ClassLevel::default()
         });
         ch.applied.mark_level("Wizard", 1);
         ch.features.list.push(Feature {
-            name: "Magic Missile".to_string(),
+            name: "Magic Missile".into(),
             source: FeatureSource::Class("Wizard".into(), 1),
             applied: true,
             ..Default::default()
@@ -1806,13 +1814,13 @@ mod tests {
         ch.identity.background = "Sage".to_string();
         ch.applied.species = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 1,
             ..ClassLevel::default()
         });
         ch.applied.mark_level("Wizard", 1);
         ch.features.list.push(Feature {
-            name: "Magic Missile".to_string(),
+            name: "Magic Missile".into(),
             source: FeatureSource::Class("Wizard".into(), 1),
             applied: true,
             ..Default::default()
@@ -1828,7 +1836,7 @@ mod tests {
         ch.applied.species = true;
         ch.applied.background = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 5,
             ..ClassLevel::default()
         });
@@ -1847,7 +1855,7 @@ mod tests {
         ch.applied.species = true;
         ch.applied.background = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Cleric".to_string(),
+            class: "Cleric".into(),
             level: 1,
             ..ClassLevel::default()
         });
@@ -1876,7 +1884,7 @@ mod tests {
         ch.applied.species = true;
         ch.applied.background = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 3,
             ..ClassLevel::default()
         });
@@ -1890,7 +1898,7 @@ mod tests {
     fn legacy_char_without_system_markers_needs_rebuild() {
         let mut ch = drift_character();
         ch.identity.classes.push(ClassLevel {
-            class: "Fighter".to_string(),
+            class: "Fighter".into(),
             level: 3,
             ..ClassLevel::default()
         });
@@ -1900,7 +1908,7 @@ mod tests {
         // Pre-marker character: only Class-source features in features.list.
         for lvl in 1..=3 {
             ch.features.list.push(Feature {
-                name: format!("Fighter L{lvl} grant"),
+                name: format!("Fighter L{lvl} grant").into(),
                 source: FeatureSource::Class("Fighter".into(), lvl),
                 applied: true,
                 category: FeatureCategory::Class,
@@ -1911,6 +1919,90 @@ mod tests {
         assert!(
             ch.rebuild_reasons()
                 .contains(&RebuildReason::LegacyMissingSystemMarkers)
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_user_removed_feature_emits_feature_removed() {
+        // User clicks the trash icon on a feature row. `Features::remove`
+        // pushes the name into `features.removed`; `rebuild_reasons` must
+        // surface a `FeatureRemoved` so the banner asks for a rebuild.
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.features.list.push(Feature {
+            name: "Tough".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            category: FeatureCategory::General,
+            ..Feature::default()
+        });
+
+        ch.features.remove(0);
+
+        let reasons = ch.rebuild_reasons();
+        assert_eq!(reasons.len(), 1, "exactly one drift reason: {reasons:?}");
+        assert_eq!(reasons[0], RebuildReason::FeatureRemoved("Tough".into()));
+        assert!(ch.needs_rebuild());
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_readd_does_not_clear_feature_removed_until_rebuild() {
+        // Re-add through AddFeatureRow pushes a fresh row but leaves derived
+        // state stale — the banner must persist until rebuild wipes
+        // `Features` wholesale. (No live-row self-filter — see plan.)
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.features.list.push(Feature {
+            name: "Tough".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            category: FeatureCategory::General,
+            ..Feature::default()
+        });
+        ch.features.remove(0);
+
+        // Simulate AddFeatureRow re-adding the same name.
+        ch.features.list.push(Feature {
+            name: "Tough".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            category: FeatureCategory::General,
+            ..Feature::default()
+        });
+
+        assert!(
+            ch.rebuild_reasons().iter().any(
+                |reason| matches!(reason, RebuildReason::FeatureRemoved(name) if &**name == "Tough")
+            ),
+            "tombstone still emits drift; derived state remains stale until rebuild",
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn drift_no_feature_removed_when_tombstone_set_is_empty() {
+        let mut ch = drift_character();
+        ch.identity.species = "Human".to_string();
+        ch.identity.background = "Soldier".to_string();
+        ch.applied.species = true;
+        ch.applied.background = true;
+        ch.features.list.push(Feature {
+            name: "Tough".into(),
+            source: FeatureSource::User(0),
+            applied: true,
+            category: FeatureCategory::General,
+            ..Feature::default()
+        });
+
+        assert!(
+            !ch.rebuild_reasons()
+                .iter()
+                .any(|reason| matches!(reason, RebuildReason::FeatureRemoved(_))),
         );
     }
 
@@ -1935,12 +2027,12 @@ mod tests {
         ch.applied.species = true;
         ch.applied.background = true;
         ch.identity.classes.push(ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 3,
             ..ClassLevel::default()
         });
         ch.identity.classes.push(ClassLevel {
-            class: "Cleric".to_string(),
+            class: "Cleric".into(),
             level: 2,
             ..ClassLevel::default()
         });
@@ -1966,7 +2058,7 @@ mod tests {
     fn caster_character() -> Character {
         let mut ch = test_character();
         ch.identity.classes[0] = ClassLevel {
-            class: "Wizard".to_string(),
+            class: "Wizard".into(),
             level: 5,
             ..ClassLevel::default()
         };
@@ -1980,7 +2072,7 @@ mod tests {
             true,
         );
         ch.features
-            .entry("Spellcasting (Wizard)".to_string())
+            .entry("Spellcasting (Wizard)".into())
             .or_default()
             .spells
             .get_or_insert(SpellData {
@@ -1998,15 +2090,13 @@ mod tests {
             .features
             .list
             .iter()
-            .position(|f| f.name == "Spellcasting (Wizard)")
+            .position(|feature| &*feature.name == "Spellcasting (Wizard)")
             .expect("caster feature");
         ApplyContext::new(ch, feature_pos)
     }
 
     #[wasm_bindgen_test]
     fn slot_assign_overwrites_total() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let mut ctx = caster_ctx(&mut ch);
         ctx.assign(Attribute::Slot(None, 1), 4).unwrap();
@@ -2018,8 +2108,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn slot_assign_clamps_used_on_shrink() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let levels = ch.spell_slots.entry(SpellSlotPool::Arcane).or_default();
         levels[0].total = 4;
@@ -2033,8 +2121,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn slot_explicit_pool() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let mut ctx = caster_ctx(&mut ch);
         ctx.assign(Attribute::Slot(Some(SpellSlotPool::Pact), 5), 2)
@@ -2044,8 +2130,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn slot_used_clamped_to_total() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let mut ctx = caster_ctx(&mut ch);
         ctx.assign(Attribute::Slot(None, 1), 3).unwrap();
@@ -2057,8 +2141,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn caster_meta_assigns() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let mut ctx = caster_ctx(&mut ch);
         ctx.assign(Attribute::SlotPool, 1).unwrap();
@@ -2076,8 +2158,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn spell_cantrips_extend_and_trim() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let mut ctx = caster_ctx(&mut ch);
         ctx.assign(Attribute::SpellCantrips, 3).unwrap();
@@ -2107,8 +2187,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn spell_ready_pad_with_highest_slot_level() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         // Outfit with slot level 3.
         let mut ctx = caster_ctx(&mut ch);
@@ -2132,8 +2210,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn spell_ready_preserves_sticky_on_shrink() {
-        use expr::Context as _;
-
         use crate::model::Spell;
 
         let mut ch = caster_character();
@@ -2142,7 +2218,7 @@ mod tests {
             .unwrap()
             .spells
             .push(Spell {
-                name: "Fireball".to_string(),
+                name: "Fireball".into(),
                 level: 3,
                 sticky: true,
                 ..Default::default()
@@ -2161,13 +2237,11 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn slot_no_feature_errors() {
-        use expr::Context as _;
-
         // ApplyContext requires a real feature row; without spell data on
         // that feature, implicit-pool resolution must error.
         let mut ch = test_character();
         ch.features.list.push(Feature {
-            name: "Bare".to_string(),
+            name: "Bare".into(),
             applied: true,
             source: FeatureSource::User(0),
             ..Default::default()
@@ -2178,8 +2252,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn caster_level_dynamic_through_feature() {
-        use expr::Context as _;
-
         let mut ch = caster_character();
         let ctx = caster_ctx(&mut ch);
         // Wizard L5, full caster (coef=1) → CASTER.LEVEL.ARCANE = 5
@@ -2195,14 +2267,14 @@ mod tests {
     fn named_pool_ctx_setup(feature_name: &str) -> Character {
         let mut ch = test_character();
         ch.features.list.push(Feature {
-            name: feature_name.to_string(),
+            name: feature_name.into(),
             applied: true,
             source: FeatureSource::User(0),
             ..Default::default()
         });
         ch.features
             .data_mut()
-            .insert(feature_name.to_string(), FeatureData::default());
+            .insert(feature_name.into(), FeatureData::default());
         ch
     }
 
@@ -2211,15 +2283,13 @@ mod tests {
             .features
             .list
             .iter()
-            .position(|f| f.name == feature_name)
+            .position(|feature| &*feature.name == feature_name)
             .expect("feature in list");
         ApplyContext::new(ch, feature_pos)
     }
 
     #[wasm_bindgen_test]
     fn points_named_lazy_creates_field() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Rage");
         let mut ctx = named_pool_ctx(&mut ch, "Rage");
         ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 4)
@@ -2238,8 +2308,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn points_named_resolve_reads_back() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Rage");
         let mut ctx = named_pool_ctx(&mut ch, "Rage");
         ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 5)
@@ -2259,8 +2327,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn points_named_subsequent_assign_updates_existing() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Rage");
         let mut ctx = named_pool_ctx(&mut ch, "Rage");
         ctx.assign(Attribute::PointsMax(AttrKey::Named("Charges")), 4)
@@ -2278,8 +2344,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn die_named_lazy_creates_and_reads_back() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Bardic Inspiration");
         let mut ctx = named_pool_ctx(&mut ch, "Bardic Inspiration");
         ctx.assign(Attribute::DieSides(AttrKey::Named("Inspiration Die")), 8)
@@ -2301,8 +2365,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn bonus_named_lazy_creates_and_reads_back() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Custom Lineage");
         let mut ctx = named_pool_ctx(&mut ch, "Custom Lineage");
         ctx.assign(Attribute::Bonus(AttrKey::Named("AC Bonus")), 2)
@@ -2324,8 +2386,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn choice_count_named_resizes_options() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Skill Picks");
         let mut ctx = named_pool_ctx(&mut ch, "Skill Picks");
         ctx.assign(Attribute::ChoiceCount(AttrKey::Named("Skills")), 3)
@@ -2351,30 +2411,28 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn cross_feature_named_lookup_writes_existing() {
-        use expr::Context as _;
-
         // Two features in pipeline order: A (scope), B (already has the field).
         let mut ch = test_character();
         ch.features.list.push(Feature {
-            name: "Feature A".to_string(),
+            name: "Feature A".into(),
             applied: true,
             source: FeatureSource::User(0),
             ..Default::default()
         });
         ch.features.list.push(Feature {
-            name: "Feature B".to_string(),
+            name: "Feature B".into(),
             applied: true,
             source: FeatureSource::User(1),
             ..Default::default()
         });
         ch.features
             .data_mut()
-            .insert("Feature A".to_string(), FeatureData::default());
+            .insert("Feature A".into(), FeatureData::default());
         ch.features.data_mut().insert(
-            "Feature B".to_string(),
+            "Feature B".into(),
             FeatureData {
                 fields: vec![FeatureField {
-                    name: "Shared".to_string(),
+                    name: "Shared".into(),
                     label: None,
                     description: String::new(),
                     value: FeatureValue::Bonus(1),
@@ -2398,8 +2456,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn die_used_lazy_create_clamps_to_zero() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Bardic Inspiration");
         let mut ctx = named_pool_ctx(&mut ch, "Bardic Inspiration");
         // No die exists yet; DieUsed lazy-creates `Die{sides:0, amount:0}`
@@ -2422,8 +2478,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn named_mismatched_value_type_errors() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Mixed");
         // Pre-create a Bonus field, then try Points-typed write to same name.
         ch.features
@@ -2432,7 +2486,7 @@ mod tests {
             .unwrap()
             .fields
             .push(FeatureField {
-                name: "X".to_string(),
+                name: "X".into(),
                 label: None,
                 description: String::new(),
                 value: FeatureValue::Bonus(0),
@@ -2447,8 +2501,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn die_used_and_die_sides_scoped_read_errors() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Anything");
         let ctx = named_pool_ctx(&mut ch, "Anything");
         // Scoped form is write-only-or-error for new variants.
@@ -2466,8 +2518,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn sticky_creates_spell_row() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Warlock Cantrips");
         let mut ctx = named_pool_ctx(&mut ch, "Warlock Cantrips");
         ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
@@ -2493,8 +2543,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn sticky_idempotent_reapply() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Some Feature");
         let mut ctx = named_pool_ctx(&mut ch, "Some Feature");
         ctx.assign(Attribute::Sticky(AttrKey::named("Mage Hand")), 1)
@@ -2507,8 +2555,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn sticky_drop_only_sticky_rows() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Drop Test");
         // Pre-populate SpellData with one sticky + one user-prepared row, same
         // name, simulating the "user manually prepared a sticky-also spell"
@@ -2516,12 +2562,12 @@ mod tests {
         let entry = ch.features.data_mut().get_mut("Drop Test").unwrap();
         let spell_data = entry.spells.get_or_insert_with(SpellData::default);
         spell_data.spells.push(Spell {
-            name: "Bless".to_string(),
+            name: "Bless".into(),
             sticky: true,
             ..Default::default()
         });
         spell_data.spells.push(Spell {
-            name: "Bless".to_string(),
+            name: "Bless".into(),
             sticky: false,
             level: 1,
             ..Default::default()
@@ -2537,8 +2583,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn free_uses_per_spell_set_max() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Pact Magic");
         let mut ctx = named_pool_ctx(&mut ch, "Pact Magic");
         ctx.assign(Attribute::Sticky(AttrKey::named("Misty Step")), 1)
@@ -2563,27 +2607,25 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn free_uses_scoped_broadcast() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Channel Divinity");
         // Two cost>0 spells + one cost=0 spell. Scoped FREE_USES write
         // should touch only the cost-bearing rows.
         let entry = ch.features.data_mut().get_mut("Channel Divinity").unwrap();
         let spell_data = entry.spells.get_or_insert_with(SpellData::default);
         spell_data.spells.push(Spell {
-            name: "Sacred Flame".to_string(),
+            name: "Sacred Flame".into(),
             sticky: true,
             cost: 1,
             ..Default::default()
         });
         spell_data.spells.push(Spell {
-            name: "Bless".to_string(),
+            name: "Bless".into(),
             sticky: true,
             cost: 1,
             ..Default::default()
         });
         spell_data.spells.push(Spell {
-            name: "Light".to_string(),
+            name: "Light".into(),
             sticky: true,
             cost: 0,
             ..Default::default()
@@ -2617,19 +2659,17 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn free_uses_used_scoped_resets() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Reset Pool");
         let entry = ch.features.data_mut().get_mut("Reset Pool").unwrap();
         let spell_data = entry.spells.get_or_insert_with(SpellData::default);
         spell_data.spells.push(Spell {
-            name: "A".to_string(),
+            name: "A".into(),
             cost: 1,
             free_uses: Some(FreeUses { used: 2, max: 3 }),
             ..Default::default()
         });
         spell_data.spells.push(Spell {
-            name: "B".to_string(),
+            name: "B".into(),
             cost: 1,
             free_uses: Some(FreeUses { used: 1, max: 3 }),
             ..Default::default()
@@ -2645,8 +2685,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn sticky_scoped_write_errors() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Anything");
         let mut ctx = named_pool_ctx(&mut ch, "Anything");
         let outcome = ctx.assign(Attribute::Sticky(AttrKey::Scoped), 1);
@@ -2657,8 +2695,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn free_uses_named_without_spell_errors() {
-        use expr::Context as _;
-
         let mut ch = named_pool_ctx_setup("Empty Feature");
         let mut ctx = named_pool_ctx(&mut ch, "Empty Feature");
         // No matching spell row — must error (do not lazy-create).
@@ -2670,8 +2706,6 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn idempotent_sticky_doesnt_drop_user_prepared() {
-        use expr::Context as _;
-
         // Setup: one sticky row "Misty Step" + one user-prepared "Bless" of
         // different names. Re-evaluating STICKY = 1 for "Misty Step" must
         // leave both rows intact and not duplicate.
@@ -2686,7 +2720,7 @@ mod tests {
             .spell_data_mut("OnCompute Reeval")
             .unwrap();
         data.spells.push(Spell {
-            name: "Bless".to_string(),
+            name: "Bless".into(),
             sticky: false,
             level: 1,
             ..Default::default()

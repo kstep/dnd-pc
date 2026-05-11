@@ -37,7 +37,7 @@ pub fn AddFeatureRow(options: Memo<Vec<DatalistOption>>) -> impl IntoView {
             let label = typed.to_string();
             store.update(|character| {
                 character.features.list.push(Feature {
-                    name: String::new(),
+                    name: Box::default(),
                     label: Some(label),
                     applied: true,
                     source,
@@ -86,7 +86,7 @@ pub fn AddFeatureRow(options: Memo<Vec<DatalistOption>>) -> impl IntoView {
         let pushed_source = source.clone();
         store.update(|character| {
             character.features.list.push(Feature {
-                name: key.clone(),
+                name: key.as_str().into(),
                 label,
                 description,
                 applied: false,
@@ -97,7 +97,7 @@ pub fn AddFeatureRow(options: Memo<Vec<DatalistOption>>) -> impl IntoView {
         });
 
         let pending = vec![PendingFeature {
-            name: key,
+            name: key.as_str().into(),
             source,
             level,
             replaces: None,

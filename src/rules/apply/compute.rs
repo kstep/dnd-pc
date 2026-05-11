@@ -37,7 +37,7 @@ pub fn assign(character: &mut CharacterCore, feat_index: FeaturesView<'_>, when:
         .iter()
         .enumerate()
         .filter_map(|(idx, feature)| {
-            let feat_def = feat_index.get(feature.name.as_str())?;
+            let feat_def = feat_index.get(&feature.name)?;
             let assigns = feat_def.assign.as_ref()?;
             assigns
                 .iter()

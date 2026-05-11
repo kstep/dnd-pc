@@ -22,14 +22,14 @@ pub type RecomputePending = Box<dyn Fn(&CharacterCore) -> Vec<PendingInputs> + S
 /// same `name` but different `source`, so both identify the instance.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct FeatureKey {
-    pub name: String,
+    pub name: Box<str>,
     pub source: FeatureSource,
 }
 
 impl FeatureKey {
-    pub fn new(name: impl Into<String>, source: FeatureSource) -> Self {
+    pub fn new(name: impl AsRef<str>, source: FeatureSource) -> Self {
         Self {
-            name: name.into(),
+            name: Box::from(name.as_ref()),
             source,
         }
     }
@@ -54,7 +54,7 @@ impl FeatureKey {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ApplyInput {
     pub inputs: Vec<AssignInputs>,
-    pub replacement: Option<String>,
+    pub replacement: Option<Box<str>>,
 }
 
 /// Bundled user inputs from the args/dice modal, keyed by `FeatureKey`.
@@ -64,12 +64,31 @@ pub struct ApplyInput {
 /// into one.
 pub type ApplyInputs = BTreeMap<FeatureKey, ApplyInput>;
 
+/// Convert `PendingInputs` prefill into `ApplyInputs` for a silent-commit
+/// trial `build_clean`. Each pending lands as one record at its own
+/// `(name, source)` key, carrying both prefilled args and the detected
+/// replacement — so the rebuild cascade reproduces the user's prior swap
+/// decisions.
+pub fn synthesize_apply_inputs(pending: &[PendingInputs]) -> ApplyInputs {
+    pending
+        .iter()
+        .map(|pending| {
+            let key = FeatureKey::new(&pending.feature_name, pending.source.clone());
+            let input = ApplyInput {
+                inputs: pending.prefill.clone(),
+                replacement: pending.prefilled_replacement.clone(),
+            };
+            (key, input)
+        })
+        .collect()
+}
+
 /// A feature whose assignment expressions require user interaction (ARG values
 /// and/or dice rolls). Each expression in `exprs` gets its own independent
 /// ARG context and dice pool.
 #[derive(Clone, PartialEq)]
 pub struct PendingInputs {
-    pub feature_name: String,
+    pub feature_name: Box<str>,
     pub exprs: Vec<Expr>,
     /// Existing stored inputs aligned with `exprs` (by index). Empty when the
     /// feature is being applied for the first time. Used by the modal to
@@ -80,7 +99,7 @@ pub struct PendingInputs {
     /// edit-of-swap-row). When set, `ReplacementPicker` initializes
     /// `replacement_choice` with this value and shows the replacement UI
     /// expanded. User can still override.
-    pub prefilled_replacement: Option<String>,
+    pub prefilled_replacement: Option<Box<str>>,
     /// Pre-filled inputs for the replacement feature's expressions, indexed
     /// by expr position (`replacement_prefill[i]` feeds expr `i`). Empty Vec
     /// = no prefill; positions past the Vec end render as
@@ -123,7 +142,7 @@ impl PendingInputs {
     /// the feature has no interactive exprs under `when` and is not
     /// replaceable (by the supplied `replace_with`).
     pub fn from_feature(
-        name: String,
+        name: Box<str>,
         feat_def: &FeatureDefinition,
         source: FeatureSource,
         when: WhenCondition,
@@ -153,7 +172,7 @@ impl PendingInputs {
     /// Effect applies the feat with empty inputs so downstream snapshots
     /// include its derived-state effect.
     pub fn hidden_for_cascade(
-        name: String,
+        name: Box<str>,
         feat_def: &FeatureDefinition,
         source: FeatureSource,
     ) -> Self {
@@ -175,11 +194,11 @@ impl PendingInputs {
 /// apply primitives.
 #[derive(Clone, Debug, Default)]
 pub struct PendingFeature {
-    pub name: String,
+    pub name: Box<str>,
     pub source: FeatureSource,
     pub level: u32,
     /// Placeholder name to record on the resulting row's `replaces`.
-    pub replaces: Option<String>,
+    pub replaces: Option<Box<str>>,
 }
 
 impl PendingFeature {

@@ -39,7 +39,7 @@ pub fn plan_from_markers(
     features: &Features,
 ) -> Option<Vec<PendingFeature>> {
     // Group System(Class) markers by class name and check coverage.
-    let mut class_markers: BTreeMap<String, Vec<&Feature>> = BTreeMap::new();
+    let mut class_markers: BTreeMap<Box<str>, Vec<&Feature>> = BTreeMap::new();
     for feature in features.iter() {
         if matches!(
             feature.category,
@@ -109,7 +109,7 @@ pub fn plan_from_markers(
     // 4. For each character level: System(Class) marker, optional
     // System(Subclass) marker (matched by Class(name, class_level) source),
     // then User(N) non-System feats.
-    let mut class_running: BTreeMap<String, u32> = BTreeMap::new();
+    let mut class_running: BTreeMap<Box<str>, u32> = BTreeMap::new();
     for character_level in 1..=total_markers {
         let class_marker = by_user_level
             .get(&character_level)
@@ -123,7 +123,7 @@ pub fn plan_from_markers(
             name: class_marker.name.clone(),
             source: class_marker.source.clone(),
             level: character_level,
-            replaces: Some(PICK_CLASS.to_string()),
+            replaces: Some(PICK_CLASS.into()),
         });
 
         // Subclass marker for this class+level, if present.
@@ -134,7 +134,7 @@ pub fn plan_from_markers(
             ) && matches!(
                 &feature.source,
                 FeatureSource::Class(class_name, level)
-                    if class_name.as_ref() == class_marker.name.as_str()
+                    if class_name.as_ref() == &*class_marker.name
                         && *level == class_level
             )
         });
@@ -143,7 +143,7 @@ pub fn plan_from_markers(
                 name: subclass.name.clone(),
                 source: subclass.source.clone(),
                 level: class_level,
-                replaces: Some(PICK_SUBCLASS.to_string()),
+                replaces: Some(PICK_SUBCLASS.into()),
             });
         }
 
@@ -167,19 +167,20 @@ fn push_identity_marker(
         IdentitySlot::Class | IdentitySlot::Subclass => return,
     };
     let marker = find_system_marker(features, slot);
-    let (name, source, replaces) = match (marker, identity_name.is_empty()) {
-        (Some(marker), _) => (
-            marker.name.clone(),
-            marker.source.clone(),
-            Some(placeholder.to_string()),
-        ),
-        (None, false) => (
-            identity_name.clone(),
-            FeatureSource::User(0),
-            Some(placeholder.to_string()),
-        ),
-        (None, true) => (placeholder.to_string(), FeatureSource::User(0), None),
-    };
+    let (name, source, replaces): (Box<str>, FeatureSource, Option<Box<str>>) =
+        match (marker, identity_name.is_empty()) {
+            (Some(marker), _) => (
+                marker.name.clone(),
+                marker.source.clone(),
+                Some(placeholder.into()),
+            ),
+            (None, false) => (
+                identity_name.as_str().into(),
+                FeatureSource::User(0),
+                Some(placeholder.into()),
+            ),
+            (None, true) => (placeholder.into(), FeatureSource::User(0), None),
+        };
     plan.push(PendingFeature {
         name,
         source,
@@ -252,7 +253,7 @@ pub fn plan_from_interleaving_with_caches(
             .get(identity.species.as_str())
             .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Species,
-                name: identity.species.clone(),
+                name: identity.species.as_str().into(),
             })?;
         apply_pending(feat_index, &mut probe, &marker, &[], caches, false);
         let species_pending: Vec<PendingFeature> =
@@ -273,7 +274,7 @@ pub fn plan_from_interleaving_with_caches(
             .get(identity.background.as_str())
             .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Background,
-                name: identity.background.clone(),
+                name: identity.background.as_str().into(),
             })?;
         apply_pending(feat_index, &mut probe, &marker, &[], caches, false);
         let bg_pending: Vec<PendingFeature> =
@@ -378,7 +379,7 @@ fn pick_next_class(
             .is_none_or(|entry| entry.meets_prerequisites(probe))
     };
 
-    let idx = if meets_prereq(probe.identity.classes[0].class.as_str()) {
+    let idx = if meets_prereq(probe.identity.classes[0].class.as_ref()) {
         probe
             .identity
             .classes
@@ -388,7 +389,7 @@ fn pick_next_class(
             .find(|(idx, class_level)| {
                 !class_level.class.is_empty()
                     && applied[*idx] < targets[*idx]
-                    && meets_prereq(class_level.class.as_str())
+                    && meets_prereq(class_level.class.as_ref())
             })
             .map_or(0, |(idx, _)| idx)
     } else {
@@ -411,14 +412,14 @@ fn emit_class_level(
     class_idx: usize,
     class_level: u32,
 ) -> Result<(), RebuildError> {
-    let class_name = identity.classes[class_idx].class.as_str();
+    let class_name = identity.classes[class_idx].class.as_ref();
     let class_def =
         caches
             .classes
             .get(class_name)
             .ok_or_else(|| RebuildError::MissingDefinition {
                 kind: DefinitionKind::Class,
-                name: class_name.to_owned(),
+                name: class_name.into(),
             })?;
 
     // Total character level after this step = (previously-applied levels
@@ -432,10 +433,10 @@ fn emit_class_level(
         + 1;
 
     plan.push(PendingFeature {
-        name: class_name.to_owned(),
+        name: Box::from(class_name),
         source: FeatureSource::User(character_level),
         level: character_level,
-        replaces: Some(PICK_CLASS.to_string()),
+        replaces: Some(PICK_CLASS.into()),
     });
     apply_pending(
         feat_index,
@@ -454,10 +455,10 @@ fn emit_class_level(
         let pick_level = subclass_def.levels.keys().next().copied().unwrap_or(0);
         if pick_level == class_level {
             plan.push(PendingFeature {
-                name: subclass_name.to_owned(),
+                name: Box::from(subclass_name),
                 source: FeatureSource::Class(Box::<str>::from(class_name), class_level),
                 level: class_level,
-                replaces: Some(PICK_SUBCLASS.to_string()),
+                replaces: Some(PICK_SUBCLASS.into()),
             });
             apply_pending(
                 feat_index,
@@ -477,7 +478,7 @@ fn emit_class_level(
     let class_level_obj = &identity.classes[class_idx];
     for (name, source) in class_level_sources(class_level_obj, class_level, class_def) {
         let pending = PendingFeature {
-            name: name.to_owned(),
+            name: Box::from(name),
             source,
             level: class_level,
             replaces: None,
@@ -516,7 +517,7 @@ mod tests {
 
     fn marker(name: &str, slot: IdentitySlot, source: FeatureSource) -> Feature {
         Feature {
-            name: name.to_string(),
+            name: name.into(),
             source,
             applied: true,
             category: FeatureCategory::System(slot),
@@ -550,8 +551,8 @@ mod tests {
         let plan = plan_from_markers(&original.identity, &original.features).expect("plan");
         let class_entries: Vec<(&str, &FeatureSource)> = plan
             .iter()
-            .filter(|pending| pending.name == "Fighter" || pending.name == "Wizard")
-            .map(|pending| (pending.name.as_str(), &pending.source))
+            .filter(|pending| &*pending.name == "Fighter" || &*pending.name == "Wizard")
+            .map(|pending| (&*pending.name, &pending.source))
             .collect();
         assert_eq!(
             class_entries,
@@ -588,11 +589,11 @@ mod tests {
         let l3_pos = plan
             .iter()
             .position(|pending| {
-                pending.name == "Fighter" && pending.source == FeatureSource::User(3)
+                &*pending.name == "Fighter" && pending.source == FeatureSource::User(3)
             })
             .expect("L3 marker");
         let next = plan.get(l3_pos + 1).expect("after L3");
-        assert_eq!(next.name, "Champion");
+        assert_eq!(&*next.name, "Champion");
         assert_eq!(next.source, FeatureSource::Class("Fighter".into(), 3));
     }
 
@@ -615,7 +616,7 @@ mod tests {
         let plan = plan_from_markers(&original.identity, &original.features).expect("plan");
         let class_steps = plan
             .iter()
-            .filter(|pending| pending.name == "Fighter" && pending.source.is_user())
+            .filter(|pending| &*pending.name == "Fighter" && pending.source.is_user())
             .count();
         assert_eq!(
             class_steps, 2,
@@ -660,7 +661,7 @@ mod tests {
         )];
 
         let plan = plan_from_markers(&original.identity, &original.features).expect("plan");
-        let names: Vec<&str> = plan.iter().map(|pending| pending.name.as_str()).collect();
+        let names: Vec<&str> = plan.iter().map(|pending| &*pending.name).collect();
         assert!(
             names.contains(&PICK_SPECIES),
             "expected {PICK_SPECIES} placeholder for empty species, got {names:?}"
