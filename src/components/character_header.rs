@@ -135,7 +135,7 @@ pub fn CharacterHeader() -> impl IntoView {
                 <div class="header-content">
                     <div class="header-name-row">
                         <input
-                            class="header-name-input"
+                            class="header-name-input inline-input"
                             type="text"
                             prop:value=move || store.personality().name().get()
                             on:change=move |event| {
@@ -307,7 +307,7 @@ pub fn CharacterHeader() -> impl IntoView {
                         <div class="header-stat">
                             <span class="header-stat-label">{move_tr!("xp")}</span>
                             <input
-                                class="header-stat-input"
+                                class="header-stat-input inline-input"
                                 type="number"
                                 min="0"
                                 prop:value=move || store.core().identity().experience_points().get()

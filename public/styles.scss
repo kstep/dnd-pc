@@ -439,6 +439,26 @@ input[type="checkbox"] {
   margin: 0;
 }
 
+input.inline-input {
+  color: var(--text-primary);
+  background: transparent;
+  field-sizing: content;
+  border: none;
+  outline: none;
+  padding: 0;
+  -moz-appearance: none;
+
+  &:focus {
+    outline: 1px solid var(--panel-border);
+    border-radius: var(--radius-1);
+  }
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    display: none;
+  }
+}
+
 /* --------------------- Panel Pattern ------------------------- */
 .panel {
   background: var(--panel-bg);
@@ -732,18 +752,8 @@ input[type="checkbox"] {
   .header-name-input {
     flex: 1;
     min-width: 0;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-primary);
     font-size: var(--font-size-4);
     font-weight: var(--font-weight-7);
-    padding: 0;
-
-    &:focus {
-      outline: 1px solid var(--panel-border);
-      border-radius: var(--radius-1);
-    }
   }
 
   .header-actions {
@@ -849,19 +859,8 @@ input[type="checkbox"] {
   }
 
   .header-stat-input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-primary);
     font-weight: var(--font-weight-7);
-    field-sizing: content;
     min-width: 2ch;
-    padding: 0;
-
-    &:focus {
-      outline: 1px solid var(--panel-border);
-      border-radius: var(--radius-1);
-    }
   }
 
   .identity-slot-link {
