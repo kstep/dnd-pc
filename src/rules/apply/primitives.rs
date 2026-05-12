@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::{
     model::{
         AssignInputs, CharacterCore, Feature, FeatureData, FeatureSource, FeatureValue, Spell,
-        SpellData,
+        SpellData, Tools,
     },
     rules::{
         FeaturesView, WhenCondition,
@@ -534,5 +534,146 @@ pub fn restore_all_spell_selections(
         ) {
             restore_spell_selections(original_spells, target_spells);
         }
+    }
+}
+
+/// Restore user-filled tool slots from `original` into `target` after a
+/// fresh cascade. Cascade-named tools (e.g. Rogue's "Thieves' Tools" via
+/// feat assign) already populate `target` on rebuild — we only fill
+/// `target`'s remaining empty slots with original entries whose name
+/// isn't yet present. Mirrors `restore_spell_list`'s donor pattern.
+pub fn restore_tools(original: &Tools, target: &mut Tools) {
+    // Snapshot names already restored by the cascade so the donor filter
+    // doesn't need to re-borrow `target` once `iter_mut` is live. Tool
+    // lists are short (≤ ~10) — linear `contains()` beats a hash set.
+    let restored: Vec<String> = target
+        .iter()
+        .filter(|entry| !entry.name.is_empty())
+        .map(|entry| entry.name.clone())
+        .collect();
+    let mut donors = original
+        .iter()
+        .filter(|entry| !entry.name.is_empty() && !restored.contains(&entry.name));
+    for slot in target.iter_mut().filter(|entry| entry.name.is_empty()) {
+        let Some(donor) = donors.next() else { break };
+        slot.clone_from(donor);
+    }
+}
+
+#[cfg(test)]
+mod restore_tools_tests {
+    use super::*;
+    use crate::model::{Ability, ProficiencyLevel, ToolEntry};
+
+    fn entry(name: &str, prof: ProficiencyLevel, ability: Ability) -> ToolEntry {
+        ToolEntry {
+            name: name.to_string(),
+            prof,
+            ability,
+        }
+    }
+
+    fn empty_slot() -> ToolEntry {
+        entry("", ProficiencyLevel::Proficient, Ability::Strength)
+    }
+
+    #[test]
+    fn fills_empty_slot_with_original_pick() {
+        let original: Tools = [entry(
+            "Lute",
+            ProficiencyLevel::Proficient,
+            Ability::Charisma,
+        )]
+        .into_iter()
+        .collect();
+        let mut target: Tools = [empty_slot()].into_iter().collect();
+        restore_tools(&original, &mut target);
+        let restored: Vec<_> = target.iter().collect();
+        assert_eq!(restored.len(), 1);
+        assert_eq!(restored[0].name, "Lute");
+        assert_eq!(restored[0].prof, ProficiencyLevel::Proficient);
+        assert_eq!(restored[0].ability, Ability::Charisma);
+    }
+
+    #[test]
+    fn skips_cascade_restored_name() {
+        let original: Tools = [
+            entry(
+                "Thieves' Tools",
+                ProficiencyLevel::Proficient,
+                Ability::Dexterity,
+            ),
+            entry("Lute", ProficiencyLevel::Proficient, Ability::Charisma),
+        ]
+        .into_iter()
+        .collect();
+        let mut target: Tools = [
+            entry(
+                "Thieves' Tools",
+                ProficiencyLevel::Proficient,
+                Ability::Dexterity,
+            ),
+            empty_slot(),
+        ]
+        .into_iter()
+        .collect();
+        restore_tools(&original, &mut target);
+        let names: Vec<_> = target.iter().map(|e| e.name.as_str()).collect();
+        assert_eq!(names, vec!["Thieves' Tools", "Lute"]);
+    }
+
+    #[test]
+    fn drops_extra_donors_when_target_smaller() {
+        let original: Tools = [
+            entry("Lute", ProficiencyLevel::Proficient, Ability::Charisma),
+            entry("Drum", ProficiencyLevel::Proficient, Ability::Strength),
+            entry("Lyre", ProficiencyLevel::Proficient, Ability::Charisma),
+        ]
+        .into_iter()
+        .collect();
+        let mut target: Tools = [empty_slot()].into_iter().collect();
+        restore_tools(&original, &mut target);
+        let names: Vec<_> = target.iter().map(|e| e.name.as_str()).collect();
+        assert_eq!(names, vec!["Lute"]);
+    }
+
+    #[test]
+    fn no_op_when_target_has_no_empties() {
+        let original: Tools = [
+            entry("Lute", ProficiencyLevel::Proficient, Ability::Charisma),
+            entry("Drum", ProficiencyLevel::Proficient, Ability::Strength),
+        ]
+        .into_iter()
+        .collect();
+        let mut target: Tools = [
+            entry("Sword", ProficiencyLevel::Proficient, Ability::Strength),
+            entry(
+                "Thieves' Tools",
+                ProficiencyLevel::Proficient,
+                Ability::Dexterity,
+            ),
+        ]
+        .into_iter()
+        .collect();
+        let snapshot = target.clone();
+        restore_tools(&original, &mut target);
+        assert_eq!(target, snapshot);
+    }
+
+    #[test]
+    fn preserves_prof_and_ability() {
+        let original: Tools = [entry(
+            "Lute",
+            ProficiencyLevel::Expertise,
+            Ability::Dexterity,
+        )]
+        .into_iter()
+        .collect();
+        let mut target: Tools = [empty_slot()].into_iter().collect();
+        restore_tools(&original, &mut target);
+        let entry = target.iter().next().unwrap();
+        assert_eq!(entry.name, "Lute");
+        assert_eq!(entry.prof, ProficiencyLevel::Expertise);
+        assert_eq!(entry.ability, Ability::Dexterity);
     }
 }

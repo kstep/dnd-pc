@@ -74,6 +74,10 @@ impl Tools {
         self.0.iter()
     }
 
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, ToolEntry> {
+        self.0.iter_mut()
+    }
+
     pub fn push_empty(&mut self) {
         self.0.push(ToolEntry {
             name: String::new(),

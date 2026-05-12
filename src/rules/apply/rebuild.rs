@@ -13,7 +13,9 @@ use crate::{
             DefinitionCaches, compute, dry_run_apply_feature,
             pending::{ApplyInputs, FeatureKey, PendingFeature, PendingInputs},
             plan::level_up_plan,
-            primitives::{apply_pending, cascade, detect_replacement, restore_user_state},
+            primitives::{
+                apply_pending, cascade, detect_replacement, restore_tools, restore_user_state,
+            },
             reconcile::reconcile_user_feature_sources,
             solver::{AssignData, FeatState, outer_group, scan_arg_range, solve_all},
         },
@@ -816,6 +818,7 @@ fn merge_preserved(clean: &mut Character, original: &Character) {
         }
     }
 
+    restore_tools(&original.tools, &mut clean.tools);
     restore_user_state(original.features.data(), clean.features.data_mut());
 }
 
