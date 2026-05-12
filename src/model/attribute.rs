@@ -107,7 +107,8 @@ pub enum Attribute {
     Feature(&'static str),
     FeatCategory(FeatureCategory),
     Language(&'static str),
-    Tool(&'static str),
+    ToolProficiency(&'static str),
+    ToolAbility(&'static str),
     ToolCount,
     Species(&'static str),
     Background(&'static str),
@@ -213,6 +214,25 @@ fn parse_backtick_name(input: &str) -> Result<(&str, &str), &'static str> {
         return Err("empty name");
     }
     Ok((name, &input[end..]))
+}
+
+/// Render `<PREFIX>.<name><SUFFIX>` using a bare name when it contains only
+/// alphanumerics, `_`, or `.`; otherwise backtick-quote it. Inverse of
+/// [`parse_backtick_name`].
+fn fmt_quoted_name(
+    name: &str,
+    prefix: &str,
+    suffix: &str,
+    f: &mut fmt::Formatter<'_>,
+) -> fmt::Result {
+    if name
+        .bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+    {
+        write!(f, "{prefix}.{name}{suffix}")
+    } else {
+        write!(f, "{prefix}.`{name}`{suffix}")
+    }
 }
 
 /// Write an `AttrKey` rendering: `<PREFIX>` for Scoped,
@@ -586,10 +606,11 @@ impl FromStr for Attribute {
                     Ok(Self::ToolCount)
                 } else {
                     let (name, suffix) = parse_backtick_name(rest)?;
-                    if suffix != ".PROF" {
-                        return Err("expected TOOL.<name>.PROF or TOOL.COUNT");
+                    match suffix {
+                        ".PROF" => Ok(Self::ToolProficiency(intern(name))),
+                        ".ABILITY" => Ok(Self::ToolAbility(intern(name))),
+                        _ => Err("expected TOOL.<name>.PROF or TOOL.COUNT"),
                     }
-                    Ok(Self::Tool(intern(name)))
                 }
             }
             "SPECIES" => {
@@ -707,36 +728,10 @@ impl fmt::Display for Attribute {
             Self::SpellKnown => f.write_str("SPELL.KNOWN"),
             Self::SpellReady => f.write_str("SPELL.READY"),
             Self::Arg(n) => write!(f, "ARG.{n}"),
-            Self::Feature(name) => {
-                if name
-                    .bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
-                {
-                    write!(f, "FEAT.{name}")
-                } else {
-                    write!(f, "FEAT.`{name}`")
-                }
-            }
-            Self::Language(name) => {
-                if name
-                    .bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
-                {
-                    write!(f, "LANG.{name}")
-                } else {
-                    write!(f, "LANG.`{name}`")
-                }
-            }
-            Self::Tool(name) => {
-                if name
-                    .bytes()
-                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
-                {
-                    write!(f, "TOOL.{name}.PROF")
-                } else {
-                    write!(f, "TOOL.`{name}`.PROF")
-                }
-            }
+            Self::Feature(name) => fmt_quoted_name(name, "FEAT", "", f),
+            Self::Language(name) => fmt_quoted_name(name, "LANG", "", f),
+            Self::ToolProficiency(name) => fmt_quoted_name(name, "TOOL", ".PROF", f),
+            Self::ToolAbility(name) => fmt_quoted_name(name, "TOOL", ".ABILITY", f),
             Self::ToolCount => f.write_str("TOOL.COUNT"),
             Self::Species(name) => write!(f, "SPECIES.`{name}`"),
             Self::Background(name) => write!(f, "BACKGROUND.`{name}`"),
@@ -876,7 +871,8 @@ impl Attribute {
             Self::Arg(_) => "?".to_string(),
             Self::Feature(name) => name.to_string(),
             Self::Language(name) => name.to_string(),
-            Self::Tool(name) => name.to_string(),
+            Self::ToolProficiency(name) => name.to_string(),
+            Self::ToolAbility(name) => name.to_string(),
             Self::ToolCount => tr!(i18n, "tool-count"),
             Self::FeatCategory(cat) => i18n.tr(cat.tr_key()),
             Self::Slot(None, n) => format!("{} L{n}", tr!(i18n, "spell-slot")),
@@ -906,7 +902,7 @@ impl Attribute {
     /// index and should display its name.
     pub fn format_value(&self, value: i32, i18n: I18n) -> String {
         match self {
-            Self::CasterAbility => Ability::try_from(value.max(0) as u8)
+            Self::CasterAbility | Self::ToolAbility(_) => Ability::try_from(value.max(0) as u8)
                 .map(|ability| i18n.tr(ability.tr_abbr_key()))
                 .unwrap_or_else(|_| value.to_string()),
             Self::SlotPool => SpellSlotPool::try_from(value.max(0) as u8)
@@ -1555,11 +1551,11 @@ mod tests {
         );
         assert_eq!(
             "TOOL.Lute.PROF".parse::<Attribute>().unwrap(),
-            Attribute::Tool(intern("Lute"))
+            Attribute::ToolProficiency(intern("Lute"))
         );
         assert_eq!(
             "TOOL.`Thieves' Tools`.PROF".parse::<Attribute>().unwrap(),
-            Attribute::Tool(intern("Thieves' Tools"))
+            Attribute::ToolProficiency(intern("Thieves' Tools"))
         );
         assert!("TOOL.Lute".parse::<Attribute>().is_err());
         assert!("TOOL.Lute.WHATEVER".parse::<Attribute>().is_err());
@@ -1569,9 +1565,9 @@ mod tests {
     fn display_tool_round_trip() {
         let cases = [
             Attribute::ToolCount,
-            Attribute::Tool(intern("Lute")),
-            Attribute::Tool(intern("Thieves' Tools")),
-            Attribute::Tool(intern("Smith's Tools")),
+            Attribute::ToolProficiency(intern("Lute")),
+            Attribute::ToolProficiency(intern("Thieves' Tools")),
+            Attribute::ToolProficiency(intern("Smith's Tools")),
         ];
         for attr in cases {
             let s = attr.to_string();

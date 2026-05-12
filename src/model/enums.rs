@@ -109,6 +109,7 @@ macro_rules! enum_serde_u8 {
 
 #[derive(
     Debug,
+    Default,
     Clone,
     Copy,
     PartialEq,
@@ -122,6 +123,7 @@ macro_rules! enum_serde_u8 {
 )]
 #[repr(u8)]
 pub enum Ability {
+    #[default]
     Strength,
     Dexterity,
     Constitution,

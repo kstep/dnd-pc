@@ -5,7 +5,10 @@ use strum::IntoEnumIterator;
 
 use crate::{
     components::{icon::Icon, slot_box::SlotBox},
-    model::{Character, CharacterCoreStoreFields, CharacterStoreFields, Proficiency, Translatable},
+    model::{
+        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, Proficiency,
+        Translatable,
+    },
 };
 
 #[component]
@@ -110,6 +113,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                         .map(|(i, entry)| {
                             let current_name = entry.name.clone();
                             let current_prof = entry.prof;
+                            let current_ability = entry.ability;
                             view! {
                                 <div class="entry-item">
                                     <div class="entry-content">
@@ -135,6 +139,29 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                                 }
                                             }
                                         />
+                                        <select
+                                            class="tool-ability"
+                                            on:change=move |e| {
+                                                let Some(ability) = Ability::from_u8_str(&event_target_value(&e)) else { return };
+                                                if let Some(entry) = tools.write().get_mut(i) {
+                                                    entry.ability = ability;
+                                                }
+                                            }
+                                        >
+                                            {Ability::iter()
+                                                .map(|ability| {
+                                                    let option_value = (ability as u8).to_string();
+                                                    let selected = ability == current_ability;
+                                                    let tr_key = ability.tr_key();
+                                                    let label = Signal::derive(move || i18n.tr(tr_key));
+                                                    view! {
+                                                        <option value=option_value selected=selected>
+                                                            {label}
+                                                        </option>
+                                                    }
+                                                })
+                                                .collect_view()}
+                                        </select>
                                     </div>
                                     <div class="entry-actions">
                                         <button

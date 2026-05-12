@@ -138,11 +138,12 @@ impl BinOp {
 pub struct CompoundAssign {
     /// The compound operator symbol ("+", "-", "*", "/", "\\", "%").
     pub sym: &'static str,
-    /// End index of stack-balanced prefix ops that precede the compound
-    /// pattern (e.g. an inner each-loop that runs side-effects before the
-    /// `X += rhs` statement that this struct describes).
+    /// End of any stack-balanced prefix ops before the compound `Push(X)`
+    /// — e.g. an inner `each(...)` side-effect loop that runs before the
+    /// `X += rhs` statement. `0` when the statement is a plain compound
+    /// with no prefix.
     pub prefix_end: usize,
-    /// Start index of the RHS ops (after the initial PushVar).
+    /// Start index of the RHS ops (after `Push(X)`).
     pub rhs_start: usize,
     /// End index of the RHS ops (before the combining op, exclusive).
     pub rhs_end: usize,
@@ -190,6 +191,30 @@ pub enum Op<Var, Val, Grp = NoGroup<Var>> {
 }
 
 impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
+    /// Net stack-depth change of this op (+1 for push, -1 for binary, etc).
+    fn stack_delta(&self) -> i32 {
+        match self {
+            Op::PushVar(_) | Op::PushConst(_) => 1,
+            Op::BinOp(_) | Op::Cmp(_) => -1,
+            Op::Not | Op::AvgHp => 0,
+            Op::Roll => -1,
+            Op::Sum
+            | Op::Explode
+            | Op::KeepMax(_)
+            | Op::KeepMin(_)
+            | Op::DropMax(_)
+            | Op::DropMin(_) => 0,
+            Op::AssignVar(_) => -1,
+            Op::In => -2,
+            Op::Eval(_) => 0,
+            Op::EvalIf(_, _) => -1,
+            Op::Each(_) | Op::Next(_) => 1,
+            Op::PushGroup(_) => 1,
+            Op::AssignGroup(_) => -1,
+            Op::Tier(n) => -(2 * *n as i32),
+        }
+    }
+
     fn compound_sym(&self) -> Option<&'static str> {
         match self {
             Op::BinOp(bin_op) => bin_op.compound_sym(),
@@ -284,11 +309,18 @@ impl<Var: PartialEq, Val, Grp> Block<Var, Val, Grp> {
 
     /// Detect compound assignment pattern in an ops slice (a single statement).
     ///
-    /// Returns `Some(CompoundAssign)` if the ops form `Push(X) <rhs>
-    /// BinaryOp Assign(X)` — i.e. a compound assignment like `X += rhs`.
-    /// Works for both `PushVar`/`Assign` and `PushGroup`/`AssignGroup` pairs.
-    /// The combining op is identified by stack-depth analysis: it's the first
-    /// binary op that would consume the initial variable from the stack.
+    /// Returns `Some(CompoundAssign)` if the ops form `[prefix] Push(X) <rhs>
+    /// BinaryOp Assign(X)` — a compound assignment like `X += rhs`, optionally
+    /// preceded by stack-balanced prefix ops (e.g. an inner each-loop with
+    /// side effects). Works for both `PushVar`/`Assign` and
+    /// `PushGroup`/`AssignGroup` pairs.
+    ///
+    /// `Op::Each + Op::EvalIf(_, BLOCK_NOOP)` pairs are treated as net 0 in
+    /// the prefix (top-level `each` statements consume their pushed sentinel)
+    /// and net +1 in the rhs (value-producing `fold(...)` accumulators).
+    /// The combining BinOp must be the last body op AND the only 2→1 stack
+    /// transition there — guarantees it consumes the initial Push(X) rather
+    /// than an inner sub-expression.
     pub fn detect_compound(ops: &[Op<Var, Val, Grp>]) -> Option<CompoundAssign>
     where
         Grp: PartialEq,
@@ -297,24 +329,77 @@ impl<Var: PartialEq, Val, Grp> Block<Var, Val, Grp> {
             return None;
         }
         let assign_op = ops.last()?;
-        let combine_idx = ops.len() - 2;
-        let sym = ops[combine_idx].compound_sym()?;
-        // Walk backwards for the matching PushVar/PushGroup; everything
-        // between it and the combine op is the RHS. Stack-depth analysis is
-        // unreliable here because recursive ops (Each / EvalIf / Eval) hide
-        // their actual net effect from the static `stack_delta`.
-        let push_idx = ops[..combine_idx]
-            .iter()
-            .rposition(|op| match (op, assign_op) {
+        let push_idx = find_compound_push(ops, assign_op)?;
+
+        let body = &ops[push_idx + 1..ops.len() - 1];
+        let last_body = body.len().checked_sub(1)?;
+        let sym = body.last()?.compound_sym()?;
+
+        let mut depth: i32 = 1;
+        let mut i = 0;
+        while i < body.len() {
+            let (delta, advance) = rhs_step_delta(body, i);
+            let new_depth = depth + delta;
+            if advance == 1 && new_depth == 1 && depth == 2 {
+                return (i == last_body).then_some(CompoundAssign {
+                    sym,
+                    prefix_end: push_idx,
+                    rhs_start: push_idx + 1,
+                    rhs_end: push_idx + 1 + i,
+                });
+            }
+            depth = new_depth;
+            i += advance;
+        }
+        None
+    }
+}
+
+/// Find the first `Push(X)` matching the final `Assign(X)` at stack depth 0,
+/// walking past any stack-balanced prefix. `Op::Each + Op::EvalIf(_, NOOP)`
+/// pairs in the prefix are top-level `each(...)` statements (net 0).
+fn find_compound_push<Var: PartialEq, Val, Grp: PartialEq>(
+    ops: &[Op<Var, Val, Grp>],
+    assign_op: &Op<Var, Val, Grp>,
+) -> Option<usize> {
+    let mut depth: i32 = 0;
+    let mut i = 0;
+    while i < ops.len() - 1 {
+        let op = &ops[i];
+        if depth == 0
+            && match (op, assign_op) {
                 (Op::PushVar(p), Op::AssignVar(a)) => p == a,
                 (Op::PushGroup(p), Op::AssignGroup(a)) => p == a,
                 _ => false,
-            })?;
-        Some(CompoundAssign {
-            sym,
-            prefix_end: push_idx,
-            rhs_start: push_idx + 1,
-            rhs_end: combine_idx,
-        })
+            }
+        {
+            return Some(i);
+        }
+        if is_loop_pair(ops, i) {
+            // each-statement at top level: pushes sentinel, EvalIf pops it,
+            // body runs side-effects with net-0 stack contribution.
+            i += 2;
+            continue;
+        }
+        depth += op.stack_delta();
+        i += 1;
     }
+    None
+}
+
+/// One step of stack-depth walk inside a compound's rhs. Returns
+/// `(delta, advance)` — how the stack changes and how many ops to skip.
+/// `Op::Each + Op::EvalIf(_, NOOP)` in rhs context is a `fold(...)` value
+/// (net +1, advance 2); everything else uses `Op::stack_delta`.
+fn rhs_step_delta<Var: PartialEq, Val, Grp>(ops: &[Op<Var, Val, Grp>], i: usize) -> (i32, usize) {
+    if is_loop_pair(ops, i) {
+        (1, 2)
+    } else {
+        (ops[i].stack_delta(), 1)
+    }
+}
+
+fn is_loop_pair<Var, Val, Grp>(ops: &[Op<Var, Val, Grp>], i: usize) -> bool {
+    matches!(ops.get(i), Some(Op::Each(_)))
+        && matches!(ops.get(i + 1), Some(Op::EvalIf(_, BLOCK_NOOP)))
 }

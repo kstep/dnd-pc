@@ -1803,6 +1803,11 @@ select.entry-name {
   font-weight: var(--font-weight-4);
 }
 
+select.tool-ability {
+  flex: 0 0 auto;
+  width: 16ch;
+}
+
 .entry-item.has-pending > .entry-content > .entry-name {
   font-weight: var(--font-weight-7);
 }

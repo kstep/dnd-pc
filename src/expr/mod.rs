@@ -545,6 +545,12 @@ impl<
         let Some(ca) = Block::detect_compound(stmt) else {
             return Ok(None);
         };
+        // The plain-text formatter doesn't have a place to render a
+        // side-effecting prefix (e.g. an inner each-loop) separately, so
+        // prefixed compounds fall back to the long form.
+        if ca.prefix_end > 0 {
+            return Ok(None);
+        }
         let var = match stmt.last() {
             Some(Op::AssignVar(v)) => format!("{v}"),
             Some(Op::AssignGroup(g)) => format!("@{g}"),
@@ -1445,6 +1451,31 @@ mod loop_tests {
         let expr: Expr = "fold(and, @ABILITY, in(@ARG, 0, 1))".parse().unwrap();
         let display = expr.to_string();
         assert_eq!(display, "fold(and, @ABILITY, in(@ARG, 0, 1))");
+    }
+
+    #[wasm_bindgen_test]
+    fn compound_with_fold_rhs() {
+        // Compound with a fold in the RHS. `Op::Each + Op::EvalIf(_, NOOP)`
+        // in rhs context is a `fold(...)` value (net +1), not a top-level
+        // each-statement (net 0). Detection of the outer BinOp's 2→1
+        // transition depends on this.
+        let expr: Expr = "AC += fold(+, @ABILITY, 1)".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += fold(+, @ABILITY, 1)");
+
+        let expr: Expr = "AC -= 3 - fold(+, @ABILITY, 1)".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3 - fold(+, @ABILITY, 1)");
+    }
+
+    #[wasm_bindgen_test]
+    fn compound_with_prefixed_each_statement() {
+        // Top-level each-statement before a compound on `AC` — the prefix
+        // is detected and roundtrips as long form (formatter has no short
+        // syntax for a side-effecting prefix + compound).
+        let expr: Expr = "each(@ABILITY, @ABILITY += 1); AC += 2".parse().unwrap();
+        assert_eq!(
+            expr.to_string(),
+            "each(@ABILITY, @ABILITY += 1); AC = AC + 2"
+        );
     }
 
     #[wasm_bindgen_test]

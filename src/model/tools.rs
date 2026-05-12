@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::model::ProficiencyLevel;
+use crate::model::{Ability, ProficiencyLevel};
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -10,6 +10,8 @@ pub struct Tools(Vec<ToolEntry>);
 pub struct ToolEntry {
     pub name: String,
     pub prof: ProficiencyLevel,
+    #[serde(default)]
+    pub ability: Ability,
 }
 
 impl Tools {
@@ -19,6 +21,13 @@ impl Tools {
             .find(|entry| entry.name == name)
             .map(|entry| entry.prof)
             .unwrap_or(ProficiencyLevel::None)
+    }
+
+    pub fn ability(&self, name: &str) -> Option<Ability> {
+        self.0
+            .iter()
+            .find(|entry| entry.name == name)
+            .map(|entry| entry.ability)
     }
 
     pub fn set(&mut self, name: &str, prof: ProficiencyLevel) {
@@ -32,8 +41,13 @@ impl Tools {
             self.0.push(ToolEntry {
                 name: name.to_string(),
                 prof,
+                ability: Ability::Strength,
             });
         }
+    }
+
+    pub fn as_mut(&mut self, name: &str) -> Option<&mut ToolEntry> {
+        self.0.iter_mut().find(|entry| entry.name == name)
     }
 
     pub fn len(&self) -> usize {
@@ -49,6 +63,7 @@ impl Tools {
             self.0.resize_with(n, || ToolEntry {
                 name: String::new(),
                 prof: ProficiencyLevel::Proficient,
+                ability: Ability::Strength,
             });
         } else {
             self.0.truncate(n);
@@ -63,6 +78,7 @@ impl Tools {
         self.0.push(ToolEntry {
             name: String::new(),
             prof: ProficiencyLevel::Proficient,
+            ability: Ability::Strength,
         });
     }
 
@@ -147,6 +163,9 @@ mod tests {
         let mut tools = Tools::default();
         tools.set("Lute", ProficiencyLevel::Proficient);
         let json = serde_json::to_value(&tools).unwrap();
-        assert_eq!(json, serde_json::json!([{"name": "Lute", "prof": 1}]));
+        assert_eq!(
+            json,
+            serde_json::json!([{"name": "Lute", "prof": 1, "ability": 0}])
+        );
     }
 }

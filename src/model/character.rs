@@ -752,8 +752,15 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                     self.languages.remove(name);
                 }
             }
-            Attribute::Tool(name) => {
+            Attribute::ToolProficiency(name) => {
                 self.tools.set(name, ProficiencyLevel::from(value));
+            }
+            Attribute::ToolAbility(name) => {
+                if let Some(entry) = self.tools.as_mut(name)
+                    && let Ok(ability) = Ability::try_from(value.max(0) as u8)
+                {
+                    entry.ability = ability;
+                }
             }
             Attribute::ToolCount => {
                 self.tools.set_count(value.max(0) as usize);
@@ -851,7 +858,10 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::DamageReduction(dt) => Ok(self.damage_modifiers.reduction(dt) as i32),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
             Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
-            Attribute::Tool(name) => Ok(self.tools.level(name).multiplier()),
+            Attribute::ToolProficiency(name) => Ok(self.tools.level(name).multiplier()),
+            Attribute::ToolAbility(name) => {
+                Ok(self.tools.ability(name).map_or(0, |ability| ability as i32))
+            }
             Attribute::ToolCount => Ok(self.tools.len() as i32),
             Attribute::Species(name) => Ok((self.identity.species == name) as i32),
             Attribute::Background(name) => Ok((self.identity.background == name) as i32),
