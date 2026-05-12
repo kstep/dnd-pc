@@ -13,6 +13,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     let languages = store.core().languages();
+    let tools = store.core().tools();
     let i18n = expect_context::<leptos_fluent::I18n>();
 
     view! {
@@ -95,6 +96,69 @@ pub fn ProficienciesPanel() -> impl IntoView {
                 }
             >
                 {move_tr!("btn-add-language")}
+            </button>
+        </section>
+
+        <section>
+            <h3>{move_tr!("tools")}</h3>
+            <div class="entry-list">
+                {move || {
+                    tools
+                        .read()
+                        .iter()
+                        .enumerate()
+                        .map(|(i, entry)| {
+                            let current_name = entry.name.clone();
+                            let current_prof = entry.prof;
+                            view! {
+                                <div class="entry-item">
+                                    <div class="entry-content">
+                                        <button
+                                            class="btn-icon tool-tier"
+                                            title=current_prof.icon_name()
+                                            on:click=move |_| {
+                                                if let Some(entry) = tools.write().get_mut(i) {
+                                                    entry.prof = entry.prof.next();
+                                                }
+                                            }
+                                        >
+                                            <Icon name=current_prof.icon_name() />
+                                        </button>
+                                        <input
+                                            type="text"
+                                            class="entry-name"
+                                            placeholder=move_tr!("tool")
+                                            prop:value=current_name
+                                            on:input=move |e| {
+                                                if let Some(entry) = tools.write().get_mut(i) {
+                                                    entry.name = event_target_value(&e);
+                                                }
+                                            }
+                                        />
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-remove"
+                                            on:click=move |_| {
+                                                tools.write().remove(i);
+                                            }
+                                        >
+                                            <Icon name="x" />
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        })
+                        .collect_view()
+                }}
+            </div>
+            <button
+                class="btn-primary"
+                on:click=move |_| {
+                    tools.write().push_empty();
+                }
+            >
+                {move_tr!("btn-add-tool")}
             </button>
         </section>
     }

@@ -198,6 +198,38 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
                 _ => false,
             })
     }
+
+    pub fn block_assigns_to(&self, block: BlockIndex, pred: &impl Fn(&Var) -> bool) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
+        let mut visited = BTreeSet::new();
+        self.block_assigns_to_inner(block, pred, &mut visited)
+    }
+
+    fn block_assigns_to_inner(
+        &self,
+        block: BlockIndex,
+        pred: &impl Fn(&Var) -> bool,
+        visited: &mut BTreeSet<BlockIndex>,
+    ) -> bool
+    where
+        Grp: VarGroup<Var = Var>,
+    {
+        if !self.is_sub_block(block) || !visited.insert(block) {
+            return false;
+        }
+        let blk = &self.0[block as usize];
+        blk.assigns_to(pred)
+            || blk.iter().any(|op| match op {
+                Op::Eval(idx) => self.block_assigns_to_inner(*idx, pred, visited),
+                Op::EvalIf(a, b) => {
+                    self.block_assigns_to_inner(*a, pred, visited)
+                        || self.block_assigns_to_inner(*b, pred, visited)
+                }
+                _ => false,
+            })
+    }
 }
 
 impl<Var, Val, Grp> Expr<Var, Val, Grp> {
@@ -265,6 +297,24 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     ) -> Result<i32, Error> {
         let mut interp = ReadOnlyEvaluator::new(ctx);
         self.run_block(&mut interp, block)?;
+        Interpreter::<Var, i32, Grp>::finish(interp)
+    }
+
+    /// Evaluate a free-standing ops slice as if it were a main block, with
+    /// sub-block references resolved through `self`. Lets callers re-use
+    /// existing fragments (e.g. a fold's `[Each, EvalIf(body, NOOP)]`
+    /// driver) without constructing a wrapper Expr.
+    pub fn eval_ops(
+        &self,
+        ops: &[Op<Var, i32, Grp>],
+        ctx: &impl Context<Var, i32>,
+    ) -> Result<i32, Error> {
+        let mut interp = ReadOnlyEvaluator::new(ctx);
+        for &op in ops.iter() {
+            if let Some(sub_block) = interp.exec(op)? {
+                self.run_block(&mut interp, sub_block)?;
+            }
+        }
         Interpreter::<Var, i32, Grp>::finish(interp)
     }
 }

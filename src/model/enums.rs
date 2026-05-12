@@ -263,6 +263,16 @@ enum_serde_u8!(ProficiencyLevel {
     Expertise
 });
 
+impl From<i32> for ProficiencyLevel {
+    fn from(value: i32) -> Self {
+        match value.clamp(0, 2) {
+            0 => Self::None,
+            1 => Self::Proficient,
+            _ => Self::Expertise,
+        }
+    }
+}
+
 impl ProficiencyLevel {
     pub fn is_proficient(self) -> bool {
         self != Self::None

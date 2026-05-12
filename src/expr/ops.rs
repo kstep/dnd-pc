@@ -138,7 +138,11 @@ impl BinOp {
 pub struct CompoundAssign {
     /// The compound operator symbol ("+", "-", "*", "/", "\\", "%").
     pub sym: &'static str,
-    /// Start index of the RHS ops (after the initial PushVar, exclusive).
+    /// End index of stack-balanced prefix ops that precede the compound
+    /// pattern (e.g. an inner each-loop that runs side-effects before the
+    /// `X += rhs` statement that this struct describes).
+    pub prefix_end: usize,
+    /// Start index of the RHS ops (after the initial PushVar).
     pub rhs_start: usize,
     /// End index of the RHS ops (before the combining op, exclusive).
     pub rhs_end: usize,
@@ -186,35 +190,6 @@ pub enum Op<Var, Val, Grp = NoGroup<Var>> {
 }
 
 impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
-    /// Net stack-depth change of this op (+1 for push, -1 for binary, etc).
-    fn stack_delta(&self) -> i32 {
-        match self {
-            Op::PushVar(_) | Op::PushConst(_) => 1,
-            Op::BinOp(_) | Op::Cmp(_) => -1,
-            // Unary ops: pop 1, push 1 → 0
-            Op::Not | Op::AvgHp => 0,
-            // Roll + reducer (Sum/Keep/Drop/Explode): conceptually a binary op
-            // taking (count, sides) and producing one die value. Real stack
-            // effect depends on count, but we charge the net -1 to Roll so the
-            // pair (Roll = -1) + (reducer = 0) sums to -1 statically.
-            Op::Roll => -1,
-            Op::Sum
-            | Op::Explode
-            | Op::KeepMax(_)
-            | Op::KeepMin(_)
-            | Op::DropMax(_)
-            | Op::DropMin(_) => 0,
-            Op::AssignVar(_) => -1,
-            Op::In => -2, // pop 3, push 1
-            Op::Eval(_) => 0,
-            Op::EvalIf(_, _) => -1,         // pops condition
-            Op::Each(_) | Op::Next(_) => 1, // push boolean
-            Op::PushGroup(_) => 1,
-            Op::AssignGroup(_) => -1,
-            Op::Tier(n) => -(2 * *n as i32), // pop (1 var + 2*n), push 1 → net -2*n
-        }
-    }
-
     fn compound_sym(&self) -> Option<&'static str> {
         match self {
             Op::BinOp(bin_op) => bin_op.compound_sym(),
@@ -321,38 +296,25 @@ impl<Var: PartialEq, Val, Grp> Block<Var, Val, Grp> {
         if ops.len() < 3 {
             return None;
         }
-        let is_matching_pair = match (&ops[0], &ops[ops.len() - 1]) {
-            (Op::PushVar(push_var), Op::AssignVar(assign_var)) => push_var == assign_var,
-            (Op::PushGroup(push_grp), Op::AssignGroup(assign_grp)) => push_grp == assign_grp,
-            _ => false,
-        };
-        if !is_matching_pair {
-            return None;
-        }
-
-        // Walk ops between PushVar and Assign, tracking stack depth (starts
-        // at 1 because PushVar already pushed). The combining op is the last
-        // op in the body AND must be the first binary op that reduces depth
-        // from 2→1 (consuming the initial variable). If it's not the last op,
-        // there are post-combine operations that prevent compound rendering.
-        let body = &ops[1..ops.len() - 1]; // exclude PushVar and Assign
-        let last_body = body.len().checked_sub(1)?;
-        let sym = body.last()?.compound_sym()?;
-
-        // Verify the last op is indeed the combining op via stack depth.
-        let mut depth: i32 = 1;
-        for (i, op) in body.iter().enumerate() {
-            let new_depth = depth + op.stack_delta();
-            if new_depth == 1 && depth == 2 {
-                // First depth 2→1 transition — must be at the last position.
-                return (i == last_body).then_some(CompoundAssign {
-                    sym,
-                    rhs_start: 1,
-                    rhs_end: 1 + i,
-                });
-            }
-            depth = new_depth;
-        }
-        None
+        let assign_op = ops.last()?;
+        let combine_idx = ops.len() - 2;
+        let sym = ops[combine_idx].compound_sym()?;
+        // Walk backwards for the matching PushVar/PushGroup; everything
+        // between it and the combine op is the RHS. Stack-depth analysis is
+        // unreliable here because recursive ops (Each / EvalIf / Eval) hide
+        // their actual net effect from the static `stack_delta`.
+        let push_idx = ops[..combine_idx]
+            .iter()
+            .rposition(|op| match (op, assign_op) {
+                (Op::PushVar(p), Op::AssignVar(a)) => p == a,
+                (Op::PushGroup(p), Op::AssignGroup(a)) => p == a,
+                _ => false,
+            })?;
+        Some(CompoundAssign {
+            sym,
+            prefix_end: push_idx,
+            rhs_start: push_idx + 1,
+            rhs_end: combine_idx,
+        })
     }
 }

@@ -73,6 +73,12 @@
   },
   {
     "name": "Crafter",
+    "assign": [
+      {
+        "expr": "TOOL.COUNT += 3",
+        "when": "OnFeatureAdd"
+      }
+    ],
     "category": "Origin"
   },
   {
@@ -91,6 +97,12 @@
   },
   {
     "name": "Musician",
+    "assign": [
+      {
+        "expr": "TOOL.COUNT += 3",
+        "when": "OnFeatureAdd"
+      }
+    ],
     "category": "Origin"
   },
   {
@@ -103,7 +115,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) <= 3, each(@, if(@ == 0, @ += @ARG)); TOOL.COUNT += 3 - fold(+, @, @ARG)))"
       }
     ],
     "category": "Origin"
@@ -189,6 +201,12 @@
   {
     "name": "Chef",
     "prerequisites": "LEVEL >= 4",
+    "assign": [
+      {
+        "expr": "TOOL.`Cook's Utensils`.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ],
     "category": "General"
   },
   {
@@ -430,6 +448,12 @@
   {
     "name": "Poisoner",
     "prerequisites": "LEVEL >= 4",
+    "assign": [
+      {
+        "expr": "TOOL.`Poisoner's Kit`.PROF = 1",
+        "when": "OnFeatureAdd"
+      }
+    ],
     "category": "General"
   },
   {
@@ -9260,7 +9284,7 @@
     "name": "Class Proficiencies (Bard)",
     "assign": [
       {
-        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; CHA.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.COUNT += 3",
         "when": "OnFeatureAdd"
       },
       {
@@ -9330,7 +9354,7 @@
     "name": "Class Proficiencies (Monk)",
     "assign": [
       {
-        "expr": "HIT_DICE.SIDES = 8; STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; STR.SAVE.PROF = 1; DEX.SAVE.PROF = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9369,7 +9393,7 @@
     "name": "Class Proficiencies (Rogue)",
     "assign": [
       {
-        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.`Thieves' Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -10077,7 +10101,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10090,7 +10114,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERS.PROF = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10103,7 +10127,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1",
+        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Forgery Kit`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10116,7 +10140,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10129,7 +10153,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1",
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10142,7 +10166,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1",
+        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1; TOOL.`Carpenter's Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10155,7 +10179,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "SKILL.ATHL.PROF = 1; SKILL.PERC.PROF = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10168,7 +10192,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1",
+        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1; TOOL.`Cartographer's Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10181,7 +10205,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1",
+        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Herbalism Kit`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10207,7 +10231,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1",
+        "expr": "SKILL.HIST.PROF = 1; SKILL.PERS.PROF = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10220,7 +10244,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1",
+        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10233,7 +10257,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Navigator's Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10246,7 +10270,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1",
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10259,7 +10283,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1",
+        "expr": "SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1; TOOL.COUNT += 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10272,7 +10296,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.PROF = 1",
         "when": "OnFeatureAdd"
       }
     ]

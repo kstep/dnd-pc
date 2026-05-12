@@ -107,6 +107,8 @@ pub enum Attribute {
     Feature(&'static str),
     FeatCategory(FeatureCategory),
     Language(&'static str),
+    Tool(&'static str),
+    ToolCount,
     Species(&'static str),
     Background(&'static str),
     Subclass(&'static str),
@@ -579,6 +581,17 @@ impl FromStr for Attribute {
                 let name = rest.trim_matches('`');
                 Ok(Self::Language(intern(name)))
             }
+            "TOOL" => {
+                if rest == "COUNT" {
+                    Ok(Self::ToolCount)
+                } else {
+                    let (name, suffix) = parse_backtick_name(rest)?;
+                    if suffix != ".PROF" {
+                        return Err("expected TOOL.<name>.PROF or TOOL.COUNT");
+                    }
+                    Ok(Self::Tool(intern(name)))
+                }
+            }
             "SPECIES" => {
                 let name = rest.trim_matches('`');
                 Ok(Self::Species(intern(name)))
@@ -714,6 +727,17 @@ impl fmt::Display for Attribute {
                     write!(f, "LANG.`{name}`")
                 }
             }
+            Self::Tool(name) => {
+                if name
+                    .bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+                {
+                    write!(f, "TOOL.{name}.PROF")
+                } else {
+                    write!(f, "TOOL.`{name}`.PROF")
+                }
+            }
+            Self::ToolCount => f.write_str("TOOL.COUNT"),
             Self::Species(name) => write!(f, "SPECIES.`{name}`"),
             Self::Background(name) => write!(f, "BACKGROUND.`{name}`"),
             Self::Subclass(name) => write!(f, "SUBCLASS.`{name}`"),
@@ -852,6 +876,8 @@ impl Attribute {
             Self::Arg(_) => "?".to_string(),
             Self::Feature(name) => name.to_string(),
             Self::Language(name) => name.to_string(),
+            Self::Tool(name) => name.to_string(),
+            Self::ToolCount => tr!(i18n, "tool-count"),
             Self::FeatCategory(cat) => i18n.tr(cat.tr_key()),
             Self::Slot(None, n) => format!("{} L{n}", tr!(i18n, "spell-slot")),
             Self::Slot(Some(pool), n) => format!(
@@ -1513,6 +1539,39 @@ mod tests {
             Attribute::Language(intern("Common")),
             Attribute::Language(intern("Thieves' Cant")),
             Attribute::Language(intern("Draconic")),
+        ];
+        for attr in cases {
+            let s = attr.to_string();
+            let parsed: Attribute = s.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {s}");
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_tool_attributes() {
+        assert_eq!(
+            "TOOL.COUNT".parse::<Attribute>().unwrap(),
+            Attribute::ToolCount
+        );
+        assert_eq!(
+            "TOOL.Lute.PROF".parse::<Attribute>().unwrap(),
+            Attribute::Tool(intern("Lute"))
+        );
+        assert_eq!(
+            "TOOL.`Thieves' Tools`.PROF".parse::<Attribute>().unwrap(),
+            Attribute::Tool(intern("Thieves' Tools"))
+        );
+        assert!("TOOL.Lute".parse::<Attribute>().is_err());
+        assert!("TOOL.Lute.WHATEVER".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_tool_round_trip() {
+        let cases = [
+            Attribute::ToolCount,
+            Attribute::Tool(intern("Lute")),
+            Attribute::Tool(intern("Thieves' Tools")),
+            Attribute::Tool(intern("Smith's Tools")),
         ];
         for attr in cases {
             let s = attr.to_string();

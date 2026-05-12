@@ -13,7 +13,7 @@ use crate::{
     model::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
         DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
-        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, Weapon, enums::*,
+        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, Tools, Weapon, enums::*,
     },
     vecset::VecSet,
 };
@@ -129,6 +129,8 @@ pub struct CharacterCore {
     #[serde(default)]
     pub languages: VecSet<String>,
     #[serde(default)]
+    pub tools: Tools,
+    #[serde(default)]
     pub damage_modifiers: DamageModifiers,
     #[serde(default)]
     pub spell_slots: SpellSlots,
@@ -237,6 +239,15 @@ impl CharacterCore {
         modifier + prof_level.multiplier() * self.proficiency_bonus()
     }
 
+    pub fn tool_level(&self, name: &str) -> ProficiencyLevel {
+        self.tools.level(name)
+    }
+
+    pub fn tool_bonus(&self, name: &str, ability: Ability) -> i32 {
+        self.ability_modifier(ability)
+            + self.tool_level(name).multiplier() * self.proficiency_bonus()
+    }
+
     pub fn initiative(&self) -> i32 {
         self.ability_modifier(Ability::Dexterity) + self.combat.initiative_misc_bonus
     }
@@ -317,6 +328,7 @@ impl CharacterCore {
             && self.skills == other.skills
             && self.proficiencies == other.proficiencies
             && self.languages == other.languages
+            && self.tools == other.tools
             && self.damage_modifiers == other.damage_modifiers
     }
 
@@ -714,12 +726,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 self.combat.initiative_misc_bonus = value;
             }
             Attribute::SkillProficiency(skill) => {
-                let level = match value.clamp(0, 2) {
-                    0 => ProficiencyLevel::None,
-                    1 => ProficiencyLevel::Proficient,
-                    _ => ProficiencyLevel::Expertise,
-                };
-                self.skills.set(skill, level);
+                self.skills.set(skill, ProficiencyLevel::from(value));
             }
             Attribute::SaveProficiency(ability) => {
                 if value != 0 {
@@ -744,6 +751,12 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 } else {
                     self.languages.remove(name);
                 }
+            }
+            Attribute::Tool(name) => {
+                self.tools.set(name, ProficiencyLevel::from(value));
+            }
+            Attribute::ToolCount => {
+                self.tools.set_count(value.max(0) as usize);
             }
             Attribute::Species(name) => {
                 if value != 0 {
@@ -838,6 +851,8 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::DamageReduction(dt) => Ok(self.damage_modifiers.reduction(dt) as i32),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
             Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
+            Attribute::Tool(name) => Ok(self.tools.level(name).multiplier()),
+            Attribute::ToolCount => Ok(self.tools.len() as i32),
             Attribute::Species(name) => Ok((self.identity.species == name) as i32),
             Attribute::Background(name) => Ok((self.identity.background == name) as i32),
             Attribute::ClassLevel(AttrKey::Named(name)) => Ok(self
@@ -953,6 +968,7 @@ impl Character {
                 ),
                 proficiencies: VecSet::new(),
                 languages: VecSet::new(),
+                tools: Tools::default(),
                 damage_modifiers: DamageModifiers::default(),
                 spell_slots: SpellSlots::default(),
                 applied: Applied {
@@ -1051,6 +1067,7 @@ mod tests {
                 .into_iter()
                 .collect(),
                 languages: VecSet::new(),
+                tools: Tools::default(),
                 damage_modifiers: DamageModifiers::default(),
                 spell_slots: SpellSlots::default(),
                 applied: Applied::default(),

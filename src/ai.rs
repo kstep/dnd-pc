@@ -929,6 +929,8 @@ fn friendly_attr_name(attr: &Attribute) -> &'static str {
         Attribute::Ac => "Armor Class",
         Attribute::Speed => "Speed",
         Attribute::MaxHp => "Max HP",
+        Attribute::Tool(name) => name,
+        Attribute::ToolCount => "tool slot count",
         _ => "unknown",
     }
 }

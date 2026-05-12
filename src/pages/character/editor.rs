@@ -63,8 +63,11 @@ pub fn CharacterEditor() -> impl IntoView {
             })
     });
 
+    let stats_has_pending =
+        Signal::derive(move || store.read().tools.iter().any(|entry| entry.name.is_empty()));
+
     let items = vec![
-        TabItem::new("stats", move_tr!("tab-stats"), "scroll-text"),
+        TabItem::new("stats", move_tr!("tab-stats"), "scroll-text").marked_when(stats_has_pending),
         TabItem::new("build", move_tr!("tab-build"), "settings").marked_when(build_has_pending),
         TabItem::new("magic", move_tr!("tab-magic"), "wand")
             .visible_when(has_magic)

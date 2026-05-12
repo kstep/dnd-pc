@@ -35,6 +35,41 @@ impl Context<Attribute, i32> for ArgContext<'_> {
     }
 }
 
+struct ProbeContext<'a> {
+    character: &'a CharacterCore,
+    args: Vec<i32>,
+}
+
+impl Context<Attribute, i32> for ProbeContext<'_> {
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Arg(n) => Ok(self.args.get(n as usize).copied().unwrap_or(0)),
+            other => self.character.resolve(other),
+        }
+    }
+
+    fn assign(&mut self, var: Attribute, _: i32) -> Result<(), expr::Error> {
+        Err(expr::Error::read_only_var(var))
+    }
+}
+
+struct PartialEvalCtx<'a> {
+    args: &'a [RwSignal<i32>],
+}
+
+impl Context<Attribute, i32> for PartialEvalCtx<'_> {
+    fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
+        match var {
+            Attribute::Arg(n) => Ok(self.args.get(n as usize).map_or(0, |s| s.get())),
+            other => Err(expr::Error::unsupported_var(other)),
+        }
+    }
+
+    fn assign(&mut self, var: Attribute, _: i32) -> Result<(), expr::Error> {
+        Err(expr::Error::read_only_var(var))
+    }
+}
+
 // --- FormBuilder: view-building stack mirroring Formatter ---
 
 struct FormBuilder(Vec<AnyView>);
@@ -209,43 +244,96 @@ fn form_block(
     ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<AnyView, expr::Error> {
-    let block = expr.block(block);
-
     let mut fb = FormBuilder::new();
-    for stmt in block.statements() {
-        render_statement(&mut fb, expr, stmt, ctx, condition)?;
-    }
+    render_block_inline(&mut fb, expr, block, ctx, condition)?;
     fb.finish()
 }
 
-/// Render a single statement: detect compound assignment (`X += rhs`) and
-/// render as `{label} {op}= {rhs}`, or fall back to `form_block_ops`.
-fn render_statement(
+fn render_block_inline(
     fb: &mut FormBuilder,
     expr: &Expr,
-    stmt: &[Op],
+    block: expr::BlockIndex,
     ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<(), expr::Error> {
-    if let Some(ca) = Block::detect_compound(stmt) {
-        let i18n = ctx.i18n;
-        let iter_idx = ctx.iter_stack.last().copied().unwrap_or_default();
-        let var_view: AnyView = match stmt.last() {
-            Some(&Op::AssignVar(var)) => (move || var.display_name(i18n)).into_any(),
-            Some(&Op::AssignGroup(grp)) => {
-                let var = grp.member(iter_idx).expect("valid index");
-                (move || var.display_name(i18n)).into_any()
-            }
-            _ => unreachable!(),
-        };
-        form_block_ops(fb, expr, &stmt[ca.rhs_start..ca.rhs_end], ctx, condition)?;
-        let rhs = fb.pop()?;
-        let sym = ca.sym;
-        fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
-    } else {
-        form_block_ops(fb, expr, stmt, ctx, condition)?;
+    let block_ops = &**expr.block(block);
+    let mut start = 0;
+    for (i, op) in block_ops.iter().enumerate() {
+        if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)) {
+            render_statement(fb, expr, block, start..(i + 1), ctx, condition)?;
+            start = i + 1;
+        }
+    }
+    if start < block_ops.len() {
+        render_statement(fb, expr, block, start..block_ops.len(), ctx, condition)?;
     }
     Ok(())
+}
+
+/// Render a single statement: detect compound assignment (`X += rhs`) and
+/// render as `{label} {op}= {rhs_value}`, or fall back to `form_block_ops`.
+/// The RHS is collapsed to its live computed value via `Expr::eval_ops` so
+/// nested folds/sums show their result instead of per-iter cells.
+fn render_statement(
+    fb: &mut FormBuilder,
+    expr: &Expr,
+    block: expr::BlockIndex,
+    stmt_range: std::ops::Range<usize>,
+    ctx: &mut FormCtx<'_>,
+    condition: bool,
+) -> Result<(), expr::Error> {
+    let stmt = &(**expr.block(block))[stmt_range.clone()];
+    let Some(compound) = Block::detect_compound(stmt) else {
+        return form_block_ops(fb, expr, stmt, ctx, condition);
+    };
+    if compound.prefix_end > 0 {
+        form_block_ops(fb, expr, &stmt[..compound.prefix_end], ctx, condition)?;
+    }
+    let i18n = ctx.i18n;
+    let iter_idx = ctx.iter_stack.last().copied().unwrap_or_default();
+    let var_view: AnyView = match stmt.last() {
+        Some(&Op::AssignVar(var)) => (move || var.display_name(i18n)).into_any(),
+        Some(&Op::AssignGroup(grp)) => {
+            let var = grp.member(iter_idx).expect("valid index");
+            (move || var.display_name(i18n)).into_any()
+        }
+        _ => unreachable!(),
+    };
+    let sym = compound.sym;
+    let rhs_slice = &stmt[compound.rhs_start..compound.rhs_end];
+    if rhs_has_reductive_loop(expr, rhs_slice) {
+        // Collapse the whole RHS to its live value — folds/sums inside
+        // would otherwise pile per-iter `@ARG` reads onto the formula.
+        let rhs_start = stmt_range.start + compound.rhs_start;
+        let rhs_end = stmt_range.start + compound.rhs_end;
+        let expr_owned = expr.clone();
+        let signals: Vec<RwSignal<i32>> = ctx.args.to_vec();
+        let compute = move || {
+            let rhs_ops = &(**expr_owned.block(block))[rhs_start..rhs_end];
+            let eval_ctx = PartialEvalCtx { args: &signals };
+            expr_owned.eval_ops(rhs_ops, &eval_ctx).unwrap_or(0)
+        };
+        fb.push_view(view! { <>{var_view}" "{sym}"= "{compute}</> }.into_any());
+    } else {
+        // Render the RHS as form elements so first-time `@ARG` references
+        // surface as interactive inputs (checkboxes / number fields).
+        form_block_ops(fb, expr, rhs_slice, ctx, condition)?;
+        let rhs = fb.pop()?;
+        fb.push_view(view! { <>{var_view}" "{sym}"= "{rhs}</> }.into_any());
+    }
+    Ok(())
+}
+
+fn rhs_has_reductive_loop(expr: &Expr, ops: &[Op]) -> bool {
+    ops.iter().enumerate().any(|(i, op)| {
+        let Op::Each(_) = op else {
+            return false;
+        };
+        let Some(Op::EvalIf(body_idx, _)) = ops.get(i + 1) else {
+            return false;
+        };
+        !expr.block_assigns_to(*body_idx, &|_| true)
+    })
 }
 
 fn arg_checkbox(signal: RwSignal<i32>, is_satisfied: Memo<bool>) -> AnyView {
@@ -346,11 +434,11 @@ fn form_block_ops(
                 }
 
                 if else_idx == BLOCK_ERROR {
-                    // Guard body: inline into current FormBuilder to avoid
-                    // nested wrapping (loop items + trailing statements
-                    // should all be siblings in the same grid).
-                    let body_ops = expr.block(then_idx);
-                    form_block_ops(fb, expr, body_ops, ctx, condition)?;
+                    // Guard body: inline statements into the current
+                    // FormBuilder so each one goes through compound-assign
+                    // detection (same wiring as `form_block`, just without
+                    // the outer finish/wrap).
+                    render_block_inline(fb, expr, then_idx, ctx, condition)?;
                 } else if else_idx == BLOCK_NOOP {
                     let then_view = form_block(expr, then_idx, ctx, false)?;
                     fb.push_view(then_view);
@@ -386,21 +474,45 @@ fn form_block_loop(
     ctx: &mut FormCtx<'_>,
     condition: bool,
 ) -> Result<(), expr::Error> {
-    let body = expr.block(body_idx);
-    let body_ops = &**body;
+    // Reductive loops (fold/sum) — render a single span with the live value
+    // instead of per-iter `@ARG` reads. Keeps the form-builder stack balanced
+    // and lets the surrounding formula read e.g. `Tool slots += 3 - 2`.
+    if !expr.block_assigns_to(body_idx, &|_| true) {
+        fb.push_view(render_fold_value(expr, subgrp, body_idx, ctx));
+        return Ok(());
+    }
+    let body_len = expr.block(body_idx).len();
     // Strip trailing Next + EvalIf (loop control ops)
-    let content_end = body_ops.len().saturating_sub(2);
-    let content = &body_ops[..content_end];
+    let content_end = body_len.saturating_sub(2);
     let body_uses_arg_group = expr.block_has_var(body_idx, &|var| matches!(var, Attribute::Arg(_)));
     for idx in subgrp.iter_indices() {
         if body_uses_arg_group && !ctx.is_active(idx.iter_no as u8) {
             continue;
         }
         ctx.iter_stack.push(idx);
-        render_statement(fb, expr, content, ctx, condition)?;
+        render_statement(fb, expr, body_idx, 0..content_end, ctx, condition)?;
         let _ = ctx.iter_stack.pop();
     }
     Ok(())
+}
+
+/// Live value of a reductive loop (fold/sum). Re-uses `Expr::eval_ops` with
+/// the loop's driver ops so any binop/shape supported by the evaluator
+/// works out of the box.
+fn render_fold_value(
+    expr: &Expr,
+    subgrp: expr::VarSubgroup<AttributeGroup>,
+    body_idx: expr::BlockIndex,
+    ctx: &FormCtx<'_>,
+) -> AnyView {
+    let ops = vec![Op::Each(subgrp), Op::EvalIf(body_idx, BLOCK_NOOP)];
+    let expr_owned = expr.clone();
+    let signals: Vec<RwSignal<i32>> = ctx.args.to_vec();
+    let compute = move || {
+        let eval_ctx = PartialEvalCtx { args: &signals };
+        expr_owned.eval_ops(&ops, &eval_ctx).unwrap_or(0)
+    };
+    view! { <span class="expr-form-ref">{compute}</span> }.into_any()
 }
 
 /// Push an ARG input (checkbox, number, or ref) for the given ARG index.
@@ -639,14 +751,30 @@ pub fn ExprArgsInput(
         args_ok && dice_ok
     });
 
-    // `is_satisfied` drives the auto-disable of untouched inputs once the
-    // expression's guard is satisfied. Without a guard, `eval_lenient` is
-    // trivially Ok, so `is_valid` is always true — using it to disable
-    // untouched fields would lock every zero-valued input on first render
-    // (e.g. Generation: Custom). Gate on `has_guard` to restrict the
-    // auto-disable to expressions that actually enforce cardinality.
-    let is_satisfied =
-        Memo::new(move |_| analysis.with(|snapshot| snapshot.has_guard) && is_valid.get());
+    // Disable untouched inputs only when flipping one to `1` would break the
+    // guard. `is_valid` alone is the wrong test for `<= K` caps — it's true
+    // at any 0..K, which would lock the picker after the first click.
+    let arg_signals_for_probe = arg_signals.clone();
+    let probe_expr = expr.clone();
+    let is_satisfied = Memo::new(move |_| {
+        if !analysis.with(|snapshot| snapshot.has_guard) {
+            return false;
+        }
+        if !is_valid.get() {
+            return false;
+        }
+        let Some(zero_idx) = arg_signals_for_probe.iter().position(|sig| sig.get() == 0) else {
+            return false;
+        };
+        let character = character.get();
+        let mut probe_args: Vec<i32> = arg_signals_for_probe.iter().map(|s| s.get()).collect();
+        probe_args[zero_idx] = 1;
+        let probe_ctx = ProbeContext {
+            character: &character,
+            args: probe_args,
+        };
+        probe_expr.eval_lenient(&probe_ctx).is_err()
+    });
 
     // Build dice input groups (fixed from initial_analysis).
     let (dice_signals, dice_groups_el) = if has_dice {

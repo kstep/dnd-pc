@@ -16,6 +16,7 @@ mod money;
 mod note;
 mod skills;
 mod spell;
+mod tools;
 
 pub use ability::*;
 pub use applied::*;
@@ -35,6 +36,7 @@ pub use money::*;
 pub use note::Note;
 pub use skills::*;
 pub use spell::*;
+pub use tools::*;
 
 /// Expression type with attribute groups for loop support.
 pub type Expr = crate::expr::Expr<Attribute, i32, AttributeGroup>;

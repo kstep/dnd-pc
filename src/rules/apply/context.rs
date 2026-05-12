@@ -1082,10 +1082,13 @@ pub fn apply_assignments_with_inputs<C: expr::Context<Attribute, i32>>(
 ) {
     let mut input_iter = inputs.iter();
     for assign in assignments.iter().filter(|a| a.when == when) {
-        let input = assign.is_interactive().then(|| input_iter.next()).flatten();
-        let result = if let Some(input) = input
-            && !input.is_empty()
-        {
+        let interactive = assign.is_interactive();
+        let input = interactive.then(|| input_iter.next()).flatten();
+        let filled = input.is_some_and(|i| !i.is_empty());
+        if interactive && !filled {
+            continue;
+        }
+        let result = if let Some(input) = input.filter(|i| !i.is_empty()) {
             let mut wrapped = WithArgs {
                 inner: ctx,
                 args: &input.args,
