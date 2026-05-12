@@ -110,7 +110,7 @@ pub fn prepare_rebuild(
     registry: &RulesRegistry,
 ) -> Result<RebuildPreview, RebuildError> {
     reconcile_user_feature_sources(&mut original, registry);
-    let plan = level_up_plan(&original.identity, &original.features, registry)?;
+    let plan = level_up_plan(&original.core, registry)?;
 
     // Dry-run with empty inputs: cascade resolves identity-changing assigns
     // canonically and emits follow-ups via the same path the real rebuild
@@ -140,7 +140,7 @@ pub fn rebuild_recompute(registry: RulesRegistry, original: &Character) -> Recom
     // `original` and frozen registry — run once at construction. Per-tick
     // recompute only filters `all_pending` against `speculative` for prefill
     // lookups; on a L20 multiclass that saves a full cascade per picker tick.
-    let all_pending = match level_up_plan(&original.identity, &original.features, &registry)
+    let all_pending = match level_up_plan(&original.core, &registry)
         .and_then(|plan| build_clean(original, &plan, &registry, &ApplyInputs::default()))
     {
         Ok(outcome) => features_to_pending(&outcome.character.features.list),
@@ -697,7 +697,7 @@ fn is_fixed_preset(args: &[i32]) -> bool {
 /// every rebuild walker would otherwise spell out by hand.
 pub fn make_inputs_for<'a>(
     feat_index: FeaturesView<'a>,
-    original: &'a Character,
+    original: &'a CharacterCore,
     extra_inputs: &'a ApplyInputs,
 ) -> impl Fn(&FeatureKey) -> Vec<AssignInputs> + 'a {
     move |key| {
@@ -721,7 +721,7 @@ pub fn make_inputs_for<'a>(
 /// against `original.features` for prior-swap recovery.
 pub fn make_replacement_for<'a>(
     feat_index: FeaturesView<'a>,
-    original: &'a Character,
+    original: &'a CharacterCore,
     extra_inputs: &'a ApplyInputs,
     pending_keys: &'a BTreeSet<(&str, &FeatureSource)>,
 ) -> impl Fn(&FeatureKey) -> Option<Box<str>> + 'a {
@@ -730,14 +730,7 @@ pub fn make_replacement_for<'a>(
             return input.replacement.as_deref().map(Box::from);
         }
         let feat_def = feat_index.get(&key.name)?;
-        detect_replacement(
-            key,
-            feat_def,
-            &original.core,
-            feat_index,
-            pending_keys,
-            &original.core,
-        )
+        detect_replacement(key, feat_def, original, feat_index, pending_keys, original)
     }
 }
 
@@ -755,7 +748,7 @@ pub fn make_replacement_for<'a>(
 /// Returns empty when neither source has inputs.
 pub fn inputs_for_pending(
     pending_feature: &PendingFeature,
-    original: &Character,
+    original: &CharacterCore,
     extra_inputs: &ApplyInputs,
     stackable: bool,
 ) -> Vec<AssignInputs> {
@@ -1963,8 +1956,7 @@ mod tests {
         let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
 
         let plan = plan_from_interleaving_with_caches(
-            &original.identity,
-            &original.features,
+            &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
             &class_entries,
@@ -2013,8 +2005,7 @@ mod tests {
         let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
 
         let plan = plan_from_interleaving_with_caches(
-            &original.identity,
-            &original.features,
+            &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
             &class_entries,
@@ -2075,8 +2066,7 @@ mod tests {
         let feat_index = synth_feat_index(&[], &[], &["Human"], &["Soldier"], vec![]);
 
         let plan = plan_from_interleaving_with_caches(
-            &original.identity,
-            &original.features,
+            &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
             &class_entries,
@@ -2144,10 +2134,9 @@ mod tests {
         let feat_index = synth_feat_index(&["Fighter"], &["Battle Master"], &[], &[], vec![]);
 
         // First pass: legacy char → interleaving.
-        assert!(plan_from_markers(&original.identity, &original.features).is_none());
+        assert!(plan_from_markers(&original.core).is_none());
         let plan1 = plan_from_interleaving_with_caches(
-            &original.identity,
-            &original.features,
+            &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
             &class_entries,
@@ -2157,8 +2146,7 @@ mod tests {
 
         // Output now has 3 System(Class) markers; second rebuild must use
         // the marker path and produce the same shape.
-        let plan2 =
-            plan_from_markers(&clean1.identity, &clean1.features).expect("plan2 from markers");
+        let plan2 = plan_from_markers(&clean1.core).expect("plan2 from markers");
         let clean2 = run_plan(&plan2, &clean1, &feat_index, caches);
 
         let class_markers_1: Vec<&FeatureSource> = clean1
@@ -2221,7 +2209,7 @@ mod tests {
             },
         ];
 
-        let plan = plan_from_markers(&original.identity, &original.features).expect("marker plan");
+        let plan = plan_from_markers(&original.core).expect("marker plan");
         // Plan must contain exactly the three class steps (plus possible
         // species/background entries — none here).
         let class_steps = plan
@@ -2322,8 +2310,7 @@ mod tests {
         }];
 
         let plan = plan_from_interleaving_with_caches(
-            &original.identity,
-            &original.features,
+            &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
             &class_entries,

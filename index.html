@@ -112,6 +112,7 @@
     signInWithCredential,
     linkWithPopup,
     onAuthStateChanged,
+    signOut,
   } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js";
   import {
     getFirestore,
@@ -151,9 +152,13 @@
           return await linkWithPopup(user, googleProvider);
         } catch (error) {
           if (error.code === "auth/credential-already-in-use") {
-            // Google account already linked to another user — sign into that
-            // existing account directly (which has the original UID + data).
-            return await signInWithPopup(auth, googleProvider);
+            // Google account already linked to another user — reuse the
+            // credential Firebase already obtained inside the first popup
+            // to sign into that existing account without a second prompt.
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            if (credential) {
+              return await signInWithCredential(auth, credential);
+            }
           }
           throw error;
         }
@@ -161,6 +166,7 @@
       // No current user — sign in directly
       return signInWithPopup(auth, googleProvider);
     },
+    signOut: () => signOut(auth),
     currentUid: () => (auth.currentUser ? auth.currentUser.uid : null),
     currentProvider: () => {
       const user = auth.currentUser;

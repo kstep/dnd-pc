@@ -18,6 +18,15 @@ pub const PICK_SUBCLASS: &str = "Subclass";
 /// the pending list the modal should display. `None` disables speculation.
 pub type RecomputePending = Box<dyn Fn(&CharacterCore) -> Vec<PendingInputs> + Send + Sync>;
 
+/// `cascade`'s per-feature stored-inputs resolver. Closures of this shape are
+/// built by `apply::make_inputs_for` and threaded through plan walkers.
+pub type InputsForFn<'a> = dyn Fn(&FeatureKey) -> Vec<AssignInputs> + 'a;
+
+/// `cascade`'s per-feature replacement-pick resolver. Closures of this shape
+/// are built by `apply::make_replacement_for` and threaded through plan
+/// walkers.
+pub type ReplacementForFn<'a> = dyn Fn(&FeatureKey) -> Option<Box<str>> + 'a;
+
 /// Key for per-feature-instance inputs. Stackable features appear with the
 /// same `name` but different `source`, so both identify the instance.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

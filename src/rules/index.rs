@@ -6,7 +6,7 @@ use strum::Display;
 use crate::{
     demap::{self, Named},
     expr::Eval as _,
-    model::{Character, Expr},
+    model::{CharacterCore, Expr},
 };
 
 /// Borrowed reference into one of the four entry types on the shared
@@ -71,7 +71,7 @@ impl Named for ClassIndexEntry {
 }
 
 impl ClassIndexEntry {
-    pub fn meets_prerequisites(&self, character: &Character) -> bool {
+    pub fn meets_prerequisites(&self, character: &CharacterCore) -> bool {
         self.prerequisites
             .as_ref()
             .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)

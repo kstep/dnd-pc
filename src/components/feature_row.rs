@@ -268,8 +268,7 @@ pub fn FeatureRow(
                                 let mut truncated_clone = store.read_untracked().clone();
                                 truncated_clone.features.truncate(&current_name, &source);
                                 let pre_edit_character = level_up_plan(
-                                    &truncated_clone.identity,
-                                    &truncated_clone.features,
+                                    &truncated_clone.core,
                                     &registry,
                                 )
                                 .and_then(|plan| {

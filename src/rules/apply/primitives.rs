@@ -320,17 +320,19 @@ pub fn cascade(
         follow_ups.extend(fu);
     }
 
-    if !follow_ups.is_empty() {
-        cascade(
-            character,
-            &follow_ups,
-            features_index,
-            caches,
-            inputs_for,
-            replacement_for,
-            speculative,
-        );
+    if follow_ups.is_empty() {
+        return;
     }
+
+    cascade(
+        character,
+        &follow_ups,
+        features_index,
+        caches,
+        inputs_for,
+        replacement_for,
+        speculative,
+    );
 }
 
 /// Add a single feature to `character.features` and call

@@ -339,8 +339,7 @@ async fn rebuild_does_not_silently_commit_when_pending_feat_has_empty_inputs() {
     );
 
     let guessed = synthesize_apply_inputs(&preview.pending);
-    let plan = level_up_plan(&original.identity, &original.features, &registry)
-        .expect("level_up_plan must succeed");
+    let plan = level_up_plan(&original.core, &registry).expect("level_up_plan must succeed");
     let outcome = build_clean(&original, &plan, &registry, &guessed)
         .expect("build_clean must succeed with synthesized inputs");
     let simulated = outcome.character;
