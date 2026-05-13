@@ -353,6 +353,14 @@
     "category": "Defense",
     "effects": [
       {
+        "name": "Cold damage",
+        "expr": "5 * SLOT.LEVEL",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 600
+        }
+      },
+      {
         "name": "Temp HP",
         "expr": "HP.TEMP = max(HP.TEMP, SLOT.LEVEL * 5)",
         "range": "Caster",
