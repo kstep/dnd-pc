@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::stat_box::StatBox,
-    model::{Character, format_bonus},
+    model::{Character, ProficiencyLevel, format_bonus},
 };
 
 #[component]
@@ -12,20 +12,26 @@ pub fn ToolsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
     move || {
-        let rows: Vec<(String, i32)> = store
+        let rows: Vec<(String, i32, bool)> = store
             .read()
             .tools()
-            .map(|(entry, bonus)| (entry.name.clone(), bonus))
+            .map(|(entry, bonus)| {
+                (
+                    entry.name.clone(),
+                    bonus,
+                    entry.prof == ProficiencyLevel::Expertise,
+                )
+            })
             .collect();
 
         (!rows.is_empty()).then(|| {
             view! {
                 <h4 class="session-subsection-title">{move_tr!("session-tools")}</h4>
                 <div class="slot-box-list">
-                    {rows.into_iter().map(|(name, bonus)| {
+                    {rows.into_iter().map(|(name, bonus, is_expertise)| {
                         let label = Signal::derive(move || name.clone());
                         view! {
-                            <StatBox label=label highlighted=Signal::derive(|| true)>
+                            <StatBox label=label highlighted=Signal::derive(move || is_expertise)>
                                 <span class="stat-highlight">{format_bonus(bonus)}</span>
                             </StatBox>
                         }
