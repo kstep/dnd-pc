@@ -712,7 +712,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 self.combat.hp_max = value as u32;
             }
             Attribute::Hp => {
-                self.combat.hp_current = value as u32;
+                self.combat.hp_current = (value as u32).clamp(0, self.combat.hp_max);
             }
             Attribute::TempHp => {
                 self.combat.hp_temp = value as u32;
