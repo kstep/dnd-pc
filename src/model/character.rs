@@ -760,13 +760,11 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 }
             }
             Attribute::ToolProficiency(name) => {
-                self.tools.set(name, ProficiencyLevel::from(value));
+                self.tools.add(name).prof = ProficiencyLevel::from(value);
             }
             Attribute::ToolAbility(name) => {
-                if let Some(entry) = self.tools.as_mut(name)
-                    && let Ok(ability) = Ability::try_from(value.max(0) as u8)
-                {
-                    entry.ability = ability;
+                if let Ok(ability) = Ability::try_from(value.max(0) as u8) {
+                    self.tools.add(name).ability = ability;
                 }
             }
             Attribute::ToolCount => {

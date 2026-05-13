@@ -121,23 +121,20 @@ impl RulesRegistry {
                     if mirrored.is_empty() {
                         continue;
                     }
-                    let pos = entry
+                    let field = match entry
                         .fields
-                        .iter()
-                        .position(|field| field.name.as_str() == action_name.as_ref());
-                    let field = match pos {
-                        Some(idx) => &mut entry.fields[idx],
-                        None => {
-                            entry.fields.push(FeatureField {
-                                name: action_name.to_string(),
-                                label: None,
-                                description: String::new(),
-                                value: FeatureValue::Choice {
-                                    options: Vec::new(),
-                                },
-                            });
-                            entry.fields.last_mut().unwrap()
-                        }
+                        .iter_mut()
+                        .find(|field| field.name.as_str() == action_name.as_ref())
+                    {
+                        Some(field) => field,
+                        None => entry.fields.push_mut(FeatureField {
+                            name: action_name.to_string(),
+                            label: None,
+                            description: String::new(),
+                            value: FeatureValue::Choice {
+                                options: Vec::new(),
+                            },
+                        }),
                     };
                     field.value = FeatureValue::Choice { options: mirrored };
                 }

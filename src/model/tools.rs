@@ -6,7 +6,7 @@ use crate::model::{Ability, ProficiencyLevel};
 #[serde(transparent)]
 pub struct Tools(Vec<ToolEntry>);
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ToolEntry {
     pub name: String,
     pub prof: ProficiencyLevel,
@@ -30,24 +30,19 @@ impl Tools {
             .map(|entry| entry.ability)
     }
 
-    pub fn set(&mut self, name: &str, prof: ProficiencyLevel) {
-        if prof == ProficiencyLevel::None {
-            if let Some(idx) = self.0.iter().position(|entry| entry.name == name) {
-                self.0.remove(idx);
-            }
-        } else if let Some(entry) = self.0.iter_mut().find(|entry| entry.name == name) {
-            entry.prof = prof;
-        } else {
-            self.0.push(ToolEntry {
-                name: name.to_string(),
-                prof,
-                ability: Ability::Strength,
-            });
+    pub fn add(&mut self, name: &str) -> &mut ToolEntry {
+        // SAFETY: NLL Problem #3 workaround. Only one &mut ToolEntry is live at a
+        // time; the raw-pointer cast launders the iterator-borrow lifetime so the
+        // else branch can re-borrow self.0 for push_mut.
+        if let Some(entry) = self.0.iter_mut().find(|entry| entry.name == name) {
+            return unsafe { &mut *(entry as *mut ToolEntry) };
         }
-    }
 
-    pub fn as_mut(&mut self, name: &str) -> Option<&mut ToolEntry> {
-        self.0.iter_mut().find(|entry| entry.name == name)
+        self.0.push_mut(ToolEntry {
+            name: name.into(),
+            prof: ProficiencyLevel::Proficient,
+            ability: Ability::default(),
+        })
     }
 
     pub fn len(&self) -> usize {
@@ -114,17 +109,17 @@ mod tests {
     #[test]
     fn set_creates_then_updates_then_removes() {
         let mut tools = Tools::default();
-        tools.set("Smith's Tools", ProficiencyLevel::Proficient);
+        tools.add("Smith's Tools").prof = ProficiencyLevel::Proficient;
         assert_eq!(tools.level("Smith's Tools"), ProficiencyLevel::Proficient);
         assert_eq!(tools.len(), 1);
 
-        tools.set("Smith's Tools", ProficiencyLevel::Expertise);
+        tools.add("Smith's Tools").prof = ProficiencyLevel::Expertise;
         assert_eq!(tools.level("Smith's Tools"), ProficiencyLevel::Expertise);
         assert_eq!(tools.len(), 1);
 
-        tools.set("Smith's Tools", ProficiencyLevel::None);
+        tools.add("Smith's Tools").prof = ProficiencyLevel::None;
         assert_eq!(tools.level("Smith's Tools"), ProficiencyLevel::None);
-        assert_eq!(tools.len(), 0);
+        assert_eq!(tools.len(), 1);
     }
 
     #[test]
@@ -155,8 +150,8 @@ mod tests {
     #[test]
     fn round_trip_serialization() {
         let mut tools = Tools::default();
-        tools.set("Lute", ProficiencyLevel::Proficient);
-        tools.set("Thieves' Tools", ProficiencyLevel::Expertise);
+        tools.add("Lute").prof = ProficiencyLevel::Proficient;
+        tools.add("Thieves' Tools").prof = ProficiencyLevel::Expertise;
         let json = serde_json::to_string(&tools).unwrap();
         let parsed: Tools = serde_json::from_str(&json).unwrap();
         assert_eq!(parsed, tools);
@@ -165,7 +160,7 @@ mod tests {
     #[test]
     fn serialize_emits_object_array_not_nested_tuples() {
         let mut tools = Tools::default();
-        tools.set("Lute", ProficiencyLevel::Proficient);
+        tools.add("Lute").prof = ProficiencyLevel::Proficient;
         let json = serde_json::to_value(&tools).unwrap();
         assert_eq!(
             json,

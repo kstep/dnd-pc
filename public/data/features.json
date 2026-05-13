@@ -203,7 +203,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "TOOL.`Cook's Utensils`.PROF = 1; TOOL.`Cook's Utensils`.ABILITY = 4",
+        "expr": "TOOL.`Cook's Utensils`.ABILITY = 4",
         "when": "OnFeatureAdd"
       }
     ],
@@ -450,7 +450,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "TOOL.`Poisoner's Kit`.PROF = 1; TOOL.`Poisoner's Kit`.ABILITY = 3",
+        "expr": "TOOL.`Poisoner's Kit`.ABILITY = 3",
         "when": "OnFeatureAdd"
       }
     ],
@@ -9393,7 +9393,7 @@
     "name": "Class Proficiencies (Rogue)",
     "assign": [
       {
-        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.`Thieves' Tools`.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -10101,7 +10101,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10127,7 +10127,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Forgery Kit`.PROF = 1; TOOL.`Forgery Kit`.ABILITY = 1",
+        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Forgery Kit`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10140,7 +10140,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10166,7 +10166,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1; TOOL.`Carpenter's Tools`.PROF = 1; TOOL.`Carpenter's Tools`.ABILITY = 0",
+        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1; TOOL.`Carpenter's Tools`.ABILITY = 0",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10192,7 +10192,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1; TOOL.`Cartographer's Tools`.PROF = 1; TOOL.`Cartographer's Tools`.ABILITY = 4",
+        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1; TOOL.`Cartographer's Tools`.ABILITY = 4",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10205,7 +10205,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Herbalism Kit`.PROF = 1; TOOL.`Herbalism Kit`.ABILITY = 3",
+        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Herbalism Kit`.ABILITY = 3",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10244,7 +10244,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10257,7 +10257,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Navigator's Tools`.PROF = 1; TOOL.`Navigator's Tools`.ABILITY = 4",
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Navigator's Tools`.ABILITY = 4",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10270,7 +10270,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Calligrapher's Supplies`.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10296,7 +10296,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
         "when": "OnFeatureAdd"
       }
     ]

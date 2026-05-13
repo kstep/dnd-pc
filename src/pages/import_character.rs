@@ -129,10 +129,11 @@ fn format_spell_slots(ch: &Character, i18n: leptos_fluent::I18n) -> String {
 fn group_diff_rows(rows: Vec<DiffRow>) -> Vec<(&'static str, Vec<DiffRow>)> {
     let mut sections: Vec<(&'static str, Vec<DiffRow>)> = Vec::new();
     for row in rows {
-        if sections.last().is_none_or(|(key, _)| *key != row.section) {
-            sections.push((row.section, Vec::new()));
-        }
-        sections.last_mut().unwrap().1.push(row);
+        let diff = match sections.last_mut() {
+            Some((key, diff)) if *key == row.section => diff,
+            _ => &mut sections.push_mut((row.section, Vec::new())).1,
+        };
+        diff.push(row);
     }
     sections
 }
