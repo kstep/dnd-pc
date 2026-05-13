@@ -246,10 +246,13 @@ impl CharacterCore {
 
     pub fn tools(&self) -> impl Iterator<Item = (&ToolEntry, i32)> + '_ {
         let pb = self.proficiency_bonus();
-        self.tools.iter().map(move |entry| {
-            let bonus = self.ability_modifier(entry.ability) + entry.prof.multiplier() * pb;
-            (entry, bonus)
-        })
+        self.tools
+            .iter()
+            .filter(|entry| !entry.name.is_empty() && entry.prof != ProficiencyLevel::None)
+            .map(move |entry| {
+                let bonus = self.ability_modifier(entry.ability) + entry.prof.multiplier() * pb;
+                (entry, bonus)
+            })
     }
 
     pub fn initiative(&self) -> i32 {
