@@ -8,7 +8,7 @@ use crate::{
     effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, CombatStatsStoreFields,
-        DamageType, Skill, Translatable, format_bonus,
+        DamageType, ProficiencyLevel, Skill, Translatable, format_bonus,
     },
 };
 
@@ -258,7 +258,7 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Skills --
-                <h4>{move_tr!("panel-skills")}</h4>
+                <h4>{move_tr!("session-skills")}</h4>
                 <div class="slot-box-list">
                     {Skill::iter().map(|skill| {
                         let tr_key = skill.tr_key();
@@ -270,6 +270,19 @@ pub fn StatsBlock() -> impl IntoView {
                                     {move || format_bonus(eff.skill_bonus(skill))}
                                     {move || adv_icon(eff.skill_advantage(skill))}
                                 </span>
+                            </StatBox>
+                        }
+                    }).collect_view()}
+                </div>
+
+                // -- Tools --
+                <h4>{move_tr!("session-tools")}</h4>
+                <div class="slot-box-list">
+                    {move || store.read().tools().map(|(entry, bonus)| {
+                        let is_expertise = entry.prof == ProficiencyLevel::Expertise;
+                        view! {
+                            <StatBox label=entry.name.clone() highlighted=is_expertise>
+                                <span class="stat-highlight">{format_bonus(bonus)}</span>
                             </StatBox>
                         }
                     }).collect_view()}
