@@ -198,6 +198,14 @@ pub fn build_clean(
 ) -> Result<RebuildOutcome, RebuildError> {
     let mut clean = rebuild_skeleton(original);
     let mut accum = RebuildAccum::default();
+    accum.removed.extend(
+        original
+            .features
+            .list
+            .iter()
+            .filter(|feature| feature.removed)
+            .map(|feature| feature.name.to_string()),
+    );
 
     registry.with_definitions(|caches| {
         registry.with_features_index_untracked(|feat_index| -> Result<(), RebuildError> {
@@ -680,6 +688,7 @@ fn migrate_legacy_abilities(clean: &mut Character, original: &Character) {
                 ..AssignInputs::default()
             }],
             replaces: None,
+            removed: false,
         },
     );
 }

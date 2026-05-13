@@ -13,7 +13,6 @@ use strum::{Display, EnumString};
 use crate::{
     expr::DicePool,
     model::{ActionType, Die, SpellData, Translatable},
-    vecset::VecSet,
 };
 
 /// Identity slot a feature writes to when applied. Used both as the inner
@@ -184,6 +183,10 @@ pub struct Feature {
     pub inputs: Vec<AssignInputs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub replaces: Option<Box<str>>,
+    /// Runtime-only soft-delete marker — kept in the Vec so reactive_stores
+    /// indexers can't go out of bounds on the same tick. Dropped on save.
+    #[serde(skip)]
+    pub removed: bool,
 }
 
 impl Feature {
@@ -314,18 +317,21 @@ impl FeatureSource {
 /// clash.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 pub struct Features {
-    #[serde(default)]
+    #[serde(default, serialize_with = "serialize_visible_features")]
     pub list: Vec<Feature>,
     #[serde(
         default,
         deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
     )]
     data: BTreeMap<Box<str>, FeatureData>,
-    /// Names physically removed by the user through the trash icon. Surfaces
-    /// as `RebuildReason::FeatureRemoved` until the next rebuild clears
-    /// `Features` wholesale.
-    #[serde(default, skip_serializing_if = "VecSet::is_empty")]
-    pub removed: VecSet<Box<str>>,
+}
+
+/// Drop soft-removed rows on persistence; next load sees a compacted list.
+fn serialize_visible_features<S>(list: &[Feature], s: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    s.collect_seq(list.iter().filter(|feature| !feature.removed))
 }
 
 impl Deref for Features {
@@ -366,21 +372,17 @@ impl Features {
     /// field.
     #[cfg(test)]
     pub fn from_parts(list: Vec<Feature>, data: BTreeMap<Box<str>, FeatureData>) -> Self {
-        Self {
-            list,
-            data,
-            removed: VecSet::default(),
-        }
+        Self { list, data }
     }
 
-    /// Iterate applied feature list (overrides BTreeMap::iter from Deref).
-    pub fn iter(&self) -> std::slice::Iter<'_, Feature> {
-        self.list.iter()
+    /// Iterate live feature rows (skips soft-removed). Use `self.list.iter()`
+    /// directly when raw access is needed (e.g. `<For>` keying).
+    pub fn iter(&self) -> impl Iterator<Item = &Feature> + '_ {
+        self.list.iter().filter(|feature| !feature.removed)
     }
 
-    /// Mutable iter over list (overrides BTreeMap::iter_mut from Deref).
-    pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, Feature> {
-        self.list.iter_mut()
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut Feature> + '_ {
+        self.list.iter_mut().filter(|feature| !feature.removed)
     }
 
     /// Number of feature rows (applied or pending).
@@ -393,93 +395,85 @@ impl Features {
         self.list.is_empty()
     }
 
-    /// Read-only access to a row by position.
+    /// Read-only access to a row by position. Returns `None` for soft-removed.
     pub fn at(&self, pos: usize) -> Option<&Feature> {
-        self.list.get(pos)
+        self.list.get(pos).filter(|feature| !feature.removed)
     }
 
-    /// Mutable access to a row by position.
+    /// Mutable access to a row by position. Returns `None` for soft-removed.
     pub fn at_mut(&mut self, pos: usize) -> Option<&mut Feature> {
-        self.list.get_mut(pos)
+        self.list.get_mut(pos).filter(|feature| !feature.removed)
     }
 
-    /// First row matching `(name, source)`. Non-stackable features may
-    /// still have an unapplied placeholder alongside an applied row;
-    /// `source` disambiguates that and stackable instances both.
+    /// First live row matching `(name, source)`.
     pub fn find(&self, name: &str, source: &FeatureSource) -> Option<&Feature> {
         self.list
             .iter()
-            .find(|feature| &*feature.name == name && &feature.source == source)
+            .find(|feature| !feature.removed && &*feature.name == name && &feature.source == source)
     }
 
-    /// Mutable variant of [`find`].
     pub fn find_mut(&mut self, name: &str, source: &FeatureSource) -> Option<&mut Feature> {
         self.list
             .iter_mut()
-            .find(|feature| &*feature.name == name && &feature.source == source)
+            .find(|feature| !feature.removed && &*feature.name == name && &feature.source == source)
     }
 
-    /// Position of the first row matching `(name, source)`.
     pub fn find_pos(&self, name: &str, source: &FeatureSource) -> Option<usize> {
-        self.list
-            .iter()
-            .position(|feature| &*feature.name == name && &feature.source == source)
+        self.list.iter().position(|feature| {
+            !feature.removed && &*feature.name == name && &feature.source == source
+        })
     }
 
-    /// Position of the last row, if any.
+    /// Position of the last row, if any. Includes soft-removed slots.
     pub fn last_pos(&self) -> Option<usize> {
         self.list.len().checked_sub(1)
     }
 
-    /// Does this feature definition + source already have an applied instance?
-    /// Non-stackable: any applied by name → true.
-    /// Stackable: applied with same name AND source → true.
     pub fn contains(&self, name: &str, stackable: bool, source: &FeatureSource) -> bool {
         if stackable {
             self.list.iter().any(|feature| {
-                &*feature.name == name && feature.applied && feature.source == *source
+                !feature.removed
+                    && &*feature.name == name
+                    && feature.applied
+                    && feature.source == *source
             })
         } else {
             self.list
                 .iter()
-                .any(|feature| &*feature.name == name && feature.applied)
+                .any(|feature| !feature.removed && &*feature.name == name && feature.applied)
         }
     }
 
     pub fn has(&self, name: &str) -> bool {
         self.list
             .iter()
-            .any(|feature| &*feature.name == name && feature.applied)
+            .any(|feature| !feature.removed && &*feature.name == name && feature.applied)
     }
 
     pub fn has_category(&self, category: FeatureCategory) -> bool {
         self.list
             .iter()
-            .any(|feature| feature.applied && feature.category == category)
+            .any(|feature| !feature.removed && feature.applied && feature.category == category)
     }
 
-    /// True if no applied entries at all, or has an unapplied entry waiting.
     pub fn is_pending(&self, name: &str) -> bool {
         let mut has_applied = false;
         let mut has_unapplied = false;
         for feature in &self.list {
-            if &*feature.name == name {
-                if feature.applied {
-                    has_applied = true;
-                } else {
-                    has_unapplied = true;
-                }
+            if feature.removed || &*feature.name != name {
+                continue;
+            }
+            if feature.applied {
+                has_applied = true;
+            } else {
+                has_unapplied = true;
             }
         }
         !has_applied || has_unapplied
     }
 
-    /// Look up stored inputs for a feature by (name, source). Required for
-    /// stackable features (e.g. Expertise at Rogue L1 and L6).
     pub fn get_inputs(&self, name: &str, source: &FeatureSource) -> &[AssignInputs] {
-        self.list
-            .iter()
-            .find(|feature| &*feature.name == name && &feature.source == source)
+        self.find(name, source)
             .map(|feature| feature.inputs.as_slice())
             .unwrap_or_default()
     }
@@ -493,8 +487,8 @@ impl Features {
         idx
     }
 
-    /// Reuse an existing `(name, source)` slot if present, otherwise push a
-    /// fresh row. Returns its position.
+    /// Reuse an existing `(name, source)` slot if present (reviving a
+    /// soft-removed row), otherwise push a fresh one. Returns its position.
     #[allow(clippy::too_many_arguments)]
     pub fn put(
         &mut self,
@@ -506,12 +500,14 @@ impl Features {
         inputs: Vec<AssignInputs>,
         applied: bool,
     ) -> usize {
+        // Raw scan — must see removed rows so they get revived, not duplicated.
         if let Some((idx, feature)) = self
             .list
             .iter_mut()
             .enumerate()
             .rfind(|(_, feature)| &*feature.name == name && feature.source == source)
         {
+            feature.removed = false;
             feature.applied = applied;
             feature.label = label;
             feature.description = description;
@@ -530,29 +526,38 @@ impl Features {
                 source,
                 inputs,
                 replaces: None,
+                removed: false,
             });
             idx
         }
     }
 
-    /// User-initiated removal of the row at `idx`. Records the name in
-    /// `removed` so `rebuild_reasons` can surface the drift; evicts the
-    /// `data[name]` entry when no other live row carries that name.
+    /// Soft-remove the row at `idx`: flag it without shrinking the Vec so
+    /// reactive_stores indexers stay in bounds. Evicts `data[name]` when no
+    /// other live row carries the name. Rebuild scans the flag to surface
+    /// `RebuildReason::FeatureRemoved`.
     pub fn remove(&mut self, idx: usize) {
-        let Some(feature) = self.list.get(idx) else {
+        let Some(feature) = self.list.get_mut(idx) else {
             return;
         };
+        if feature.removed {
+            return;
+        }
+        feature.removed = true;
         let name = feature.name.clone();
-        self.list.remove(idx);
-        if !self.list.iter().any(|other| other.name == name) {
+        if !self
+            .list
+            .iter()
+            .any(|other| !other.removed && other.name == name)
+        {
             self.data.remove(&name);
         }
-        self.removed.insert(name);
     }
 
     /// Truncate the feature list at the position of the entry matching
     /// `name` + `source`, dropping that feature and everything after it.
-    /// Returns `true` if a match was found. Does not touch `data`.
+    /// Only called on a non-reactive clone (`feature_row.rs:269`), so a
+    /// hard `Vec::truncate` is safe — no reactive_stores subscribers.
     pub fn truncate(&mut self, name: &str, source: &FeatureSource) -> bool {
         let Some(idx) = self
             .list
@@ -938,7 +943,7 @@ mod tests {
     }
 
     #[test]
-    fn remove_records_tombstone_and_evicts_data() {
+    fn remove_flags_row_and_evicts_data() {
         let mut features = Features::default();
         let pos = features.put(
             "Tough",
@@ -953,15 +958,10 @@ mod tests {
 
         features.remove(pos);
 
-        assert!(features.is_empty(), "row physically removed");
-        assert!(
-            !features.data.contains_key("Tough"),
-            "data evicted when no other live row carries the name"
-        );
-        assert!(
-            features.removed.contains("Tough"),
-            "tombstone records the removed name"
-        );
+        assert_eq!(features.len(), 1, "Vec keeps the row");
+        assert!(features.list[0].removed, "flag set");
+        assert!(features.at(pos).is_none(), "soft-removed hidden from at()");
+        assert!(!features.data.contains_key("Tough"), "data evicted");
     }
 
     #[test]
@@ -991,12 +991,10 @@ mod tests {
 
         features.remove(0);
 
-        assert_eq!(features.len(), 1);
-        assert!(
-            features.data.contains_key("ASI"),
-            "data preserved because the second ASI still lives"
-        );
-        assert!(features.removed.contains("ASI"));
+        assert_eq!(features.len(), 2, "both rows kept (one flagged)");
+        assert!(features.list[0].removed);
+        assert!(!features.list[1].removed);
+        assert!(features.data.contains_key("ASI"));
     }
 
     #[test]
@@ -1004,14 +1002,43 @@ mod tests {
         let mut features = Features::default();
         features.remove(0);
         features.remove(99);
-        assert!(features.removed.is_empty());
         assert!(features.is_empty());
     }
 
     #[test]
-    fn removed_field_json_roundtrip() {
+    fn put_revives_soft_removed_slot() {
         let mut features = Features::default();
-        features.put(
+        let pos = features.put(
+            "Skilled",
+            None,
+            String::new(),
+            FeatureCategory::Origin,
+            FeatureSource::User(1),
+            Vec::new(),
+            true,
+        );
+        features.remove(pos);
+        assert!(features.list[pos].removed);
+
+        let pos2 = features.put(
+            "Skilled",
+            None,
+            String::new(),
+            FeatureCategory::Origin,
+            FeatureSource::User(1),
+            Vec::new(),
+            true,
+        );
+
+        assert_eq!(pos, pos2, "same slot reused");
+        assert_eq!(features.len(), 1, "no new row");
+        assert!(!features.list[pos].removed, "flag cleared");
+    }
+
+    #[test]
+    fn find_skips_removed_rows() {
+        let mut features = Features::default();
+        let pos = features.put(
             "Tough",
             None,
             String::new(),
@@ -1020,34 +1047,44 @@ mod tests {
             Vec::new(),
             true,
         );
-        features.remove(0);
+        features.remove(pos);
+        assert!(features.find("Tough", &FeatureSource::User(0)).is_none());
+        assert!(!features.contains("Tough", false, &FeatureSource::User(0)));
+        assert!(!features.has("Tough"));
+    }
+
+    #[test]
+    fn serialize_drops_removed_rows() {
+        let mut features = Features::default();
+        features.put(
+            "Live",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(0),
+            Vec::new(),
+            true,
+        );
+        let pos = features.put(
+            "Dead",
+            None,
+            String::new(),
+            FeatureCategory::General,
+            FeatureSource::User(0),
+            Vec::new(),
+            true,
+        );
+        features.remove(pos);
 
         let json = serde_json::to_value(&features).expect("serialize");
+        let list = json
+            .get("list")
+            .and_then(|value| value.as_array())
+            .expect("list array");
+        assert_eq!(list.len(), 1, "removed row dropped");
         assert_eq!(
-            json.get("removed").and_then(|removed| removed.as_array()),
-            Some(&vec![serde_json::Value::String("Tough".into())]),
+            list[0].get("name").and_then(|name| name.as_str()),
+            Some("Live"),
         );
-
-        let restored: Features = serde_json::from_value(json).expect("deserialize");
-        assert!(restored.removed.contains("Tough"));
-    }
-
-    #[test]
-    fn removed_field_omitted_when_empty() {
-        // Back-compat: characters that never lost a feature serialize without
-        // a `removed` key — old clients reading the JSON see no extra field.
-        let features = Features::default();
-        let json = serde_json::to_value(&features).expect("serialize");
-        assert!(
-            json.get("removed").is_none(),
-            "skip_serializing_if drops the empty VecSet"
-        );
-    }
-
-    #[test]
-    fn removed_field_default_when_absent_in_json() {
-        let json = serde_json::json!({ "list": [], "data": {} });
-        let features: Features = serde_json::from_value(json).expect("deserialize");
-        assert!(features.removed.is_empty());
     }
 }

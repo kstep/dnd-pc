@@ -131,9 +131,14 @@ impl<'a> ApplyContext<'a> {
 
     /// Find a `FeatureField` by name across all applied features. Search
     /// order matches `features.list`, not BTreeMap key order. Returns
-    /// `(feature_pos, field_index)` on first match.
+    /// `(feature_pos, field_index)` on first match. The returned `feat_idx`
+    /// must be a real Vec position so `Features::at(feat_idx)` resolves —
+    /// iterate the raw list and skip soft-removed rows inline.
     fn find_field_named(&self, field_name: &str) -> Option<(usize, usize)> {
-        for (feat_idx, feature) in self.character.features.iter().enumerate() {
+        for (feat_idx, feature) in self.character.features.list.iter().enumerate() {
+            if feature.removed {
+                continue;
+            }
             let Some(feature_data) = self.character.features.get(&*feature.name) else {
                 continue;
             };

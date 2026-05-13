@@ -473,9 +473,10 @@ impl CharacterCore {
             )
             .chain(
                 self.features
-                    .removed
+                    .list
                     .iter()
-                    .map(|name| RebuildReason::FeatureRemoved(name.clone())),
+                    .filter(|feature| feature.removed)
+                    .map(|feature| RebuildReason::FeatureRemoved(feature.name.clone())),
             )
             .chain({
                 let has_levels = self.applied.levels.values().any(|lvls| !lvls.is_empty());
@@ -958,6 +959,7 @@ impl Character {
                         source: FeatureSource::Class("Bard".into(), 1),
                         inputs: Vec::new(),
                         replaces: None,
+                        removed: false,
                     }],
                     BTreeMap::from([(
                         "Spellcasting (Bard)".into(),
@@ -1956,9 +1958,8 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn drift_user_removed_feature_emits_feature_removed() {
-        // User clicks the trash icon on a feature row. `Features::remove`
-        // pushes the name into `features.removed`; `rebuild_reasons` must
-        // surface a `FeatureRemoved` so the banner asks for a rebuild.
+        // User trashes a feature row. The soft-delete flag drives the drift
+        // reason so the Rebuild banner shows.
         let mut ch = drift_character();
         ch.identity.species = "Human".to_string();
         ch.identity.background = "Soldier".to_string();
@@ -1982,9 +1983,8 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn drift_readd_does_not_clear_feature_removed_until_rebuild() {
-        // Re-add through AddFeatureRow pushes a fresh row but leaves derived
-        // state stale — the banner must persist until rebuild wipes
-        // `Features` wholesale. (No live-row self-filter — see plan.)
+        // Re-adding the same name via raw push leaves the zombie alongside
+        // the new live row; the banner persists until rebuild compacts.
         let mut ch = drift_character();
         ch.identity.species = "Human".to_string();
         ch.identity.background = "Soldier".to_string();
@@ -2017,7 +2017,7 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
-    fn drift_no_feature_removed_when_tombstone_set_is_empty() {
+    fn drift_no_feature_removed_without_soft_deletes() {
         let mut ch = drift_character();
         ch.identity.species = "Human".to_string();
         ch.identity.background = "Soldier".to_string();

@@ -152,14 +152,14 @@ pub fn FeaturesPanel() -> impl IntoView {
                             .with(|all| all.get(idx).cloned())
                             .unwrap_or_default()
                     });
-                    // TODO: migrate to at_keyed so FeatureRow can detect zombie
-                    // state internally — at_unkeyed Reader panics on stale idx.
-                    let in_bounds = Signal::derive(move || idx < features.list().read().len());
+                    let visible = Signal::derive(move || {
+                        idx < features.list().read().len() && !feature.read().removed
+                    });
                     view! {
                         {move || header_label.get().map(|label| view! {
                             <h3 class="features-group-header">{label}</h3>
                         })}
-                        <Show when=move || in_bounds.get() fallback=|| ()>
+                        <Show when=move || visible.get() fallback=|| ()>
                             <FeatureRow
                                 feature=feature
                                 options=feature_options
