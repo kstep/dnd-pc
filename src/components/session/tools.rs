@@ -26,7 +26,7 @@ pub fn ToolsBlock() -> impl IntoView {
 
         (!rows.is_empty()).then(|| {
             view! {
-                <h4 class="session-subsection-title">{move_tr!("session-tools")}</h4>
+                <h4>{move_tr!("tools")}</h4>
                 <div class="slot-box-list">
                     {rows.into_iter().map(|(name, bonus, is_expertise)| {
                         let label = Signal::derive(move || name.clone());

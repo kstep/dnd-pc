@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{icon::Icon, stat_box::StatBox},
+    components::{icon::Icon, session::ToolsBlock, stat_box::StatBox},
     effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, CombatStatsStoreFields,
@@ -274,6 +274,8 @@ pub fn StatsBlock() -> impl IntoView {
                         }
                     }).collect_view()}
                 </div>
+
+                <ToolsBlock />
             </div>
         }
     }

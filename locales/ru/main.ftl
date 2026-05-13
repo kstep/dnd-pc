@@ -348,7 +348,6 @@ session-no-items = Нет предметов
 session-ability-mods = Модификаторы характеристик
 session-saving-throws = Спасброски
 session-languages = Понятные языки
-session-tools = Инструменты
 session-damage-modifiers = Сопротивления
 damage-vulnerability = Уязвимость
 damage-resistance = Сопротивление
