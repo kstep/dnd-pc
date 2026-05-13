@@ -31,7 +31,7 @@ pub fn ToolsBlock() -> impl IntoView {
                     {rows.into_iter().map(|(name, bonus, is_expertise)| {
                         let label = Signal::derive(move || name.clone());
                         view! {
-                            <StatBox label=label highlighted=Signal::derive(move || is_expertise)>
+                            <StatBox label=label highlighted=is_expertise>
                                 <span class="stat-highlight">{format_bonus(bonus)}</span>
                             </StatBox>
                         }
