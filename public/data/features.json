@@ -10568,7 +10568,13 @@
     ]
   },
   {
-    "name": "Integrated Protection"
+    "name": "Integrated Protection",
+    "assign": [
+      {
+        "when": "OnCompute",
+        "expr": "AC += 1"
+      }
+    ]
   },
   {
     "name": "Sentry's Rest"
@@ -10578,7 +10584,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG)))); TOOL.COUNT += 1"
       }
     ]
   },
