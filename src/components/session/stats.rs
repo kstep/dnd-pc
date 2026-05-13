@@ -258,7 +258,7 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Skills --
-                <h4>{move_tr!("panel-skills")}</h4>
+                <h4>{move_tr!("session-skills")}</h4>
                 <div class="slot-box-list">
                     {Skill::iter().map(|skill| {
                         let tr_key = skill.tr_key();
@@ -276,7 +276,7 @@ pub fn StatsBlock() -> impl IntoView {
                 </div>
 
                 // -- Tools --
-                <h4>{move_tr!("tools")}</h4>
+                <h4>{move_tr!("session-tools")}</h4>
                 <div class="slot-box-list">
                     {move || store.read().tools().map(|(entry, bonus)| {
                         let name = entry.name.clone();
