@@ -13,7 +13,8 @@ use crate::{
     model::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
         DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
-        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, Tools, Weapon, enums::*,
+        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, ToolEntry, Tools, Weapon,
+        enums::*,
     },
     vecset::VecSet,
 };
@@ -243,9 +244,15 @@ impl CharacterCore {
         self.tools.level(name)
     }
 
-    pub fn tool_bonus(&self, name: &str, ability: Ability) -> i32 {
-        self.ability_modifier(ability)
-            + self.tool_level(name).multiplier() * self.proficiency_bonus()
+    pub fn tools(&self) -> impl Iterator<Item = (&ToolEntry, i32)> + '_ {
+        let pb = self.proficiency_bonus();
+        self.tools
+            .iter()
+            .filter(|entry| !entry.name.is_empty() && entry.prof != ProficiencyLevel::None)
+            .map(move |entry| {
+                let bonus = self.ability_modifier(entry.ability) + entry.prof.multiplier() * pb;
+                (entry, bonus)
+            })
     }
 
     pub fn initiative(&self) -> i32 {

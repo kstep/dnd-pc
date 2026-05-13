@@ -7,6 +7,7 @@ mod languages;
 mod resources;
 mod spells;
 mod stats;
+mod tools;
 mod weapons;
 
 pub use backpack::BackpackBlock;
@@ -19,6 +20,7 @@ use leptos::prelude::*;
 pub use resources::ResourcesBlock;
 pub use spells::SpellsBlock;
 pub use stats::{StatsBlock, adv_icon};
+pub use tools::ToolsBlock;
 pub use weapons::WeaponsBlock;
 
 #[component]

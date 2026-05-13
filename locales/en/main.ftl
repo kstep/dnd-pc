@@ -344,6 +344,7 @@ session-no-items = No items
 session-ability-mods = Ability Modifiers
 session-saving-throws = Saving Throws
 session-languages = Comprehensible Languages
+session-tools = Tools
 session-damage-modifiers = Resistances
 damage-vulnerability = Vulnerable
 damage-resistance = Resistant
