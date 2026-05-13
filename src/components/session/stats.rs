@@ -4,11 +4,11 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    components::{icon::Icon, session::ToolsBlock, stat_box::StatBox},
+    components::{icon::Icon, stat_box::StatBox},
     effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, CombatStatsStoreFields,
-        DamageType, Skill, Translatable, format_bonus,
+        DamageType, ProficiencyLevel, Skill, Translatable, format_bonus,
     },
 };
 
@@ -275,7 +275,20 @@ pub fn StatsBlock() -> impl IntoView {
                     }).collect_view()}
                 </div>
 
-                <ToolsBlock />
+                // -- Tools --
+                <h4>{move_tr!("tools")}</h4>
+                <div class="slot-box-list">
+                    {move || store.read().tools().map(|(entry, bonus)| {
+                        let name = entry.name.clone();
+                        let label = Signal::derive(move || name.clone());
+                        let is_expertise = entry.prof == ProficiencyLevel::Expertise;
+                        view! {
+                            <StatBox label=label highlighted=is_expertise>
+                                <span class="stat-highlight">{format_bonus(bonus)}</span>
+                            </StatBox>
+                        }
+                    }).collect_view()}
+                </div>
             </div>
         }
     }
