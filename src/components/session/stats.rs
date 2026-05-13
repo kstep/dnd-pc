@@ -279,11 +279,9 @@ pub fn StatsBlock() -> impl IntoView {
                 <h4>{move_tr!("session-tools")}</h4>
                 <div class="slot-box-list">
                     {move || store.read().tools().map(|(entry, bonus)| {
-                        let name = entry.name.clone();
-                        let label = Signal::derive(move || name.clone());
                         let is_expertise = entry.prof == ProficiencyLevel::Expertise;
                         view! {
-                            <StatBox label=label highlighted=is_expertise>
+                            <StatBox label=entry.name.clone() highlighted=is_expertise>
                                 <span class="stat-highlight">{format_bonus(bonus)}</span>
                             </StatBox>
                         }
