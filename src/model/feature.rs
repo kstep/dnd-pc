@@ -183,9 +183,10 @@ pub struct Feature {
     pub inputs: Vec<AssignInputs>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub replaces: Option<Box<str>>,
-    /// Runtime-only soft-delete marker — kept in the Vec so reactive_stores
-    /// indexers can't go out of bounds on the same tick. Dropped on save.
-    #[serde(skip)]
+    /// Soft-delete marker — kept in the Vec so reactive_stores indexers
+    /// can't go out of bounds on the same tick. Persisted until the next
+    /// rebuild compacts the list.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub removed: bool,
 }
 
@@ -317,21 +318,13 @@ impl FeatureSource {
 /// clash.
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Store)]
 pub struct Features {
-    #[serde(default, serialize_with = "serialize_visible_features")]
+    #[serde(default)]
     pub list: Vec<Feature>,
     #[serde(
         default,
         deserialize_with = "crate::serde_util::deserialize_map_dropping_nulls"
     )]
     data: BTreeMap<Box<str>, FeatureData>,
-}
-
-/// Drop soft-removed rows on persistence; next load sees a compacted list.
-fn serialize_visible_features<S>(list: &[Feature], s: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    s.collect_seq(list.iter().filter(|feature| !feature.removed))
 }
 
 impl Deref for Features {
@@ -1054,7 +1047,7 @@ mod tests {
     }
 
     #[test]
-    fn serialize_drops_removed_rows() {
+    fn removed_flag_survives_roundtrip() {
         let mut features = Features::default();
         features.put(
             "Live",
@@ -1077,14 +1070,13 @@ mod tests {
         features.remove(pos);
 
         let json = serde_json::to_value(&features).expect("serialize");
-        let list = json
-            .get("list")
-            .and_then(|value| value.as_array())
-            .expect("list array");
-        assert_eq!(list.len(), 1, "removed row dropped");
-        assert_eq!(
-            list[0].get("name").and_then(|name| name.as_str()),
-            Some("Live"),
+        let restored: Features = serde_json::from_value(json).expect("deserialize");
+
+        assert_eq!(restored.list.len(), 2, "removed row persisted, not dropped");
+        assert!(!restored.list[0].removed, "live row stays live");
+        assert!(
+            restored.list[1].removed,
+            "removed flag survives the roundtrip"
         );
     }
 }
