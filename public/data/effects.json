@@ -5,7 +5,7 @@
   },
   {
     "name": "Warding Bond",
-    "expr": "AC += 1; each(@ABILITY, @.SAVE += 1); each(@DMG, @ = 1)"
+    "expr": "AC += 1; each(@ABIL, @.SAVE += 1); each(@DMG, @ = 1)"
   },
   {
     "name": "Ceremony: Wedding",
@@ -17,7 +17,7 @@
   },
   {
     "name": "Arcane Deflection",
-    "expr": "AC += 2; each(@ABILITY, @.SAVE += 4)"
+    "expr": "AC += 2; each(@ABIL, @.SAVE += 4)"
   },
   {
     "name": "Soul of the Forge",
@@ -410,7 +410,7 @@
   },
   {
     "name": "Circle of Power",
-    "expr": "each(@ABILITY, @.SAVE.ADV = 1)"
+    "expr": "each(@ABIL, @.SAVE.ADV = 1)"
   },
   {
     "name": "Aura of Purity",
@@ -466,7 +466,7 @@
   },
   {
     "name": "Holy Aura",
-    "expr": "each(@ABILITY, @.SAVE.ADV = 1)"
+    "expr": "each(@ABIL, @.SAVE.ADV = 1)"
   },
   {
     "name": "Mind Blank",
@@ -474,7 +474,7 @@
   },
   {
     "name": "Foresight",
-    "expr": "ATK.ADV = 1; each(@ABILITY, @.ADV = 1; @.SAVE.ADV = 1)"
+    "expr": "ATK.ADV = 1; each(@ABIL, @.ADV = 1; @.SAVE.ADV = 1)"
   },
   {
     "name": "Feign Death",
@@ -712,7 +712,7 @@
   },
   {
     "name": "Frightened",
-    "expr": "ATK.ADV = -1; each(@ABILITY, @.ADV = -1)"
+    "expr": "ATK.ADV = -1; each(@ABIL, @.ADV = -1)"
   },
   {
     "name": "Incapacitated"
@@ -723,26 +723,26 @@
   },
   {
     "name": "Poisoned",
-    "expr": "ATK.ADV = -1; each(@ABILITY, @.ADV = -1)"
+    "expr": "ATK.ADV = -1; each(@ABIL, @.ADV = -1)"
   },
   {
     "name": "Exhaustion 1",
-    "expr": "each(@ABILITY, @.ADV = -1)"
+    "expr": "each(@ABIL, @.ADV = -1)"
   },
   {
     "name": "Exhaustion 2",
-    "expr": "SPEED /= 2; each(@ABILITY, @.ADV = -1)"
+    "expr": "SPEED /= 2; each(@ABIL, @.ADV = -1)"
   },
   {
     "name": "Exhaustion 3",
-    "expr": "SPEED /= 2; ATK.ADV = -1; each(@ABILITY, @.ADV = -1; @.SAVE.ADV = -1)"
+    "expr": "SPEED /= 2; ATK.ADV = -1; each(@ABIL, @.ADV = -1; @.SAVE.ADV = -1)"
   },
   {
     "name": "Exhaustion 4",
-    "expr": "SPEED /= 2; HP.MAX /= 2; ATK.ADV = -1; each(@ABILITY, @.ADV = -1; @.SAVE.ADV = -1)"
+    "expr": "SPEED /= 2; HP.MAX /= 2; ATK.ADV = -1; each(@ABIL, @.ADV = -1; @.SAVE.ADV = -1)"
   },
   {
     "name": "Exhaustion 5",
-    "expr": "SPEED = 0; HP.MAX /= 2; ATK.ADV = -1; each(@ABILITY, @.ADV = -1; @.SAVE.ADV = -1)"
+    "expr": "SPEED = 0; HP.MAX /= 2; ATK.ADV = -1; each(@ABIL, @.ADV = -1; @.SAVE.ADV = -1)"
   }
 ]

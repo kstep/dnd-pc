@@ -1459,30 +1459,30 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn parse_each_roundtrip() {
-        let expr: Expr = "each(@ABILITY, @ += @ARG)".parse().unwrap();
+        let expr: Expr = "each(@ABIL, @ += @ARG)".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "each(@ABILITY, @ += @ARG)");
+        assert_eq!(display, "each(@ABIL, @ += @ARG)");
     }
 
     #[wasm_bindgen_test]
     fn parse_fold_roundtrip() {
-        let expr: Expr = "fold(+, @ABILITY, @ARG)".parse().unwrap();
+        let expr: Expr = "fold(+, @ABIL, @ARG)".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "fold(+, @ABILITY, @ARG)");
+        assert_eq!(display, "fold(+, @ABIL, @ARG)");
     }
 
     #[wasm_bindgen_test]
     fn parse_each_with_condition() {
-        let expr: Expr = "each(@ABILITY, if(@ < 20, @ += @ARG))".parse().unwrap();
+        let expr: Expr = "each(@ABIL, if(@ < 20, @ += @ARG))".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "each(@ABILITY, if(@ < 20, @ += @ARG))");
+        assert_eq!(display, "each(@ABIL, if(@ < 20, @ += @ARG))");
     }
 
     #[wasm_bindgen_test]
     fn parse_fold_with_and() {
-        let expr: Expr = "fold(and, @ABILITY, in(@ARG, 0, 1))".parse().unwrap();
+        let expr: Expr = "fold(and, @ABIL, in(@ARG, 0, 1))".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "fold(and, @ABILITY, in(@ARG, 0, 1))");
+        assert_eq!(display, "fold(and, @ABIL, in(@ARG, 0, 1))");
     }
 
     #[wasm_bindgen_test]
@@ -1491,11 +1491,11 @@ mod loop_tests {
         // in rhs context is a `fold(...)` value (net +1), not a top-level
         // each-statement (net 0). Detection of the outer BinOp's 2→1
         // transition depends on this.
-        let expr: Expr = "AC += fold(+, @ABILITY, 1)".parse().unwrap();
-        assert_eq!(expr.to_string(), "AC += fold(+, @ABILITY, 1)");
+        let expr: Expr = "AC += fold(+, @ABIL, 1)".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC += fold(+, @ABIL, 1)");
 
-        let expr: Expr = "AC -= 3 - fold(+, @ABILITY, 1)".parse().unwrap();
-        assert_eq!(expr.to_string(), "AC -= 3 - fold(+, @ABILITY, 1)");
+        let expr: Expr = "AC -= 3 - fold(+, @ABIL, 1)".parse().unwrap();
+        assert_eq!(expr.to_string(), "AC -= 3 - fold(+, @ABIL, 1)");
     }
 
     #[wasm_bindgen_test]
@@ -1503,15 +1503,15 @@ mod loop_tests {
         // Top-level each-statement before a compound on `AC` — the prefix
         // is detected and roundtrips as long form (formatter has no short
         // syntax for a side-effecting prefix + compound).
-        let expr: Expr = "each(@ABILITY, @ += 1); AC += 2".parse().unwrap();
-        assert_eq!(expr.to_string(), "each(@ABILITY, @ += 1); AC = AC + 2");
+        let expr: Expr = "each(@ABIL, @ += 1); AC += 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "each(@ABIL, @ += 1); AC = AC + 2");
     }
 
     #[wasm_bindgen_test]
     fn eval_each_assigns_all() {
         let mut ctx = TestCtx::new();
         let original = ctx.abilities;
-        let expr: Expr = "each(@ABILITY, @ABILITY += 1)".parse().unwrap();
+        let expr: Expr = "each(@ABIL, @ABIL += 1)".parse().unwrap();
         expr.apply(&mut ctx).unwrap();
         for (i, (&original, &actual)) in original.iter().zip(ctx.abilities.iter()).enumerate() {
             assert_eq!(actual, original + 1, "ability {i} not incremented");
@@ -1521,8 +1521,8 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn eval_fold_sums() {
         let ctx = TestCtx::new();
-        // fold(+, @ABILITY, @ABILITY) should sum all ability scores
-        let expr: Expr = "fold(+, @ABILITY, @ABILITY)".parse().unwrap();
+        // fold(+, @ABIL, @ABIL) should sum all ability scores
+        let expr: Expr = "fold(+, @ABIL, @ABIL)".parse().unwrap();
         let result = expr.eval(&ctx).unwrap();
         let expected: i32 = ctx.abilities.iter().sum();
         assert_eq!(result, expected);
@@ -1531,7 +1531,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn eval_fold_max() {
         let ctx = TestCtx::new();
-        let expr: Expr = "fold(max, @ABILITY, @ABILITY)".parse().unwrap();
+        let expr: Expr = "fold(max, @ABIL, @ABIL)".parse().unwrap();
         let result = expr.eval(&ctx).unwrap();
         assert_eq!(result, *ctx.abilities.iter().max().unwrap());
     }
@@ -1539,7 +1539,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn analyze_each_active_args() {
         let ctx = TestCtx::new();
-        let expr: Expr = "each(@ABILITY, @ABILITY += @ARG)".parse().unwrap();
+        let expr: Expr = "each(@ABIL, @ABIL += @ARG)".parse().unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 6);
         assert_eq!(analysis.active_args, BTreeSet::from([0, 1, 2, 3, 4, 5]));
@@ -1548,7 +1548,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn analyze_fold_boolean_args() {
         let ctx = TestCtx::new();
-        let expr: Expr = "fold(and, @ABILITY, in(@ARG, 0, 1))".parse().unwrap();
+        let expr: Expr = "fold(and, @ABIL, in(@ARG, 0, 1))".parse().unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
         assert_eq!(analysis.active_args.len(), 6);
         for i in 0..6u8 {
@@ -1562,7 +1562,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn analyze_masked_each_active_args() {
         let ctx = TestCtx::new();
-        let expr: Expr = "with(@ABILITY(STR, INT, CHA), each(@, @ += @ARG))"
+        let expr: Expr = "with(@ABIL(STR, INT, CHA), each(@, @ += @ARG))"
             .parse()
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
@@ -1577,7 +1577,7 @@ mod loop_tests {
         // where both COND and BODY use @ARG. Regression test: analyze should
         // detect ARGs despite the guard wrapping.
         let ctx = TestCtx::new();
-        let expr: Expr = "with(@ABILITY(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))"
+        let expr: Expr = "with(@ABIL(STR, INT, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))"
             .parse()
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
@@ -1591,7 +1591,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn analyze_masked_fold_boolean_args() {
         let ctx = TestCtx::new();
-        let expr: Expr = "with(@ABILITY(STR, INT, CHA), fold(and, @, in(@ARG, 0, 1)))"
+        let expr: Expr = "with(@ABIL(STR, INT, CHA), fold(and, @, in(@ARG, 0, 1)))"
             .parse()
             .unwrap();
         let analysis = expr.analyze(&ctx, Attribute::arg_index);
@@ -1711,20 +1711,20 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn summarizer_each_terminates() {
-        let expr: Expr = "each(@ABILITY, @ABILITY += @ARG)".parse().unwrap();
+        let expr: Expr = "each(@ABIL, @ABIL += @ARG)".parse().unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
     }
 
     #[wasm_bindgen_test]
     fn summarizer_fold_terminates() {
-        let expr: Expr = "fold(+, @ABILITY, @ARG)".parse().unwrap();
+        let expr: Expr = "fold(+, @ABIL, @ARG)".parse().unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
     }
 
     #[wasm_bindgen_test]
     fn summarizer_guard_with_fold_terminates() {
         let expr: Expr =
-            "guard(fold(and, @ABILITY, in(@ARG, 0, 1)) and fold(+, @ABILITY, @ARG) == 1, each(@ABILITY, if(@ABILITY < 20, @ABILITY += @ARG)))"
+            "guard(fold(and, @ABIL, in(@ARG, 0, 1)) and fold(+, @ABIL, @ARG) == 1, each(@ABIL, if(@ABIL < 20, @ABIL += @ARG)))"
                 .parse()
                 .unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
@@ -1732,7 +1732,7 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn summarizer_each_with_condition_terminates() {
-        let expr: Expr = "each(@ABILITY, if(@ABILITY < 20, @ABILITY += @ARG))"
+        let expr: Expr = "each(@ABIL, if(@ABIL < 20, @ABIL += @ARG))"
             .parse()
             .unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
@@ -1740,7 +1740,7 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn summarizer_fold_with_complex_body_terminates() {
-        let expr: Expr = "fold(+, @ABILITY, @ARG + max(0, @ARG - 5))"
+        let expr: Expr = "fold(+, @ABIL, @ARG + max(0, @ARG - 5))"
             .parse()
             .unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
@@ -1748,7 +1748,7 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn parse_with_binding() {
-        let expr: Expr = "with(@ABILITY(INT, WIS, CHA), each(@, if(@ < 20, @ += @ARG)))"
+        let expr: Expr = "with(@ABIL(INT, WIS, CHA), each(@, if(@ < 20, @ += @ARG)))"
             .parse()
             .unwrap();
         // with expands — display shows the expanded form
@@ -1760,7 +1760,7 @@ mod loop_tests {
     fn eval_with_binding() {
         let mut ctx = TestCtx::new();
         // INT=8, WIS=16, CHA=11 → all += 1
-        let expr: Expr = "with(@ABILITY(INT, WIS, CHA), each(@, @ += 1))"
+        let expr: Expr = "with(@ABIL(INT, WIS, CHA), each(@, @ += 1))"
             .parse()
             .unwrap();
         expr.apply(&mut ctx).unwrap();
@@ -1775,7 +1775,7 @@ mod loop_tests {
     fn eval_with_fold() {
         let ctx = TestCtx::new();
         // fold(+, INT+WIS+CHA) = 8+16+11 = 35
-        let expr: Expr = "with(@ABILITY(INT, WIS, CHA), fold(+, @, @))"
+        let expr: Expr = "with(@ABIL(INT, WIS, CHA), fold(+, @, @))"
             .parse()
             .unwrap();
         let result = expr.eval(&ctx).unwrap();
@@ -1785,7 +1785,7 @@ mod loop_tests {
     #[wasm_bindgen_test]
     fn summarizer_with_terminates() {
         let expr: Expr =
-            "with(@ABILITY(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))"
+            "with(@ABIL(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))"
                 .parse()
                 .unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
@@ -1793,14 +1793,14 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn fold_shorthand_roundtrip() {
-        let expr: Expr = "fold(+, @ABILITY)".parse().unwrap();
-        assert_eq!(expr.to_string(), "fold(+, @ABILITY)");
+        let expr: Expr = "fold(+, @ABIL)".parse().unwrap();
+        assert_eq!(expr.to_string(), "fold(+, @ABIL)");
     }
 
     #[wasm_bindgen_test]
     fn eval_fold_shorthand() {
         let ctx = TestCtx::new();
-        let expr: Expr = "fold(+, @ABILITY)".parse().unwrap();
+        let expr: Expr = "fold(+, @ABIL)".parse().unwrap();
         let result = expr.eval(&ctx).unwrap();
         assert_eq!(result, ctx.abilities.iter().sum::<i32>());
     }

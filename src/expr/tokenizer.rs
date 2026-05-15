@@ -27,7 +27,7 @@ pub(super) enum Token<'a> {
     Comma,
     Semicolon,
     Bang,
-    GroupRef(&'a str), // @ABILITY, @SKILL, @TOOL, @DMG (bare group name)
+    GroupRef(&'a str), // @ABIL, @SKILL, @TOOL, @DMG (bare group name)
     At,                // bare @ (current each-scope primary column)
     AtField(&'a str),  // @.SUFFIX (e.g. @.MOD, @.SAVE.PROF) — column projection
     // Boolean / comparison

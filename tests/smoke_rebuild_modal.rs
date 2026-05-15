@@ -80,7 +80,7 @@ fn background_ability_def(name: &str, abilities: &str) -> FeatureDefinition {
     // `in(@ARG, 0, 2)` so `scan_arg_range` produces a valid range and the
     // assign survives `prepare_rebuild`'s emit filter.
     let expr_str = format!(
-        "with(@ABILITY({abilities}), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "with(@ABIL({abilities}), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
     );
     FeatureDefinition {
         name: name.into(),
@@ -366,7 +366,7 @@ async fn rebuild_does_not_silently_commit_when_pending_feat_has_empty_inputs() {
 fn multi_statement_expression_aborts_atomically_on_guard_failure() {
     use dnd_pc::model::ProficiencyLevel;
 
-    let expr_str = "with(@ABILITY(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1";
+    let expr_str = "with(@ABIL(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1";
     let expr: Expr = expr_str.parse().expect("expression parses");
     let assignments = [Assignment {
         expr,
@@ -424,7 +424,7 @@ fn multi_statement_expression_aborts_atomically_on_guard_failure() {
 fn split_assigns_let_skill_writes_survive_guard_failure() {
     use dnd_pc::model::ProficiencyLevel;
 
-    let asi_expr: Expr = "with(@ABILITY(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))".parse().expect("parses");
+    let asi_expr: Expr = "with(@ABIL(STR, DEX, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))".parse().expect("parses");
     let skills_expr: Expr = "SKILL.ACRO.PROF = 1; SKILL.PERF.PROF = 1"
         .parse()
         .expect("parses");

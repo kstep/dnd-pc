@@ -147,7 +147,7 @@ impl FromStr for AttributeGroup {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "ABILITY" => Ok(Self::Ability),
+            "ABIL" => Ok(Self::Ability),
             "SKILL" => Ok(Self::Skill),
             "TOOL" => Ok(Self::Tool),
             "DMG" => Ok(Self::Dmg),
@@ -233,7 +233,7 @@ impl ResolveGroup<AttributeGroup> for StaticAttrSource {
 impl fmt::Display for AttributeGroup {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(match self {
-            Self::Ability => "ABILITY",
+            Self::Ability => "ABIL",
             Self::Skill => "SKILL",
             Self::Tool => "TOOL",
             Self::Dmg => "DMG",

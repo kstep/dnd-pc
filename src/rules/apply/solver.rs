@@ -378,7 +378,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn scan_arg_range_extracts_asi_bounds() {
-        let expr: Expr = "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2)) and \
+        let expr: Expr = "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 2)) and \
              fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))"
             .parse()
             .unwrap();
@@ -388,7 +388,7 @@ mod tests {
     #[wasm_bindgen_test]
     fn solve_single_asi_str_plus_2() {
         let def = feat_def_single(
-            "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2)) and \
+            "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 2)) and \
              fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         );
         let pending = pending_l1("ASI");
@@ -417,11 +417,11 @@ mod tests {
     #[wasm_bindgen_test]
     fn solve_two_asi_plus_spell_sniper_chain() {
         let asi_def = feat_def_single(
-            "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2)) and \
+            "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 2)) and \
              fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
         );
         let sniper_def = feat_def_single(
-            "with(@ABILITY(INT), guard(fold(and, @, in(@ARG, 0, 1)) and \
+            "with(@ABIL(INT), guard(fold(and, @, in(@ARG, 0, 1)) and \
              fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
         );
 
@@ -499,7 +499,7 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn solve_unreachable_target_returns_false() {
-        let def = feat_def_single("with(@ABILITY(STR), guard(in(@ARG, 0, 1), each(@, @ += @ARG)))");
+        let def = feat_def_single("with(@ABIL(STR), guard(in(@ARG, 0, 1), each(@, @ += @ARG)))");
         let pending = pending_l1("STR-bump");
         let mut feats = vec![mk_feat_state(
             &def,
@@ -526,7 +526,7 @@ mod tests {
             "name": "_Dragonscarred",
             "assign": [
                 {
-                    "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                    "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and \
                              fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
                     "when": "OnFeatureAdd",
                 },
@@ -733,7 +733,7 @@ mod tests {
         let criminal_ba_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Background Abilities (Criminal)",
             "assign": [{
-                "expr": "with(@ABILITY(DEX, CON, INT), \
+                "expr": "with(@ABIL(DEX, CON, INT), \
                          guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and \
                          fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG)))); \
                          SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1",
@@ -753,7 +753,7 @@ mod tests {
         let asi_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Ability Score Improvement",
             "assign": [{
-                "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) \
+                "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) \
                          and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))",
                 "when": "OnFeatureAdd",
             }],

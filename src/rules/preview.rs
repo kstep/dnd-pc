@@ -82,7 +82,7 @@ pub fn eval_at_levels<F: FnMut(u32, &mut PreviewContext)>(
 }
 
 // PreviewContext has no Character — group iteration yields nothing. Reference
-// pages only preview scalar progressions; loops over @ABILITY/@SKILL/etc.
+// pages only preview scalar progressions; loops over @ABIL/@SKILL/etc.
 // surface zero contributions for the snapshot.
 impl expr::ResolveGroup<AttributeGroup> for PreviewContext {
     fn resolve_group<'a>(

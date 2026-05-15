@@ -838,7 +838,7 @@ mod tests {
         );
     }
 
-    /// Sanity: cascade applies a non-stackable feat whose `@ABILITY(DEX,
+    /// Sanity: cascade applies a non-stackable feat whose `@ABIL(DEX,
     /// CON, CHA)` group-iter assign bumps abilities from stored args.
     #[wasm_bindgen_test]
     fn cascade_applies_bg_abilities_group_assign_to_probe() {
@@ -881,7 +881,7 @@ mod tests {
                 spells: None,
                 actions: BTreeMap::new(),
                 assign: Some(vec![Assignment {
-                    expr: "with(@ABILITY(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))"
+                    expr: "with(@ABIL(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))"
                         .parse::<Expr>()
                         .unwrap(),
                     when: WhenCondition::OnFeatureAdd,
@@ -932,7 +932,7 @@ mod tests {
             false,
         );
 
-        // args=[1,0,2] over @ABILITY(DEX, CON, CHA): DEX+1, CON+0, CHA+2.
+        // args=[1,0,2] over @ABIL(DEX, CON, CHA): DEX+1, CON+0, CHA+2.
         assert_eq!(probe.abilities.dexterity, 16);
         assert_eq!(probe.abilities.constitution, 16);
         assert_eq!(probe.abilities.charisma, 11);
@@ -1198,7 +1198,7 @@ mod tests {
                 spells: None,
                 actions: BTreeMap::new(),
                 assign: Some(vec![Assignment {
-                    expr: "with(@ABILITY(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))"
+                    expr: "with(@ABIL(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))"
                         .parse::<Expr>()
                         .unwrap(),
                     when: WhenCondition::OnFeatureAdd,
@@ -1234,7 +1234,7 @@ mod tests {
                 spells: None,
                 actions: BTreeMap::new(),
                 assign: Some(vec![Assignment {
-                    expr: "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))"
+                    expr: "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 2, each(@, if(@ < 20, @ += @ARG))))"
                         .parse::<Expr>()
                         .unwrap(),
                     when: WhenCondition::OnFeatureAdd,

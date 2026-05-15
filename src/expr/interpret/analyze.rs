@@ -333,10 +333,10 @@ mod tests {
 
     #[test]
     fn analyze_loop_no_filter_preserves_all_indices() {
-        // Generation: User-Defined uses `each(@ABILITY, @ = @ARG)` — no filter.
+        // Generation: User-Defined uses `each(@ABIL, @ = @ARG)` — no filter.
         // All 6 abilities must stay active after our refactor.
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "each(@ABILITY, @ = @ARG)".parse().expect("expr must parse");
+        let expr: crate::model::Expr = "each(@ABIL, @ = @ARG)".parse().expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
         assert_eq!(
             analysis.active_args,
@@ -347,12 +347,12 @@ mod tests {
 
     #[test]
     fn analyze_loop_with_outer_mask() {
-        // Masked subgroup (@ABILITY(STR, DEX)) × per-iter filter @ < 20.
+        // Masked subgroup (@ABIL(STR, DEX)) × per-iter filter @ < 20.
         // A freshly-built character has all abilities below 20, so both
         // STR and DEX iters should end up active (iter_no 0 and 1 within
         // the masked subgroup).
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "each(@ABILITY(STR, DEX), if(@ < 20, @ += @ARG))"
+        let expr: crate::model::Expr = "each(@ABIL(STR, DEX), if(@ < 20, @ += @ARG))"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
@@ -389,7 +389,7 @@ mod tests {
         // current iter_no. Across all outer×inner iterations, `active_args`
         // should cover every inner iter_no exactly once (BTreeSet dedupes).
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "each(@ABILITY, each(@ABILITY, @ABILITY += @ARG))"
+        let expr: crate::model::Expr = "each(@ABIL, each(@ABIL, @ABIL += @ARG))"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
@@ -407,7 +407,7 @@ mod tests {
         // ARGs. AC on a default-built character is 0, so `AC >= 999` is
         // trivially false without any ARG in the cond.
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "guard(AC >= 999, each(@ABILITY, @ABILITY += @ARG))"
+        let expr: crate::model::Expr = "guard(AC >= 999, each(@ABIL, @ABIL += @ARG))"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
@@ -427,7 +427,7 @@ mod tests {
         // discards ARGs pushed by the fold body on every iteration except
         // the first.
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "fold(+, @ABILITY, @ARG)".parse().expect("expr must parse");
+        let expr: crate::model::Expr = "fold(+, @ABIL, @ARG)".parse().expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
         assert_eq!(
             analysis.active_args,
@@ -454,7 +454,7 @@ mod tests {
         // Generation: User-Defined is the driving case: all ability inputs must
         // stay editable (is_satisfied in ExprArgsInput gates on has_guard).
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "each(@ABILITY, @ABILITY = @ARG)"
+        let expr: crate::model::Expr = "each(@ABIL, @ABIL = @ARG)"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
