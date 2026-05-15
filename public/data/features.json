@@ -203,7 +203,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "TOOL.`Cook's Utensils`.ABILITY = 4",
+        "expr": "TOOL.`Cook's Utensils`.ABIL = 4",
         "when": "OnFeatureAdd"
       }
     ],
@@ -274,7 +274,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -450,7 +450,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "TOOL.`Poisoner's Kit`.ABILITY = 3",
+        "expr": "TOOL.`Poisoner's Kit`.ABIL = 3",
         "when": "OnFeatureAdd"
       }
     ],
@@ -510,7 +510,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -625,7 +625,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "expr": "STICKY.`Detect Thoughts` = 1",
@@ -689,7 +689,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "when": "OnCompute",
@@ -722,7 +722,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "when": "OnCompute",
@@ -928,7 +928,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 2"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 2"
       },
       {
         "when": "OnCompute",
@@ -941,7 +941,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 2"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 2"
       },
       {
         "expr": "STICKY.`Mending` = 1",
@@ -1345,7 +1345,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Healing Word` = 1; STICKY.`Ray of Sickness` = 1)",
@@ -1439,7 +1439,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Magic Missile` = 1; STICKY.`Thunderwave` = 1)",
@@ -1492,7 +1492,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Shield` = 1; STICKY.`Thunderwave` = 1)",
@@ -1542,7 +1542,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Heroism` = 1; STICKY.`Shield` = 1)",
@@ -1583,7 +1583,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Healing Word` = 1)",
@@ -2087,7 +2087,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -2200,7 +2200,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Mirror Image` = 1)",
@@ -2578,7 +2578,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -2674,7 +2674,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Bless` = 1; STICKY.`Cure Wounds` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
@@ -2729,7 +2729,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Faerie Fire` = 1; STICKY.`Scorching Ray` = 1; STICKY.`See Invisibility` = 1)",
@@ -2959,7 +2959,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Disguise Self` = 1; STICKY.`Invisibility` = 1; STICKY.`Pass without Trace` = 1)",
@@ -2987,7 +2987,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Shield of Faith` = 1; STICKY.`Magic Weapon` = 1; STICKY.`Spiritual Weapon` = 1)",
@@ -3483,7 +3483,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -3569,7 +3569,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Fog Cloud` = 1; STICKY.`Ray of Sickness` = 1; STICKY.`Sleep` = 1; STICKY.`Blur` = 1; STICKY.`Hold Person` = 1; STICKY.`Misty Step` = 1; STICKY.`Web` = 1)",
@@ -3650,7 +3650,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Moonbeam` = 1)",
@@ -3945,7 +3945,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Fog Cloud` = 1; STICKY.`Thunderwave` = 1; STICKY.`Gust of Wind` = 1)",
@@ -4177,7 +4177,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 3"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 3"
       },
       {
         "when": "OnCompute",
@@ -5078,7 +5078,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       }
     ]
   },
@@ -5130,7 +5130,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       }
     ]
   },
@@ -5284,7 +5284,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 2"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 2"
       },
       {
         "when": "OnCompute",
@@ -5348,7 +5348,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Protection from Evil and Good` = 1; STICKY.`Shield of Faith` = 1)",
@@ -5436,7 +5436,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Ensnaring Strike` = 1; STICKY.`Speak with Animals` = 1)",
@@ -5503,7 +5503,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Bane` = 1; STICKY.`Hunter's Mark` = 1)",
@@ -5807,7 +5807,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Heroism` = 1)",
@@ -5970,7 +5970,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Thunderous Smite` = 1)",
@@ -6051,7 +6051,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 2"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 2"
       },
       {
         "expr": "POINTS.`Favored Enemy`.MAX = tier(CLASS.LEVEL, 1:2, 5:3, 9:4, 13:5, 17:6)",
@@ -6073,7 +6073,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 2"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 2"
       },
       {
         "when": "OnCompute",
@@ -6230,7 +6230,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Disguise Self` = 1)",
@@ -6396,7 +6396,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1)",
@@ -6521,7 +6521,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Ice Knife` = 1)",
@@ -6793,7 +6793,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 3"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 3"
       },
       {
         "when": "OnCompute",
@@ -7164,7 +7164,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -7542,7 +7542,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Arms of Hadar` = 1; STICKY.`Dissonant Whispers` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Detect Thoughts` = 1)",
@@ -7630,7 +7630,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Alarm` = 1; STICKY.`Protection from Evil and Good` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
@@ -7722,7 +7722,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Command` = 1; STICKY.`Alter Self` = 1; STICKY.`Dragon's Breath` = 1)",
@@ -7817,7 +7817,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Lesser Restoration` = 1; STICKY.`Scorching Ray` = 1)",
@@ -7979,7 +7979,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "SLOT.POOL = 1; CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "SLOT.POOL = 1; CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -8003,7 +8003,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -8025,7 +8025,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -8047,7 +8047,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -8069,7 +8069,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 5; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -8329,7 +8329,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Sleep` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Misty Step` = 1; STICKY.`Phantasmal Force` = 1)",
@@ -8387,7 +8387,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
@@ -8470,7 +8470,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Command` = 1; STICKY.`Scorching Ray` = 1; STICKY.`Suggestion` = 1)",
@@ -8633,7 +8633,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Dissonant Whispers` = 1; STICKY.`Hex` = 1; STICKY.`Tasha's Hideous Laughter` = 1; STICKY.`Detect Thoughts` = 1; STICKY.`Phantasmal Force` = 1)",
@@ -8690,7 +8690,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -9023,7 +9023,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 10, STICKY.`See Invisibility` = 1)",
@@ -9064,7 +9064,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       }
     ]
   },
@@ -9073,7 +9073,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 6, STICKY.`Summon Beast` = 1; STICKY.`Summon Fey` = 1)",
@@ -9180,7 +9180,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4"
+        "expr": "CASTER.ABIL = 4"
       },
       {
         "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1)",
@@ -9237,7 +9237,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3"
+        "expr": "CASTER.ABIL = 3"
       },
       {
         "expr": "if(LEVEL >= 10, STICKY.`Counterspell` = 1; STICKY.`Dispel Magic` = 1)",
@@ -9393,7 +9393,7 @@
     "name": "Class Proficiencies (Rogue)",
     "assign": [
       {
-        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "HIT_DICE.SIDES = 8; DEX.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.SIMPLE_WEAPONS = 1; TOOL.`Thieves' Tools`.ABIL = 1",
         "when": "OnFeatureAdd"
       },
       {
@@ -9560,7 +9560,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -9583,7 +9583,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -9606,7 +9606,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 3; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 1"
       },
       {
         "when": "OnCompute",
@@ -9623,7 +9623,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Light` = 1",
@@ -9658,7 +9658,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Dancing Lights` = 1",
@@ -9694,7 +9694,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Minor Illusion` = 1",
@@ -9726,7 +9726,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Prestidigitation` = 1",
@@ -9772,7 +9772,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Druidcraft` = 1",
@@ -9824,7 +9824,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Thaumaturgy` = 1; STICKY.`Poison Spray` = 1",
@@ -9874,7 +9874,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Thaumaturgy` = 1; STICKY.`Chill Touch` = 1",
@@ -9924,7 +9924,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Thaumaturgy` = 1; STICKY.`Fire Bolt` = 1",
@@ -10101,7 +10101,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Calligrapher's Supplies`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10127,7 +10127,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Forgery Kit`.ABILITY = 1",
+        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Forgery Kit`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10140,7 +10140,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "SKILL.SLEI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10166,7 +10166,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1; TOOL.`Carpenter's Tools`.ABILITY = 0",
+        "expr": "SKILL.ANIM.PROF = 1; SKILL.NATU.PROF = 1; TOOL.`Carpenter's Tools`.ABIL = 0",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10192,7 +10192,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1; TOOL.`Cartographer's Tools`.ABILITY = 4",
+        "expr": "SKILL.STEA.PROF = 1; SKILL.SURV.PROF = 1; TOOL.`Cartographer's Tools`.ABIL = 4",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10205,7 +10205,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Herbalism Kit`.ABILITY = 3",
+        "expr": "SKILL.MEDI.PROF = 1; SKILL.RELI.PROF = 1; TOOL.`Herbalism Kit`.ABIL = 3",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10244,7 +10244,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.ARCA.PROF = 1; SKILL.HIST.PROF = 1; TOOL.`Calligrapher's Supplies`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10257,7 +10257,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Navigator's Tools`.ABILITY = 4",
+        "expr": "SKILL.ACRO.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Navigator's Tools`.ABIL = 4",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10270,7 +10270,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Calligrapher's Supplies`.ABILITY = 1",
+        "expr": "SKILL.INVE.PROF = 1; SKILL.PERC.PROF = 1; TOOL.`Calligrapher's Supplies`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10283,7 +10283,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1; TOOL.COUNT += 1",
+        "expr": "SKILL.ATHL.PROF = 1; SKILL.INTI.PROF = 1; TOOL.`Gaming Set`.ABIL = 4",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10296,7 +10296,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABILITY = 1",
+        "expr": "SKILL.INSI.PROF = 1; SKILL.STEA.PROF = 1; TOOL.`Thieves' Tools`.ABIL = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10507,7 +10507,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 5"
+        "expr": "CASTER.ABIL = 5"
       },
       {
         "expr": "STICKY.`Friends` = 1",
@@ -11029,7 +11029,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "CASTER.ABILITY = 4; CASTER.COEF = 1"
+        "expr": "CASTER.ABIL = 4; CASTER.COEF = 1"
       },
       {
         "expr": "STICKY.`Fog Cloud` = 1",

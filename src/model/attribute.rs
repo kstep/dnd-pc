@@ -485,7 +485,7 @@ impl FromStr for Attribute {
                 "LEVEL.ARCANE" => Ok(Self::CasterLevel(Some(SpellSlotPool::Arcane))),
                 "LEVEL.PACT" => Ok(Self::CasterLevel(Some(SpellSlotPool::Pact))),
                 "MOD" => Ok(Self::CasterModifier),
-                "ABILITY" => Ok(Self::CasterAbility),
+                "ABIL" => Ok(Self::CasterAbility),
                 "COEF" => Ok(Self::CasterCoef),
                 _ => Err("unknown CASTER suffix"),
             },
@@ -608,7 +608,7 @@ impl FromStr for Attribute {
                     let (name, suffix) = parse_backtick_name(rest)?;
                     match suffix {
                         ".PROF" => Ok(Self::ToolProficiency(intern(name))),
-                        ".ABILITY" => Ok(Self::ToolAbility(intern(name))),
+                        ".ABIL" => Ok(Self::ToolAbility(intern(name))),
                         _ => Err("expected TOOL.<name>.PROF or TOOL.COUNT"),
                     }
                 }
@@ -722,7 +722,7 @@ impl fmt::Display for Attribute {
             Self::SlotUsed(Some(SpellSlotPool::Arcane), n) => write!(f, "SLOT.ARCANE.{n}.USED"),
             Self::SlotUsed(Some(SpellSlotPool::Pact), n) => write!(f, "SLOT.PACT.{n}.USED"),
             Self::SlotPool => f.write_str("SLOT.POOL"),
-            Self::CasterAbility => f.write_str("CASTER.ABILITY"),
+            Self::CasterAbility => f.write_str("CASTER.ABIL"),
             Self::CasterCoef => f.write_str("CASTER.COEF"),
             Self::SpellCantrips => f.write_str("SPELL.CANTRIPS"),
             Self::SpellKnown => f.write_str("SPELL.KNOWN"),
@@ -731,7 +731,7 @@ impl fmt::Display for Attribute {
             Self::Feature(name) => fmt_quoted_name(name, "FEAT", "", f),
             Self::Language(name) => fmt_quoted_name(name, "LANG", "", f),
             Self::ToolProficiency(name) => fmt_quoted_name(name, "TOOL", ".PROF", f),
-            Self::ToolAbility(name) => fmt_quoted_name(name, "TOOL", ".ABILITY", f),
+            Self::ToolAbility(name) => fmt_quoted_name(name, "TOOL", ".ABIL", f),
             Self::ToolCount => f.write_str("TOOL.COUNT"),
             Self::Species(name) => write!(f, "SPECIES.`{name}`"),
             Self::Background(name) => write!(f, "BACKGROUND.`{name}`"),
@@ -1480,7 +1480,7 @@ mod tests {
     #[wasm_bindgen_test]
     fn parse_caster_meta_attributes() {
         assert_eq!(
-            "CASTER.ABILITY".parse::<Attribute>().unwrap(),
+            "CASTER.ABIL".parse::<Attribute>().unwrap(),
             Attribute::CasterAbility
         );
         assert_eq!(

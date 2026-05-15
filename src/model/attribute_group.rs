@@ -92,7 +92,7 @@ impl VarGroup for ToolGroup {
 
     const COLUMNS: &'static [fn(&'static str) -> Attribute] =
         &[Attribute::ToolProficiency, Attribute::ToolAbility];
-    const SCHEMA: &'static [&'static str] = &["ABILITY"];
+    const SCHEMA: &'static [&'static str] = &["ABIL"];
 
     fn arg(n: u8) -> Attribute {
         Attribute::Arg(n)
@@ -140,7 +140,7 @@ impl VarGroup for DmgGroup {
 
 /// Storage discriminator for Op-side dispatch.
 ///
-/// Parser builds it via `FromStr` from bare group names (`ABILITY`,
+/// Parser builds it via `FromStr` from bare group names (`ABIL`,
 /// `SKILL`, `TOOL`, `DMG`). Iteration is handled by
 /// `Context::resolve_group` (per-variant impl on the concrete Context),
 /// not through `VarGroup` methods here — those provide
