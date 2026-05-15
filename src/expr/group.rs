@@ -25,6 +25,12 @@ pub trait VarGroup {
     /// Map a member's short name to row position for `@G(name, …)` masks.
     fn member_by_name(&self, name: &str) -> Option<usize>;
 
+    /// Inverse of `member_by_name`: short name of the member at `pos`.
+    /// Default `None` for groups without name-keyed masks.
+    fn member_name(&self, _pos: usize) -> Option<&'static str> {
+        None
+    }
+
     /// Row count when membership is statically known; `None` for dynamic
     /// groups.
     fn static_size(&self) -> Option<usize> {
@@ -88,7 +94,7 @@ impl<Grp> VarSubgroup<Grp> {
     }
 }
 
-impl<Grp: fmt::Display> fmt::Display for VarSubgroup<Grp> {
+impl<Grp: fmt::Display + VarGroup> fmt::Display for VarSubgroup<Grp> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.inner)?;
         if self.mask != u32::MAX {
@@ -99,7 +105,10 @@ impl<Grp: fmt::Display> fmt::Display for VarSubgroup<Grp> {
                     if !first {
                         write!(f, ", ")?;
                     }
-                    write!(f, "@{}", bit)?;
+                    match self.inner.member_name(bit as usize) {
+                        Some(name) => write!(f, "{name}")?,
+                        None => write!(f, "@{bit}")?,
+                    }
                     first = false;
                 }
             }

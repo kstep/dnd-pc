@@ -38,8 +38,12 @@ impl VarGroup for AbilityGroup {
     }
 
     fn member_by_name(&self, name: &str) -> Option<usize> {
-        let a = parse_ability(name)?;
-        Ability::VARIANTS.iter().position(|&x| x == a)
+        let ability = parse_ability(name)?;
+        Ability::VARIANTS.iter().position(|&x| x == ability)
+    }
+
+    fn member_name(&self, pos: usize) -> Option<&'static str> {
+        Ability::VARIANTS.get(pos).map(|ability| ability.abbr())
     }
 
     fn static_size(&self) -> Option<usize> {
@@ -66,8 +70,12 @@ impl VarGroup for SkillGroup {
     }
 
     fn member_by_name(&self, name: &str) -> Option<usize> {
-        let s = parse_skill(name)?;
-        Skill::VARIANTS.iter().position(|&x| x == s)
+        let skill = parse_skill(name)?;
+        Skill::VARIANTS.iter().position(|&x| x == skill)
+    }
+
+    fn member_name(&self, pos: usize) -> Option<&'static str> {
+        Skill::VARIANTS.get(pos).map(|skill| skill.abbr())
     }
 
     fn static_size(&self) -> Option<usize> {
@@ -117,8 +125,12 @@ impl VarGroup for DmgGroup {
     }
 
     fn member_by_name(&self, name: &str) -> Option<usize> {
-        let d = parse_damage_type(name)?;
-        DamageType::VARIANTS.iter().position(|&x| x == d)
+        let damage = parse_damage_type(name)?;
+        DamageType::VARIANTS.iter().position(|&x| x == damage)
+    }
+
+    fn member_name(&self, pos: usize) -> Option<&'static str> {
+        DamageType::VARIANTS.get(pos).map(|damage| damage.abbr())
     }
 
     fn static_size(&self) -> Option<usize> {
@@ -270,6 +282,15 @@ impl VarGroup for AttributeGroup {
             Self::Skill => SkillGroup.member_by_name(name),
             Self::Tool => ToolGroup.member_by_name(name),
             Self::Dmg => DmgGroup.member_by_name(name),
+        }
+    }
+
+    fn member_name(&self, pos: usize) -> Option<&'static str> {
+        match self {
+            Self::Ability => AbilityGroup.member_name(pos),
+            Self::Skill => SkillGroup.member_name(pos),
+            Self::Tool => ToolGroup.member_name(pos),
+            Self::Dmg => DmgGroup.member_name(pos),
         }
     }
 

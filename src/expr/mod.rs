@@ -1499,6 +1499,25 @@ mod loop_tests {
     }
 
     #[wasm_bindgen_test]
+    fn asi_roundtrip() {
+        // Canonical ASI formula: masked ability subgroup, guard with two
+        // folds, each with a guarded body. Catches `VarSubgroup::Display`
+        // bug (printing `@bit` instead of member names) and scope-tracking
+        // in the Formatter at the same time.
+        let input = "with(@ABIL(INT, WIS, CHA), guard(fold(and, @, in(@ARG, 0, 1)) and \
+                     fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))";
+        let expr: Expr = input.parse().unwrap();
+        // `with` is parse-time sugar, so display reflects the expanded form.
+        let expected = "guard(fold(and, @ABIL(INT, WIS, CHA), in(@ARG, 0, 1)) and \
+                        fold(+, @ABIL(INT, WIS, CHA), @ARG) == 1, \
+                        each(@ABIL(INT, WIS, CHA), if(@ < 20, @ += @ARG)))";
+        assert_eq!(expr.to_string(), expected);
+        // Reparsing the displayed form yields an identical bytecode.
+        let reparsed: Expr = expr.to_string().parse().unwrap();
+        assert_eq!(reparsed.to_string(), expected);
+    }
+
+    #[wasm_bindgen_test]
     fn compound_with_prefixed_each_statement() {
         // Top-level each-statement before a compound on `AC` — the prefix
         // is detected and roundtrips as long form (formatter has no short
@@ -1740,9 +1759,7 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn summarizer_fold_with_complex_body_terminates() {
-        let expr: Expr = "fold(+, @ABIL, @ARG + max(0, @ARG - 5))"
-            .parse()
-            .unwrap();
+        let expr: Expr = "fold(+, @ABIL, @ARG + max(0, @ARG - 5))".parse().unwrap();
         expr.run(NonEvalInterpreter::new()).unwrap();
     }
 
@@ -1775,9 +1792,7 @@ mod loop_tests {
     fn eval_with_fold() {
         let ctx = TestCtx::new();
         // fold(+, INT+WIS+CHA) = 8+16+11 = 35
-        let expr: Expr = "with(@ABIL(INT, WIS, CHA), fold(+, @, @))"
-            .parse()
-            .unwrap();
+        let expr: Expr = "with(@ABIL(INT, WIS, CHA), fold(+, @, @))".parse().unwrap();
         let result = expr.eval(&ctx).unwrap();
         assert_eq!(result, 8 + 16 + 11);
     }

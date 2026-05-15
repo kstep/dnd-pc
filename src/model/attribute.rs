@@ -297,7 +297,7 @@ pub fn parse_damage_type(s: &str) -> Option<DamageType> {
 }
 
 impl DamageType {
-    fn abbr(self) -> &'static str {
+    pub fn abbr(self) -> &'static str {
         match self {
             Self::Acid => "ACID",
             Self::Bludgeoning => "BLUDG",
@@ -354,7 +354,7 @@ pub fn parse_skill(s: &str) -> Option<Skill> {
 }
 
 impl Skill {
-    fn abbr(self) -> &'static str {
+    pub fn abbr(self) -> &'static str {
         match self {
             Self::Acrobatics => "ACRO",
             Self::AnimalHandling => "ANIM",
