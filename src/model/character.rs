@@ -173,6 +173,18 @@ impl DerefMut for Character {
     }
 }
 
+impl AsRef<CharacterCore> for CharacterCore {
+    fn as_ref(&self) -> &CharacterCore {
+        self
+    }
+}
+
+impl AsRef<CharacterCore> for Character {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.core
+    }
+}
+
 pub fn now_epoch_secs() -> u64 {
     (js_sys::Date::now() / 1000.0) as u64
 }

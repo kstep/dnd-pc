@@ -16,8 +16,10 @@ use crate::{
     components::{
         expr_view::ExprView, markdown::Markdown, ref_link::Ref, spell_info_bar::SpellInfoBar,
     },
-    expr::{self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Interpreter, IterStack, VarGroup},
-    model::{Attribute, AttributeGroup, Expr, FeatureCategory, Op, Translatable},
+    expr::{
+        self, BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, CursorStack, GroupCursor, Interpreter,
+    },
+    model::{Attribute, AttributeGroup, Expr, FeatureCategory, Op, StaticAttrSource, Translatable},
     rules::{
         ActionDefinition, Assignment, ChoiceOptions, FeatureDefinition, PoolSummarizer,
         RulesRegistry, SpellDefinition, SpellEntry, SpellsList, locale::LocaleKey,
@@ -210,7 +212,7 @@ impl SumEntry {
 
 struct AssignmentSummarizer {
     stack: Vec<SumEntry>,
-    iter_stack: IterStack,
+    iter_stack: CursorStack<Attribute>,
     i18n: I18n,
     registry: RulesRegistry,
     abilities: Vec<String>,
@@ -225,7 +227,7 @@ impl AssignmentSummarizer {
     fn new(i18n: I18n, registry: RulesRegistry) -> Self {
         Self {
             stack: Vec::new(),
-            iter_stack: IterStack::new(),
+            iter_stack: CursorStack::new(),
             i18n,
             registry,
             abilities: Vec::new(),
@@ -497,16 +499,30 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer {
                 });
             }
             Op::Each(subgrp) => {
-                let has_items = subgrp.init_loop(&mut self.iter_stack);
-                self.stack.push(SumEntry::constant(has_items as i32));
+                let cursor = GroupCursor::build(&StaticAttrSource, &subgrp);
+                let live = cursor.is_live();
+                if live {
+                    self.iter_stack.push(cursor);
+                }
+                self.stack.push(SumEntry::constant(live as i32));
             }
-            Op::Next(subgrp) => {
-                let more = subgrp.advance_loop(&mut self.iter_stack);
+            Op::Next => {
+                let more = self
+                    .iter_stack
+                    .top_mut()
+                    .map(|cursor| cursor.advance())
+                    .unwrap_or(false);
+                if !more {
+                    let _ = self.iter_stack.pop();
+                }
                 self.stack.push(SumEntry::constant(more as i32));
             }
-            Op::PushGroup(grp) => {
-                if let Some(idx) = self.iter_stack.last()
-                    && let Some(var) = grp.member(*idx)
+            Op::PushGroup(_grp, col) => {
+                if let Some(var) = self
+                    .iter_stack
+                    .top()
+                    .ok()
+                    .and_then(|cursor| cursor.col(col).copied())
                 {
                     let raw = var.to_string();
                     let text = var.display_name(self.i18n);
@@ -515,9 +531,12 @@ impl Interpreter<Attribute, i32, AttributeGroup> for AssignmentSummarizer {
                     self.stack.push(SumEntry::constant(0));
                 }
             }
-            Op::AssignGroup(grp) => {
-                if let Some(idx) = self.iter_stack.last()
-                    && let Some(attr) = grp.member(*idx)
+            Op::AssignGroup(_grp, col) => {
+                if let Some(attr) = self
+                    .iter_stack
+                    .top()
+                    .ok()
+                    .and_then(|cursor| cursor.col(col).copied())
                 {
                     let value = self.pop();
                     self.assign_to_attr(attr, value);

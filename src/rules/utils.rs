@@ -2,7 +2,10 @@ use std::{collections::BTreeMap, ops::Deref};
 
 use serde::{Deserialize, Deserializer, de};
 
-use crate::{expr, model::Attribute};
+use crate::{
+    expr,
+    model::{Attribute, AttributeGroup},
+};
 
 /// A newtype around `BTreeMap<u32, T>` for level-based progressions.
 /// Provides `get_for_level()` to find the highest entry at or below a given
@@ -19,14 +22,13 @@ impl<T> LevelRules<T> {
 
 impl<T> LevelRules<T>
 where
-    T: expr::Eval<Attribute, i32>,
+    T: expr::Eval<Attribute, i32, AttributeGroup>,
     T::Output: Default,
 {
-    pub fn eval_for_level(
-        &self,
-        level: u32,
-        ctx: &impl expr::Context<Attribute, i32>,
-    ) -> T::Output {
+    pub fn eval_for_level<C>(&self, level: u32, ctx: &C) -> T::Output
+    where
+        C: expr::Context<Attribute, i32> + expr::ResolveGroup<AttributeGroup>,
+    {
         self.at_level(level)
             .map(|rule| rule.eval(ctx))
             .unwrap_or_default()

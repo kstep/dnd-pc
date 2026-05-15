@@ -1068,7 +1068,7 @@
     "description": "Increase STR or DEX by 1 (max 20). When you take the Dash action, you can make one melee attack or shove as a Bonus Action; if you moved at least 10 feet in a straight line toward the target, the attack deals +1d8 damage or the shove pushes 10 feet."
   },
   "Chef": {
-    "description": "Gain proficiency with Cook's Utensils (or Expertise if proficient). After a Long Rest, you can cook a number of treats equal to your Proficiency Bonus that each restore 1d8 HP when consumed. During a Short Rest, you can prepare a meal that grants temporary HP equal to your Proficiency Bonus to up to five creatures."
+    "description": "Increase your Constitution or Wisdom score by 1 (max 20). Gain proficiency with Cook's Utensils if you don't already have it. As part of a Short Rest, with ingredients and Cook's Utensils on hand, you can cook food for 4 + your Proficiency Bonus creatures; any who eat it and spend Hit Dice during the rest regain an extra 1d8 HP. With 1 hour of work or when you finish a Long Rest, you can cook a number of treats equal to your Proficiency Bonus; a creature can use a Bonus Action to eat one and gain temporary HP equal to your Proficiency Bonus."
   },
   "Chemical Mastery": {
     "description": "You gain the following benefits. Alchemical Eruption: When you cast an Artificer spell that deals Acid, Fire, or Poison damage to a target, you can also deal 2d8 Force damage to that target. You can use this benefit only once on each of your turns. Chemical Resistance: You gain Resistance to Acid damage and Poison damage. You also gain Immunity to the Poisoned condition."

@@ -3,9 +3,8 @@ use std::{collections::BTreeMap, fmt, marker::PhantomData, slice};
 use serde::{Deserialize, Serialize};
 
 use crate::expr::{
-    Context, Error, Op, VarGroup,
-    group::IterStack,
-    interpret::{Interpreter, eval_op, handle_context_op},
+    Context, Error, Op, ResolveGroup, VarGroup,
+    interpret::{CursorStack, Interpreter, eval_op, handle_context_op},
     ops::BlockIndex,
     stack::Stack,
 };
@@ -73,7 +72,7 @@ impl DicePoolIter<'_> {
 
 pub struct DicePoolEvaluator<'a, 'p, Var, Ctx> {
     stack: Stack<i32>,
-    iter_stack: IterStack,
+    iter_stack: CursorStack<Var>,
     ctx: &'a mut Ctx,
     pool: &'a mut DicePoolIter<'p>,
     _var: PhantomData<Var>,
@@ -83,7 +82,7 @@ impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     pub fn new(ctx: &'a mut Ctx, pool: &'a mut DicePoolIter<'p>) -> Self {
         Self {
             stack: Stack::new(),
-            iter_stack: IterStack::new(),
+            iter_stack: CursorStack::new(),
             ctx,
             pool,
             _var: PhantomData,
@@ -91,8 +90,11 @@ impl<'a, 'p, Var, Ctx> DicePoolEvaluator<'a, 'p, Var, Ctx> {
     }
 }
 
-impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
-    Interpreter<Var, i32, Grp> for DicePoolEvaluator<'_, '_, Var, Ctx>
+impl<Var, Ctx, Grp> Interpreter<Var, i32, Grp> for DicePoolEvaluator<'_, '_, Var, Ctx>
+where
+    Var: Copy + fmt::Display,
+    Grp: VarGroup<Var = Var>,
+    Ctx: Context<Var, i32> + ResolveGroup<Grp>,
 {
     type Output = i32;
 
@@ -111,9 +113,9 @@ impl<Var: Copy + fmt::Display, Ctx: Context<Var, i32>, Grp: VarGroup<Var = Var>>
             self.stack.push(count);
             return Ok(None);
         }
-        match handle_context_op(op, &mut self.stack, &self.iter_stack, self.ctx)? {
+        match handle_context_op(op, &mut self.stack, &mut self.iter_stack, self.ctx)? {
             None => Ok(None),
-            Some(op) => eval_op(&mut self.stack, &mut self.iter_stack, op),
+            Some(op) => eval_op(&mut self.stack, op),
         }
     }
 

@@ -55,7 +55,7 @@
     "prerequisites": "LEVEL == 1 and fold(and, @ABILITY, @ABILITY == 8) and not FEAT_CAT.Generation",
     "assign": [
       {
-        "expr": "with(@ABILITY, each(@, @ = @ARG))",
+        "expr": "each(@ABILITY, @ = @ARG)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -115,7 +115,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) <= 3, each(@, if(@ == 0, @ += @ARG)); TOOL.COUNT += 3 - fold(+, @, @ARG)))"
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) <= 3, each(@, if(@.PROF == 0, @.PROF += @ARG)); TOOL.COUNT += 3 - fold(+, @, @ARG)))"
       }
     ],
     "category": "Origin"
@@ -472,7 +472,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG); @ABILITY.SAVE.PROF = max(@ABILITY.SAVE.PROF, @ARG))))",
+        "expr": "with(@ABILITY, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG); @.SAVE.PROF = max(@.SAVE.PROF, @ARG))))",
         "when": "OnFeatureAdd"
       }
     ],
@@ -899,7 +899,7 @@
             "effects": [
               {
                 "name": "Shadowy Form",
-                "expr": "with(@RESIST._(ACID, BLUDG, COLD, FIRE, FORCE, LIGHT, NECRO, PIERC, POISON, SLASH, THUND), each(@, @ = 1))"
+                "expr": "each(@DMG(ACID, BLUDG, COLD, FIRE, FORCE, LIGHT, NECRO, PIERC, POISON, SLASH, THUND), @ = 1)"
               }
             ]
           }
@@ -1693,7 +1693,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -2005,7 +2005,7 @@
             "effects": [
               {
                 "name": "Bear Totem Spirit",
-                "expr": "with(@RESIST._(ACID, BLUDG, COLD, FIRE, LIGHT, PIERC, POISON, SLASH, THUND), each(@, @ = 1))"
+                "expr": "each(@DMG(ACID, BLUDG, COLD, FIRE, LIGHT, PIERC, POISON, SLASH, THUND), @ = 1)"
               }
             ]
           },
@@ -2101,7 +2101,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))"
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 1, @.PROF += @ARG))))"
       }
     ]
   },
@@ -2624,7 +2624,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ARCA, HIST, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ARCA, HIST, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -2800,7 +2800,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ANIM, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ANIM, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -2809,7 +2809,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(HIST, INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(HIST, INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -3176,7 +3176,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ANIM, ATHL, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ANIM, ATHL, NATU, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -3381,7 +3381,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(INSI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -4217,7 +4217,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ARCA, NATU), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ARCA, NATU), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -4779,7 +4779,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@ABILITY.SAVE.PROF, each(@, @ = 1))"
+        "expr": "each(@ABILITY, @.SAVE.PROF = 1)"
       }
     ]
   },
@@ -6003,7 +6003,7 @@
       },
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ACRO, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ACRO, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -6425,7 +6425,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(DECE, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(DECE, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -7759,7 +7759,7 @@
     "name": "Elemental Affinity",
     "assign": [
       {
-        "expr": "with(@RESIST._(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
+        "expr": "with(@DMG(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9117,7 +9117,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(ACRO, ATHL, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(ACRO, ATHL, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -9253,7 +9253,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9275,7 +9275,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9288,7 +9288,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9310,7 +9310,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(HIST, INSI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(HIST, INSI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9323,7 +9323,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ARCA, ANIM, INSI, MEDI, NATU, PERC, RELI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ARCA, ANIM, INSI, MEDI, NATU, PERC, RELI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9336,7 +9336,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ACRO, ANIM, ATHL, HIST, INSI, INTI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ACRO, ANIM, ATHL, HIST, INSI, INTI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9358,7 +9358,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ACRO, ATHL, HIST, INSI, RELI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ACRO, ATHL, HIST, INSI, RELI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9371,7 +9371,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ATHL, INSI, INTI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ATHL, INSI, INTI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9384,7 +9384,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ANIM, ATHL, INSI, INVE, NATU, PERC, STEA, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ANIM, ATHL, INSI, INVE, NATU, PERC, STEA, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9397,7 +9397,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9410,7 +9410,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ARCA, DECE, INSI, INTI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ARCA, DECE, INSI, INTI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9423,7 +9423,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ARCA, DECE, HIST, INTI, INVE, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ARCA, DECE, HIST, INTI, INVE, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9436,7 +9436,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@SKILL._.PROF(ARCA, HIST, INSI, INVE, MEDI, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ARCA, HIST, INSI, INVE, MEDI, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10005,7 +10005,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(INSI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(INSI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -10071,7 +10071,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -10477,7 +10477,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF(DECE, INSI, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 0, @ += @ARG))))"
+        "expr": "with(@SKILL(DECE, INSI, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
       }
     ]
   },
@@ -10525,7 +10525,7 @@
     "name": "Bestial Instincts",
     "assign": [
       {
-        "expr": "with(@SKILL._.PROF(ACRO, ATHL, INTI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))",
+        "expr": "with(@SKILL(ACRO, ATHL, INTI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -10584,7 +10584,7 @@
     "assign": [
       {
         "when": "OnFeatureAdd",
-        "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG)))); TOOL.COUNT += 1"
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))); TOOL.COUNT += 1)"
       }
     ]
   },
@@ -11078,7 +11078,7 @@
         "when": "OnFeatureAdd"
       },
       {
-        "expr": "with(@RESIST._(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
+        "expr": "with(@DMG(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, @ += @ARG)))",
         "when": "OnFeatureAdd"
       }
     ],

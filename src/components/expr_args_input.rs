@@ -9,9 +9,10 @@ use leptos_fluent::move_tr;
 use crate::{
     components::icon::Icon,
     expr::{
-        self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, DicePool, ExprAnalysis, IterStack, VarGroup,
+        self, BLOCK_ERROR, BLOCK_NOOP, Block, Context, CursorStack, DicePool, ExprAnalysis,
+        GroupCursor,
     },
-    model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr, Op},
+    model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr, Op, StaticAttrSource},
 };
 
 // --- ArgContext: resolves Arg(n) from signals, delegates rest to CharacterCore
@@ -20,6 +21,12 @@ use crate::{
 struct ArgContext<'a> {
     character: &'a CharacterCore,
     args: &'a [Signal<i32>],
+}
+
+impl AsRef<CharacterCore> for ArgContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        self.character
+    }
 }
 
 impl Context<Attribute, i32> for ArgContext<'_> {
@@ -40,6 +47,12 @@ struct ProbeContext<'a> {
     args: Vec<i32>,
 }
 
+impl AsRef<CharacterCore> for ProbeContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        self.character
+    }
+}
+
 impl Context<Attribute, i32> for ProbeContext<'_> {
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         match var {
@@ -55,6 +68,16 @@ impl Context<Attribute, i32> for ProbeContext<'_> {
 
 struct PartialEvalCtx<'a> {
     args: &'a [RwSignal<i32>],
+}
+
+// No Character: group iteration yields nothing.
+impl expr::ResolveGroup<AttributeGroup> for PartialEvalCtx<'_> {
+    fn resolve_group<'a>(
+        &'a self,
+        _grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        Box::new(std::iter::empty())
+    }
 }
 
 impl Context<Attribute, i32> for PartialEvalCtx<'_> {
@@ -170,9 +193,9 @@ impl FormBuilder {
             Op::Eval(_)
             | Op::EvalIf(_, _)
             | Op::Each(_)
-            | Op::Next(_)
-            | Op::PushGroup(_)
-            | Op::AssignGroup(_)
+            | Op::Next
+            | Op::PushGroup(_, _)
+            | Op::AssignGroup(_, _)
             | Op::Tier(_) => {} // intercepted by form_block
         }
         Ok(())
@@ -206,7 +229,7 @@ struct FormCtx<'a> {
     active_args: BTreeSet<u8>,
     boolean_args: BTreeSet<u8>,
     i18n: leptos_fluent::I18n,
-    iter_stack: IterStack,
+    iter_stack: CursorStack<Attribute>,
     is_satisfied: Memo<bool>,
 }
 
@@ -224,7 +247,7 @@ impl<'a> FormCtx<'a> {
             active_args,
             boolean_args,
             i18n,
-            iter_stack: IterStack::new(),
+            iter_stack: CursorStack::new(),
             is_satisfied,
         }
     }
@@ -259,7 +282,7 @@ fn render_block_inline(
     let block_ops = &**expr.block(block);
     let mut start = 0;
     for (i, op) in block_ops.iter().enumerate() {
-        if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)) {
+        if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_, _)) {
             render_statement(fb, expr, block, start..(i + 1), ctx, condition)?;
             start = i + 1;
         }
@@ -290,11 +313,15 @@ fn render_statement(
         form_block_ops(fb, expr, &stmt[..compound.prefix_end], ctx, condition)?;
     }
     let i18n = ctx.i18n;
-    let iter_idx = ctx.iter_stack.last().copied().unwrap_or_default();
     let var_view: AnyView = match stmt.last() {
         Some(&Op::AssignVar(var)) => (move || var.display_name(i18n)).into_any(),
-        Some(&Op::AssignGroup(grp)) => {
-            let var = grp.member(iter_idx).expect("valid index");
+        Some(&Op::AssignGroup(_grp, col)) => {
+            let var = ctx
+                .iter_stack
+                .top()
+                .ok()
+                .and_then(|cursor| cursor.col(col).copied())
+                .expect("cursor live with valid column");
             (move || var.display_name(i18n)).into_any()
         }
         _ => unreachable!(),
@@ -393,9 +420,12 @@ fn form_block_ops(
             Op::PushVar(Attribute::Arg(n)) => {
                 push_arg_input(fb, ctx, n, condition);
             }
-            Op::PushGroup(grp) => {
-                if let Some(idx) = ctx.iter_stack.last()
-                    && let Some(var) = grp.member(*idx)
+            Op::PushGroup(_grp, col) => {
+                if let Some(var) = ctx
+                    .iter_stack
+                    .top()
+                    .ok()
+                    .and_then(|cursor| cursor.col(col).copied())
                 {
                     if let Attribute::Arg(n) = var {
                         push_arg_input(fb, ctx, n, condition);
@@ -405,9 +435,12 @@ fn form_block_ops(
                     }
                 }
             }
-            Op::AssignGroup(grp) => {
-                if let Some(idx) = ctx.iter_stack.last()
-                    && let Some(var) = grp.member(*idx)
+            Op::AssignGroup(_grp, col) => {
+                if let Some(var) = ctx
+                    .iter_stack
+                    .top()
+                    .ok()
+                    .and_then(|cursor| cursor.col(col).copied())
                 {
                     let val = fb.pop()?;
                     let i18n = ctx.i18n;
@@ -415,7 +448,7 @@ fn form_block_ops(
                     fb.push_view(view! { <>{var_s}" = "{val}</> }.into_any());
                 }
             }
-            Op::Next(_) => {} // handled by loop unroll
+            Op::Next => {} // handled by loop unroll
             Op::Eval(idx) => {
                 let sub = form_block(expr, idx, ctx, true)?;
                 fb.push_view(sub);
@@ -485,14 +518,31 @@ fn form_block_loop(
     // Strip trailing Next + EvalIf (loop control ops)
     let content_end = body_len.saturating_sub(2);
     let body_uses_arg_group = expr.block_has_var(body_idx, &|var| matches!(var, Attribute::Arg(_)));
-    for idx in subgrp.iter_indices() {
-        if body_uses_arg_group && !ctx.is_active(idx.iter_no as u8) {
-            continue;
-        }
-        ctx.iter_stack.push(idx);
-        render_statement(fb, expr, body_idx, 0..content_end, ctx, condition)?;
-        let _ = ctx.iter_stack.pop();
+    let cursor = GroupCursor::build(&StaticAttrSource, &subgrp);
+    if !cursor.is_live() {
+        return Ok(());
     }
+    ctx.iter_stack.push(cursor);
+    loop {
+        let row_no = ctx
+            .iter_stack
+            .top()
+            .ok()
+            .map(|cursor| cursor.row_no())
+            .unwrap_or(0);
+        if !body_uses_arg_group || ctx.is_active(row_no as u8) {
+            render_statement(fb, expr, body_idx, 0..content_end, ctx, condition)?;
+        }
+        let more = ctx
+            .iter_stack
+            .top_mut()
+            .map(|cursor| cursor.advance())
+            .unwrap_or(false);
+        if !more {
+            break;
+        }
+    }
+    let _ = ctx.iter_stack.pop();
     Ok(())
 }
 

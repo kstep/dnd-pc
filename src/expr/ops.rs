@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::expr::{
     Error,
-    group::{NoGroup, VarGroup, VarSubgroup},
+    group::{NoGroup, VarSubgroup},
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -182,11 +182,12 @@ pub enum Op<Var, Val, Grp = NoGroup<Var>> {
     In,                             // in(a, b, c) → b <= a && a <= c
     EvalIf(BlockIndex, BlockIndex), // if: pop cond, branch to then/else block
     Eval(BlockIndex),               // evaluate sub-block
-    Each(VarSubgroup<Grp>),         // init loop: push real index to iter_stack, push 1/0
-    Next(VarSubgroup<Grp>),         // advance to next member, push 1 if more, else pop+push 0
-    PushGroup(Grp),                 // push group[iter_stack.last()] via ctx.resolve
-    AssignGroup(Grp),               /* pop value, assign to group[iter_stack.last()] via
-                                     * ctx.assign */
+    Each(VarSubgroup<Grp>),         // init loop: push cursor onto iter_stack, push 1/0
+    Next,                           /* advance current cursor; push 1 if more rows, else
+                                     * pop+push 0 */
+    PushGroup(Grp, u8), // push iter_stack.top().col(col) via ctx.resolve
+    AssignGroup(Grp, u8), /* pop value, assign to iter_stack.top().col(col) via
+                         * ctx.assign */
     Tier(u8), // pop var, pop N*(threshold,value) pairs, push matching value
 }
 
@@ -208,9 +209,9 @@ impl<Var: PartialEq, Val, Grp> Op<Var, Val, Grp> {
             Op::In => -2,
             Op::Eval(_) => 0,
             Op::EvalIf(_, _) => -1,
-            Op::Each(_) | Op::Next(_) => 1,
-            Op::PushGroup(_) => 1,
-            Op::AssignGroup(_) => -1,
+            Op::Each(_) | Op::Next => 1,
+            Op::PushGroup(_, _) => 1,
+            Op::AssignGroup(_, _) => -1,
             Op::Tier(n) => -(2 * *n as i32),
         }
     }
@@ -250,26 +251,16 @@ impl<Var, Val, Grp> From<Vec<Op<Var, Val, Grp>>> for Block<Var, Val, Grp> {
     }
 }
 
-/// Upper bound on group member index scanned by `Block::has_var` /
-/// `assigns_to`. `VarSubgroup` masks use u32 flags, so any subgroup resolves
-/// to ≤32 members; standalone `Grp` members currently fit too. If a future
-/// bounded group exceeds this, its members at index 32+ are silently skipped.
-/// Unbounded groups (e.g. `Arg` indexed by arbitrary `u8`) use this as a
-/// practical cap — an expression with 32+ distinct ARG slots is not a real
-/// feature.
-const MAX_GROUP_SCAN: usize = 32;
-
 impl<Var, Val, Grp> Block<Var, Val, Grp> {
     /// Returns true if this block contains any variable matching the predicate.
-    pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool
-    where
-        Grp: VarGroup<Var = Var>,
-    {
+    /// Group ops (`PushGroup`/`AssignGroup`) over-approximate as `true` — they
+    /// reference a column of a runtime row whose `Var` can't be enumerated
+    /// without the Context. Callers needing precision should walk the
+    /// materialised rows via `Context::resolve_group`.
+    pub fn has_var(&self, pred: &impl Fn(&Var) -> bool) -> bool {
         self.0.iter().any(|op| match op {
             Op::PushVar(v) | Op::AssignVar(v) => pred(v),
-            Op::PushGroup(g) | Op::AssignGroup(g) => {
-                (0..MAX_GROUP_SCAN).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
-            }
+            Op::PushGroup(_, _) | Op::AssignGroup(_, _) => true,
             _ => false,
         })
     }
@@ -280,16 +271,12 @@ impl<Var, Val, Grp> Block<Var, Val, Grp> {
     }
 
     /// Returns true if this block assigns to any variable matching the
-    /// predicate.
-    pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool
-    where
-        Grp: VarGroup<Var = Var>,
-    {
+    /// predicate. Group assigns over-approximate as `true` (see
+    /// [`Self::has_var`]).
+    pub fn assigns_to(&self, pred: &impl Fn(&Var) -> bool) -> bool {
         self.0.iter().any(|op| match op {
             Op::AssignVar(v) => pred(v),
-            Op::AssignGroup(g) => {
-                (0..MAX_GROUP_SCAN).any(|i| g.member(i.into()).is_some_and(|v| pred(&v)))
-            }
+            Op::AssignGroup(_, _) => true,
             _ => false,
         })
     }
@@ -304,7 +291,7 @@ impl<Var: PartialEq, Val, Grp> Block<Var, Val, Grp> {
     /// Split this block into statements at `Assign` boundaries.
     pub fn statements(&self) -> impl Iterator<Item = &[Op<Var, Val, Grp>]> {
         self.0
-            .split_inclusive(|op| matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)))
+            .split_inclusive(|op| matches!(op, Op::AssignVar(_) | Op::AssignGroup(_, _)))
     }
 
     /// Detect compound assignment pattern in an ops slice (a single statement).
@@ -369,7 +356,7 @@ fn find_compound_push<Var: PartialEq, Val, Grp: PartialEq>(
         if depth == 0
             && match (op, assign_op) {
                 (Op::PushVar(p), Op::AssignVar(a)) => p == a,
-                (Op::PushGroup(p), Op::AssignGroup(a)) => p == a,
+                (Op::PushGroup(p, pc), Op::AssignGroup(a, ac)) => p == a && pc == ac,
                 _ => false,
             }
         {

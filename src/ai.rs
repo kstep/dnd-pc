@@ -8,10 +8,10 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 
 use crate::{
-    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, IterStack},
+    expr::{self, BinOp, BlockIndex, Cmp, Interpreter, ResolveGroup},
     firebase,
     hooks::join_iter,
-    model::{Ability, Attribute, AttributeGroup, Character, Op, Skill},
+    model::{Ability, Attribute, AttributeGroup, Character, Op, Skill, StaticAttrSource},
     rules::{PendingInputs, RulesRegistry},
 };
 
@@ -987,7 +987,6 @@ impl ArgStackEntry {
 
 struct ArgSummarizer {
     stack: Vec<ArgStackEntry>,
-    iter_stack: IterStack,
     args: BTreeMap<u8, ArgInfo>,
     sum_constraint: Option<i32>,
     group_members: Vec<Attribute>,
@@ -997,7 +996,6 @@ impl ArgSummarizer {
     fn new() -> Self {
         Self {
             stack: Vec::new(),
-            iter_stack: IterStack::new(),
             args: BTreeMap::new(),
             sum_constraint: None,
             group_members: Vec::new(),
@@ -1123,20 +1121,28 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                 self.stack.push(top);
             }
             Op::Each(subgrp) => {
+                // Single-pass walk: collect primary-column Vars for AI prompt
+                // text. The body executes once (Next pushes 0), since we only
+                // need to inspect ARG references, not iterate values.
                 if self.group_members.is_empty() {
-                    self.group_members.extend(subgrp.members());
+                    self.group_members.extend(
+                        StaticAttrSource
+                            .resolve_group(&subgrp.inner)
+                            .enumerate()
+                            .filter(|(pos, _)| subgrp.allows(*pos))
+                            .filter_map(|(_, row)| row.get(1).copied()),
+                    );
                 }
-                let has_items = subgrp.init_loop(&mut self.iter_stack);
+                let has_items = !self.group_members.is_empty();
                 self.stack.push(ArgStackEntry::constant(has_items as i32));
             }
-            Op::Next(subgrp) => {
-                let more = subgrp.advance_loop(&mut self.iter_stack);
-                self.stack.push(ArgStackEntry::constant(more as i32));
+            Op::Next => {
+                self.stack.push(ArgStackEntry::constant(0));
             }
-            Op::PushGroup(_) => {
+            Op::PushGroup(_, _) => {
                 self.stack.push(ArgStackEntry::other());
             }
-            Op::AssignGroup(_) => {
+            Op::AssignGroup(_, _) => {
                 self.pop();
             }
             Op::Tier(count) => {

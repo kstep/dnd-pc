@@ -209,7 +209,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        weapons.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                        weapons.write().sort_by_key(|weapon| weapon.name.to_lowercase());
                     }
                 >
                     <Icon name="arrow-down-a-z" size=16 />
@@ -474,7 +474,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        armors.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                        armors.write().sort_by_key(|armor| armor.name.to_lowercase());
                     }
                 >
                     <Icon name="arrow-down-a-z" size=16 />
@@ -652,7 +652,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        items.write().sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+                        items.write().sort_by_key(|item| item.name.to_lowercase());
                     }
                 >
                     <Icon name="arrow-down-a-z" size=16 />

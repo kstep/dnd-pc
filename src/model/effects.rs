@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     demap,
     expr::{self, Context, DicePool},
-    model::{Ability, Attribute, Character, Charges, Expr, GearRef, WeaponEffect},
+    model::{Ability, Attribute, Character, CharacterCore, Charges, Expr, GearRef, WeaponEffect},
     rules::{FeaturesView, WhenCondition},
 };
 
@@ -221,6 +221,12 @@ impl Ctx<'_> {
             GearRef::Weapon(i) => self.character.equipment.weapons.get(i).map(|x| x.quantity),
             GearRef::Armor(_) => Some(1),
         }
+    }
+}
+
+impl AsRef<CharacterCore> for Ctx<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
     }
 }
 

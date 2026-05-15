@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 
 use crate::{
     expr,
-    model::{AttrKey, Attribute, SpellSlotPool},
+    model::{AttrKey, Attribute, AttributeGroup, SpellSlotPool},
     rules::{WhenCondition, feature::FeatureDefinition},
 };
 
@@ -79,6 +79,18 @@ pub fn eval_at_levels<F: FnMut(u32, &mut PreviewContext)>(
         per_level(level, &mut ctx);
     }
     ctx
+}
+
+// PreviewContext has no Character — group iteration yields nothing. Reference
+// pages only preview scalar progressions; loops over @ABILITY/@SKILL/etc.
+// surface zero contributions for the snapshot.
+impl expr::ResolveGroup<AttributeGroup> for PreviewContext {
+    fn resolve_group<'a>(
+        &'a self,
+        _grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        Box::new(std::iter::empty())
+    }
 }
 
 impl expr::Context<Attribute, i32> for PreviewContext {

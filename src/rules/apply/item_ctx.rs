@@ -1,6 +1,6 @@
 use crate::{
     expr,
-    model::{Attribute, Character, Charges, Enchantment, Expr, GearRef},
+    model::{Attribute, Character, CharacterCore, Charges, Enchantment, Expr, GearRef},
     rules::WhenCondition,
 };
 
@@ -77,6 +77,12 @@ impl ItemApplyCtx<'_> {
     fn charges_mut_or_init(&mut self) -> Option<&mut Charges> {
         let ench = self.enchantment_mut()?;
         Some(ench.charges.get_or_insert_with(Charges::default))
+    }
+}
+
+impl AsRef<CharacterCore> for ItemApplyCtx<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
     }
 }
 

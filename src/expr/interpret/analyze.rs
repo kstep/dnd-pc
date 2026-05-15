@@ -4,9 +4,8 @@ use std::{
 };
 
 use crate::expr::{
-    Context, Expr, Op, VarGroup, avg_hp,
-    group::IterStack,
-    interpret::eval_block,
+    Context, Expr, Op, ResolveGroup, VarGroup, avg_hp,
+    interpret::{CursorStack, eval_block, handle_loop_op},
     ops::{BLOCK_ERROR, BLOCK_MAIN, BlockIndex},
     stack::Stack,
 };
@@ -71,10 +70,10 @@ impl ExprAnalysis {
     where
         Var: Copy + fmt::Display,
         Grp: Copy + VarGroup<Var = Var>,
-        Ctx: Context<Var, i32>,
+        Ctx: Context<Var, i32> + ResolveGroup<Grp>,
     {
         let mut analysis = Self::default();
-        let mut iter_stack = IterStack::new();
+        let mut iter_stack = CursorStack::new();
         let _ = analysis.analyze_block(expr, ctx, arg_index, BLOCK_MAIN, &mut iter_stack, false);
         analysis
     }
@@ -85,13 +84,13 @@ impl ExprAnalysis {
         ctx: &Ctx,
         arg_index: impl Fn(&Var) -> Option<u8> + Copy,
         block: BlockIndex,
-        iter_stack: &mut IterStack,
+        iter_stack: &mut CursorStack<Var>,
         suppress_args: bool,
     ) -> AnalyzedBlock
     where
         Var: Copy + fmt::Display,
         Grp: Copy + VarGroup<Var = Var>,
-        Ctx: Context<Var, i32>,
+        Ctx: Context<Var, i32> + ResolveGroup<Grp>,
     {
         let ops = expr.block(block);
         let mut stack = Stack::new();
@@ -115,9 +114,16 @@ impl ExprAnalysis {
                         stack.push(ctx.resolve(var).unwrap_or(0));
                     }
                 }
-                Op::AssignVar(_) | Op::AssignGroup(_) => {}
-                Op::PushGroup(grp) => {
-                    if let Some(var) = grp.top_member(iter_stack) {
+                Op::AssignVar(_) | Op::AssignGroup(_, _) => {}
+                Op::PushGroup(_grp, col) => {
+                    // Read the column from the top cursor. col=0 yields the
+                    // current row's `Arg(row_no)`; col>=1 yields the projected
+                    // Var. `arg_index` recognises Arg vars uniformly.
+                    if let Some(var) = iter_stack
+                        .top()
+                        .ok()
+                        .and_then(|cursor| cursor.col(col).copied())
+                    {
                         if let Some(arg_idx) = arg_index(&var) {
                             has_args = true;
                             if !suppress_args {
@@ -207,18 +213,23 @@ impl ExprAnalysis {
                     if let Some((arg_idx, 3)) = bool_detect {
                         self.boolean_args.insert(arg_idx);
                     }
-                    let _ = super::eval_op(&mut stack, iter_stack, op);
+                    let _ = super::eval_op(&mut stack, op);
+                }
+                Op::Each(_) | Op::Next => {
+                    let _ = handle_loop_op(op, &mut stack, iter_stack, ctx);
                 }
                 op => {
-                    let _ = super::eval_op(&mut stack, iter_stack, op);
+                    let _ = super::eval_op(&mut stack, op);
                 }
             }
 
             // Advance boolean-arg pattern: Arg(n) → PushConst(0) → PushConst(1) → In
             bool_detect = match op {
                 Op::PushVar(var) => arg_index(&var).map(|idx| (idx, 1)),
-                Op::PushGroup(grp) => grp
-                    .top_member(iter_stack)
+                Op::PushGroup(_grp, col) => iter_stack
+                    .top()
+                    .ok()
+                    .and_then(|cursor| cursor.col(col).copied())
                     .and_then(|var| arg_index(&var))
                     .map(|idx| (idx, 1)),
                 Op::PushConst(0) => match bool_detect {
@@ -287,7 +298,7 @@ mod tests {
             (Skill::Arcana, ProficiencyLevel::Expertise),
         ]);
 
-        let expr: crate::model::Expr = "with(@SKILL._.PROF, each(@, if(@ == 1, @ += @ARG)))"
+        let expr: crate::model::Expr = "each(@SKILL, if(@.PROF == 1, @.PROF += @ARG))"
             .parse()
             .unwrap();
 
@@ -311,7 +322,7 @@ mod tests {
             (Skill::Athletics, ProficiencyLevel::Proficient),
         ]);
         let expr: crate::model::Expr =
-            "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))"
+            "guard(fold(and, @SKILL, in(@ARG, 0, 1)) and fold(+, @SKILL, @ARG) == 2, each(@SKILL, if(@.PROF == 1, @.PROF += @ARG)))"
                 .parse()
                 .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
@@ -325,9 +336,7 @@ mod tests {
         // Generation: User-Defined uses `each(@ABILITY, @ = @ARG)` — no filter.
         // All 6 abilities must stay active after our refactor.
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "with(@ABILITY, each(@, @ = @ARG))"
-            .parse()
-            .expect("expr must parse");
+        let expr: crate::model::Expr = "each(@ABILITY, @ = @ARG)".parse().expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
         assert_eq!(
             analysis.active_args,
@@ -343,7 +352,7 @@ mod tests {
         // STR and DEX iters should end up active (iter_no 0 and 1 within
         // the masked subgroup).
         let character = character_with_skills(&[]);
-        let expr: crate::model::Expr = "with(@ABILITY(STR, DEX), each(@, if(@ < 20, @ += @ARG)))"
+        let expr: crate::model::Expr = "each(@ABILITY(STR, DEX), if(@ < 20, @ += @ARG))"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);
@@ -362,7 +371,7 @@ mod tests {
             (Skill::Acrobatics, ProficiencyLevel::Proficient),
             (Skill::Athletics, ProficiencyLevel::Proficient),
         ]);
-        let expr: crate::model::Expr = "with(@SKILL._.PROF, each(@, if(@ == 1, @ += 1d6 * @ARG)))"
+        let expr: crate::model::Expr = "each(@SKILL, if(@.PROF == 1, @.PROF += 1d6 * @ARG))"
             .parse()
             .expect("expr must parse");
         let analysis = expr.analyze(&character, arg_index);

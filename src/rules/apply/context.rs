@@ -1,8 +1,9 @@
 use crate::{
     expr,
     model::{
-        Ability, AssignInputs, AttrKey, Attribute, CharacterCore, ClassLevel, Die, Feature,
-        FeatureField, FeatureOption, FeatureSource, FeatureValue, Spell, SpellData, SpellSlotPool,
+        Ability, AssignInputs, AttrKey, Attribute, AttributeGroup, CharacterCore, ClassLevel, Die,
+        Feature, FeatureField, FeatureOption, FeatureSource, FeatureValue, Spell, SpellData,
+        SpellSlotPool,
     },
     rules::{
         WhenCondition,
@@ -786,6 +787,12 @@ impl<'a> ApplyContext<'a> {
     }
 }
 
+impl AsRef<CharacterCore> for ApplyContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        self.character
+    }
+}
+
 impl expr::Context<Attribute, i32> for ApplyContext<'_> {
     fn assign(&mut self, var: Attribute, value: i32) -> Result<(), expr::Error> {
         match var {
@@ -1078,13 +1085,15 @@ impl expr::Context<Attribute, i32> for ApplyContext<'_> {
 /// resolve from the matching `inputs` slot. Used by the preview panel
 /// where the inner context (`PreviewContext`) intercepts `assign` calls
 /// for display rather than producing real character mutations.
-pub fn apply_assignments_with_inputs<C: expr::Context<Attribute, i32>>(
+pub fn apply_assignments_with_inputs<C>(
     ctx: &mut C,
     assignments: &[Assignment],
     when: WhenCondition,
     inputs: &[AssignInputs],
     log_errors: bool,
-) {
+) where
+    C: expr::Context<Attribute, i32> + expr::ResolveGroup<AttributeGroup>,
+{
     let mut input_iter = inputs.iter();
     for assign in assignments.iter().filter(|a| a.when == when) {
         let interactive = assign.is_interactive();

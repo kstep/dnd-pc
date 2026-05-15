@@ -1,12 +1,18 @@
 use crate::{
     expr,
-    model::{Attribute, Character},
+    model::{Attribute, Character, CharacterCore},
 };
 
 /// Read-only context that resolves ARG variables from a slice for validation.
 pub struct ArgsContext<'a> {
     pub character: &'a Character,
     pub args: &'a [i32],
+}
+
+impl AsRef<CharacterCore> for ArgsContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
+    }
 }
 
 impl expr::Context<Attribute, i32> for ArgsContext<'_> {
@@ -31,6 +37,12 @@ impl expr::Context<Attribute, i32> for ArgsContext<'_> {
 pub struct CaptureContext<'a> {
     pub character: &'a mut Character,
     pub captured: Vec<(Attribute, i32)>,
+}
+
+impl AsRef<CharacterCore> for CaptureContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
+    }
 }
 
 impl expr::Context<Attribute, i32> for CaptureContext<'_> {

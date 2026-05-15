@@ -4,78 +4,142 @@ use serde::{Deserialize, Serialize};
 use strum::VariantArray;
 
 use crate::{
-    expr::{IterIndex, VarGroup},
+    expr::{ResolveGroup, VarGroup},
     model::{
-        Ability, Attribute, DamageType, Skill,
-        attribute::{parse_ability, parse_damage_type, parse_skill},
+        Ability, Attribute, CharacterCore, DamageType, Skill,
+        attribute::{intern, parse_ability, parse_damage_type, parse_skill},
     },
 };
 
+// Per-group ZST descriptors. Each holds a constructor table mapping
+// `Index` to a concrete `Attribute`, plus a schema indexed by `col_no`
+// (`schema()[0] == "ARG"`, `schema()[1] == ""` = primary, the rest =
+// suffixes parallel to `columns()`).
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AbilityGroup;
+
+impl VarGroup for AbilityGroup {
+    type Index = Ability;
+    type Var = Attribute;
+
+    const COLUMNS: &'static [fn(Ability) -> Attribute] = &[
+        Attribute::Ability,
+        Attribute::Modifier,
+        Attribute::SavingThrow,
+        Attribute::SaveProficiency,
+        Attribute::SaveAdvantage,
+        Attribute::AbilityAdvantage,
+    ];
+    const SCHEMA: &'static [&'static str] = &["MOD", "SAVE", "SAVE.PROF", "SAVE.ADV", "ADV"];
+
+    fn arg(n: u8) -> Attribute {
+        Attribute::Arg(n)
+    }
+
+    fn member_by_name(&self, name: &str) -> Option<usize> {
+        let a = parse_ability(name)?;
+        Ability::VARIANTS.iter().position(|&x| x == a)
+    }
+
+    fn static_size(&self) -> Option<usize> {
+        Some(Ability::VARIANTS.len())
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SkillGroup;
+
+impl VarGroup for SkillGroup {
+    type Index = Skill;
+    type Var = Attribute;
+
+    const COLUMNS: &'static [fn(Skill) -> Attribute] = &[
+        Attribute::Skill,
+        Attribute::SkillProficiency,
+        Attribute::SkillAdvantage,
+    ];
+    const SCHEMA: &'static [&'static str] = &["PROF", "ADV"];
+
+    fn arg(n: u8) -> Attribute {
+        Attribute::Arg(n)
+    }
+
+    fn member_by_name(&self, name: &str) -> Option<usize> {
+        let s = parse_skill(name)?;
+        Skill::VARIANTS.iter().position(|&x| x == s)
+    }
+
+    fn static_size(&self) -> Option<usize> {
+        Some(Skill::VARIANTS.len())
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ToolGroup;
+
+impl VarGroup for ToolGroup {
+    type Index = &'static str;
+    type Var = Attribute;
+
+    const COLUMNS: &'static [fn(&'static str) -> Attribute] =
+        &[Attribute::ToolProficiency, Attribute::ToolAbility];
+    const SCHEMA: &'static [&'static str] = &["ABILITY"];
+
+    fn arg(n: u8) -> Attribute {
+        Attribute::Arg(n)
+    }
+
+    fn member_by_name(&self, _name: &str) -> Option<usize> {
+        // @TOOL mask not supported: positional indices зависят от
+        // runtime-состояния персонажа.
+        None
+    }
+}
+
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DmgGroup;
+
+impl VarGroup for DmgGroup {
+    type Index = DamageType;
+    type Var = Attribute;
+
+    const COLUMNS: &'static [fn(DamageType) -> Attribute] = &[
+        Attribute::Resistance,
+        Attribute::Vulnerability,
+        Attribute::Immunity,
+        Attribute::DamageReduction,
+    ];
+    const SCHEMA: &'static [&'static str] = &["VULN", "IMMUNE", "DR"];
+
+    fn arg(n: u8) -> Attribute {
+        Attribute::Arg(n)
+    }
+
+    fn member_by_name(&self, name: &str) -> Option<usize> {
+        let d = parse_damage_type(name)?;
+        DamageType::VARIANTS.iter().position(|&x| x == d)
+    }
+
+    fn static_size(&self) -> Option<usize> {
+        Some(DamageType::VARIANTS.len())
+    }
+}
+
+/// Storage discriminator for Op-side dispatch.
+///
+/// Parser builds it via `FromStr` from bare group names (`ABILITY`,
+/// `SKILL`, `TOOL`, `DMG`). Iteration is handled by
+/// `Context::resolve_group` (per-variant impl on the concrete Context),
+/// not through `VarGroup` methods here — those provide
+/// schema/member_by_name for parser-side use.
 #[derive(Debug, Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AttributeGroup {
     #[default]
     Ability,
-    AbilityMod,
-    AbilitySave,
-    AbilitySaveProf,
-    AbilitySaveAdv,
-    AbilityAdv,
     Skill,
-    SkillProf,
-    SkillAdv,
-    Resist,
-    Vuln,
-    Immune,
-    Arg,
-}
-
-impl VarGroup for AttributeGroup {
-    type Var = Attribute;
-
-    fn member_by_name(&self, name: &str) -> Option<usize> {
-        match self {
-            Self::Ability
-            | Self::AbilityMod
-            | Self::AbilitySave
-            | Self::AbilitySaveProf
-            | Self::AbilitySaveAdv
-            | Self::AbilityAdv => {
-                let ability = parse_ability(name)?;
-                Ability::VARIANTS.iter().position(|&a| a == ability)
-            }
-            Self::Skill | Self::SkillProf | Self::SkillAdv => {
-                let skill = parse_skill(name)?;
-                Skill::VARIANTS.iter().position(|&s| s == skill)
-            }
-            Self::Resist | Self::Vuln | Self::Immune => {
-                let dmg = parse_damage_type(name)?;
-                DamageType::VARIANTS.iter().position(|&d| d == dmg)
-            }
-            Self::Arg => name.parse::<usize>().ok(),
-        }
-    }
-
-    fn member(&self, idx: IterIndex) -> Option<Attribute> {
-        let i = idx.index;
-        let ability = || Ability::VARIANTS.get(i).copied();
-        let skill = || Skill::VARIANTS.get(i).copied();
-        let dmg = || DamageType::VARIANTS.get(i).copied();
-        match self {
-            Self::Ability => ability().map(Attribute::Ability),
-            Self::AbilityMod => ability().map(Attribute::Modifier),
-            Self::AbilitySave => ability().map(Attribute::SavingThrow),
-            Self::AbilitySaveProf => ability().map(Attribute::SaveProficiency),
-            Self::AbilitySaveAdv => ability().map(Attribute::SaveAdvantage),
-            Self::AbilityAdv => ability().map(Attribute::AbilityAdvantage),
-            Self::Skill => skill().map(Attribute::Skill),
-            Self::SkillProf => skill().map(Attribute::SkillProficiency),
-            Self::SkillAdv => skill().map(Attribute::SkillAdvantage),
-            Self::Resist => dmg().map(Attribute::Resistance),
-            Self::Vuln => dmg().map(Attribute::Vulnerability),
-            Self::Immune => dmg().map(Attribute::Immunity),
-            Self::Arg => Some(Attribute::Arg(idx.iter_no as u8)),
-        }
-    }
+    Tool,
+    Dmg,
 }
 
 impl FromStr for AttributeGroup {
@@ -84,20 +148,85 @@ impl FromStr for AttributeGroup {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "ABILITY" => Ok(Self::Ability),
-            "ABILITY.MOD" => Ok(Self::AbilityMod),
-            "ABILITY.SAVE" => Ok(Self::AbilitySave),
-            "ABILITY.SAVE.PROF" => Ok(Self::AbilitySaveProf),
-            "ABILITY.SAVE.ADV" => Ok(Self::AbilitySaveAdv),
-            "ABILITY.ADV" => Ok(Self::AbilityAdv),
-            "SKILL._" => Ok(Self::Skill),
-            "SKILL._.PROF" => Ok(Self::SkillProf),
-            "SKILL._.ADV" => Ok(Self::SkillAdv),
-            "RESIST._" => Ok(Self::Resist),
-            "VULN._" => Ok(Self::Vuln),
-            "IMMUNE._" => Ok(Self::Immune),
-            "ARG" => Ok(Self::Arg),
+            "SKILL" => Ok(Self::Skill),
+            "TOOL" => Ok(Self::Tool),
+            "DMG" => Ok(Self::Dmg),
             _ => Err("unknown attribute group"),
         }
+    }
+}
+
+impl AttributeGroup {
+    /// Materialise rows that don't depend on Character state: Ability,
+    /// Skill, Dmg variants enumerate their `VARIANTS`. Tool returns
+    /// empty (its membership is per-character).
+    pub fn static_rows(&self) -> Box<dyn Iterator<Item = Vec<Attribute>>> {
+        match self {
+            Self::Ability => Box::new(
+                Ability::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(AbilityGroup::make_row),
+            ),
+            Self::Skill => Box::new(
+                Skill::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(SkillGroup::make_row),
+            ),
+            Self::Tool => Box::new(std::iter::empty()),
+            Self::Dmg => Box::new(
+                DamageType::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(DmgGroup::make_row),
+            ),
+        }
+    }
+}
+
+impl CharacterCore {
+    pub fn resolve_attribute_group<'a>(
+        &'a self,
+        grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        match grp {
+            AttributeGroup::Tool => Box::new(
+                self.tools
+                    .iter()
+                    .enumerate()
+                    .map(|(i, entry)| ToolGroup::make_row((i, intern(&entry.name)))),
+            ),
+            other => other.static_rows(),
+        }
+    }
+}
+
+impl<T: AsRef<CharacterCore> + ?Sized> ResolveGroup<AttributeGroup> for T {
+    fn resolve_group<'a>(
+        &'a self,
+        grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        self.as_ref().resolve_attribute_group(grp)
+    }
+}
+
+/// Context-free source for static attribute-group rows. Used by
+/// analysis-only passes (AI prompt builder, reference renderer, form
+/// builder) that walk Op-streams without a Character available. Tool
+/// iteration yields nothing here.
+#[derive(Debug, Copy, Clone, Default)]
+pub struct StaticAttrSource;
+
+impl ResolveGroup<AttributeGroup> for StaticAttrSource {
+    fn resolve_group<'a>(
+        &'a self,
+        grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        grp.static_rows()
     }
 }
 
@@ -105,18 +234,51 @@ impl fmt::Display for AttributeGroup {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(match self {
             Self::Ability => "ABILITY",
-            Self::AbilityMod => "ABILITY.MOD",
-            Self::AbilitySave => "ABILITY.SAVE",
-            Self::AbilitySaveProf => "ABILITY.SAVE.PROF",
-            Self::AbilitySaveAdv => "ABILITY.SAVE.ADV",
-            Self::AbilityAdv => "ABILITY.ADV",
-            Self::Skill => "SKILL._",
-            Self::SkillProf => "SKILL._.PROF",
-            Self::SkillAdv => "SKILL._.ADV",
-            Self::Resist => "RESIST._",
-            Self::Vuln => "VULN._",
-            Self::Immune => "IMMUNE._",
-            Self::Arg => "ARG",
+            Self::Skill => "SKILL",
+            Self::Tool => "TOOL",
+            Self::Dmg => "DMG",
         })
+    }
+}
+
+/// Shim `VarGroup` impl on the storage enum: only `column_by_suffix` and
+/// `member_by_name` are reached (by parser). Row iteration goes through
+/// `ResolveGroup::resolve_group` on the Context side.
+impl VarGroup for AttributeGroup {
+    type Index = ();
+    type Var = Attribute;
+
+    const COLUMNS: &'static [fn(()) -> Attribute] = &[];
+    const SCHEMA: &'static [&'static str] = &[];
+
+    fn arg(n: u8) -> Attribute {
+        Attribute::Arg(n)
+    }
+
+    fn column_by_suffix(&self, suffix: &str) -> Option<u8> {
+        match self {
+            Self::Ability => AbilityGroup.column_by_suffix(suffix),
+            Self::Skill => SkillGroup.column_by_suffix(suffix),
+            Self::Tool => ToolGroup.column_by_suffix(suffix),
+            Self::Dmg => DmgGroup.column_by_suffix(suffix),
+        }
+    }
+
+    fn member_by_name(&self, name: &str) -> Option<usize> {
+        match self {
+            Self::Ability => AbilityGroup.member_by_name(name),
+            Self::Skill => SkillGroup.member_by_name(name),
+            Self::Tool => ToolGroup.member_by_name(name),
+            Self::Dmg => DmgGroup.member_by_name(name),
+        }
+    }
+
+    fn static_size(&self) -> Option<usize> {
+        match self {
+            Self::Ability => AbilityGroup.static_size(),
+            Self::Skill => SkillGroup.static_size(),
+            Self::Tool => ToolGroup.static_size(),
+            Self::Dmg => DmgGroup.static_size(),
+        }
     }
 }

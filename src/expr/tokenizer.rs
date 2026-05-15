@@ -27,8 +27,9 @@ pub(super) enum Token<'a> {
     Comma,
     Semicolon,
     Bang,
-    GroupRef(&'a str), // @ABILITY, @SKILL._, etc.
-    At,                // bare @ (with-binding reference)
+    GroupRef(&'a str), // @ABILITY, @SKILL, @TOOL, @DMG (bare group name)
+    At,                // bare @ (current each-scope primary column)
+    AtField(&'a str),  // @.SUFFIX (e.g. @.MOD, @.SAVE.PROF) — column projection
     // Boolean / comparison
     And,
     Or,
@@ -117,19 +118,33 @@ impl<'a> Iterator for Tokenizer<'a> {
                 }))
             }
             b'@' => {
-                // @GROUP_NAME — e.g. @ABILITY, @SKILL._.PROF
                 self.rest = &self.rest[1..]; // skip @
-                let len = self
-                    .rest
-                    .bytes()
-                    .take_while(|&b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
-                    .count();
-                if len == 0 {
-                    return Some(Ok(Token::At));
+                match self.rest.as_bytes().first().copied() {
+                    Some(b'.') => {
+                        // @.SUFFIX[.SUFFIX] → Token::AtField (column projection)
+                        self.rest = &self.rest[1..]; // skip .
+                        let len = self
+                            .rest
+                            .bytes()
+                            .take_while(|&b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+                            .count();
+                        let (name, rest) = self.rest.split_at(len);
+                        self.rest = rest;
+                        Some(Ok(Token::AtField(name)))
+                    }
+                    Some(c) if c.is_ascii_alphabetic() || c == b'_' => {
+                        // @IDENT → Token::GroupRef (bare group name, no dots)
+                        let len = self
+                            .rest
+                            .bytes()
+                            .take_while(|&b| b.is_ascii_alphanumeric() || b == b'_')
+                            .count();
+                        let (name, rest) = self.rest.split_at(len);
+                        self.rest = rest;
+                        Some(Ok(Token::GroupRef(name)))
+                    }
+                    _ => Some(Ok(Token::At)),
                 }
-                let (name, rest) = self.rest.split_at(len);
-                self.rest = rest;
-                Some(Ok(Token::GroupRef(name)))
             }
             b'+' | b'-' | b'*' | b'/' | b'\\' | b'%' | b'(' | b')' | b',' | b'=' | b';' | b'<'
             | b'>' | b'!' | b':' => {

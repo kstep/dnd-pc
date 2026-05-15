@@ -20,10 +20,10 @@ mod traits;
 
 pub use crate::expr::{
     error::Error,
-    group::{IterIndex, IterStack, NoGroup, VarGroup, VarSubgroup},
-    interpret::{DicePool, ExprAnalysis, Interpreter},
+    group::{GroupCursor, NoGroup, VarGroup, VarSubgroup},
+    interpret::{CursorStack, DicePool, ExprAnalysis, Interpreter},
     ops::{BLOCK_ERROR, BLOCK_MAIN, BLOCK_NOOP, BinOp, Block, BlockIndex, Cmp, Op},
-    traits::{Context, Eval},
+    traits::{Context, Eval, ResolveGroup},
 };
 use crate::expr::{
     interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
@@ -138,12 +138,17 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
             .flat_map(|block| block.iter().copied())
             .filter_map(|op| match op {
                 Op::PushVar(var) => arg_index(&var).map(|n| n as usize),
-                // Each/Next carry a `VarSubgroup` — masked iteration domain.
-                // PushGroup/AssignGroup carry the bare `Grp` (attach to the
-                // surrounding Each's iter_stack) and contribute no new
-                // iter_no range, so they're not scanned here.
-                Op::Each(subgrp) | Op::Next(subgrp) => {
-                    subgrp.iter_indices().map(|i| i.iter_no).max()
+                // `Each` carries the loop's `VarSubgroup`; its iter-no range is
+                // (mask popcount) for masked or `static_size()` for unmasked
+                // static groups. `Next` carries no domain. PushGroup/AssignGroup
+                // attach to the surrounding loop and don't widen the range.
+                Op::Each(subgrp) => {
+                    let count = if subgrp.mask == u32::MAX {
+                        subgrp.inner.static_size()?
+                    } else {
+                        subgrp.mask.count_ones() as usize
+                    };
+                    count.checked_sub(1)
                 }
                 _ => None,
             })
@@ -275,26 +280,27 @@ impl<Var: Copy, Val: Copy, Grp: Copy> Expr<Var, Val, Grp> {
 }
 
 impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
-    pub fn apply(&self, ctx: &mut impl Context<Var, i32>) -> Result<i32, Error> {
+    pub fn apply<C>(&self, ctx: &mut C) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         self.run(Evaluator::new(ctx))
     }
 
-    pub fn apply_with_dice(
-        &self,
-        ctx: &mut impl Context<Var, i32>,
-        pool: &DicePool,
-    ) -> Result<i32, Error> {
+    pub fn apply_with_dice<C>(&self, ctx: &mut C, pool: &DicePool) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         let mut iter = pool.iter();
         self.run(DicePoolEvaluator::new(ctx, &mut iter))
     }
 }
 
 impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, Grp> {
-    pub fn eval_block(
-        &self,
-        block: BlockIndex,
-        ctx: &impl Context<Var, i32>,
-    ) -> Result<i32, Error> {
+    pub fn eval_block<C>(&self, block: BlockIndex, ctx: &C) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         let mut interp = ReadOnlyEvaluator::new(ctx);
         self.run_block(&mut interp, block)?;
         Interpreter::<Var, i32, Grp>::finish(interp)
@@ -304,11 +310,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     /// sub-block references resolved through `self`. Lets callers re-use
     /// existing fragments (e.g. a fold's `[Each, EvalIf(body, NOOP)]`
     /// driver) without constructing a wrapper Expr.
-    pub fn eval_ops(
-        &self,
-        ops: &[Op<Var, i32, Grp>],
-        ctx: &impl Context<Var, i32>,
-    ) -> Result<i32, Error> {
+    pub fn eval_ops<C>(&self, ops: &[Op<Var, i32, Grp>], ctx: &C) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         let mut interp = ReadOnlyEvaluator::new(ctx);
         for &op in ops.iter() {
             if let Some(sub_block) = interp.exec(op)? {
@@ -319,7 +324,7 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     }
 }
 
-impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32>
+impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32, Grp>
     for Expr<Var, i32, Grp>
 {
     type Output = Result<i32, Error>;
@@ -328,7 +333,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Eval<Var, i32>
         feature = "perf-marks",
         tracing::instrument(name = "expr.eval", skip_all)
     )]
-    fn eval(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+    fn eval<C>(&self, ctx: &C) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         self.run(ReadOnlyEvaluator::new(ctx))
     }
 
@@ -343,7 +351,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
         feature = "perf-marks",
         tracing::instrument(name = "expr.eval_lenient", skip_all)
     )]
-    pub fn eval_lenient(&self, ctx: &impl Context<Var, i32>) -> Result<i32, Error> {
+    pub fn eval_lenient<C>(&self, ctx: &C) -> Result<i32, Error>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         self.run(ReadOnlyEvaluator::lenient(ctx))
     }
 
@@ -351,7 +362,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
     /// requirements. Returns a map of die sides to total number of rolls
     /// needed. Supports both static (`2d6`) and dynamic (`(LEVEL / 5 + 1)d6`)
     /// dice counts.
-    pub fn dice_rolls(&self, ctx: &impl Context<Var, i32>) -> BTreeMap<u32, u32> {
+    pub fn dice_rolls<C>(&self, ctx: &C) -> BTreeMap<u32, u32>
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         self.analyze(ctx, |_| None).dice_rolls
     }
 
@@ -367,11 +381,10 @@ impl<Var: Copy + fmt::Display, Grp: Copy + VarGroup<Var = Var>> Expr<Var, i32, G
         feature = "perf-marks",
         tracing::instrument(name = "expr.analyze", skip_all)
     )]
-    pub fn analyze(
-        &self,
-        ctx: &impl Context<Var, i32>,
-        arg_index: impl Fn(&Var) -> Option<u8> + Copy,
-    ) -> ExprAnalysis {
+    pub fn analyze<C>(&self, ctx: &C, arg_index: impl Fn(&Var) -> Option<u8> + Copy) -> ExprAnalysis
+    where
+        C: Context<Var, i32> + ResolveGroup<Grp>,
+    {
         ExprAnalysis::analyze(self, ctx, arg_index)
     }
 }
@@ -477,8 +490,7 @@ impl<
         if len < 2 {
             return Err(Error::InvalidBlock(body_idx));
         }
-        let (Op::EvalIf(target_idx, BLOCK_NOOP), Op::Next(_)) =
-            (body_ops[len - 1], body_ops[len - 2])
+        let (Op::EvalIf(target_idx, BLOCK_NOOP), Op::Next) = (body_ops[len - 1], body_ops[len - 2])
         else {
             return Err(Error::InvalidBlock(body_idx));
         };
@@ -501,7 +513,7 @@ impl<
             {
                 // Shorthand: fold(op, @GROUP) when body is just PushGroup(inner)
                 if content_ops.len() == 1
-                    && matches!(content_ops[0], Op::PushGroup(g) if g == subgrp.inner)
+                    && matches!(content_ops[0], Op::PushGroup(g, _) if g == subgrp.inner)
                 {
                     Ok(format!("fold({}, @{grp_str})", bin_op.symbol()))
                 } else {
@@ -523,7 +535,7 @@ impl<
         let mut results: Vec<String> = Vec::new();
         let mut start = 0;
         for (i, op) in ops.iter().enumerate() {
-            if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_)) {
+            if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_, _)) {
                 let stmt = &ops[start..=i];
                 if let Some(formatted) = self.try_format_compound(stmt)? {
                     results.push(formatted);
@@ -553,7 +565,7 @@ impl<
         }
         let var = match stmt.last() {
             Some(Op::AssignVar(v)) => format!("{v}"),
-            Some(Op::AssignGroup(g)) => format!("@{g}"),
+            Some(Op::AssignGroup(g, _)) => format!("@{g}"),
             _ => unreachable!(),
         };
         let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end])?;
@@ -1374,8 +1386,8 @@ mod loop_tests {
     use wasm_bindgen_test::*;
 
     use crate::{
-        expr::{self, Context, Eval, IterIndex, IterStack, Op},
-        model::{Ability, Attribute, AttributeGroup, Expr},
+        expr::{self, Context, CursorStack, Eval, GroupCursor, Op},
+        model::{Ability, Attribute, AttributeGroup, Expr, StaticAttrSource},
     };
 
     struct TestCtx {
@@ -1387,6 +1399,15 @@ mod loop_tests {
             Self {
                 abilities: [10, 12, 14, 8, 16, 11],
             }
+        }
+    }
+
+    impl expr::ResolveGroup<AttributeGroup> for TestCtx {
+        fn resolve_group<'a>(
+            &'a self,
+            _grp: &AttributeGroup,
+        ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+            Box::new(std::iter::empty())
         }
     }
 
@@ -1588,14 +1609,14 @@ mod loop_tests {
     /// This must NOT infinite-loop on each/fold expressions.
     struct NonEvalInterpreter {
         stack: Vec<Option<i32>>,
-        iter_stack: IterStack,
+        iter_stack: CursorStack<Attribute>,
     }
 
     impl NonEvalInterpreter {
         fn new() -> Self {
             Self {
                 stack: Vec::new(),
-                iter_stack: IterStack::new(),
+                iter_stack: CursorStack::new(),
             }
         }
     }
@@ -1610,8 +1631,8 @@ mod loop_tests {
             match op {
                 Op::PushConst(n) => self.stack.push(Some(n)),
                 Op::PushVar(_) => self.stack.push(None),
-                Op::PushGroup(_) => self.stack.push(None),
-                Op::AssignVar(_) | Op::AssignGroup(_) => {
+                Op::PushGroup(_, _) => self.stack.push(None),
+                Op::AssignVar(_) | Op::AssignGroup(_, _) => {
                     self.stack.pop();
                 }
                 Op::BinOp(_) | Op::Cmp(_) => {
@@ -1629,23 +1650,24 @@ mod loop_tests {
                     self.stack.pop();
                     self.stack.push(None);
                 }
-                Op::Each(grp) => {
-                    self.iter_stack.push(IterIndex::default());
-                    self.stack.push(Some(grp.member(0).is_some() as i32));
-                }
-                Op::Next(grp) => {
-                    if let Ok(entry) = self.iter_stack.top_mut() {
-                        entry.iter_no += 1;
-                        entry.index += 1;
-                        if grp.member(entry.iter_no).is_some() {
-                            self.stack.push(Some(1));
-                        } else {
-                            let _ = self.iter_stack.pop();
-                            self.stack.push(Some(0));
-                        }
-                    } else {
-                        self.stack.push(Some(0));
+                Op::Each(subgrp) => {
+                    let cursor = GroupCursor::build(&StaticAttrSource, &subgrp);
+                    let live = cursor.is_live();
+                    if live {
+                        self.iter_stack.push(cursor);
                     }
+                    self.stack.push(Some(live as i32));
+                }
+                Op::Next => {
+                    let more = self
+                        .iter_stack
+                        .top_mut()
+                        .map(|cursor| cursor.advance())
+                        .unwrap_or(false);
+                    if !more {
+                        let _ = self.iter_stack.pop();
+                    }
+                    self.stack.push(Some(more as i32));
                 }
                 // Mimics AssignmentSummarizer: enter then-branch unless
                 // condition is known constant(0) (loop termination).

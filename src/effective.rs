@@ -3,9 +3,10 @@ use reactive_stores::Store;
 use strum::IntoEnumIterator;
 
 use crate::{
-    expr::{self, Context, Eval as _},
+    expr::{self, Context, Eval as _, VarGroup},
     model::{
-        Ability, ActiveEffects, Attribute, Character, DamageModifiers, DamageType, Skill, Weapon,
+        Ability, AbilityGroup, ActiveEffects, Attribute, AttributeGroup, Character,
+        DamageModifiers, DamageType, DmgGroup, Skill, SkillGroup, ToolGroup, Weapon, intern,
     },
 };
 
@@ -42,6 +43,51 @@ impl Context<Attribute, i32> for EffectiveCharacter {
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
         Ok(self.get(var))
+    }
+}
+
+// Static groups iterate `VARIANTS` lazily; Tool reads tools per row via
+// the Copy + 'static `Store<Character>` captured in a from_fn closure.
+impl expr::ResolveGroup<AttributeGroup> for EffectiveCharacter {
+    fn resolve_group<'a>(
+        &'a self,
+        grp: &AttributeGroup,
+    ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+        use strum::VariantArray;
+        match grp {
+            AttributeGroup::Ability => Box::new(
+                Ability::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(AbilityGroup::make_row),
+            ),
+            AttributeGroup::Skill => Box::new(
+                Skill::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(SkillGroup::make_row),
+            ),
+            AttributeGroup::Dmg => Box::new(
+                DamageType::VARIANTS
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .map(DmgGroup::make_row),
+            ),
+            AttributeGroup::Tool => {
+                let store = self.store;
+                let mut i = 0usize;
+                Box::new(std::iter::from_fn(move || {
+                    let character = store.read_untracked();
+                    let name = intern(&character.tools.iter().nth(i)?.name);
+                    let row = ToolGroup::make_row((i, name));
+                    i += 1;
+                    Some(row)
+                }))
+            }
+        }
     }
 }
 

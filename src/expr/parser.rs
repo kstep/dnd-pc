@@ -13,9 +13,10 @@ pub(super) struct Parser<'a, Var, Val, Grp = NoGroup<Var>> {
     /// Extra blocks for sub-expressions (if branches, etc.).
     /// Block indices are 1-based (0 = main block / "no block").
     blocks: Vec<Vec<Op<Var, Val, Grp>>>,
-    /// Current `with(@GROUP, ...)` binding. `$` without a name resolves to
-    /// this.
-    with_binding: Option<VarSubgroup<Grp>>,
+    /// Current `each`/`fold` scope. Body's bare `@`, `@.SUFFIX` and
+    /// `@ARG` references resolve through this. Saved/restored around
+    /// nested loops.
+    each_scope: Option<VarSubgroup<Grp>>,
     _var: PhantomData<(Var, Val)>,
 }
 
@@ -24,7 +25,7 @@ impl<'a, Var, Val, Grp> From<Tokenizer<'a>> for Parser<'a, Var, Val, Grp> {
         Self {
             tokens: tokens.peekable(),
             blocks: Vec::new(),
-            with_binding: None,
+            each_scope: None,
             _var: PhantomData,
         }
     }
@@ -315,13 +316,34 @@ impl<
                 Ok(())
             }
             Some(Token::GroupRef(name)) => {
-                let group = parse_group::<Grp>(name)?;
-                ops.push(Op::PushGroup(group));
+                if name == "ARG" {
+                    // @ARG in body context — col=0 of current each-scope.
+                    let grp = self
+                        .each_scope
+                        .ok_or(Error::unexpected_token("@ARG"))?
+                        .inner;
+                    ops.push(Op::PushGroup(grp, 0));
+                } else {
+                    // Standalone @G — primary col of group G (no current
+                    // scope binding; rare, mostly inside `each`-arg
+                    // position).
+                    let group = parse_group::<Grp>(name)?;
+                    ops.push(Op::PushGroup(group, 1));
+                }
                 Ok(())
             }
             Some(Token::At) => {
-                let grp = self.with_binding.ok_or(Error::unexpected_token("@"))?.inner;
-                ops.push(Op::PushGroup(grp));
+                let grp = self.each_scope.ok_or(Error::unexpected_token("@"))?.inner;
+                ops.push(Op::PushGroup(grp, 1));
+                Ok(())
+            }
+            Some(Token::AtField(suffix)) => {
+                let subgrp = self.each_scope.ok_or(Error::unexpected_token("@.SUFFIX"))?;
+                let col = subgrp
+                    .inner
+                    .column_by_suffix(suffix)
+                    .ok_or(Error::unexpected_token(suffix))?;
+                ops.push(Op::PushGroup(subgrp.inner, col));
                 Ok(())
             }
             Some(Token::LParen) => {
@@ -361,14 +383,14 @@ impl<
             "guard" => {
                 self.parse_guard(ops)?;
             }
-            "with" => {
-                self.parse_with(ops)?;
-            }
             "each" => {
                 self.parse_each(ops)?;
             }
             "fold" => {
                 self.parse_fold(ops)?;
+            }
+            "with" => {
+                self.parse_with(ops)?;
             }
             "tier" => {
                 self.parse_tier(ops)?;
@@ -434,29 +456,19 @@ impl<
         Ok(())
     }
 
-    /// `each(@GROUP, body)` →
-    /// `[Each(group), EvalIf(m, NOOP)]`
-    /// `block m: [...body..., Next(group), EvalIf(m, NOOP)]`
-    fn expect_group(&mut self) -> Result<Grp, Error> {
-        match self.next()? {
-            Some(Token::GroupRef(name)) => parse_group::<Grp>(name),
-            Some(token) => Err(Error::unexpected_token(token)),
-            None => Err(Error::UnexpectedEnd),
-        }
-    }
-
-    /// Parse `@GROUP` or `@GROUP(elem, elem, ...)` into a VarSubgroup.
-    /// Elements are resolved as member names — each must be a valid
-    /// `Var` that the group contains, and its index becomes a set bit.
+    /// Parse `@GROUP` / `@GROUP(elem, ...)` / bare `@` / `@(elem, ...)`
+    /// into a VarSubgroup. Bare `@` substitutes the active `each_scope`
+    /// (set by `each`/`fold`/`with`); `@(elem, ...)` substitutes the
+    /// scope's group with an explicit mask.
     fn expect_subgroup(&mut self) -> Result<VarSubgroup<Grp>, Error> {
-        // Bare $ → use with_binding
-        if let Some(Token::At) = self.peek() {
-            self.next()?;
-            return self.with_binding.ok_or(Error::unexpected_token("@"));
-        }
-        let group = self.expect_group()?;
+        let scope_subgrp = match self.next()? {
+            Some(Token::GroupRef(name)) => parse_group::<Grp>(name)?.into(),
+            Some(Token::At) => self.each_scope.ok_or(Error::unexpected_token("@"))?,
+            Some(token) => return Err(Error::unexpected_token(token)),
+            None => return Err(Error::UnexpectedEnd),
+        };
         let Some(Token::LParen) = self.peek() else {
-            return Ok(group.into());
+            return Ok(scope_subgrp);
         };
         self.next()?;
         let mut mask = 0u32;
@@ -466,7 +478,8 @@ impl<
                 Some(token) => return Err(Error::unexpected_token(token)),
                 None => return Err(Error::UnexpectedEnd),
             };
-            let idx = group
+            let idx = scope_subgrp
+                .inner
                 .member_by_name(name)
                 .ok_or(Error::unexpected_token(name))?;
             mask |= 1 << idx;
@@ -481,19 +494,7 @@ impl<
                 _ => return Err(Error::UnexpectedEnd),
             }
         }
-        Ok(VarSubgroup::masked(group, mask))
-    }
-
-    /// `with(@GROUP, body)` — set a group binding so `$` resolves to it.
-    fn parse_with(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
-        self.expect(|token| matches!(token, Token::LParen))?;
-        let subgrp = self.expect_subgroup()?;
-        self.expect(|token| matches!(token, Token::Comma))?;
-        let prev = self.with_binding.replace(subgrp);
-        self.parse_assignment(ops)?;
-        self.with_binding = prev;
-        self.expect(|token| matches!(token, Token::RParen))?;
-        Ok(())
+        Ok(VarSubgroup::masked(scope_subgrp.inner, mask))
     }
 
     fn parse_each(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
@@ -501,9 +502,11 @@ impl<
         let subgrp = self.expect_subgroup()?;
         self.expect(|token| matches!(token, Token::Comma))?;
 
+        let prev_scope = self.each_scope.replace(subgrp);
         let mut body_ops = Vec::new();
         self.parse_assignment(&mut body_ops)?;
-        body_ops.push(Op::Next(subgrp));
+        self.each_scope = prev_scope;
+        body_ops.push(Op::Next);
         let body_idx = self.blocks.len() as BlockIndex + 1;
         body_ops.push(Op::EvalIf(body_idx, BLOCK_NOOP));
         self.blocks.push(body_ops);
@@ -525,15 +528,17 @@ impl<
         let subgrp = self.expect_subgroup()?;
 
         // Body block (m): expr + Next + EvalIf(n, NOOP)
+        let prev_scope = self.each_scope.replace(subgrp);
         let mut body_ops = Vec::new();
         if let Some(Token::Comma) = self.peek() {
             self.next()?;
             self.parse_or(&mut body_ops)?;
         } else {
             // fold(op, @GROUP) shorthand → fold(op, @GROUP, @GROUP)
-            body_ops.push(Op::PushGroup(subgrp.inner));
+            body_ops.push(Op::PushGroup(subgrp.inner, 1));
         }
-        body_ops.push(Op::Next(subgrp));
+        self.each_scope = prev_scope;
+        body_ops.push(Op::Next);
         let body_idx = self.blocks.len() as BlockIndex + 1;
         let acc_idx = body_idx + 1;
         body_ops.push(Op::EvalIf(acc_idx, BLOCK_NOOP));
@@ -546,6 +551,20 @@ impl<
         self.expect(|token| matches!(token, Token::RParen))?;
         ops.push(Op::Each(subgrp));
         ops.push(Op::EvalIf(body_idx, BLOCK_NOOP));
+        Ok(())
+    }
+
+    /// `with(@SCOPE, body)` — parse-time alias: binds `each_scope` to
+    /// `@SCOPE` during `body` so bare `@` / `@(MASK)` in group-spec
+    /// positions substitute the scope. Emits no Op (no runtime cost).
+    fn parse_with(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
+        self.expect(|token| matches!(token, Token::LParen))?;
+        let subgrp = self.expect_subgroup()?;
+        self.expect(|token| matches!(token, Token::Comma))?;
+        let prev_scope = self.each_scope.replace(subgrp);
+        self.parse_assignment(ops)?;
+        self.each_scope = prev_scope;
+        self.expect(|token| matches!(token, Token::RParen))?;
         Ok(())
     }
 
@@ -664,13 +683,41 @@ impl<
     fn parse_assignment(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {
         loop {
             if let Some(Token::At) = self.peek() {
-                let group = self.with_binding.ok_or(Error::unexpected_token("@"))?.inner;
+                let group = self.each_scope.ok_or(Error::unexpected_token("@"))?.inner;
                 self.next()?;
-                self.parse_assign_target(ops, Op::PushGroup(group), Op::AssignGroup(group))?;
+                self.parse_assign_target(ops, Op::PushGroup(group, 1), Op::AssignGroup(group, 1))?;
+            } else if let Some(&Token::AtField(suffix)) = self.peek() {
+                let subgrp = self.each_scope.ok_or(Error::unexpected_token("@.SUFFIX"))?;
+                let col = subgrp
+                    .inner
+                    .column_by_suffix(suffix)
+                    .ok_or(Error::unexpected_token(suffix))?;
+                self.next()?;
+                self.parse_assign_target(
+                    ops,
+                    Op::PushGroup(subgrp.inner, col),
+                    Op::AssignGroup(subgrp.inner, col),
+                )?;
             } else if let Some(&Token::GroupRef(name)) = self.peek() {
-                let group = parse_group::<Grp>(name)?;
                 self.next()?;
-                self.parse_assign_target(ops, Op::PushGroup(group), Op::AssignGroup(group))?;
+                if name == "ARG" {
+                    let group = self
+                        .each_scope
+                        .ok_or(Error::unexpected_token("@ARG"))?
+                        .inner;
+                    self.parse_assign_target(
+                        ops,
+                        Op::PushGroup(group, 0),
+                        Op::AssignGroup(group, 0),
+                    )?;
+                } else {
+                    let group = parse_group::<Grp>(name)?;
+                    self.parse_assign_target(
+                        ops,
+                        Op::PushGroup(group, 1),
+                        Op::AssignGroup(group, 1),
+                    )?;
+                }
             } else if let Some(&Token::Ident(name)) = self.peek()
                 && let Ok(var) = name.parse::<Var>()
             {

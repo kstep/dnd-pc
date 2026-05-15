@@ -14,8 +14,8 @@ use crate::{
     effective::EffectiveCharacter,
     expr::{self, DicePool},
     model::{
-        ActiveEffect, ActiveEffects, AttrKey, Attribute, Character, EffectDefinition,
-        EffectDuration, Expr, FeatureData, FeatureValue, Op,
+        ActiveEffect, ActiveEffects, AttrKey, Attribute, Character, CharacterCore,
+        EffectDefinition, EffectDuration, Expr, FeatureData, FeatureValue, Op,
     },
 };
 
@@ -24,6 +24,12 @@ use crate::{
 struct CalcContext<'a> {
     character: &'a Character,
     extra_vars: &'a BTreeMap<Attribute, i32>,
+}
+
+impl AsRef<CharacterCore> for CalcContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
+    }
 }
 
 impl expr::Context<Attribute, i32> for CalcContext<'_> {
@@ -44,6 +50,12 @@ impl expr::Context<Attribute, i32> for CalcContext<'_> {
 struct ApplyContext<'a> {
     character: &'a mut Character,
     extra_vars: &'a BTreeMap<Attribute, i32>,
+}
+
+impl AsRef<CharacterCore> for ApplyContext<'_> {
+    fn as_ref(&self) -> &CharacterCore {
+        &self.character.core
+    }
 }
 
 impl expr::Context<Attribute, i32> for ApplyContext<'_> {

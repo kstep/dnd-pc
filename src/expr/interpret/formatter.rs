@@ -135,10 +135,10 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Displa
                 let a = self.stack.pop()?;
                 self.push(format!("in({}, {}, {})", a.text, b.text, c.text), 3);
             }
-            Op::PushGroup(grp) => {
+            Op::PushGroup(grp, _col) => {
                 self.push(format!("@{grp}"), 7);
             }
-            Op::AssignGroup(grp) => {
+            Op::AssignGroup(grp, _col) => {
                 let val = self.stack.pop()?;
                 self.push(format!("@{grp} = {}", val.text), 0);
             }
@@ -154,8 +154,8 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Displa
                 let text = format!("tier({}, {})", var.text, pairs.join(", "));
                 self.push(text, 7);
             }
-            Op::Eval(_) | Op::EvalIf(_, _) | Op::Each(_) | Op::Next(_) => {} /* intercepted by
-                                                                              * format_block */
+            Op::Eval(_) | Op::EvalIf(_, _) | Op::Each(_) | Op::Next => {} /* intercepted by
+                                                                           * format_block */
         }
         Ok(None)
     }

@@ -1,7 +1,7 @@
 use std::iter::once;
 
 use crate::{
-    expr::{Context, Op, VarSubgroup},
+    expr::{Context, GroupCursor, Op, VarSubgroup},
     model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr},
     rules::{
         WhenCondition,
@@ -58,10 +58,7 @@ pub fn scan_arg_range(expr: &Expr) -> Option<(i32, i32)> {
             let [push, lo, hi, in_op] = window else {
                 continue;
             };
-            let arg_pushed = matches!(
-                push,
-                Op::PushVar(Attribute::Arg(_)) | Op::PushGroup(AttributeGroup::Arg)
-            );
+            let arg_pushed = matches!(push, Op::PushVar(Attribute::Arg(_)) | Op::PushGroup(_, 0));
             if !arg_pushed || !matches!(in_op, Op::In) {
                 continue;
             }
@@ -74,10 +71,10 @@ pub fn scan_arg_range(expr: &Expr) -> Option<(i32, i32)> {
     None
 }
 
-/// Find the outer `with(@X, ...)` binding — first non-`Arg` `Op::Each`.
+/// Find the outer `with(@X, ...)` binding — first `Op::Each`.
 pub fn outer_group(expr: &Expr) -> Option<VarSubgroup<AttributeGroup>> {
     expr.ops().find_map(|op| match op {
-        Op::Each(sg) if sg.inner != AttributeGroup::Arg => Some(*sg),
+        Op::Each(sg) => Some(*sg),
         _ => None,
     })
 }
@@ -123,12 +120,18 @@ fn enumerate_assign<'a>(
     // Single-pass: build `positions` and fill `diff_exact` together.
     let mut diff_exact = vec![0i32; arg_count];
     let mut positions: Vec<usize> = Vec::new();
-    for (pos, slot) in mask.members().enumerate() {
-        let diff = target.resolve(slot).unwrap_or(0) - baseline.resolve(slot).unwrap_or(0);
-        if diff != 0 {
-            diff_exact[pos] = diff.clamp(lo, hi);
-            positions.push(pos);
+    let mut cursor = GroupCursor::build(baseline, &mask);
+    let mut pos = 0;
+    while cursor.is_live() {
+        if let Some(&slot) = cursor.col(1) {
+            let diff = target.resolve(slot).unwrap_or(0) - baseline.resolve(slot).unwrap_or(0);
+            if diff != 0 {
+                diff_exact[pos] = diff.clamp(lo, hi);
+                positions.push(pos);
+            }
         }
+        pos += 1;
+        cursor.advance();
     }
     let zero = vec![0i32; arg_count];
 
@@ -464,7 +467,7 @@ mod tests {
             "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, \
              each(@, if(@ == 0, @ += @ARG))))",
         );
-        let mask = VarSubgroup::from(AttributeGroup::SkillProf);
+        let mask = VarSubgroup::from(AttributeGroup::Skill);
         let p_bard = pending_l1("Bard CP");
         let p_skilled = pending_l1("Skilled");
         let mut feats = vec![
@@ -557,7 +560,7 @@ mod tests {
                 },
                 AssignData {
                     expr: skill_expr,
-                    mask: VarSubgroup::from(AttributeGroup::SkillProf),
+                    mask: VarSubgroup::from(AttributeGroup::Skill),
                     arg_range: skill_range,
                     args: vec![0; skill_arg_count],
                     forced: None,
@@ -619,7 +622,7 @@ mod tests {
         // CP mask = bits for {Acro, Athl, Dec, Insi, Inti, Inv, Perc, Perf, Pers,
         // Sleight, Stealth}.
         let cp_mask = VarSubgroup::masked(
-            AttributeGroup::SkillProf,
+            AttributeGroup::Skill,
             (1u32 << 0)   // Acrobatics
                 | (1 << 3)   // Athletics
                 | (1 << 4)   // Deception
@@ -649,7 +652,7 @@ mod tests {
                 pending: &p_exp,
                 assigns: vec![AssignData {
                     expr: expertise_def.assign.as_ref().unwrap()[0].expr.clone(),
-                    mask: VarSubgroup::from(AttributeGroup::SkillProf),
+                    mask: VarSubgroup::from(AttributeGroup::Skill),
                     arg_range: (0, 1),
                     args: vec![0; 18],
                     forced: Some(expertise_forced),
@@ -758,7 +761,7 @@ mod tests {
         .unwrap();
 
         let cp_mask = VarSubgroup::masked(
-            AttributeGroup::SkillProf,
+            AttributeGroup::Skill,
             (1u32 << 0)  // Acrobatics
                 | (1 << 3)   // Athletics
                 | (1 << 4)   // Deception
@@ -814,7 +817,7 @@ mod tests {
                 pending: &p_exp,
                 assigns: vec![AssignData {
                     expr: expertise_expr,
-                    mask: VarSubgroup::from(AttributeGroup::SkillProf),
+                    mask: VarSubgroup::from(AttributeGroup::Skill),
                     arg_range: (0, 1),
                     args: vec![0; 18],
                     forced: Some(expertise_forced),

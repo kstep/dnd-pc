@@ -413,12 +413,12 @@ mod tests {
 
     /// Single-arg interactive expr (mask of one ability → 1 ARG slot).
     fn one_arg_expr() -> &'static str {
-        "with(@ABILITY(STR), each(@, @ += @ARG))"
+        "each(@ABILITY(STR), @ += @ARG)"
     }
 
     /// Two-arg interactive expr (mask of two abilities → 2 ARG slots).
     fn two_arg_expr() -> &'static str {
-        "with(@ABILITY(STR, DEX), each(@, @ += @ARG))"
+        "each(@ABILITY(STR, DEX), @ += @ARG)"
     }
 
     #[test]
