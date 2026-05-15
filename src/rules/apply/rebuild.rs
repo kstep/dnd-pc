@@ -1392,8 +1392,8 @@ mod tests {
             "stackable": true,
             "assign": [{
                 "when": "OnFeatureAdd",
-                "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and \
-                         fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))",
+                "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                         fold(+, @, @ARG) == 2, each(@, if(@.PROF == 1, @.PROF += @ARG))))",
             }],
         }))
         .unwrap();

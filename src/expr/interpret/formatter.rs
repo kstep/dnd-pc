@@ -1,6 +1,34 @@
 use std::fmt;
 
-use crate::expr::{Error, Op, interpret::Interpreter, ops::BlockIndex, stack::Stack};
+use crate::expr::{
+    Error, Op, group::VarGroup, interpret::Interpreter, ops::BlockIndex, stack::Stack,
+};
+
+/// Format an `@G[.SUFFIX]` reference. `scope_active = true` emits the
+/// short scope-relative form (`@` / `@.SUFFIX`); otherwise the explicit
+/// `@G` / `@G.SUFFIX`. `@ARG` is universal.
+pub fn format_group_ref<G: fmt::Display + VarGroup>(
+    grp: &G,
+    col: u8,
+    scope_active: bool,
+) -> String {
+    match (col, scope_active) {
+        (0, _) => "@ARG".to_string(),
+        (1, true) => "@".to_string(),
+        (1, false) => format!("@{grp}"),
+        (col, scope) => {
+            let suffix = G::SCHEMA
+                .get((col - 2) as usize)
+                .copied()
+                .unwrap_or("<bad>");
+            if scope {
+                format!("@.{suffix}")
+            } else {
+                format!("@{grp}.{suffix}")
+            }
+        }
+    }
+}
 
 struct Frag {
     text: String,
@@ -9,13 +37,23 @@ struct Frag {
 
 pub struct Formatter {
     stack: Stack<Frag>,
+    /// Stack of enclosing-each/with group names (as their Display strings).
+    /// `PushGroup(grp, col)` emits `@` / `@.SUFFIX` (scope-relative) when
+    /// `grp` matches the top of this stack; otherwise the explicit
+    /// `@G` / `@G.SUFFIX` form.
+    scope: Vec<String>,
 }
 
 impl Formatter {
     pub fn new() -> Self {
         Self {
             stack: Stack::new(),
+            scope: Vec::new(),
         }
+    }
+
+    pub fn push_scope(&mut self, grp: impl fmt::Display) {
+        self.scope.push(grp.to_string());
     }
 
     fn push(&mut self, text: String, prec: u8) {
@@ -56,8 +94,11 @@ impl Formatter {
     }
 }
 
-impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Display>
-    Interpreter<Var, Val, Grp> for Formatter
+impl<
+    Var: Copy + fmt::Display,
+    Val: Copy + fmt::Display,
+    Grp: Copy + fmt::Display + VarGroup<Var = Var>,
+> Interpreter<Var, Val, Grp> for Formatter
 {
     type Output = String;
 
@@ -135,12 +176,21 @@ impl<Var: Copy + fmt::Display, Val: Copy + fmt::Display, Grp: Copy + fmt::Displa
                 let a = self.stack.pop()?;
                 self.push(format!("in({}, {}, {})", a.text, b.text, c.text), 3);
             }
-            Op::PushGroup(grp, _col) => {
-                self.push(format!("@{grp}"), 7);
+            Op::PushGroup(grp, col) => {
+                let scope_active = self.scope.last().is_some_and(|s| *s == grp.to_string());
+                self.push(format_group_ref(&grp, col, scope_active), 7);
             }
-            Op::AssignGroup(grp, _col) => {
+            Op::AssignGroup(grp, col) => {
                 let val = self.stack.pop()?;
-                self.push(format!("@{grp} = {}", val.text), 0);
+                let scope_active = self.scope.last().is_some_and(|s| *s == grp.to_string());
+                self.push(
+                    format!(
+                        "{} = {}",
+                        format_group_ref(&grp, col, scope_active),
+                        val.text
+                    ),
+                    0,
+                );
             }
             Op::Tier(count) => {
                 let var = self.stack.pop()?;

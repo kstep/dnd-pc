@@ -26,7 +26,7 @@ pub use crate::expr::{
     traits::{Context, Eval, ResolveGroup},
 };
 use crate::expr::{
-    interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator},
+    interpret::{DicePoolEvaluator, Evaluator, Formatter, ReadOnlyEvaluator, format_group_ref},
     parser::Parser,
 };
 
@@ -73,10 +73,10 @@ where
             if self.0.is_empty() {
                 return serializer.serialize_str("");
             }
-            let s = self
-                .format_block(BLOCK_MAIN)
+            let expr_str = self
+                .format_block(BLOCK_MAIN, None)
                 .map_err(serde::ser::Error::custom)?;
-            serializer.serialize_str(&s)
+            serializer.serialize_str(&expr_str)
         } else {
             // Binary format: serialize as a sequence of op-blocks.
             let mut seq = serializer.serialize_seq(Some(self.0.len()))?;
@@ -416,21 +416,24 @@ impl<
     Grp: Copy + VarGroup<Var = Var> + PartialEq + fmt::Display,
 > Expr<Var, Val, Grp>
 {
-    fn format_block(&self, block: BlockIndex) -> Result<String, Error> {
+    fn format_block(&self, block: BlockIndex, scope: Option<&str>) -> Result<String, Error> {
         let block = &self.0[block as usize];
         let mut results: Vec<String> = Vec::new();
         for stmt in block.statements() {
-            if let Some(formatted) = self.try_format_compound(stmt)? {
+            if let Some(formatted) = self.try_format_compound(stmt, scope)? {
                 results.push(formatted);
             } else {
-                results.push(self.format_ops(stmt)?);
+                results.push(self.format_ops(stmt, scope)?);
             }
         }
         Ok(results.join("; "))
     }
 
-    fn format_ops(&self, ops: &[Op<Var, Val, Grp>]) -> Result<String, Error> {
+    fn format_ops(&self, ops: &[Op<Var, Val, Grp>], scope: Option<&str>) -> Result<String, Error> {
         let mut fmt = Formatter::new();
+        if let Some(s) = scope {
+            fmt.push_scope(s);
+        }
         let mut i = 0;
         while i < ops.len() {
             let op = ops[i];
@@ -445,21 +448,21 @@ impl<
                     fmt.exec(op)?;
                 }
                 Op::Eval(idx) => {
-                    let text = self.format_block(idx)?;
+                    let text = self.format_block(idx, scope)?;
                     fmt.push_atom(text);
                 }
                 Op::EvalIf(then_idx, BLOCK_ERROR) => {
                     let cond = fmt.pop_text()?;
-                    let then_text = self.format_block(then_idx)?;
+                    let then_text = self.format_block(then_idx, scope)?;
                     fmt.push_atom(format!("guard({cond}, {then_text})"));
                 }
                 Op::EvalIf(then_idx, else_idx) => {
                     let cond = fmt.pop_text()?;
-                    let then_text = self.format_block(then_idx)?;
+                    let then_text = self.format_block(then_idx, scope)?;
                     if else_idx == BLOCK_NOOP {
                         fmt.push_atom(format!("if({cond}, {then_text})"));
                     } else {
-                        let else_text = self.format_block(else_idx)?;
+                        let else_text = self.format_block(else_idx, scope)?;
                         fmt.push_atom(format!("if({cond}, {then_text}, {else_text})"));
                     }
                 }
@@ -500,9 +503,10 @@ impl<
 
         let mut grp_str = String::new();
         write!(grp_str, "{subgrp}").unwrap();
+        let inner_scope = subgrp.inner.to_string();
 
         if target_idx == body_idx {
-            let body_text = self.format_block_ops(content_ops)?;
+            let body_text = self.format_block_ops(content_ops, Some(&inner_scope))?;
             Ok(format!("each(@{grp_str}, {body_text})"))
         } else {
             let acc_block = &self.0[target_idx as usize];
@@ -511,13 +515,15 @@ impl<
                 && matches!(acc_ops[0], Op::Eval(idx) if idx == body_idx)
                 && let Op::BinOp(bin_op) = acc_ops[1]
             {
-                // Shorthand: fold(op, @GROUP) when body is just PushGroup(inner)
+                // Shorthand: `fold(op, @GROUP)` only when body is a single
+                // PushGroup on the same group's primary column (col=1). col=0
+                // would emit `fold(+, @G)` but mean `fold(+, @G, @ARG)`.
                 if content_ops.len() == 1
-                    && matches!(content_ops[0], Op::PushGroup(g, _) if g == subgrp.inner)
+                    && matches!(content_ops[0], Op::PushGroup(g, 1) if g == subgrp.inner)
                 {
                     Ok(format!("fold({}, @{grp_str})", bin_op.symbol()))
                 } else {
-                    let expr_text = self.format_block_ops(content_ops)?;
+                    let expr_text = self.format_block_ops(content_ops, Some(&inner_scope))?;
                     Ok(format!(
                         "fold({}, @{grp_str}, {expr_text})",
                         bin_op.symbol()
@@ -531,44 +537,52 @@ impl<
 
     /// Format a slice of ops with compound assignment detection for both
     /// Assign and AssignGroup.
-    fn format_block_ops(&self, ops: &[Op<Var, Val, Grp>]) -> Result<String, Error> {
+    fn format_block_ops(
+        &self,
+        ops: &[Op<Var, Val, Grp>],
+        scope: Option<&str>,
+    ) -> Result<String, Error> {
         let mut results: Vec<String> = Vec::new();
         let mut start = 0;
         for (i, op) in ops.iter().enumerate() {
             if matches!(op, Op::AssignVar(_) | Op::AssignGroup(_, _)) {
                 let stmt = &ops[start..=i];
-                if let Some(formatted) = self.try_format_compound(stmt)? {
+                if let Some(formatted) = self.try_format_compound(stmt, scope)? {
                     results.push(formatted);
                 } else {
-                    results.push(self.format_ops(stmt)?);
+                    results.push(self.format_ops(stmt, scope)?);
                 }
                 start = i + 1;
             }
         }
         if start < ops.len() {
-            results.push(self.format_ops(&ops[start..])?);
+            results.push(self.format_ops(&ops[start..], scope)?);
         }
         Ok(results.join("; "))
     }
 
     /// Try to format a statement as compound assignment (X += Y).
     /// Works for both PushVar/Assign and PushGroup/AssignGroup patterns.
-    fn try_format_compound(&self, stmt: &[Op<Var, Val, Grp>]) -> Result<Option<String>, Error> {
+    fn try_format_compound(
+        &self,
+        stmt: &[Op<Var, Val, Grp>],
+        scope: Option<&str>,
+    ) -> Result<Option<String>, Error> {
         let Some(ca) = Block::detect_compound(stmt) else {
             return Ok(None);
         };
-        // The plain-text formatter doesn't have a place to render a
-        // side-effecting prefix (e.g. an inner each-loop) separately, so
-        // prefixed compounds fall back to the long form.
         if ca.prefix_end > 0 {
             return Ok(None);
         }
         let var = match stmt.last() {
             Some(Op::AssignVar(v)) => format!("{v}"),
-            Some(Op::AssignGroup(g, _)) => format!("@{g}"),
+            Some(Op::AssignGroup(g, col)) => {
+                let scope_active = scope.is_some_and(|s| s == g.to_string());
+                format_group_ref(g, *col, scope_active)
+            }
             _ => unreachable!(),
         };
-        let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end])?;
+        let rhs = self.format_ops(&stmt[ca.rhs_start..ca.rhs_end], scope)?;
         Ok(Some(format!("{var} {sym}= {rhs}", sym = ca.sym)))
     }
 }
@@ -583,8 +597,10 @@ impl<
         if self.0.is_empty() {
             return Ok(());
         }
-        let s = self.format_block(BLOCK_MAIN).map_err(|_| fmt::Error)?;
-        f.write_str(&s)
+        let expr_str = self
+            .format_block(BLOCK_MAIN, None)
+            .map_err(|_| fmt::Error)?;
+        f.write_str(&expr_str)
     }
 }
 
@@ -1405,9 +1421,9 @@ mod loop_tests {
     impl expr::ResolveGroup<AttributeGroup> for TestCtx {
         fn resolve_group<'a>(
             &'a self,
-            _grp: &AttributeGroup,
+            grp: &AttributeGroup,
         ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
-            Box::new(std::iter::empty())
+            StaticAttrSource.resolve_group(grp)
         }
     }
 
@@ -1443,9 +1459,9 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn parse_each_roundtrip() {
-        let expr: Expr = "each(@ABILITY, @ABILITY += @ARG)".parse().unwrap();
+        let expr: Expr = "each(@ABILITY, @ += @ARG)".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "each(@ABILITY, @ABILITY += @ARG)");
+        assert_eq!(display, "each(@ABILITY, @ += @ARG)");
     }
 
     #[wasm_bindgen_test]
@@ -1457,14 +1473,9 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn parse_each_with_condition() {
-        let expr: Expr = "each(@ABILITY, if(@ABILITY < 20, @ABILITY += @ARG))"
-            .parse()
-            .unwrap();
+        let expr: Expr = "each(@ABILITY, if(@ < 20, @ += @ARG))".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(
-            display,
-            "each(@ABILITY, if(@ABILITY < 20, @ABILITY += @ARG))"
-        );
+        assert_eq!(display, "each(@ABILITY, if(@ < 20, @ += @ARG))");
     }
 
     #[wasm_bindgen_test]
@@ -1492,11 +1503,8 @@ mod loop_tests {
         // Top-level each-statement before a compound on `AC` — the prefix
         // is detected and roundtrips as long form (formatter has no short
         // syntax for a side-effecting prefix + compound).
-        let expr: Expr = "each(@ABILITY, @ABILITY += 1); AC += 2".parse().unwrap();
-        assert_eq!(
-            expr.to_string(),
-            "each(@ABILITY, @ABILITY += 1); AC = AC + 2"
-        );
+        let expr: Expr = "each(@ABILITY, @ += 1); AC += 2".parse().unwrap();
+        assert_eq!(expr.to_string(), "each(@ABILITY, @ += 1); AC = AC + 2");
     }
 
     #[wasm_bindgen_test]
@@ -1599,9 +1607,10 @@ mod loop_tests {
 
     #[wasm_bindgen_test]
     fn parse_each_resist() {
-        let expr: Expr = "each(@RESIST._, @RESIST._ = 1)".parse().unwrap();
+        // DmgGroup primary col=1 is Resistance; `@` is the resistance cell.
+        let expr: Expr = "each(@DMG, @ = 1)".parse().unwrap();
         let display = expr.to_string();
-        assert_eq!(display, "each(@RESIST._, @RESIST._ = 1)");
+        assert_eq!(display, "each(@DMG, @ = 1)");
     }
 
     /// Minimal interpreter that mimics AssignmentSummarizer's behavior:

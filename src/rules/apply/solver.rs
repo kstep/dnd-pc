@@ -464,8 +464,8 @@ mod tests {
     #[wasm_bindgen_test]
     fn solve_bard_cp_plus_skilled_splits_6_skills() {
         let def = feat_def_single(
-            "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, \
-             each(@, if(@ == 0, @ += @ARG))))",
+            "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, \
+             each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         );
         let mask = VarSubgroup::from(AttributeGroup::Skill);
         let p_bard = pending_l1("Bard CP");
@@ -531,8 +531,8 @@ mod tests {
                     "when": "OnFeatureAdd",
                 },
                 {
-                    "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and \
-                             fold(+, @, @ARG) == 1, each(@, if(@ == 0, @ += @ARG))))",
+                    "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                             fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
                     "when": "OnFeatureAdd",
                 },
             ],
@@ -603,17 +603,17 @@ mod tests {
         let cp_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Class Proficiencies (Rogue)",
             "assign": [{
-                "expr": "with(@SKILL._.PROF(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), \
+                "expr": "with(@SKILL(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), \
                          guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, \
-                         each(@, if(@ == 0, @ += @ARG))))",
+                         each(@, if(@.PROF == 0, @.PROF += @ARG))))",
                 "when": "OnFeatureAdd",
             }],
         })).expect("cp def");
         let expertise_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Expertise",
             "assign": [{
-                "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and \
-                         fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))",
+                "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                         fold(+, @, @ARG) == 2, each(@, if(@.PROF == 1, @.PROF += @ARG))))",
                 "when": "OnFeatureAdd",
             }],
         }))
@@ -724,9 +724,9 @@ mod tests {
         let cp_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Class Proficiencies (Rogue)",
             "assign": [{
-                "expr": "with(@SKILL._.PROF(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), \
+                "expr": "with(@SKILL(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), \
                          guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, \
-                         each(@, if(@ == 0, @ += @ARG))))",
+                         each(@, if(@.PROF == 0, @.PROF += @ARG))))",
                 "when": "OnFeatureAdd",
             }],
         })).unwrap();
@@ -744,8 +744,8 @@ mod tests {
         let expertise_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Expertise",
             "assign": [{
-                "expr": "with(@SKILL._.PROF, guard(fold(and, @, in(@ARG, 0, 1)) and \
-                         fold(+, @, @ARG) == 2, each(@, if(@ == 1, @ += @ARG))))",
+                "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and \
+                         fold(+, @, @ARG) == 2, each(@, if(@.PROF == 1, @.PROF += @ARG))))",
                 "when": "OnFeatureAdd",
             }],
         }))

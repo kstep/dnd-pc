@@ -7,7 +7,7 @@ pub use self::{
     analyze::ExprAnalysis,
     dice::{DicePool, DicePoolEvaluator},
     evaluator::{Evaluator, ReadOnlyEvaluator},
-    formatter::Formatter,
+    formatter::{Formatter, format_group_ref},
 };
 use crate::expr::{
     Error, Op, VarGroup, avg_hp,
