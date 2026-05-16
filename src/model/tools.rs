@@ -85,6 +85,12 @@ impl Tools {
         self.0.retain(|entry| entry.name != name);
     }
 
+    pub fn remove_at(&mut self, idx: usize) {
+        if idx < self.0.len() {
+            self.0.remove(idx);
+        }
+    }
+
     pub fn get_mut(&mut self, idx: usize) -> Option<&mut ToolEntry> {
         self.0.get_mut(idx)
     }

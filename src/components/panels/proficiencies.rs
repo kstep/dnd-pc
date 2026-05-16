@@ -167,7 +167,7 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                         <button
                                             class="btn-remove"
                                             on:click=move |_| {
-                                                tools.write().remove(i);
+                                                tools.write().remove_at(i);
                                             }
                                         >
                                             <Icon name="x" />
