@@ -773,7 +773,11 @@ impl expr::Context<Attribute, i32> for CharacterCore {
                 }
             }
             Attribute::ToolProficiency(name) => {
-                self.tools.add(name).prof = ProficiencyLevel::from(value);
+                if value == 0 {
+                    self.tools.remove(name);
+                } else {
+                    self.tools.add(name).prof = ProficiencyLevel::from(value);
+                }
             }
             Attribute::ToolAbility(name) => {
                 if let Ok(ability) = Ability::try_from(value.max(0) as u8) {
