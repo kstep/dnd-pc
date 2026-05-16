@@ -1,11 +1,14 @@
 use std::{iter::Peekable, marker::PhantomData, ops::Neg, str::FromStr};
 
-use crate::expr::{
-    Op,
-    error::Error,
-    group::{NoGroup, VarGroup, VarSubgroup},
-    ops::{BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Cmp},
-    tokenizer::{Token, Tokenizer},
+use crate::{
+    expr::{
+        Op,
+        error::Error,
+        group::{NoGroup, VarGroup, VarSubgroup},
+        ops::{BLOCK_ERROR, BLOCK_NOOP, BinOp, BlockIndex, Cmp},
+        tokenizer::{Token, Tokenizer},
+    },
+    model::intern,
 };
 
 pub(super) struct Parser<'a, Var, Val, Grp = NoGroup<Var>> {
@@ -471,18 +474,27 @@ impl<
             return Ok(scope_subgrp);
         };
         self.next()?;
-        let mut mask = 0u32;
+        if scope_subgrp.inner.static_size().is_some() {
+            self.parse_subgroup_bits(scope_subgrp.inner)
+        } else {
+            self.parse_subgroup_names(scope_subgrp.inner)
+        }
+    }
+
+    /// Static-group mask: `name1, name2, …)` → bit positions via
+    /// `member_by_name`. Unknown name → parse error.
+    fn parse_subgroup_bits(&mut self, inner: Grp) -> Result<VarSubgroup<Grp>, Error> {
+        let mut bits = 0u32;
         loop {
             let name = match self.next()? {
                 Some(Token::Ident(name)) => name,
                 Some(token) => return Err(Error::unexpected_token(token)),
                 None => return Err(Error::UnexpectedEnd),
             };
-            let idx = scope_subgrp
-                .inner
+            let idx = inner
                 .member_by_name(name)
                 .ok_or(Error::unexpected_token(name))?;
-            mask |= 1 << idx;
+            bits |= 1 << idx;
             match self.peek() {
                 Some(Token::Comma) => {
                     self.next()?;
@@ -494,7 +506,35 @@ impl<
                 _ => return Err(Error::UnexpectedEnd),
             }
         }
-        Ok(VarSubgroup::masked(scope_subgrp.inner, mask))
+        Ok(VarSubgroup::masked(inner, bits))
+    }
+
+    /// Dynamic-group mask: `name1, name2, …)` → `\0`-joined interned
+    /// allowlist; runtime filter checks `VarGroup::name_of(row)`.
+    fn parse_subgroup_names(&mut self, inner: Grp) -> Result<VarSubgroup<Grp>, Error> {
+        let mut joined = String::new();
+        loop {
+            let name = match self.next()? {
+                Some(Token::Ident(name)) => name,
+                Some(token) => return Err(Error::unexpected_token(token)),
+                None => return Err(Error::UnexpectedEnd),
+            };
+            if !joined.is_empty() {
+                joined.push('\0');
+            }
+            joined.push_str(name);
+            match self.peek() {
+                Some(Token::Comma) => {
+                    self.next()?;
+                }
+                Some(Token::RParen) => {
+                    self.next()?;
+                    break;
+                }
+                _ => return Err(Error::UnexpectedEnd),
+            }
+        }
+        Ok(VarSubgroup::masked_names(inner, intern(&joined)))
     }
 
     fn parse_each(&mut self, ops: &mut Vec<Op<Var, Val, Grp>>) -> Result<(), Error> {

@@ -1129,7 +1129,7 @@ impl Interpreter<Attribute, i32, AttributeGroup> for ArgSummarizer {
                         StaticAttrSource
                             .resolve_group(&subgrp.inner)
                             .enumerate()
-                            .filter(|(pos, _)| subgrp.allows(*pos))
+                            .filter(|(pos, row)| subgrp.allows_row(row, *pos))
                             .filter_map(|(_, row)| row.get(1).copied()),
                     );
                 }

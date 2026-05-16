@@ -75,7 +75,7 @@
     "name": "Crafter",
     "assign": [
       {
-        "expr": "TOOL.COUNT += 3",
+        "expr": "guard(in(ARG.0, 0, 1) and in(ARG.1, 0, 1) and in(ARG.2, 0, 1) and in(ARG.3, 0, 1) and in(ARG.4, 0, 1) and in(ARG.5, 0, 1) and in(ARG.6, 0, 1) and in(ARG.7, 0, 1) and ARG.0 + ARG.1 + ARG.2 + ARG.3 + ARG.4 + ARG.5 + ARG.6 + ARG.7 == 3, if(ARG.0 == 1, TOOL.`Carpenter's Tools`.ABIL = ARG.0 * 0); if(ARG.1 == 1, TOOL.`Leatherworker's Tools`.ABIL = ARG.1 * 1); if(ARG.2 == 1, TOOL.`Mason's Tools`.ABIL = ARG.2 * 0); if(ARG.3 == 1, TOOL.`Potter's Tools`.ABIL = ARG.3 * 1); if(ARG.4 == 1, TOOL.`Smith's Tools`.ABIL = ARG.4 * 0); if(ARG.5 == 1, TOOL.`Tinker's Tools`.ABIL = ARG.5 * 1); if(ARG.6 == 1, TOOL.`Weaver's Tools`.ABIL = ARG.6 * 1); if(ARG.7 == 1, TOOL.`Woodcarver's Tools`.ABIL = ARG.7 * 1))",
         "when": "OnFeatureAdd"
       }
     ],

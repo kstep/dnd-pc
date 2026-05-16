@@ -142,14 +142,10 @@ impl<Var, Val, Grp> Expr<Var, Val, Grp> {
                 // (mask popcount) for masked or `static_size()` for unmasked
                 // static groups. `Next` carries no domain. PushGroup/AssignGroup
                 // attach to the surrounding loop and don't widen the range.
-                Op::Each(subgrp) => {
-                    let count = if subgrp.mask == u32::MAX {
-                        subgrp.inner.static_size()?
-                    } else {
-                        subgrp.mask.count_ones() as usize
-                    };
-                    count.checked_sub(1)
-                }
+                Op::Each(subgrp) => subgrp
+                    .mask
+                    .admitted_count(|| subgrp.inner.static_size())?
+                    .checked_sub(1),
                 _ => None,
             })
             .max()
@@ -1818,5 +1814,112 @@ mod loop_tests {
         let expr: Expr = "fold(+, @ABIL)".parse().unwrap();
         let result = expr.eval(&ctx).unwrap();
         assert_eq!(result, ctx.abilities.iter().sum::<i32>());
+    }
+
+    struct ToolCtx {
+        tools: Vec<&'static str>,
+    }
+
+    impl expr::ResolveGroup<AttributeGroup> for ToolCtx {
+        fn resolve_group<'a>(
+            &'a self,
+            grp: &AttributeGroup,
+        ) -> Box<dyn Iterator<Item = Vec<Attribute>> + 'a> {
+            use crate::{
+                expr::VarGroup,
+                model::{ToolGroup, intern},
+            };
+            match grp {
+                AttributeGroup::Tool => Box::new(
+                    self.tools
+                        .iter()
+                        .copied()
+                        .map(intern)
+                        .enumerate()
+                        .map(ToolGroup::make_row),
+                ),
+                _ => StaticAttrSource.resolve_group(grp),
+            }
+        }
+    }
+
+    impl Context<Attribute, i32> for ToolCtx {
+        fn resolve(&self, _var: Attribute) -> Result<i32, expr::Error> {
+            Ok(0)
+        }
+
+        fn assign(&mut self, _var: Attribute, _val: i32) -> Result<(), expr::Error> {
+            Ok(())
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_dynamic_subgroup_mask_roundtrip() {
+        // TOOL's primary col (bare `@`) is the proficiency cell.
+        let input = "with(@TOOL(`Smith's Tools`, `Tinker's Tools`), each(@, @ = 1))";
+        let expr: Expr = input.parse().unwrap();
+        // `with` is parse-time sugar, so display reflects the expanded form.
+        let expected = "each(@TOOL(`Smith's Tools`, `Tinker's Tools`), @ = 1)";
+        assert_eq!(expr.to_string(), expected);
+        // Reparse the displayed form for an identical render.
+        let reparsed: Expr = expr.to_string().parse().unwrap();
+        assert_eq!(reparsed.to_string(), expected);
+    }
+
+    #[wasm_bindgen_test]
+    fn dynamic_subgroup_filters_at_runtime() {
+        let ctx = ToolCtx {
+            tools: vec!["Smith's Tools", "Cook's Utensils", "Tinker's Tools"],
+        };
+        let expr: Expr = "fold(+, @TOOL(`Smith's Tools`, `Tinker's Tools`), 1)"
+            .parse()
+            .unwrap();
+        assert_eq!(expr.eval(&ctx).unwrap(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn const_multiplier_is_not_folded() {
+        let expr: Expr = "STR = ARG.0 * 1".parse().unwrap();
+        assert_eq!(expr.to_string(), "STR = ARG.0 * 1");
+        let expr: Expr = "STR = ARG.0 * 0".parse().unwrap();
+        assert_eq!(expr.to_string(), "STR = ARG.0 * 0");
+    }
+
+    #[wasm_bindgen_test]
+    fn dynamic_subgroup_each_body_fills_active_args() {
+        let ctx = ToolCtx { tools: vec![] };
+        let expr: Expr = "each(@TOOL(`A`, `B`, `C`), @ += @ARG)".parse().unwrap();
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
+        assert_eq!(analysis.active_args, BTreeSet::from([0u8, 1, 2]));
+    }
+
+    #[wasm_bindgen_test]
+    fn crafter_formula_active_args() {
+        let ctx = ToolCtx { tools: vec![] };
+        let formula = "with(@TOOL(`Carpenter's Tools`, `Leatherworker's Tools`, `Mason's Tools`, \
+                       `Potter's Tools`, `Smith's Tools`, `Tinker's Tools`, `Weaver's Tools`, \
+                       `Woodcarver's Tools`), guard(fold(and, @, in(@ARG, 0, 1)) and \
+                       fold(+, @, @ARG) == 3, each(@, @ += @ARG); \
+                       if(ARG.0 == 1, TOOL.`Carpenter's Tools`.ABIL = 0); \
+                       if(ARG.1 == 1, TOOL.`Leatherworker's Tools`.ABIL = 1)))";
+        let expr: Expr = formula.parse().unwrap();
+        let analysis = expr.analyze(&ctx, Attribute::arg_index);
+        assert_eq!(
+            analysis.active_args,
+            BTreeSet::from([0u8, 1, 2, 3, 4, 5, 6, 7])
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn dynamic_subgroup_mask_drives_iteration() {
+        // `SubgroupMask::Names` iterates the allowlist directly, bypassing
+        // Context — so the character's actual tools (or lack thereof)
+        // don't shadow the mask. Lets feats like Crafter grant tools the
+        // character doesn't yet own.
+        let ctx = ToolCtx { tools: vec![] };
+        let expr: Expr = "fold(+, @TOOL(`Carpenter's Tools`, `Smith's Tools`), 1)"
+            .parse()
+            .unwrap();
+        assert_eq!(expr.eval(&ctx).unwrap(), 2);
     }
 }

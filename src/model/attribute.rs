@@ -216,23 +216,30 @@ fn parse_backtick_name(input: &str) -> Result<(&str, &str), &'static str> {
     Ok((name, &input[end..]))
 }
 
-/// Render `<PREFIX>.<name><SUFFIX>` using a bare name when it contains only
-/// alphanumerics, `_`, or `.`; otherwise backtick-quote it. Inverse of
-/// [`parse_backtick_name`].
+/// Write `name` bare when it contains only alphanumerics / `_` / `.`,
+/// backtick-quoted otherwise. Inverse of [`parse_backtick_name`].
+pub fn write_maybe_quoted(name: &str, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    if name
+        .bytes()
+        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
+    {
+        write!(f, "{name}")
+    } else {
+        write!(f, "`{name}`")
+    }
+}
+
+/// Render `<PREFIX>.<name><SUFFIX>`, quoting `<name>` per
+/// [`write_maybe_quoted`].
 fn fmt_quoted_name(
     name: &str,
     prefix: &str,
     suffix: &str,
     f: &mut fmt::Formatter<'_>,
 ) -> fmt::Result {
-    if name
-        .bytes()
-        .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'.')
-    {
-        write!(f, "{prefix}.{name}{suffix}")
-    } else {
-        write!(f, "{prefix}.`{name}`{suffix}")
-    }
+    write!(f, "{prefix}.")?;
+    write_maybe_quoted(name, f)?;
+    write!(f, "{suffix}")
 }
 
 /// Write an `AttrKey` rendering: `<PREFIX>` for Scoped,

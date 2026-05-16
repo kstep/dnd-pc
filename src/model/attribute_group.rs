@@ -99,9 +99,21 @@ impl VarGroup for ToolGroup {
     }
 
     fn member_by_name(&self, _name: &str) -> Option<usize> {
-        // @TOOL mask not supported: positional indices зависят от
-        // runtime-состояния персонажа.
+        // Positional masks unsupported — tool positions depend on
+        // per-character `Character.tools` order. Name masks are used
+        // instead via `SubgroupMask::Names` + `name_of`.
         None
+    }
+
+    fn name_of(&self, row: &[Attribute]) -> Option<&'static str> {
+        match row.get(1)? {
+            Attribute::ToolProficiency(name) => Some(name),
+            _ => None,
+        }
+    }
+
+    fn index_from_name(&self, name: &'static str) -> Option<&'static str> {
+        Some(name)
     }
 }
 
@@ -291,6 +303,20 @@ impl VarGroup for AttributeGroup {
             Self::Skill => SkillGroup.member_name(pos),
             Self::Tool => ToolGroup.member_name(pos),
             Self::Dmg => DmgGroup.member_name(pos),
+        }
+    }
+
+    fn name_of(&self, row: &[Attribute]) -> Option<&'static str> {
+        match self {
+            Self::Tool => ToolGroup.name_of(row),
+            Self::Ability | Self::Skill | Self::Dmg => None,
+        }
+    }
+
+    fn materialize_from_name(&self, name: &'static str, iter_no: usize) -> Option<Vec<Attribute>> {
+        match self {
+            Self::Tool => Some(ToolGroup::make_row((iter_no, name))),
+            Self::Ability | Self::Skill | Self::Dmg => None,
         }
     }
 

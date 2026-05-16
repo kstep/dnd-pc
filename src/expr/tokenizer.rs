@@ -117,6 +117,19 @@ impl<'a> Iterator for Tokenizer<'a> {
                     _ => Token::Ident(ident),
                 }))
             }
+            b'`' => {
+                // Bare backtick-quoted ident: `name with spaces`. Used in
+                // dynamic-subgroup masks like `@TOOL(\`Smith's Tools\`)`.
+                let after_open = &self.rest[1..];
+                match after_open.find('`') {
+                    Some(close_at) => {
+                        let (name, rest) = after_open.split_at(close_at);
+                        self.rest = &rest[1..]; // skip closing backtick
+                        Some(Ok(Token::Ident(name)))
+                    }
+                    None => Some(Err(Error::UnexpectedChar('`'))),
+                }
+            }
             b'@' => {
                 self.rest = &self.rest[1..]; // skip @
                 match self.rest.as_bytes().first().copied() {
