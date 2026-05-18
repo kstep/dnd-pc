@@ -508,11 +508,10 @@ fn OptionRow(
                 </button>
             </div>
             <div class="option-card-meta">
-                <label class="field-inline">
+                <label class="field-inline field-cost">
                     <span class="field-label">{move_tr!("choice-cost")}</span>
                     <input
                         type="number"
-                        class="short-input"
                         min="0"
                         prop:value=cost
                         on:change=on_cost
@@ -522,7 +521,6 @@ fn OptionRow(
                     <span class="field-label">{move_tr!("choice-consumes")}</span>
                     <input
                         type="number"
-                        class="short-input"
                         min="0"
                         prop:value=consumes
                         on:change=on_consumes
@@ -775,7 +773,6 @@ fn EffectRow(
                     <Show when=is_feet>
                         <input
                             type="number"
-                            class="short-input"
                             min="0"
                             prop:value=range_feet
                             on:change=on_range_feet
@@ -795,21 +792,11 @@ fn EffectRow(
                     <Show when=is_rounds>
                         <input
                             type="number"
-                            class="short-input"
                             min="0"
                             prop:value=duration_rounds
                             on:change=on_duration_rounds
                         />
                     </Show>
-                </label>
-                <label class="field-inline">
-                    <span class="field-label">{move_tr!("effect-scope")}</span>
-                    <input
-                        type="text"
-                        class="scope-input"
-                        prop:value=scope
-                        on:change=on_scope
-                    />
                 </label>
                 <label class="field-inline">
                     <input
@@ -819,6 +806,19 @@ fn EffectRow(
                     />
                     {move_tr!("effect-stackable")}
                 </label>
+                <details class="field-advanced">
+                    <summary>{move_tr!("enchantment-advanced")}</summary>
+                    <label class="field-inline">
+                        <span class="field-label">{move_tr!("effect-scope")}</span>
+                        <input
+                            type="text"
+                            class="scope-input"
+                            prop:value=scope
+                            on:change=on_scope
+                        />
+                        <span class="field-hint">{move_tr!("effect-scope-hint")}</span>
+                    </label>
+                </details>
             </div>
         </div>
     }
