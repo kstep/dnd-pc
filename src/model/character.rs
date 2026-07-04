@@ -858,7 +858,11 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
             Attribute::Speed => Ok(self.combat.speed as i32),
-            Attribute::CasterLevel(None) => Ok(self.caster_level(SpellSlotPool::default()) as i32),
+            // Scope-free bare form means "any pool"; pools never stack, so max.
+            Attribute::CasterLevel(None) => Ok(self
+                .caster_level(SpellSlotPool::Arcane)
+                .max(self.caster_level(SpellSlotPool::Pact))
+                as i32),
             Attribute::CasterLevel(Some(pool)) => Ok(self.caster_level(pool) as i32),
             Attribute::Slot(pool, n) => {
                 let pool = pool.unwrap_or_default();
@@ -1381,6 +1385,28 @@ mod tests {
         assert_eq!(ch.caster_level(SpellSlotPool::Arcane), 5);
         // Pact pool only sees Warlock
         assert_eq!(ch.caster_level(SpellSlotPool::Pact), 3);
+    }
+
+    #[wasm_bindgen_test]
+    fn resolve_bare_caster_level_sees_pact_pool() {
+        // Mirrors "Alaric Kestrel": single Warlock class, Pact Magic in the
+        // Pact pool with caster_coef 1 — bare CASTER.LEVEL must see it.
+        let mut ch = test_character();
+        ch.identity.classes[0].class = "Warlock".into();
+        ch.identity.classes[0].level = 4;
+        make_caster(&mut ch, "Warlock", "Pact Magic", 1, SpellSlotPool::Pact);
+        assert_eq!(ch.resolve(Attribute::CasterLevel(None)).unwrap(), 4);
+
+        let prereq: Expr = "LEVEL >= 4 and CASTER.LEVEL >= 1".parse().unwrap();
+        assert_eq!(prereq.eval(&ch.core).unwrap(), 1);
+    }
+
+    #[wasm_bindgen_test]
+    fn resolve_bare_caster_level_takes_max_pool() {
+        // Arcane-only caster keeps its arcane level through the bare form.
+        let mut ch = test_character();
+        make_caster(&mut ch, "Fighter", "Spellcasting", 1, SpellSlotPool::Arcane);
+        assert_eq!(ch.resolve(Attribute::CasterLevel(None)).unwrap(), 5);
     }
 
     // --- class_summary() ---
