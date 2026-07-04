@@ -270,7 +270,7 @@ impl RulesRegistry {
     /// missing from the index pass vacuously. Used by the picker for
     /// `Category(System(Class))` placeholders to gate level-up / multiclass
     /// candidates against the existing-classes side of the PHB rules.
-    pub fn meets_class_prerequisites(&self, character: &Character) -> bool {
+    pub fn meets_class_prerequisites(&self, character: &CharacterCore) -> bool {
         self.with_class_entries(|entries| {
             character.identity.classes.iter().all(|cl| {
                 cl.class.is_empty()
@@ -281,13 +281,67 @@ impl RulesRegistry {
         })
     }
 
-    pub fn can_multiclass(&self, character: &Character, class_name: &str) -> bool {
+    pub fn can_multiclass(&self, character: &CharacterCore, class_name: &str) -> bool {
         self.meets_class_prerequisites(character)
             && self.with_class_entries(|entries| {
                 entries
                     .get(class_name)
                     .is_none_or(|entry| entry.meets_prerequisites(character))
             })
+    }
+
+    /// Replacement candidates for a placeholder, filtered against `character`
+    /// (the speculative modal snapshot, NOT the live store).
+    pub fn replacement_candidates(
+        &self,
+        character: &CharacterCore,
+        replace_with: &ReplaceWith,
+        parent_class_for_subclass: Option<&str>,
+    ) -> Vec<Box<str>> {
+        self.with_features_index(|features_index| {
+            // System(Class) candidates: a new class needs the full multiclass
+            // gate (every existing class meets its prereq + this class's
+            // prereq); an existing class always passes — level-up doesn't
+            // re-check multiclass requirements.
+            let class_prereqs_ok = self.meets_class_prerequisites(character);
+            features_index
+                .values()
+                .filter(|feat| {
+                    if !replace_with.matches(feat) {
+                        return false;
+                    }
+                    match feat.category {
+                        FeatureCategory::System(IdentitySlot::Class) => {
+                            let is_own = character
+                                .identity
+                                .classes
+                                .iter()
+                                .any(|class_level| class_level.class.as_ref() == &*feat.name);
+                            is_own || (class_prereqs_ok && feat.meets_prerequisites(character))
+                        }
+                        // System(Subclass) candidates: limit to subclasses of
+                        // the placeholder's parent class — `Subclass`
+                        // placeholders are attached to a specific class via
+                        // `source = Class(name, lvl)`, and a Cleric's picker
+                        // shouldn't surface a Wizard subclass.
+                        FeatureCategory::System(IdentitySlot::Subclass) => {
+                            if !feat.meets_prerequisites(character) {
+                                return false;
+                            }
+                            parent_class_for_subclass.is_some_and(|parent| {
+                                self.classes()
+                                    .with(parent, |class_def| {
+                                        class_def.subclasses.contains_key(&*feat.name)
+                                    })
+                                    .unwrap_or(false)
+                            })
+                        }
+                        _ => feat.meets_prerequisites(character),
+                    }
+                })
+                .map(|feat| feat.name.clone())
+                .collect()
+        })
     }
 
     pub fn is_loading(&self) -> bool {

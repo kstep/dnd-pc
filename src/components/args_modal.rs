@@ -13,9 +13,7 @@ use crate::{
         modal::Modal,
     },
     expr::DicePool,
-    model::{
-        AssignInputs, Character, CharacterCore, Expr, FeatureCategory, FeatureSource, IdentitySlot,
-    },
+    model::{AssignInputs, Character, CharacterCore, Expr, FeatureSource},
     rules::{
         ApplyInputs, DefinitionStore, FeatureKey, PendingInputs, RecomputePending, ReplaceWith,
         RulesRegistry,
@@ -526,7 +524,6 @@ fn ReplacementPicker(
     source: FeatureSource,
     replace_only: bool,
 ) -> impl IntoView {
-    let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
     let initial_replacement = replacement_choice.get_untracked();
     let replacing = RwSignal::new(replace_only || initial_replacement.is_some());
@@ -535,60 +532,27 @@ fn ReplacementPicker(
 
     let replacement_list_id = next_datalist_id();
     let options = Memo::new(move |_prev: Option<&Vec<DatalistOption>>| {
-        let character = store.read();
-        registry.with_features_index(|features_index| {
-            // System(Class) candidates: a new class needs the full multiclass
-            // gate (every existing class meets its prereq + this class's
-            // prereq); an existing class always passes — level-up doesn't
-            // re-check multiclass requirements.
-            let class_prereqs_ok = registry.meets_class_prerequisites(&character);
-            // System(Subclass) candidates: limit to subclasses of the
-            // placeholder's parent class — `Subclass` placeholders are
-            // attached to a specific class via `source = Class(name, lvl)`,
-            // and a Cleric's picker shouldn't surface a Wizard subclass.
-            let parent_class_for_subclass = source.with_value(|source| match source {
-                FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => {
-                    Some(name.to_string())
-                }
-                _ => None,
-            });
-            features_index
-                .values()
-                .filter(|feat| {
-                    if !replace_with.matches(feat) {
-                        return false;
-                    }
-                    match feat.category {
-                        FeatureCategory::System(IdentitySlot::Class) => {
-                            let is_own = character
-                                .identity
-                                .classes
-                                .iter()
-                                .any(|class_level| class_level.class.as_ref() == &*feat.name);
-                            is_own || (class_prereqs_ok && feat.meets_prerequisites(&character))
-                        }
-                        FeatureCategory::System(IdentitySlot::Subclass) => {
-                            if !feat.meets_prerequisites(&character) {
-                                return false;
-                            }
-                            parent_class_for_subclass.as_deref().is_some_and(|parent| {
-                                registry
-                                    .classes()
-                                    .with(parent, |class_def| {
-                                        class_def.subclasses.contains_key(&*feat.name)
-                                    })
-                                    .unwrap_or(false)
-                            })
-                        }
-                        _ => feat.meets_prerequisites(&character),
-                    }
-                })
-                .map(|feat| {
-                    let (label, description) = registry.feature_label_desc(&feat.name);
-                    DatalistOption::with_signals(&*feat.name, label, description)
-                })
-                .collect::<Vec<_>>()
-        })
+        // Speculative upstream snapshot — during level-up this already
+        // includes the tentative class level, so LEVEL >= 4 gates pass.
+        let character = character.get();
+        let parent_class_for_subclass = source.with_value(|feature_source| match feature_source {
+            FeatureSource::Class(name, _) | FeatureSource::Subclass(name, _, _) => {
+                Some(name.to_string())
+            }
+            _ => None,
+        });
+        registry
+            .replacement_candidates(
+                &character,
+                &replace_with,
+                parent_class_for_subclass.as_deref(),
+            )
+            .into_iter()
+            .map(|name| {
+                let (label, description) = registry.feature_label_desc(&name);
+                DatalistOption::with_signals(&*name, label, description)
+            })
+            .collect::<Vec<_>>()
     });
 
     let input_value = RwSignal::new(String::new());
