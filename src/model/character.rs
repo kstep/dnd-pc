@@ -13,8 +13,8 @@ use crate::{
     model::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
         DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
-        IdentitySlot, Note, Personality, Skills, SpellData, SpellSlots, ToolEntry, Tools, Weapon,
-        enums::*,
+        IdentitySlot, Item, ItemKind, Note, Personality, Skills, SpellData, SpellSlots, ToolEntry,
+        Tools, enums::*,
     },
     vecset::VecSet,
 };
@@ -282,8 +282,10 @@ impl CharacterCore {
     /// Evaluate a weapon's attack-bonus expression against this character.
     /// Uses the weapon's explicit `attack_expr` when set, otherwise the
     /// default derived from its `category` / `ability` / `magic_bonus`.
-    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
-        weapon.effective_attack_expr().eval(self).unwrap_or(0)
+    pub fn weapon_attack_bonus(&self, item: &Item) -> i32 {
+        item.attack_expr()
+            .map(|expr| expr.eval(self).unwrap_or(0))
+            .unwrap_or(0)
     }
 
     /// `(caster_level, caster_class_count)` for `pool`. Single class:
@@ -629,36 +631,40 @@ impl Character {
     ///
     /// Expects `combat.armor_class` to be pre-set as the baseline
     /// (default `10 + DEX.MOD`, possibly overridden by OnCompute assignments).
+    /// Only equipped armor counts (backup armor in the pack gives nothing).
     ///
     /// Evaluation order:
-    /// 1. All non-shield, non-natural armor formulas → pick the max vs baseline
+    /// 1. Equipped non-shield armor formulas → pick the max vs baseline
     /// 2. Set AC so shield formulas can read it
-    /// 3. All shield formulas → pick the max
+    /// 3. Equipped shield formulas → pick the max
     pub fn compute_armor_class(&mut self) -> u32 {
         let baseline = self.combat.armor_class;
 
-        // Best body armor (non-shield, non-natural), skipping armor the
-        // character isn't proficient with. Natural armor AC comes through
+        let armor_kind = |item: &Item| match item.kind {
+            ItemKind::Armor { armor_type, .. } => Some(armor_type),
+            _ => None,
+        };
+        // Best equipped body armor (non-shield, non-natural), skipping armor
+        // the character isn't proficient with. Natural armor AC comes through
         // OnCompute assignments, not through equipment evaluation.
         if let Some(body_ac) = self
             .equipment
-            .armors
+            .items
             .iter()
-            .filter(|armor| {
-                armor.armor_type != ArmorType::Shield && armor.armor_type != ArmorType::Natural
-            })
-            .filter(|armor| {
-                armor
-                    .armor_type
+            .filter(|item| item.is_active())
+            .filter_map(|item| Some((item, armor_kind(item)?)))
+            .filter(|(_, armor_type)| *armor_type != ArmorType::Shield)
+            .filter(|(_, armor_type)| {
+                armor_type
                     .required_proficiency()
                     .is_none_or(|prof| self.proficiencies.contains(&prof))
             })
-            .filter_map(|armor| {
-                let expr = armor.ac_expr.as_ref()?;
+            .filter_map(|(item, _)| {
+                let expr = item.ac_expr()?;
                 match expr.eval(self) {
                     Ok(value) => Some(value),
                     Err(error) => {
-                        log::warn!("AC expr eval failed for '{}': {error}", armor.name);
+                        log::warn!("AC expr eval failed for '{}': {error}", item.name);
                         None
                     }
                 }
@@ -669,21 +675,22 @@ impl Character {
             self.combat.armor_class = baseline.max(body_ac);
         }
 
-        // Best shield (reads AC = body_ac), only if proficient with shields
+        // Best equipped shield (reads AC = body_ac), only if proficient
         if !self.proficiencies.contains(&Proficiency::Shields) {
             return self.combat.armor_class;
         }
         if let Some(shield_ac) = self
             .equipment
-            .armors
+            .items
             .iter()
-            .filter(|armor| armor.armor_type == ArmorType::Shield)
-            .filter_map(|armor| {
-                let expr = armor.ac_expr.as_ref()?;
+            .filter(|item| item.is_active())
+            .filter(|item| armor_kind(item) == Some(ArmorType::Shield))
+            .filter_map(|item| {
+                let expr = item.ac_expr()?;
                 match expr.eval(self) {
                     Ok(value) => Some(value),
                     Err(error) => {
-                        log::warn!("AC expr eval failed for '{}': {error}", armor.name);
+                        log::warn!("AC expr eval failed for '{}': {error}", item.name);
                         None
                     }
                 }
@@ -1043,7 +1050,7 @@ mod tests {
     use crate::{
         expr::Context as _,
         model::{
-            Armor, AttrKey, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureData,
+            AttrKey, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureData,
             FeatureField, FeatureSource, FeatureValue, FreeUses, Money, Spell, SpellData,
         },
         rules::apply::ApplyContext,
@@ -1680,17 +1687,15 @@ mod tests {
 
     // --- compute_armor_class ---
 
-    fn make_armor(name: &str, base_ac: u32, armor_type: ArmorType, expr_str: &str) -> Armor {
-        Armor {
+    fn make_armor(name: &str, base_ac: u32, armor_type: ArmorType) -> Item {
+        Item {
             name: name.to_string(),
-            base_ac,
-            armor_type,
-            ac_expr: if expr_str.is_empty() {
-                None
-            } else {
-                Some(expr_str.parse::<Expr>().unwrap())
+            equipped: true,
+            kind: ItemKind::Armor {
+                armor_type,
+                base_ac,
             },
-            ..Armor::default()
+            ..Item::default()
         }
     }
 
@@ -1698,7 +1703,7 @@ mod tests {
     fn computed_ac_no_armor() {
         // DEX 14 → modifier +2 → 10 + 2 = 12
         let mut ch = test_character();
-        ch.equipment.armors.clear();
+        ch.equipment.items.clear();
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 12);
     }
@@ -1707,7 +1712,7 @@ mod tests {
     fn computed_ac_light_armor() {
         // Leather: 11 + DEX.MOD(+2) = 13
         let mut ch = test_character();
-        ch.equipment.armors = vec![make_armor("Leather", 11, ArmorType::Light, "11 + DEX.MOD")];
+        ch.equipment.items = vec![make_armor("Leather", 11, ArmorType::Light)];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 13);
     }
@@ -1716,12 +1721,7 @@ mod tests {
     fn computed_ac_medium_armor() {
         // Chain shirt: 13 + min(DEX.MOD(+2), 2) = 15
         let mut ch = test_character();
-        ch.equipment.armors = vec![make_armor(
-            "Chain Shirt",
-            13,
-            ArmorType::Medium,
-            "13 + min(DEX.MOD, 2)",
-        )];
+        ch.equipment.items = vec![make_armor("Chain Shirt", 13, ArmorType::Medium)];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 15);
     }
@@ -1730,7 +1730,7 @@ mod tests {
     fn computed_ac_heavy_armor() {
         // Plate: 18
         let mut ch = test_character();
-        ch.equipment.armors = vec![make_armor("Plate", 18, ArmorType::Heavy, "18")];
+        ch.equipment.items = vec![make_armor("Plate", 18, ArmorType::Heavy)];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 18);
     }
@@ -1739,9 +1739,9 @@ mod tests {
     fn computed_ac_with_shield() {
         // Plate(18) + Shield(+2) = 20
         let mut ch = test_character();
-        ch.equipment.armors = vec![
-            make_armor("Plate", 18, ArmorType::Heavy, "18"),
-            make_armor("Shield", 2, ArmorType::Shield, "AC + 2"),
+        ch.equipment.items = vec![
+            make_armor("Plate", 18, ArmorType::Heavy),
+            make_armor("Shield", 2, ArmorType::Shield),
         ];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 20);
@@ -1749,37 +1749,38 @@ mod tests {
 
     #[wasm_bindgen_test]
     fn computed_ac_natural_armor() {
-        // Natural armor is now applied via assign() OnCompute, which sets
-        // combat.armor_class directly. compute_armor_class() skips Natural
-        // type and uses the baseline. Simulate by setting baseline to 13.
+        // Natural armor is applied via assign() OnCompute, which sets
+        // combat.armor_class directly. compute_armor_class() derives no
+        // formula for Natural and uses the baseline. Simulate baseline 13.
         let mut ch = test_character();
         ch.combat.armor_class = 13; // as if assign() set 10 + DEX(+2) + CON(+1)
-        ch.equipment.armors = vec![make_armor(
-            "Unarmored Defense",
-            0,
-            ArmorType::Natural,
-            "10 + DEX.MOD + CON.MOD",
-        )];
+        ch.equipment.items = vec![make_armor("Unarmored Defense", 0, ArmorType::Natural)];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 13);
     }
 
     #[wasm_bindgen_test]
     fn computed_ac_picks_best() {
-        // Leather(13) vs Plate(18) vs Natural(13) → picks 18
+        // Leather(13) vs Plate(18) vs Natural(baseline) → picks 18
         let mut ch = test_character();
-        ch.equipment.armors = vec![
-            make_armor("Leather", 11, ArmorType::Light, "11 + DEX.MOD"),
-            make_armor("Plate", 18, ArmorType::Heavy, "18"),
-            make_armor(
-                "Unarmored Defense",
-                0,
-                ArmorType::Natural,
-                "10 + DEX.MOD + CON.MOD",
-            ),
+        ch.equipment.items = vec![
+            make_armor("Leather", 11, ArmorType::Light),
+            make_armor("Plate", 18, ArmorType::Heavy),
+            make_armor("Unarmored Defense", 0, ArmorType::Natural),
         ];
         let ac = ch.compute_armor_class();
         assert_eq!(ac, 18);
+    }
+
+    #[wasm_bindgen_test]
+    fn computed_ac_ignores_unequipped_backup_armor() {
+        // Equipped Leather(13); Plate 18 in the pack must NOT raise AC.
+        let mut ch = test_character();
+        let mut backup = make_armor("Plate", 18, ArmorType::Heavy);
+        backup.equipped = false;
+        ch.equipment.items = vec![make_armor("Leather", 11, ArmorType::Light), backup];
+        let ac = ch.compute_armor_class();
+        assert_eq!(ac, 13);
     }
 
     // --- compute_hp_max ---

@@ -81,7 +81,9 @@ impl Formatter {
     fn binary_func(&mut self, name: &str) -> Result<(), Error> {
         let b = self.stack.pop()?;
         let a = self.stack.pop()?;
-        self.push(format!("{name}({}, {})", a.text, b.text), 3);
+        // Function-call syntax is self-delimiting — push as an atom, or the
+        // parent operator wraps it in redundant parens.
+        self.push(format!("{name}({}, {})", a.text, b.text), 7);
         Ok(())
     }
 

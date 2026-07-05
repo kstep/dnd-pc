@@ -1,82 +1,56 @@
 use crate::{
     expr,
-    model::{Attribute, Character, CharacterCore, Charges, Enchantment, Expr, GearRef},
+    model::{Attribute, Character, CharacterCore, Charges, Expr, ItemEffects},
     rules::WhenCondition,
 };
 
-/// Apply-time context for evaluating gear `Enchantment.assign` expressions.
+/// Apply-time context for evaluating gear `ItemEffects.assign` expressions.
 ///
 /// Routes the gear-local attributes (`Charges`, `ChargesMax`, `ChargesUsed`,
-/// `Quantity`) to the owning gear's `magic.charges` / `quantity`. Anything
+/// `Quantity`) to the owning item's `effects.charges` / `quantity`. Anything
 /// else falls through to `Character::assign` / `Character::resolve` so
 /// expressions can still read character state (`HP`, `LEVEL`, …).
 pub struct ItemApplyCtx<'a> {
     pub character: &'a mut Character,
-    pub gear: GearRef,
+    pub gear: usize,
 }
 
 impl ItemApplyCtx<'_> {
-    fn enchantment(&self) -> Option<&Enchantment> {
-        match self.gear {
-            GearRef::Item(i) => self.character.equipment.items.get(i).map(|x| &x.magic),
-            GearRef::Weapon(i) => self.character.equipment.weapons.get(i).map(|x| &x.magic),
-            GearRef::Armor(i) => self.character.equipment.armors.get(i).map(|x| &x.magic),
-        }
+    fn item_effects(&self) -> Option<&ItemEffects> {
+        self.character
+            .equipment
+            .items
+            .get(self.gear)
+            .map(|item| &item.effects)
     }
 
-    fn enchantment_mut(&mut self) -> Option<&mut Enchantment> {
-        match self.gear {
-            GearRef::Item(i) => self
-                .character
-                .equipment
-                .items
-                .get_mut(i)
-                .map(|x| &mut x.magic),
-            GearRef::Weapon(i) => self
-                .character
-                .equipment
-                .weapons
-                .get_mut(i)
-                .map(|x| &mut x.magic),
-            GearRef::Armor(i) => self
-                .character
-                .equipment
-                .armors
-                .get_mut(i)
-                .map(|x| &mut x.magic),
-        }
+    fn item_effects_mut(&mut self) -> Option<&mut ItemEffects> {
+        self.character
+            .equipment
+            .items
+            .get_mut(self.gear)
+            .map(|item| &mut item.effects)
     }
 
     fn quantity(&self) -> u32 {
-        match self.gear {
-            GearRef::Item(i) => self
-                .character
-                .equipment
-                .items
-                .get(i)
-                .map(|x| x.quantity)
-                .unwrap_or(0),
-            GearRef::Weapon(i) => self
-                .character
-                .equipment
-                .weapons
-                .get(i)
-                .map(|x| x.quantity)
-                .unwrap_or(0),
-            GearRef::Armor(_) => 1,
-        }
+        self.character
+            .equipment
+            .items
+            .get(self.gear)
+            .map(|item| item.quantity)
+            .unwrap_or(0)
     }
 
     fn charges_field<R>(&self, read: impl Fn(&Charges) -> R, default: R) -> R {
-        self.enchantment()
-            .and_then(|e| e.charges.as_ref())
+        self.item_effects()
+            .and_then(|effects| effects.charges.as_ref())
             .map(read)
             .unwrap_or(default)
     }
 
     fn charges_mut_or_init(&mut self) -> Option<&mut Charges> {
-        let ench = self.enchantment_mut()?;
-        Some(ench.charges.get_or_insert_with(Charges::default))
+        let effects = self.item_effects_mut()?;
+        Some(effects.charges.get_or_insert_with(Charges::default))
     }
 }
 
@@ -135,7 +109,7 @@ impl expr::Context<Attribute, i32> for ItemApplyCtx<'_> {
 }
 
 pub fn assign_items(character: &mut Character, when: WhenCondition) {
-    let work: Vec<(GearRef, Expr)> = character
+    let work: Vec<(usize, Expr)> = character
         .equipment
         .assignments(when)
         .map(|(gear, expr)| (gear, expr.clone()))
@@ -164,8 +138,8 @@ mod tests {
             quantity: 1,
             ..Default::default()
         };
-        item.magic.charges = Some(Charges { used, max });
-        item.magic.assign.push(Assignment {
+        item.effects.charges = Some(Charges { used, max });
+        item.effects.assign.push(Assignment {
             expr: expr.parse().unwrap(),
             when,
         });
@@ -186,8 +160,8 @@ mod tests {
         assign_items(&mut character, WhenCondition::OnLongRest);
 
         let item = &character.equipment.items[0];
-        assert_eq!(item.magic.charges.as_ref().unwrap().used, 0);
-        assert_eq!(item.magic.charges.as_ref().unwrap().max, 7);
+        assert_eq!(item.effects.charges.as_ref().unwrap().used, 0);
+        assert_eq!(item.effects.charges.as_ref().unwrap().max, 7);
     }
 
     #[wasm_bindgen_test]
@@ -206,7 +180,7 @@ mod tests {
 
         assert_eq!(
             character.equipment.items[0]
-                .magic
+                .effects
                 .charges
                 .as_ref()
                 .unwrap()
@@ -228,7 +202,7 @@ mod tests {
         // refill happens anyway: gear lives its own life
         assert_eq!(
             character.equipment.items[0]
-                .magic
+                .effects
                 .charges
                 .as_ref()
                 .unwrap()
@@ -245,7 +219,7 @@ mod tests {
             quantity: 3,
             ..Default::default()
         };
-        item.magic.assign.push(Assignment {
+        item.effects.assign.push(Assignment {
             expr: "QUANTITY = 0".parse().unwrap(),
             when: WhenCondition::OnLongRest,
         });

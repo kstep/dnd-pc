@@ -15,14 +15,14 @@ use crate::{
         session_list::{SessionList, SessionListItem},
     },
     effective::EffectiveCharacter,
-    model::{Attribute, Character, GearRef, Translatable},
+    model::{Attribute, Character, Translatable},
     rules::{ActionDefinition, ChoiceOption, ChoiceOptions},
 };
 
-/// Renders all action options from active items / weapons / armors that have
-/// an `action` type assigned. Each option becomes a `SessionListItem` with a
-/// cast button; clicking decrements `cost` charges and `consumes` quantity,
-/// then runs the option's effects through the standard self-cast / calc-modal
+/// Renders all action options from active items that have an `action` type
+/// assigned. Each option becomes a `SessionListItem` with a cast button;
+/// clicking decrements `cost` charges and `consumes` quantity, then runs
+/// the option's effects through the standard self-cast / calc-modal
 /// pipeline.
 #[component]
 pub fn GearActionsBlock() -> impl IntoView {
@@ -33,35 +33,15 @@ pub fn GearActionsBlock() -> impl IntoView {
     let show_calc = RwSignal::new(false);
     let calc_info = StoredValue::new(None::<EffectsCalcInfo>);
 
-    let cast = move |target: GearRef, opt: &ChoiceOption, gear_name: String| {
+    let cast = move |target: usize, opt: &ChoiceOption, gear_name: String| {
         let cost = opt.cost;
         let consumes = opt.consumes;
         let label = opt.label().to_string();
         let effects = opt.effects.clone();
 
-        store.update(|character| match target {
-            GearRef::Item(i) => {
-                if let Some(item) = character.equipment.items.get_mut(i) {
-                    if let Some(ref mut charges) = item.magic.charges {
-                        charges.used = (charges.used + cost).min(charges.max);
-                    }
-                    item.quantity = item.quantity.saturating_sub(consumes);
-                }
-            }
-            GearRef::Weapon(i) => {
-                if let Some(weapon) = character.equipment.weapons.get_mut(i) {
-                    if let Some(ref mut charges) = weapon.magic.charges {
-                        charges.used = (charges.used + cost).min(charges.max);
-                    }
-                    weapon.quantity = weapon.quantity.saturating_sub(consumes);
-                }
-            }
-            GearRef::Armor(i) => {
-                if let Some(armor) = character.equipment.armors.get_mut(i)
-                    && let Some(ref mut charges) = armor.magic.charges
-                {
-                    charges.used = (charges.used + cost).min(charges.max);
-                }
+        store.update(|character| {
+            if let Some(item) = character.equipment.items.get_mut(target) {
+                item.activate(cost, consumes);
             }
         });
 
@@ -106,7 +86,7 @@ pub fn GearActionsBlock() -> impl IntoView {
         let mut items = Vec::new();
 
         let push_options = |items: &mut Vec<SessionListItem>,
-                            target: GearRef,
+                            target: usize,
                             action: &ActionDefinition,
                             gear_name: &str,
                             available_charges: u32,
@@ -178,66 +158,24 @@ pub fn GearActionsBlock() -> impl IntoView {
             }
         };
 
-        for (i, item) in character.equipment.items.iter().enumerate() {
-            if !item.is_active() || item.magic.actions.is_empty() {
+        for (index, item) in character.equipment.items.iter().enumerate() {
+            if !item.is_active() || item.effects.actions.is_empty() {
                 continue;
             }
             let available = item
-                .magic
+                .effects
                 .charges
                 .as_ref()
-                .map(|c| c.available())
+                .map(|charges| charges.available())
                 .unwrap_or(u32::MAX);
-            for action in &item.magic.actions {
+            for action in &item.effects.actions {
                 push_options(
                     &mut items,
-                    GearRef::Item(i),
+                    index,
                     action,
                     &item.name,
                     available,
                     item.quantity,
-                );
-            }
-        }
-        for (i, weapon) in character.equipment.weapons.iter().enumerate() {
-            if !weapon.is_active() || weapon.magic.actions.is_empty() {
-                continue;
-            }
-            let available = weapon
-                .magic
-                .charges
-                .as_ref()
-                .map(|c| c.available())
-                .unwrap_or(u32::MAX);
-            for action in &weapon.magic.actions {
-                push_options(
-                    &mut items,
-                    GearRef::Weapon(i),
-                    action,
-                    &weapon.name,
-                    available,
-                    weapon.quantity,
-                );
-            }
-        }
-        for (i, armor) in character.equipment.armors.iter().enumerate() {
-            if !armor.is_active() || armor.magic.actions.is_empty() {
-                continue;
-            }
-            let available = armor
-                .magic
-                .charges
-                .as_ref()
-                .map(|c| c.available())
-                .unwrap_or(u32::MAX);
-            for action in &armor.magic.actions {
-                push_options(
-                    &mut items,
-                    GearRef::Armor(i),
-                    action,
-                    &armor.name,
-                    available,
-                    1,
                 );
             }
         }

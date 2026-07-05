@@ -1,4 +1,9 @@
-use std::{fmt, iter::Sum, ops::Add, str::FromStr};
+use std::{
+    fmt,
+    iter::Sum,
+    ops::{Add, Mul},
+    str::FromStr,
+};
 
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
@@ -24,9 +29,12 @@ impl Weight {
     pub fn from_hundredths(hundredths: u32) -> Self {
         Self(hundredths)
     }
+}
 
-    /// Total weight for `quantity` units.
-    pub fn times(self, quantity: u32) -> Self {
+impl Mul<u32> for Weight {
+    type Output = Self;
+
+    fn mul(self, quantity: u32) -> Self {
         Self(self.0.saturating_mul(quantity))
     }
 }
@@ -51,7 +59,7 @@ impl fmt::Display for Weight {
         let frac = self.0 % 100;
         if frac == 0 {
             write!(f, "{whole}")
-        } else if frac % 10 == 0 {
+        } else if frac.is_multiple_of(10) {
             write!(f, "{whole}.{}", frac / 10)
         } else {
             write!(f, "{whole}.{frac:02}")
@@ -101,7 +109,7 @@ mod tests {
 
     #[test]
     fn weight_totals() {
-        assert_eq!(Weight(150).times(4), Weight(600));
+        assert_eq!(Weight(150) * 4, Weight(600));
         let total: Weight = [Weight(25), Weight(150)].into_iter().sum();
         assert_eq!(total, Weight(175));
     }

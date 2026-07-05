@@ -82,7 +82,8 @@ pub enum WhenCondition {
     /// character base.
     OnCompute,
     /// Gear pipeline: runs every `Character::compute()` cycle while the gear
-    /// is active. Mutates `<gear>.magic.charges` and may mutate character base.
+    /// is active. Mutates `<gear>.effects.charges` and may mutate character
+    /// base.
     OnGearActive,
     /// Gear pipeline: runs every `ActiveEffects::recompute()` cycle while the
     /// gear is active. Writes to overrides only.

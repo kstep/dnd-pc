@@ -22,17 +22,17 @@ pub fn WeaponsBlock() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let eff = expect_context::<EffectiveCharacter>();
     let i18n = expect_context::<I18n>();
-    let weapons = store.equipment().weapons();
+    let items = store.equipment().items();
 
     let show_calc = RwSignal::new(false);
     let calc_info = StoredValue::new(None::<EffectsCalcInfo>);
 
     let content = move || {
-        let items = weapons
+        let rows = items
             .read()
             .iter()
             .enumerate()
-            .filter(|(_, w)| !w.name.is_empty())
+            .filter(|(_, w)| w.is_weapon() && !w.name.is_empty())
             .map(|(idx, w)| {
                 let total_atk = eff.weapon_attack_bonus(w);
                 let name_atk = w.name.clone();
@@ -46,14 +46,18 @@ pub fn WeaponsBlock() -> impl IntoView {
                         title=move_tr!("equipped")
                         prop:checked=equipped
                         on:change=move |e| {
-                            weapons.write()[idx].equipped = event_target_checked(&e);
+                            items.write()[idx].equipped = event_target_checked(&e);
                         }
                     />
                 }
                 .into_any();
 
-                let active_effects: Vec<_> =
-                    w.effects.iter().filter(|e| !e.expr.is_empty()).collect();
+                let active_effects: Vec<_> = w
+                    .effects
+                    .damage
+                    .iter()
+                    .filter(|e| !e.expr.is_empty())
+                    .collect();
                 let has_effects = !active_effects.is_empty();
 
                 let attack_badge = view! {
@@ -103,8 +107,12 @@ pub fn WeaponsBlock() -> impl IntoView {
                 };
 
                 let cast_button = has_effects.then(|| {
-                    let effects: Vec<EffectDefinition> =
-                        w.effects.iter().map(EffectDefinition::from).collect();
+                    let effects: Vec<EffectDefinition> = w
+                        .effects
+                        .damage
+                        .iter()
+                        .map(EffectDefinition::from)
+                        .collect();
                     let title = name_atk.clone();
                     view! {
                         <CastButton on_cast=Callback::new(move |_| {
@@ -132,7 +140,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                         prop:value=quantity.to_string()
                         on:input=move |e| {
                             let Ok(value) = event_target_value(&e).parse::<u32>() else { return };
-                            weapons.write()[idx].quantity = value.max(1);
+                            items.write()[idx].quantity = value.max(1);
                         }
                     />
                 }
@@ -152,7 +160,7 @@ pub fn WeaponsBlock() -> impl IntoView {
 
         let attack_count = eff.attack_count();
 
-        if items.is_empty() {
+        if rows.is_empty() {
             Either::Left(view! {
                 <p class="session-empty">{move_tr!("session-no-weapons")}</p>
             })
@@ -165,7 +173,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                             <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
                         })}
                     </h4>
-                    <SessionList items=items />
+                    <SessionList items=rows />
                 </div>
             })
         }

@@ -2,26 +2,12 @@ use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    model::{Ability, ArmorType, DamageType, Enchantment, Expr, Money, WeaponCategory},
+    model::{Ability, ArmorType, Expr, ItemEffects, Money, WeaponCategory, Weight},
     rules::WhenCondition,
 };
 
-/// Stable reference to a gear slot inside `Equipment`. Used by the
-/// enchantment editor, gear-actions UI, and `ItemApplyCtx` to address a
-/// specific item / weapon / armor by kind and index.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum GearRef {
-    Item(usize),
-    Weapon(usize),
-    Armor(usize),
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
 pub struct Equipment {
-    #[serde(default)]
-    pub weapons: Vec<Weapon>,
-    #[serde(default)]
-    pub armors: Vec<Armor>,
     #[serde(default)]
     pub items: Vec<Item>,
     #[serde(default)]
@@ -31,151 +17,67 @@ pub struct Equipment {
 impl Equipment {
     /// `OnGearActive` only fires for equipped gear; other timings run on all
     /// gear.
-    pub fn assignments(&self, when: WhenCondition) -> impl Iterator<Item = (GearRef, &Expr)> + '_ {
+    pub fn assignments(&self, when: WhenCondition) -> impl Iterator<Item = (usize, &Expr)> + '_ {
         let active_only = matches!(when, WhenCondition::OnGearActive);
-        let items = self.items.iter().enumerate().flat_map(move |(i, item)| {
-            let gate = !active_only || item.is_active();
-            item.magic
-                .assign
-                .iter()
-                .filter(move |a| gate && a.when == when)
-                .map(move |a| (GearRef::Item(i), &a.expr))
-        });
-        let weapons = self
-            .weapons
+        self.items
             .iter()
             .enumerate()
-            .flat_map(move |(i, weapon)| {
-                let gate = !active_only || weapon.is_active();
-                weapon
-                    .magic
+            .flat_map(move |(index, item)| {
+                let gate = !active_only || item.is_active();
+                item.effects
                     .assign
                     .iter()
-                    .filter(move |a| gate && a.when == when)
-                    .map(move |a| (GearRef::Weapon(i), &a.expr))
-            });
-        let armors = self.armors.iter().enumerate().flat_map(move |(i, armor)| {
-            let gate = !active_only || armor.is_active();
-            armor
-                .magic
-                .assign
-                .iter()
-                .filter(move |a| gate && a.when == when)
-                .map(move |a| (GearRef::Armor(i), &a.expr))
-        });
-        items.chain(weapons).chain(armors)
+                    .filter(move |assignment| gate && assignment.when == when)
+                    .map(move |assignment| (index, &assignment.expr))
+            })
+    }
+
+    /// Total carried weight: Σ quantity × per-unit weight.
+    pub fn total_weight(&self) -> Weight {
+        self.items.iter().map(Item::total_weight).sum()
     }
 }
 
+/// Kind-specific parameters. Pure data — every formula (attack bonus, AC)
+/// is derived from these, never stored.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
-pub struct Armor {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub base_ac: u32,
-    #[serde(default)]
-    pub armor_type: ArmorType,
-    #[serde(default)]
-    pub ac_expr: Option<Expr>,
-    #[serde(default)]
-    pub equipped: bool,
-    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
-    pub magic: Enchantment,
+pub enum ItemKind {
+    #[default]
+    Misc,
+    Weapon {
+        #[serde(default)]
+        category: WeaponCategory,
+        #[serde(default = "default_weapon_ability")]
+        ability: Ability,
+        #[serde(default)]
+        magic_bonus: i32,
+    },
+    Armor {
+        #[serde(default)]
+        armor_type: ArmorType,
+        #[serde(default)]
+        base_ac: u32,
+    },
 }
 
-impl Armor {
-    pub fn is_active(&self) -> bool {
-        self.equipped
-    }
-
-    /// Generate the default AC formula string for the given armor type and base
-    /// AC.
-    pub fn default_ac_expr_str(armor_type: ArmorType, base_ac: u32) -> String {
-        match armor_type {
-            ArmorType::Light => format!("{base_ac} + DEX.MOD"),
-            ArmorType::Medium => format!("{base_ac} + min(DEX.MOD, 2)"),
-            ArmorType::Heavy => format!("{base_ac}"),
-            ArmorType::Shield => format!("AC + {base_ac}"),
-            ArmorType::Natural => String::new(),
-        }
-    }
-
-    /// Generate and parse the default AC formula for the given armor type and
-    /// base AC.
-    pub fn default_ac_expr(armor_type: ArmorType, base_ac: u32) -> Option<Expr> {
-        if armor_type == ArmorType::Natural {
-            return None;
-        }
-        let s = Self::default_ac_expr_str(armor_type, base_ac);
-        s.parse().ok()
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
-pub struct WeaponEffect {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default)]
-    pub damage_type: Option<DamageType>,
-    #[serde(default)]
-    pub expr: Expr,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
-pub struct Weapon {
-    #[serde(default)]
-    pub name: String,
-    #[serde(default = "default_quantity")]
-    pub quantity: u32,
-    #[serde(default)]
-    pub category: WeaponCategory,
-    #[serde(default = "default_weapon_ability")]
-    pub ability: Ability,
-    #[serde(default)]
-    pub magic_bonus: i32,
-    #[serde(default)]
-    pub attack_expr: Option<Expr>,
-    #[serde(default)]
-    pub effects: Vec<WeaponEffect>,
-    #[serde(default)]
-    pub equipped: bool,
-    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
-    pub magic: Enchantment,
-}
-
-fn default_quantity() -> u32 {
-    1
-}
-
-fn default_weapon_ability() -> Ability {
-    Ability::Strength
-}
-
-impl Default for Weapon {
-    fn default() -> Self {
-        Self {
-            name: String::new(),
-            quantity: default_quantity(),
+impl ItemKind {
+    pub fn default_weapon() -> Self {
+        Self::Weapon {
             category: WeaponCategory::default(),
             ability: default_weapon_ability(),
             magic_bonus: 0,
-            attack_expr: None,
-            effects: Vec::new(),
-            equipped: false,
-            magic: Enchantment::default(),
         }
     }
-}
 
-impl Weapon {
-    pub fn is_active(&self) -> bool {
-        self.equipped
+    pub fn default_armor() -> Self {
+        Self::Armor {
+            armor_type: ArmorType::default(),
+            base_ac: 11,
+        }
     }
 
-    /// Generate the default attack-bonus formula for the given weapon
-    /// parameters. The formula is fully reactive: it uses `PROF.XXX_WEAPONS`
-    /// to include proficiency bonus only when the character is proficient,
-    /// and `ATK` to incorporate global attack-bonus overrides from effects.
+    /// Attack-bonus formula for the given weapon parameters. Reactive:
+    /// proficiency gates through `PROF.*_WEAPONS`, global bonus via `ATK`.
     pub fn default_attack_expr_str(
         category: WeaponCategory,
         ability: Ability,
@@ -193,56 +95,120 @@ impl Weapon {
         s
     }
 
-    pub fn default_attack_expr(
-        category: WeaponCategory,
-        ability: Ability,
-        magic: i32,
-    ) -> Option<Expr> {
-        Self::default_attack_expr_str(category, ability, magic)
-            .parse()
-            .ok()
-    }
-
-    /// Returns the expression to evaluate for this weapon's attack bonus:
-    /// the explicit `attack_expr` when set, otherwise the default derived
-    /// from `category` / `ability` / `magic_bonus`.
-    pub fn effective_attack_expr(&self) -> Expr {
-        self.attack_expr.clone().unwrap_or_else(|| {
-            Self::default_attack_expr(self.category, self.ability, self.magic_bonus)
-                .unwrap_or_default()
-        })
+    /// AC formula for the given armor type and base AC; None for Natural.
+    pub fn default_ac_expr_str(armor_type: ArmorType, base_ac: u32) -> Option<String> {
+        match armor_type {
+            ArmorType::Light => Some(format!("{base_ac} + DEX.MOD")),
+            ArmorType::Medium => Some(format!("{base_ac} + min(DEX.MOD, 2)")),
+            ArmorType::Heavy => Some(format!("{base_ac}")),
+            ArmorType::Shield => Some(format!("AC + {base_ac}")),
+            ArmorType::Natural => None,
+        }
     }
 
     /// Default per-weapon damage formula: a single d4 plus the ability
-    /// modifier. User can override the die in the UI.
+    /// modifier.
     pub fn default_damage_expr_str(ability: Ability) -> String {
         format!("d4 + {}.MOD", ability.abbr())
     }
-
-    pub fn default_damage_expr(ability: Ability) -> Expr {
-        Self::default_damage_expr_str(ability)
-            .parse()
-            .unwrap_or_default()
-    }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default, Store)]
+fn default_quantity() -> u32 {
+    1
+}
+
+fn default_weapon_ability() -> Ability {
+    Ability::Strength
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct Item {
     #[serde(default)]
     pub name: String,
     #[serde(default)]
+    pub description: String,
+    #[serde(default = "default_quantity")]
     pub quantity: u32,
     #[serde(default)]
-    pub description: String,
+    pub weight: Weight,
+    #[serde(default)]
+    pub price: Money,
     #[serde(default)]
     pub equipped: bool,
-    #[serde(default, skip_serializing_if = "Enchantment::is_empty")]
-    pub magic: Enchantment,
+    #[serde(default)]
+    pub kind: ItemKind,
+    #[serde(default, skip_serializing_if = "ItemEffects::is_empty")]
+    pub effects: ItemEffects,
+}
+
+impl Default for Item {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            description: String::new(),
+            quantity: default_quantity(),
+            weight: Weight::default(),
+            price: Money::default(),
+            equipped: false,
+            kind: ItemKind::default(),
+            effects: ItemEffects::default(),
+        }
+    }
 }
 
 impl Item {
     pub fn is_active(&self) -> bool {
         self.equipped
+    }
+
+    pub fn is_weapon(&self) -> bool {
+        matches!(self.kind, ItemKind::Weapon { .. })
+    }
+
+    pub fn is_armor(&self) -> bool {
+        matches!(self.kind, ItemKind::Armor { .. })
+    }
+
+    /// Derived attack-bonus expression; None for non-weapons.
+    pub fn attack_expr(&self) -> Option<Expr> {
+        let ItemKind::Weapon {
+            category,
+            ability,
+            magic_bonus,
+        } = self.kind
+        else {
+            return None;
+        };
+        ItemKind::default_attack_expr_str(category, ability, magic_bonus)
+            .parse()
+            .ok()
+    }
+
+    /// Derived AC expression; None for non-armor and Natural armor.
+    pub fn ac_expr(&self) -> Option<Expr> {
+        let ItemKind::Armor {
+            armor_type,
+            base_ac,
+        } = self.kind
+        else {
+            return None;
+        };
+        ItemKind::default_ac_expr_str(armor_type, base_ac)?
+            .parse()
+            .ok()
+    }
+
+    pub fn total_weight(&self) -> Weight {
+        self.weight * self.quantity
+    }
+
+    /// Spend an activation: `cost` charges (clamped to max) and `consumes`
+    /// units of quantity (floored at 0).
+    pub fn activate(&mut self, cost: u32, consumes: u32) {
+        if let Some(ref mut charges) = self.effects.charges {
+            charges.used = (charges.used + cost).min(charges.max);
+        }
+        self.quantity = self.quantity.saturating_sub(consumes);
     }
 }
 
@@ -364,5 +330,149 @@ impl std::fmt::Display for Currency {
             f.write_str("\u{2014}")?;
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+    use crate::{model::Charges, rules::feature::Assignment};
+
+    fn weapon(name: &str, category: WeaponCategory, ability: Ability, magic: i32) -> Item {
+        Item {
+            name: name.into(),
+            kind: ItemKind::Weapon {
+                category,
+                ability,
+                magic_bonus: magic,
+            },
+            ..Item::default()
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn attack_expr_derives_from_parameters() {
+        let simple = weapon("Club", WeaponCategory::Simple, Ability::Strength, 0);
+        assert_eq!(
+            simple.attack_expr().unwrap().to_string(),
+            "STR.MOD + if(PROF.SIMPLE_WEAPONS, PROF.BONUS, 0) + ATK"
+        );
+        let martial = weapon("Rapier", WeaponCategory::Martial, Ability::Dexterity, 1);
+        assert_eq!(
+            martial.attack_expr().unwrap().to_string(),
+            "DEX.MOD + if(PROF.MARTIAL_WEAPONS, PROF.BONUS, 0) + ATK + 1"
+        );
+        let cursed = weapon("Cursed", WeaponCategory::Martial, Ability::Strength, -2);
+        assert_eq!(
+            cursed.attack_expr().unwrap().to_string(),
+            "STR.MOD + if(PROF.MARTIAL_WEAPONS, PROF.BONUS, 0) + ATK - 2"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn attack_expr_none_for_non_weapons() {
+        assert!(Item::default().attack_expr().is_none());
+        let armor = Item {
+            kind: ItemKind::default_armor(),
+            ..Item::default()
+        };
+        assert!(armor.attack_expr().is_none());
+    }
+
+    #[wasm_bindgen_test]
+    fn ac_expr_derives_from_parameters() {
+        let cases = [
+            (ArmorType::Light, 11, Some("11 + DEX.MOD")),
+            (ArmorType::Medium, 14, Some("14 + min(DEX.MOD, 2)")),
+            (ArmorType::Heavy, 18, Some("18")),
+            (ArmorType::Shield, 2, Some("AC + 2")),
+            (ArmorType::Natural, 13, None),
+        ];
+        for (armor_type, base_ac, expected) in cases {
+            let armor = Item {
+                kind: ItemKind::Armor {
+                    armor_type,
+                    base_ac,
+                },
+                ..Item::default()
+            };
+            assert_eq!(
+                armor.ac_expr().map(|expr| expr.to_string()),
+                expected.map(str::to_string),
+                "{armor_type:?}"
+            );
+        }
+        assert!(Item::default().ac_expr().is_none());
+    }
+
+    #[wasm_bindgen_test]
+    fn assignments_gate_on_gear_active_only() {
+        let mut equipment = Equipment::default();
+        for (equipped, kind) in [
+            (false, ItemKind::default_weapon()),
+            (true, ItemKind::default_armor()),
+            (false, ItemKind::Misc),
+        ] {
+            let mut item = Item {
+                equipped,
+                kind,
+                ..Item::default()
+            };
+            item.effects.assign.push(Assignment {
+                expr: "AC += 1".parse().unwrap(),
+                when: WhenCondition::OnGearActive,
+            });
+            item.effects.assign.push(Assignment {
+                expr: "CHARGES.USED = 0".parse().unwrap(),
+                when: WhenCondition::OnLongRest,
+            });
+            equipment.items.push(item);
+        }
+
+        // OnGearActive: only the equipped armor row fires.
+        let active: Vec<usize> = equipment
+            .assignments(WhenCondition::OnGearActive)
+            .map(|(index, _)| index)
+            .collect();
+        assert_eq!(active, vec![1]);
+
+        // OnLongRest fires for everything regardless of equipped.
+        let rest: Vec<usize> = equipment
+            .assignments(WhenCondition::OnLongRest)
+            .map(|(index, _)| index)
+            .collect();
+        assert_eq!(rest, vec![0, 1, 2]);
+    }
+
+    #[wasm_bindgen_test]
+    fn activate_spends_charges_and_quantity() {
+        let mut item = Item {
+            quantity: 2,
+            ..Item::default()
+        };
+        item.effects.charges = Some(Charges { used: 6, max: 7 });
+        item.activate(3, 1);
+        assert_eq!(item.effects.charges.unwrap().used, 7, "clamped to max");
+        assert_eq!(item.quantity, 1);
+        item.activate(0, 5);
+        assert_eq!(item.quantity, 0, "floored at zero");
+    }
+
+    #[wasm_bindgen_test]
+    fn total_weight_sums_quantities() {
+        let mut equipment = Equipment::default();
+        equipment.items.push(Item {
+            quantity: 4,
+            weight: Weight(150),
+            ..Item::default()
+        });
+        equipment.items.push(Item {
+            quantity: 1,
+            weight: Weight(25),
+            ..Item::default()
+        });
+        assert_eq!(equipment.total_weight(), Weight(625));
     }
 }

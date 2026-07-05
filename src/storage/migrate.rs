@@ -7,7 +7,7 @@ use crate::model::{Character, DamageType};
 /// Latest schema version. Bumped when a new migration step is added.
 /// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
 /// the migration loop entirely.
-pub const CURRENT_SCHEMA_VERSION: u32 = 4;
+pub const CURRENT_SCHEMA_VERSION: u32 = 5;
 
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut Value) {
@@ -405,6 +405,12 @@ pub fn migrate_value(mut value: Value) -> Value {
         migrate_v16(&mut value);
     }
 
+    // → schema version 5: weapons/armors/items unify into one kind-tagged
+    // item list; stored attack/AC formulas are dropped (always derived now).
+    if version < 5 {
+        migrate_v17(&mut value);
+    }
+
     if let Value::Object(map) = &mut value {
         map.insert("schema_version".into(), Value::from(CURRENT_SCHEMA_VERSION));
     }
@@ -605,9 +611,171 @@ fn migrate_v11(value: &mut Value) {
     }
 }
 
+/// v17: unify `equipment.{weapons,armors,items}` into a single `items` list
+/// with kind-tagged entries. Only legacy entries are converted; items that
+/// already carry `kind` are kept verbatim (sparse cloud merges can resurrect
+/// legacy keys next to an already-unified list).
+fn migrate_v17(value: &mut Value) {
+    let Some(equipment) = value.get_mut("equipment").and_then(Value::as_object_mut) else {
+        return;
+    };
+    let legacy_weapons = equipment.remove("weapons");
+    let legacy_armors = equipment.remove("armors");
+    let old_items = equipment.remove("items");
+    if legacy_weapons.is_none() && legacy_armors.is_none() && old_items.is_none() {
+        return;
+    }
+
+    let take_array = |value: Option<Value>| -> Vec<Value> {
+        match value {
+            Some(Value::Array(entries)) => entries,
+            _ => Vec::new(),
+        }
+    };
+    // Old `magic` block becomes the `effects` container.
+    let effects_from_magic = |obj: &mut serde_json::Map<String, Value>| -> Value {
+        obj.remove("magic").unwrap_or_else(|| serde_json::json!({}))
+    };
+
+    let mut unified: Vec<Value> = Vec::new();
+
+    for weapon in take_array(legacy_weapons) {
+        let Value::Object(mut obj) = weapon else {
+            continue;
+        };
+        let mut effects = effects_from_magic(&mut obj);
+        if let Some(damage) = obj.remove("effects")
+            && let Some(effects) = effects.as_object_mut()
+        {
+            effects.insert("damage".into(), damage);
+        }
+        obj.remove("attack_expr");
+        let kind = serde_json::json!({ "Weapon": {
+            "category": obj.remove("category").unwrap_or(Value::from(0)),
+            "ability": obj.remove("ability").unwrap_or(Value::from(0)),
+            "magic_bonus": obj.remove("magic_bonus").unwrap_or(Value::from(0)),
+        }});
+        obj.insert("kind".into(), kind);
+        obj.insert("effects".into(), effects);
+        unified.push(Value::Object(obj));
+    }
+
+    for armor in take_array(legacy_armors) {
+        let Value::Object(mut obj) = armor else {
+            continue;
+        };
+        let effects = effects_from_magic(&mut obj);
+        obj.remove("ac_expr");
+        let kind = serde_json::json!({ "Armor": {
+            "armor_type": obj.remove("armor_type").unwrap_or(Value::from(0)),
+            "base_ac": obj.remove("base_ac").unwrap_or(Value::from(0)),
+        }});
+        obj.insert("kind".into(), kind);
+        obj.insert("effects".into(), effects);
+        unified.push(Value::Object(obj));
+    }
+
+    for item in take_array(old_items) {
+        let Value::Object(mut obj) = item else {
+            continue;
+        };
+        if !obj.contains_key("kind")
+            && let Some(magic) = obj.remove("magic")
+        {
+            obj.insert("effects".into(), magic);
+        }
+        unified.push(Value::Object(obj));
+    }
+
+    equipment.insert("items".into(), Value::Array(unified));
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn migrate_unified_items() {
+        // Legacy wire format: enum params are u8 (enum_serde_u8), equipment
+        // is top-level, weapons carry attack_expr/effects/magic.
+        let value = serde_json::json!({
+            "id": "00000000-0000-0000-0000-000000000000",
+            "schema_version": 4,
+            "equipment": {
+                "weapons": [{
+                    "name": "Dagger", "quantity": 2, "category": 0, "ability": 1,
+                    "magic_bonus": 1, "attack_expr": "DEX.MOD + 100",
+                    "effects": [{"name": "Piercing", "damage_type": 7, "expr": "d4 + DEX.MOD"}],
+                    "equipped": true,
+                    "magic": {"charges": {"used": 1, "max": 3}}
+                }],
+                "armors": [{
+                    "name": "Leather", "base_ac": 11, "armor_type": 0,
+                    "ac_expr": "11 + DEX.MOD", "equipped": true
+                }],
+                "items": [{"name": "Rope", "quantity": 1, "description": "50 ft",
+                            "magic": {"charges": {"used": 0, "max": 1}}}],
+                "currency": {"gp": 10}
+            }
+        });
+        let value = migrate_value(value);
+
+        let items = value["equipment"]["items"].as_array().unwrap();
+        assert_eq!(items.len(), 3);
+        // Weapon: kind params moved, custom attack_expr dropped, damage from
+        // old effects, magic carried into effects.
+        assert_eq!(items[0]["name"], "Dagger");
+        assert_eq!(items[0]["quantity"], 2);
+        assert_eq!(items[0]["kind"]["Weapon"]["category"], 0);
+        assert_eq!(items[0]["kind"]["Weapon"]["ability"], 1);
+        assert_eq!(items[0]["kind"]["Weapon"]["magic_bonus"], 1);
+        assert!(items[0].get("attack_expr").is_none());
+        assert_eq!(items[0]["effects"]["damage"][0]["damage_type"], 7);
+        assert_eq!(items[0]["effects"]["charges"]["max"], 3);
+        // Armor: quantity defaults to 1 on deserialize, ac_expr dropped.
+        assert_eq!(items[1]["kind"]["Armor"]["armor_type"], 0);
+        assert_eq!(items[1]["kind"]["Armor"]["base_ac"], 11);
+        assert!(items[1].get("ac_expr").is_none());
+        // Misc: magic renamed to effects.
+        assert_eq!(items[2]["name"], "Rope");
+        assert_eq!(items[2]["effects"]["charges"]["max"], 1);
+        assert!(items[2].get("magic").is_none());
+        assert!(value["equipment"].get("weapons").is_none());
+        assert!(value["equipment"].get("armors").is_none());
+
+        // Deserializes into the live model.
+        let character = deserialize_character_value(value).unwrap();
+        assert_eq!(character.equipment.items.len(), 3);
+        assert!(character.equipment.items[0].is_weapon());
+        assert!(character.equipment.items[1].is_armor());
+        assert_eq!(character.equipment.items[1].quantity, 1);
+    }
+
+    #[test]
+    fn migrate_unified_items_tolerates_resurrected_legacy_keys() {
+        // Sparse cloud merge from a stale app can bring `weapons` back next
+        // to an already-unified list: convert ONLY the legacy entries and
+        // keep kind-bearing items untouched.
+        let value = serde_json::json!({
+            "schema_version": 4,
+            "equipment": {
+                "weapons": [{"name": "Club", "quantity": 1, "category": 0, "ability": 0}],
+                "items": [
+                    {"name": "Sword", "quantity": 1,
+                     "kind": {"Weapon": {"category": 1, "ability": 0, "magic_bonus": 0}}},
+                    {"name": "Rope", "quantity": 1}
+                ]
+            }
+        });
+        let value = migrate_value(value);
+        let items = value["equipment"]["items"].as_array().unwrap();
+        let names: Vec<&str> = items
+            .iter()
+            .map(|item| item["name"].as_str().unwrap())
+            .collect();
+        assert_eq!(names, vec!["Club", "Sword", "Rope"]);
+        assert_eq!(items[1]["kind"]["Weapon"]["category"], 1, "untouched");
+    }
 
     #[test]
     fn migrate_value_preserves_unknown_top_level_fields() {

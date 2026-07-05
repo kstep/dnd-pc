@@ -1,34 +1,45 @@
-use leptos::{either::Either, prelude::*};
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
-use strum::IntoEnumIterator;
 
 use crate::{
-    components::{
-        enchantment::EnchantmentModal, entry_name::EntryName, icon::Icon, slot_box::SlotBox,
-        toggle_button::ToggleButton,
-    },
+    components::{enchantment::EnchantmentModal, icon::Icon, slot_box::SlotBox},
     model::{
-        Ability, Armor, ArmorType, Character, CharacterStoreFields, CurrencyStoreFields,
-        DamageType, Enchantment, EquipmentStoreFields, GearRef, Item, Translatable, Weapon,
-        WeaponCategory, WeaponEffect,
+        Character, CharacterStoreFields, CurrencyStoreFields, DamageEffect, EquipmentStoreFields,
+        Item, ItemEffects, ItemKind,
     },
 };
 
 /// Stable (locale-independent) name used to identify the auto-created
 /// damage effect on a new weapon. Kept in English so that ability-change
 /// auto-fill keeps matching even after the UI locale is switched.
-const DAMAGE_EFFECT_NAME: &str = "Damage";
+pub const DAMAGE_EFFECT_NAME: &str = "Damage";
+
+/// Stable in-place sort of only the rows matching `pred`; other kinds keep
+/// their positions.
+fn sort_kind_by_name(list: &mut [Item], pred: fn(&Item) -> bool) {
+    let indexes: Vec<usize> = list
+        .iter()
+        .enumerate()
+        .filter(|(_, item)| pred(item))
+        .map(|(index, _)| index)
+        .collect();
+    let mut picked: Vec<Item> = indexes.iter().map(|&index| list[index].clone()).collect();
+    picked.sort_by_key(|item| item.name.to_lowercase());
+    for (&index, item) in indexes.iter().zip(picked) {
+        list[index] = item;
+    }
+}
+
+fn is_misc(item: &Item) -> bool {
+    !item.is_weapon() && !item.is_armor()
+}
 
 #[component]
 pub fn EquipmentPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
 
-    let i18n = expect_context::<leptos_fluent::I18n>();
-
     let equipment = store.equipment();
-    let weapons = equipment.weapons();
-    let armors = equipment.armors();
     let items = equipment.items();
     let currency = equipment.currency();
 
@@ -38,40 +49,23 @@ pub fn EquipmentPanel() -> impl IntoView {
     let show_ep = move || currency_expanded.get() || currency.ep().get() > 0;
     let show_pp = move || currency_expanded.get() || currency.pp().get() > 0;
 
-    // Enchantment modal state — references the currently-edited gear slot.
-    let edit_target = RwSignal::new(None::<GearRef>);
-    let show_enchant = RwSignal::new(false);
-    let editing_enchant = Signal::derive(move || {
+    // Effects modal state — references the currently-edited item slot.
+    let edit_target = RwSignal::new(None::<usize>);
+    let show_effects = RwSignal::new(false);
+    let editing_effects = Signal::derive(move || {
         edit_target
             .get()
-            .and_then(|target| match target {
-                GearRef::Item(i) => items.read().get(i).map(|x| x.magic.clone()),
-                GearRef::Weapon(i) => weapons.read().get(i).map(|x| x.magic.clone()),
-                GearRef::Armor(i) => armors.read().get(i).map(|x| x.magic.clone()),
-            })
+            .and_then(|index| items.read().get(index).map(|item| item.effects.clone()))
             .unwrap_or_default()
     });
-    let save_enchant = Callback::new(move |value: Enchantment| {
-        let Some(target) = edit_target.get_untracked() else {
+    let save_effects = Callback::new(move |value: ItemEffects| {
+        let Some(index) = edit_target.get_untracked() else {
             return;
         };
-        match target {
-            GearRef::Item(i) if i < items.read().len() => {
-                items.write()[i].magic = value;
-            }
-            GearRef::Weapon(i) if i < weapons.read().len() => {
-                weapons.write()[i].magic = value;
-            }
-            GearRef::Armor(i) if i < armors.read().len() => {
-                armors.write()[i].magic = value;
-            }
-            _ => {}
+        if index < items.read().len() {
+            items.write()[index].effects = value;
         }
     });
-    let edit_gear = move |target: GearRef| {
-        edit_target.set(Some(target));
-        show_enchant.set(true);
-    };
 
     view! {
         <section>
@@ -203,552 +197,136 @@ pub fn EquipmentPanel() -> impl IntoView {
             </div>
         </section>
 
-        <section>
-            <div class="section-header">
-                <h3>{move_tr!("weapons")}</h3>
-                <button
-                    class="btn-toggle-desc"
-                    on:click=move |_| {
-                        weapons.write().sort_by_key(|weapon| weapon.name.to_lowercase());
-                    }
-                >
-                    <Icon name="arrow-down-a-z" size=16 />
-                </button>
-            </div>
-            {
-                view! {
-                    <div class="entry-list">
-                        {move || {
-                            weapons
-                                .read()
-                                .iter()
-                                .enumerate()
-                                .map(|(i, weapon)| {
-                                    let name = weapon.name.clone();
-                                    let quantity = weapon.quantity.to_string();
-                                    let category = weapon.category as u8;
-                                    let ability = weapon.ability as u8;
-                                    let magic_bonus = weapon.magic_bonus.to_string();
-                                    let attack_expr_display = weapon
-                                        .attack_expr
-                                        .as_ref()
-                                        .map(ToString::to_string)
-                                        .unwrap_or_else(|| {
-                                            Weapon::default_attack_expr_str(
-                                                weapon.category,
-                                                weapon.ability,
-                                                weapon.magic_bonus,
-                                            )
-                                        });
-                                    let effects: Vec<_> = weapon.effects.iter().enumerate().map(|(j, effect)| {
-                                        let eff_name = effect.name.clone();
-                                        let eff_expr = effect.expr.to_string();
-                                        let eff_dmg_type = effect.damage_type.map(|dt| dt as u8);
-                                        (j, eff_name, eff_expr, eff_dmg_type)
-                                    }).collect();
-                                    view! {
-                                        <div class="entry-item">
-                                            <ToggleButton />
-                                            <div class="entry-content">
-                                                <input
-                                                    type="checkbox"
-                                                    class="entry-equipped"
-                                                    title=move_tr!("equipped")
-                                                    prop:checked=move || weapons.read()[i].equipped
-                                                    on:change=move |e| {
-                                                        weapons.write()[i].equipped = event_target_checked(&e);
-                                                    }
-                                                />
-                                                <input
-                                                    type="text"
-                                                    class="entry-name"
-                                                    placeholder=move_tr!("name")
-                                                    prop:value=name
-                                                    on:change=move |e| {
-                                                        weapons.write()[i].name = event_target_value(&e);
-                                                    }
-                                                />
-                                                <input
-                                                    type="number"
-                                                    class="short-input"
-                                                    min="1"
-                                                    prop:value=quantity
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
-                                                        weapons.write()[i].quantity = value.max(1);
-                                                    }
-                                                />
-                                                <select class="select-fixed"
-                                                    prop:value=category.to_string()
-                                                    on:change=move |e| {
-                                                        let Ok(idx) = event_target_value(&e).parse::<u8>() else { return };
-                                                        let new_category = WeaponCategory::try_from(idx).unwrap_or_default();
-                                                        let mut weapons = weapons.write();
-                                                        let ability = weapons[i].ability;
-                                                        let magic = weapons[i].magic_bonus;
-                                                        weapons[i].category = new_category;
-                                                        weapons[i].attack_expr = Weapon::default_attack_expr(new_category, ability, magic);
-                                                    }
-                                                >
-                                                    {WeaponCategory::iter()
-                                                        .map(|cat| {
-                                                            let option_value = (cat as u8).to_string();
-                                                            let selected = cat as u8 == category;
-                                                            let label = Signal::derive(move || i18n.tr(cat.tr_key()));
-                                                            view! {
-                                                                <option value=option_value selected=selected>
-                                                                    {label}
-                                                                </option>
-                                                            }
-                                                        })
-                                                        .collect_view()}
-                                                </select>
-                                            </div>
-                                            <div class="entry-actions">
-                                                <button
-                                                    class="btn-icon"
-                                                    title=move_tr!("enchantment-edit")
-                                                    on:click=move |_| edit_gear(GearRef::Weapon(i))
-                                                >
-                                                    <Icon name="pencil" />
-                                                </button>
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        if i < weapons.read().len() {
-                                                            weapons.write().remove(i);
-                                                        }
-                                                    }
-                                                >
-                                                    <Icon name="x" />
-                                                </button>
-                                            </div>
-                                            <span class="entry-sublabel">{attack_expr_display}</span>
-                                            <div class="entry-full-row slot-box-list">
-                                                <SlotBox label=move_tr!("weapon-ability")>
-                                                    <select
-                                                        prop:value=ability.to_string()
-                                                        on:change=move |e| {
-                                                            let Ok(idx) = event_target_value(&e).parse::<u8>() else { return };
-                                                            let new_ability = Ability::try_from(idx).unwrap_or(Ability::Strength);
-                                                            let mut weapons = weapons.write();
-                                                            let category = weapons[i].category;
-                                                            let magic = weapons[i].magic_bonus;
-                                                            weapons[i].ability = new_ability;
-                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, new_ability, magic);
-                                                            for effect in weapons[i].effects.iter_mut() {
-                                                                if effect.name == DAMAGE_EFFECT_NAME && effect.expr.is_empty() {
-                                                                    effect.expr = Weapon::default_damage_expr(new_ability);
-                                                                }
-                                                            }
-                                                        }
-                                                    >
-                                                        {Ability::iter()
-                                                            .map(|ab| {
-                                                                let option_value = (ab as u8).to_string();
-                                                                let selected = ab as u8 == ability;
-                                                                let label = Signal::derive(move || i18n.tr(ab.tr_key()));
-                                                                view! {
-                                                                    <option value=option_value selected=selected>
-                                                                        {label}
-                                                                    </option>
-                                                                }
-                                                            })
-                                                            .collect_view()}
-                                                    </select>
-                                                </SlotBox>
-                                                <SlotBox label=move_tr!("atk-magic")>
-                                                    <input
-                                                        type="number"
-                                                        prop:value=magic_bonus
-                                                        on:change=move |e| {
-                                                            let new_magic = event_target_value(&e).parse::<i32>().unwrap_or_default();
-                                                            let mut weapons = weapons.write();
-                                                            let category = weapons[i].category;
-                                                            let ability = weapons[i].ability;
-                                                            weapons[i].magic_bonus = new_magic;
-                                                            weapons[i].attack_expr = Weapon::default_attack_expr(category, ability, new_magic);
-                                                        }
-                                                    />
-                                                </SlotBox>
-                                            </div>
-                                            {effects.into_iter().map(|(j, eff_name, eff_expr, eff_dmg_type)| {
-                                                view! {
-                                                    <div class="entry-full-row weapon-effect-row">
-                                                        <input
-                                                            type="text"
-                                                            placeholder=move_tr!("effect-name")
-                                                            class="effect-name-input"
-                                                            prop:value=eff_name
-                                                            on:change=move |e| {
-                                                                weapons.write()[i].effects[j].name = event_target_value(&e);
-                                                            }
-                                                        />
-                                                        <select class="select-fixed"
-                                                            prop:value=eff_dmg_type.map(|dt| dt.to_string()).unwrap_or_default()
-                                                            on:change=move |e| {
-                                                                let value = event_target_value(&e);
-                                                                weapons.write()[i].effects[j].damage_type = if value.is_empty() {
-                                                                    None
-                                                                } else {
-                                                                    DamageType::from_u8_str(&value)
-                                                                };
-                                                            }
-                                                        >
-                                                            <option value="" selected=eff_dmg_type.is_none()>"\u{2014}"</option>
-                                                            {DamageType::iter()
-                                                                .map(|dt| {
-                                                                    let option_value = (dt as u8).to_string();
-                                                                    let selected = eff_dmg_type == Some(dt as u8);
-                                                                    let label = Signal::derive(move || i18n.tr(dt.tr_key()));
-                                                                    view! {
-                                                                        <option value=option_value selected=selected>
-                                                                            {label}
-                                                                        </option>
-                                                                    }
-                                                                })
-                                                                .collect_view()}
-                                                        </select>
-                                                        <input
-                                                            type="text"
-                                                            placeholder=move_tr!("damage")
-                                                            class="damage-input"
-                                                            prop:value=eff_expr
-                                                            on:change=move |e| {
-                                                                let value = event_target_value(&e);
-                                                                if let Ok(expr) = value.parse() {
-                                                                    weapons.write()[i].effects[j].expr = expr;
-                                                                }
-                                                            }
-                                                        />
-                                                        <button
-                                                            class="btn-remove"
-                                                            on:click=move |_| {
-                                                                if j < weapons.read()[i].effects.len() {
-                                                                    weapons.write()[i].effects.remove(j);
-                                                                }
-                                                            }
-                                                        >
-                                                            <Icon name="x" />
-                                                        </button>
-                                                    </div>
-                                                }
-                                            }).collect_view()}
-                                            <div class="entry-full-row">
-                                                <button
-                                                    class="btn-primary"
-                                                    on:click=move |_| {
-                                                        weapons.write()[i].effects.push(WeaponEffect::default());
-                                                    }
-                                                >
-                                                    "+ " {move_tr!("btn-add-effect")}
-                                                </button>
-                                            </div>
-                                        </div>
-                            }
-                        })
-                        .collect_view()
-                }}
-                    </div>
-                }
-            }
-            <button
-                class="btn-primary"
-                on:click=move |_| {
-                    let mut weapon = Weapon::default();
-                    weapon.effects.push(WeaponEffect {
-                        name: DAMAGE_EFFECT_NAME.to_string(),
-                        damage_type: None,
-                        expr: Weapon::default_damage_expr(weapon.ability),
-                    });
-                    weapons.write().push(weapon);
-                }
-            >
-                {move_tr!("btn-add-weapon")}
-            </button>
-        </section>
+        <GearSection title=move_tr!("weapons") pred=Item::is_weapon make_kind=ItemKind::default_weapon edit_target show_effects />
+        <GearSection title=move_tr!("armor") pred=Item::is_armor make_kind=ItemKind::default_armor edit_target show_effects />
+        <GearSection title=move_tr!("items") pred=is_misc make_kind=misc_kind edit_target show_effects />
 
-        <section>
-            <div class="section-header">
-                <h3>{move_tr!("armor")}</h3>
-                <button
-                    class="btn-toggle-desc"
-                    on:click=move |_| {
-                        armors.write().sort_by_key(|armor| armor.name.to_lowercase());
-                    }
-                >
-                    <Icon name="arrow-down-a-z" size=16 />
-                </button>
-            </div>
-            {
-                view! {
-                    <div class="entry-list">
-                        {move || {
-                            armors
-                                .read()
-                                .iter()
-                                .enumerate()
-                                .map(|(i, armor)| {
-                                    let name = armor.name.clone();
-                                    let base_ac = armor.base_ac.to_string();
-                                    let armor_type = armor.armor_type as u8;
-                                    let is_natural = armor.armor_type == ArmorType::Natural;
-                                    let ac_expr_str = armor.ac_expr.as_ref().map(|e| e.to_string()).unwrap_or_default();
-                                    if is_natural {
-                                        Either::Left(view! {
-                                            <div class="entry-item armor-natural">
-                                                <ToggleButton />
-                                                <div class="entry-content">
-                                                    <EntryName>{name}</EntryName>
-                                                    <span class="armor-type-label">
-                                                        {move || i18n.tr(ArmorType::Natural.tr_key())}
-                                                    </span>
-                                                </div>
-                                                <div class="entry-actions">
-                                                    <button
-                                                        class="btn-remove"
-                                                        on:click=move |_| {
-                                                            if i < armors.read().len() {
-                                                                armors.write().remove(i);
-                                                            }
-                                                        }
-                                                    >
-                                                        <Icon name="x" />
-                                                    </button>
-                                                </div>
-                                                <span class="entry-sublabel">{ac_expr_str.clone()}</span>
-                                            </div>
-                                        })
-                                    } else {
-                                        Either::Right(view! {
-                                            <div class="entry-item">
-                                                <ToggleButton />
-                                                <div class="entry-content">
-                                                    <input
-                                                        type="checkbox"
-                                                        class="entry-equipped"
-                                                        title=move_tr!("equipped")
-                                                        prop:checked=move || armors.read()[i].equipped
-                                                        on:change=move |e| {
-                                                            armors.write()[i].equipped = event_target_checked(&e);
-                                                        }
-                                                    />
-                                                    <input
-                                                        type="text"
-                                                        class="entry-name"
-                                                        placeholder=move_tr!("name")
-                                                        prop:value=name
-                                                        on:change=move |e| {
-                                                            armors.write()[i].name = event_target_value(&e);
-                                                        }
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        placeholder=move_tr!("base-ac")
-                                                        class="short-input"
-                                                        min="0"
-                                                        prop:value=base_ac
-                                                        on:change=move |e| {
-                                                            let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
-                                                            let mut armors = armors.write();
-                                                            let old_base_ac = armors[i].base_ac;
-                                                            let at = armors[i].armor_type;
-                                                            armors[i].base_ac = value;
-                                                            // Auto-fill formula if it matches the previous default
-                                                            let old_default = Armor::default_ac_expr(at, old_base_ac);
-                                                            if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                                armors[i].ac_expr = Armor::default_ac_expr(at, value);
-                                                            }
-                                                        }
-                                                    />
-                                                    <select class="select-fixed"
-                                                        prop:value=armor_type.to_string()
-                                                        on:change=move |e| {
-                                                            let value = event_target_value(&e);
-                                                            if let Ok(idx) = value.parse::<u8>() {
-                                                                let new_type = ArmorType::try_from(idx).unwrap_or_default();
-                                                                let mut armors = armors.write();
-                                                                let old_type = armors[i].armor_type;
-                                                                let base_ac = armors[i].base_ac;
-                                                                armors[i].armor_type = new_type;
-                                                                // Auto-fill formula if it matches the previous default
-                                                                let old_default = Armor::default_ac_expr(old_type, base_ac);
-                                                                if armors[i].ac_expr == old_default || armors[i].ac_expr.is_none() {
-                                                                    armors[i].ac_expr = Armor::default_ac_expr(new_type, base_ac);
-                                                                }
-                                                            }
-                                                        }
-                                                    >
-                                                        {ArmorType::iter()
-                                                            .filter(|at| *at != ArmorType::Natural)
-                                                            .map(|at| {
-                                                                let option_value = (at as u8).to_string();
-                                                                let selected = at as u8 == armor_type;
-                                                                let label = Signal::derive(move || i18n.tr(at.tr_key()));
-                                                                view! {
-                                                                    <option value=option_value selected=selected>
-                                                                        {label}
-                                                                    </option>
-                                                                }
-                                                            })
-                                                            .collect_view()}
-                                                    </select>
-                                                </div>
-                                                <div class="entry-actions">
-                                                    <button
-                                                        class="btn-icon"
-                                                        title=move_tr!("enchantment-edit")
-                                                        on:click=move |_| edit_gear(GearRef::Armor(i))
-                                                    >
-                                                        <Icon name="pencil" />
-                                                    </button>
-                                                    <button
-                                                        class="btn-remove"
-                                                        on:click=move |_| {
-                                                            if i < armors.read().len() {
-                                                                armors.write().remove(i);
-                                                            }
-                                                        }
-                                                    >
-                                                        <Icon name="x" />
-                                                    </button>
-                                                </div>
-                                                <input
-                                                    type="text"
-                                                    placeholder=move_tr!("ac-formula")
-                                                    class="entry-desc ac-expr-input"
-                                                    prop:value=ac_expr_str.clone()
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e);
-                                                        armors.write()[i].ac_expr = if value.is_empty() {
-                                                            None
-                                                        } else {
-                                                            value.parse().ok()
-                                                        };
-                                                    }
-                                                />
-                                            </div>
-                                        })
-                                    }
-                                })
-                                .collect_view()
-                        }}
-                    </div>
-                }
-            }
-            <button
-                class="btn-primary"
-                on:click=move |_| {
-                    armors.write().push(Armor::default());
-                }
-            >
-                {move_tr!("btn-add-armor")}
-            </button>
-        </section>
+        <EnchantmentModal show=show_effects value=editing_effects on_save=save_effects />
+    }
+}
 
+fn misc_kind() -> ItemKind {
+    ItemKind::Misc
+}
+
+/// One kind-filtered section of the unified item list: sort header, rows
+/// (equipped + name + quantity + edit/delete), and an add button.
+#[component]
+fn GearSection(
+    #[prop(into)] title: Signal<String>,
+    pred: fn(&Item) -> bool,
+    make_kind: fn() -> ItemKind,
+    /// Slot index currently edited in the effects modal (shared with parent).
+    edit_target: RwSignal<Option<usize>>,
+    show_effects: RwSignal<bool>,
+) -> impl IntoView {
+    let store = expect_context::<Store<Character>>();
+    let items = store.equipment().items();
+
+    let rows = move || {
+        items
+            .read()
+            .iter()
+            .enumerate()
+            .filter(|(_, item)| pred(item))
+            .map(|(i, item)| {
+                let name = item.name.clone();
+                let qty = item.quantity.to_string();
+                view! {
+                    <div class="entry-item">
+                        <div class="entry-content">
+                            <input
+                                type="checkbox"
+                                class="entry-equipped"
+                                title=move_tr!("equipped")
+                                prop:checked=move || items.read()[i].equipped
+                                on:change=move |e| {
+                                    items.write()[i].equipped = event_target_checked(&e);
+                                }
+                            />
+                            <input
+                                type="text"
+                                class="entry-name"
+                                placeholder=move_tr!("item-name")
+                                prop:value=name
+                                on:change=move |e| {
+                                    items.write()[i].name = event_target_value(&e);
+                                }
+                            />
+                            <input
+                                type="number"
+                                class="short-input"
+                                placeholder=move_tr!("qty")
+                                min="0"
+                                prop:value=qty
+                                on:change=move |e| {
+                                    let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                    items.write()[i].quantity = value;
+                                }
+                            />
+                        </div>
+                        <div class="entry-actions">
+                            <button
+                                class="btn-icon"
+                                title=move_tr!("enchantment-edit")
+                                on:click=move |_| {
+                                    edit_target.set(Some(i));
+                                    show_effects.set(true);
+                                }
+                            >
+                                <Icon name="pencil" />
+                            </button>
+                            <button
+                                class="btn-remove"
+                                on:click=move |_| {
+                                    if i < items.read().len() {
+                                        items.write().remove(i);
+                                    }
+                                }
+                            >
+                                <Icon name="x" />
+                            </button>
+                        </div>
+                    </div>
+                }
+            })
+            .collect_view()
+    };
+
+    let add_item = move |_| {
+        let mut item = Item {
+            kind: make_kind(),
+            ..Item::default()
+        };
+        if let ItemKind::Weapon { ability, .. } = item.kind {
+            item.effects.damage.push(DamageEffect {
+                name: DAMAGE_EFFECT_NAME.into(),
+                damage_type: None,
+                expr: ItemKind::default_damage_expr_str(ability)
+                    .parse()
+                    .unwrap_or_default(),
+            });
+        }
+        items.write().push(item);
+    };
+
+    view! {
         <section>
             <div class="section-header">
-                <h3>{move_tr!("items")}</h3>
+                <h3>{title}</h3>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        items.write().sort_by_key(|item| item.name.to_lowercase());
+                        sort_kind_by_name(&mut items.write(), pred);
                     }
                 >
                     <Icon name="arrow-down-a-z" size=16 />
                 </button>
             </div>
-            {
-                view! {
-                    <div class="entry-list">
-                        {move || {
-                            items
-                                .read()
-                                .iter()
-                                .enumerate()
-                                .map(|(i, item)| {
-                                    let name = item.name.clone();
-                                    let qty = item.quantity.to_string();
-                                    let desc = item.description.clone();
-                                    view! {
-                                        <div class="entry-item">
-                                            <ToggleButton />
-                                            <div class="entry-content">
-                                                <input
-                                                    type="checkbox"
-                                                    class="entry-equipped"
-                                                    title=move_tr!("equipped")
-                                                    prop:checked=move || items.read()[i].equipped
-                                                    on:change=move |e| {
-                                                        items.write()[i].equipped = event_target_checked(&e);
-                                                    }
-                                                />
-                                                <input
-                                                    type="text"
-                                                    class="entry-name"
-                                                    placeholder=move_tr!("item-name")
-                                                    prop:value=name
-                                                    on:change=move |e| {
-                                                        items.write()[i].name = event_target_value(&e);
-                                                    }
-                                                />
-                                                <input
-                                                    type="number"
-                                                    class="short-input"
-                                                    placeholder=move_tr!("qty")
-                                                    min="0"
-                                                    prop:value=qty
-                                                    on:change=move |e| {
-                                                        let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
-                                                        items.write()[i].quantity = value;
-                                                    }
-                                                />
-                                            </div>
-                                            <div class="entry-actions">
-                                                <button
-                                                    class="btn-icon"
-                                                    title=move_tr!("enchantment-edit")
-                                                    on:click=move |_| edit_gear(GearRef::Item(i))
-                                                >
-                                                    <Icon name="pencil" />
-                                                </button>
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        if i < items.read().len() {
-                                                            items.write().remove(i);
-                                                        }
-                                                    }
-                                                >
-                                                    <Icon name="x" />
-                                                </button>
-                                            </div>
-                                            <textarea
-                                                class="entry-desc"
-                                                placeholder=move_tr!("description")
-                                                prop:value=desc.clone()
-                                                on:change=move |e| {
-                                                    items.write()[i].description = event_target_value(&e);
-                                                }
-                                            />
-                                        </div>
-                                    }
-                                })
-                                .collect_view()
-                        }}
-                    </div>
-                }
-            }
-            <button
-                class="btn-primary"
-                on:click=move |_| {
-                    items.write().push(Item { quantity: 1, ..Item::default() });
-                }
-            >
+            <div class="entry-list">{rows}</div>
+            <button class="btn-primary" on:click=add_item>
                 {move_tr!("btn-add-item")}
             </button>
         </section>
-
-        <EnchantmentModal show=show_enchant value=editing_enchant on_save=save_enchant />
     }
 }

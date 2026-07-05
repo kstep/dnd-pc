@@ -282,9 +282,6 @@ impl Character {
 
         // --- Equipment ---
         let sec = "panel-equipment";
-        let local_val = format_names(&self.equipment.weapons, |w| &w.name);
-        let imported_val = format_names(&imported.equipment.weapons, |w| &w.name);
-        push_if_diff(&mut rows, sec, "weapons", local_val, imported_val);
 
         let local_val = format_items(&self.equipment.items);
         let imported_val = format_items(&imported.equipment.items);

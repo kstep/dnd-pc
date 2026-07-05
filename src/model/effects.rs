@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     demap,
     expr::{self, Context, DicePool},
-    model::{Ability, Attribute, Character, CharacterCore, Charges, Expr, GearRef, WeaponEffect},
+    model::{Ability, Attribute, Character, CharacterCore, Charges, DamageEffect, Expr},
     rules::{FeaturesView, WhenCondition},
 };
 
@@ -93,8 +93,8 @@ impl EffectDefinition {
     }
 }
 
-impl From<&WeaponEffect> for EffectDefinition {
-    fn from(effect: &WeaponEffect) -> Self {
+impl From<&DamageEffect> for EffectDefinition {
+    fn from(effect: &DamageEffect) -> Self {
         Self {
             name: effect.name.clone(),
             label: None,
@@ -177,7 +177,7 @@ const CONSUMABLE_ATTRS: [Attribute; 2] = [Attribute::Hp, Attribute::TempHp];
 /// resolution during gear `OnEffect` evaluation.
 struct Ctx<'a> {
     character: &'a Character,
-    gear: Option<GearRef>,
+    gear: Option<usize>,
     global: &'a mut BTreeMap<Attribute, i32>,
     scoped: Option<&'a mut BTreeMap<Attribute, i32>>,
     casting_ability: Option<Ability>,
@@ -185,42 +185,21 @@ struct Ctx<'a> {
 
 impl Ctx<'_> {
     fn gear_charges(&self) -> Option<&Charges> {
-        let gear = self.gear?;
-        match gear {
-            GearRef::Item(i) => self
-                .character
-                .equipment
-                .items
-                .get(i)?
-                .magic
-                .charges
-                .as_ref(),
-            GearRef::Weapon(i) => self
-                .character
-                .equipment
-                .weapons
-                .get(i)?
-                .magic
-                .charges
-                .as_ref(),
-            GearRef::Armor(i) => self
-                .character
-                .equipment
-                .armors
-                .get(i)?
-                .magic
-                .charges
-                .as_ref(),
-        }
+        self.character
+            .equipment
+            .items
+            .get(self.gear?)?
+            .effects
+            .charges
+            .as_ref()
     }
 
     fn gear_quantity(&self) -> Option<u32> {
-        let gear = self.gear?;
-        match gear {
-            GearRef::Item(i) => self.character.equipment.items.get(i).map(|x| x.quantity),
-            GearRef::Weapon(i) => self.character.equipment.weapons.get(i).map(|x| x.quantity),
-            GearRef::Armor(_) => Some(1),
-        }
+        self.character
+            .equipment
+            .items
+            .get(self.gear?)
+            .map(|item| item.quantity)
     }
 }
 
@@ -379,38 +358,27 @@ fn eval_features_on_effect(
 }
 
 fn eval_gear_on_effect(character: &Character, overrides: &mut BTreeMap<Attribute, i32>) {
-    let mut run = |gear: GearRef, assigns: &[crate::rules::feature::Assignment]| {
+    for (index, item) in character.equipment.items.iter().enumerate() {
+        if !item.is_active() || item.effects.assign.is_empty() {
+            continue;
+        }
         let mut ctx = Ctx {
             character,
-            gear: Some(gear),
+            gear: Some(index),
             global: overrides,
             scoped: None,
             casting_ability: None,
         };
-        for assign in assigns.iter().filter(|a| a.when == WhenCondition::OnEffect) {
+        for assign in item
+            .effects
+            .assign
+            .iter()
+            .filter(|assignment| assignment.when == WhenCondition::OnEffect)
+        {
             if let Err(error) = assign.expr.apply(&mut ctx) {
-                log::debug!("Gear {gear:?} OnEffect assign error: {error}");
+                log::debug!("Gear #{index} OnEffect assign error: {error}");
             }
         }
-    };
-
-    for (i, item) in character.equipment.items.iter().enumerate() {
-        if !item.is_active() || item.magic.assign.is_empty() {
-            continue;
-        }
-        run(GearRef::Item(i), &item.magic.assign);
-    }
-    for (i, weapon) in character.equipment.weapons.iter().enumerate() {
-        if !weapon.is_active() || weapon.magic.assign.is_empty() {
-            continue;
-        }
-        run(GearRef::Weapon(i), &weapon.magic.assign);
-    }
-    for (i, armor) in character.equipment.armors.iter().enumerate() {
-        if !armor.is_active() || armor.magic.assign.is_empty() {
-            continue;
-        }
-        run(GearRef::Armor(i), &armor.magic.assign);
     }
 }
 

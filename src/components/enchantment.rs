@@ -6,8 +6,8 @@ use strum::VariantArray;
 use crate::{
     components::{icon::Icon, modal::Modal},
     model::{
-        ActionType, Charges, EffectDefinition, EffectDuration, EffectRange, Enchantment,
-        EnchantmentStoreFields, Expr, Translatable,
+        ActionType, Charges, EffectDefinition, EffectDuration, EffectRange, Expr, ItemEffects,
+        ItemEffectsStoreFields, Translatable,
     },
     rules::{ActionDefinition, Assignment, ChoiceOption, ChoiceOptions, WhenCondition},
 };
@@ -22,16 +22,16 @@ const GEAR_WHEN: &[WhenCondition] = &[
     WhenCondition::OnShortRest,
 ];
 
-/// Modal for editing an `Enchantment` block on a piece of gear. Opens with a
+/// Modal for editing an `ItemEffects` block on a piece of gear. Opens with a
 /// snapshot of the current value, edits a local draft, and commits via
 /// `on_save` only on the Save button. Cancel discards.
 #[component]
 pub fn EnchantmentModal(
     show: RwSignal<bool>,
-    #[prop(into)] value: Signal<Enchantment>,
-    on_save: Callback<Enchantment>,
+    #[prop(into)] value: Signal<ItemEffects>,
+    on_save: Callback<ItemEffects>,
 ) -> impl IntoView {
-    let draft = Store::new(Enchantment::default());
+    let draft = Store::new(ItemEffects::default());
 
     Effect::new(move || {
         if show.get() {
@@ -64,7 +64,7 @@ pub fn EnchantmentModal(
 }
 
 #[component]
-fn ChargesSection(draft: Store<Enchantment>) -> impl IntoView {
+fn ChargesSection(draft: Store<ItemEffects>) -> impl IntoView {
     let charges = draft.charges();
     let has_charges = move || charges.read().is_some();
 
@@ -148,7 +148,7 @@ fn ChargesEditor(charges: reactive_stores::Field<Option<Charges>>) -> impl IntoV
 }
 
 #[component]
-fn PassivesSection(draft: Store<Enchantment>) -> impl IntoView {
+fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
     let assigns = draft.assign();
     let i18n = expect_context::<I18n>();
 
@@ -264,7 +264,7 @@ fn PassiveRow(
 }
 
 #[component]
-fn ActionsSection(draft: Store<Enchantment>) -> impl IntoView {
+fn ActionsSection(draft: Store<ItemEffects>) -> impl IntoView {
     let actions = draft.actions();
 
     let add = move |_| {

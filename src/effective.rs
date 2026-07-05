@@ -6,7 +6,7 @@ use crate::{
     expr::{self, Context, Eval as _, VarGroup},
     model::{
         Ability, AbilityGroup, ActiveEffects, Attribute, AttributeGroup, Character,
-        DamageModifiers, DamageType, DmgGroup, Skill, SkillGroup, ToolGroup, Weapon, intern,
+        DamageModifiers, DamageType, DmgGroup, Item, Skill, SkillGroup, ToolGroup, intern,
     },
 };
 
@@ -128,11 +128,13 @@ impl EffectiveCharacter {
         self.get(Attribute::Speed)
     }
 
-    /// Evaluate a weapon's attack-bonus expression with effect overlays
-    /// applied. `ATK` in the expression resolves through the overlay, so
-    /// global buffs (Bless, Bardic Inspiration) are included automatically.
-    pub fn weapon_attack_bonus(&self, weapon: &Weapon) -> i32 {
-        weapon.effective_attack_expr().eval(self).unwrap_or(0)
+    /// Evaluate a weapon item's derived attack expression with effect
+    /// overlays applied. `ATK` resolves through the overlay, so global
+    /// buffs (Bless, Bardic Inspiration) are included automatically.
+    pub fn weapon_attack_bonus(&self, item: &Item) -> i32 {
+        item.attack_expr()
+            .map(|expr| expr.eval(self).unwrap_or(0))
+            .unwrap_or(0)
     }
 
     pub fn attack_count(&self) -> i32 {

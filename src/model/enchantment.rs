@@ -1,13 +1,29 @@
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::rules::{ActionDefinition, Assignment};
+use crate::{
+    model::{DamageType, Expr},
+    rules::{ActionDefinition, Assignment},
+};
 
-/// Magical block embedded in `Item`/`Weapon`/`Armor`. Bundles activatable
-/// actions, passive assigns, and an optional charge pool. Empty for mundane
-/// gear — skips serialization entirely so existing JSON stays unchanged.
+/// One always-visible damage line of an item (weapon dice, bonus riders).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct DamageEffect {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub damage_type: Option<DamageType>,
+    #[serde(default)]
+    pub expr: Expr,
+}
+
+/// Effects block embedded in `Item`: damage lines, activatable actions,
+/// passive assigns, and an optional charge pool. Empty for plain gear —
+/// skips serialization entirely.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, Store)]
-pub struct Enchantment {
+pub struct ItemEffects {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub damage: Vec<DamageEffect>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub actions: Vec<ActionDefinition>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16,9 +32,12 @@ pub struct Enchantment {
     pub charges: Option<Charges>,
 }
 
-impl Enchantment {
+impl ItemEffects {
     pub fn is_empty(&self) -> bool {
-        self.actions.is_empty() && self.assign.is_empty() && self.charges.is_none()
+        self.damage.is_empty()
+            && self.actions.is_empty()
+            && self.assign.is_empty()
+            && self.charges.is_none()
     }
 }
 
