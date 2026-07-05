@@ -353,8 +353,9 @@ impl CharacterCore {
 
     /// Compute base max HP from class levels and CON modifier.
     ///
-    /// Formula: for each class, `hit_die_sides` at level 1 +
-    /// `avg_hp(hit_die_sides)` for each subsequent level, plus
+    /// Formula: initial class gets `hit_die_sides` at level 1 + `avg_hp`
+    /// per later level; every other class gets `avg_hp` for ALL its levels
+    /// (PHB 2024: level-1 max-die HP only at total level 1). Plus
     /// `total_level * CON modifier`.
     pub fn compute_hp_max(&mut self) -> u32 {
         let con_mod = self.ability_modifier(Ability::Constitution);
@@ -363,10 +364,16 @@ impl CharacterCore {
             .identity
             .classes
             .iter()
-            .map(|cl| {
-                total_level += cl.level as i32;
-                let sides = cl.hit_die_sides as i32;
-                sides + (cl.level as i32 - 1) * expr::avg_hp(sides)
+            .enumerate()
+            .map(|(idx, class_level)| {
+                total_level += class_level.level as i32;
+                let sides = class_level.hit_die_sides as i32;
+                let level = class_level.level as i32;
+                if idx == 0 {
+                    sides + (level - 1) * expr::avg_hp(sides)
+                } else {
+                    level * expr::avg_hp(sides)
+                }
             })
             .sum();
         let total = (base + total_level * con_mod).max(0) as u32;
@@ -1792,10 +1799,10 @@ mod tests {
     #[wasm_bindgen_test]
     fn compute_hp_max_multiclass() {
         // Fighter 5 (d10) + Wizard 2 (d6), CON 12 (mod +1), total level 7
-        // Fighter: 10 + 4 * 6 = 34
-        // Wizard: 6 + 1 * 4 = 10
+        // Fighter (initial): 10 + 4 * 6 = 34
+        // Wizard (multiclass, no level-1 max die): 2 * 4 = 8
         // con = 7 * 1 = 7
-        // total = 51
+        // total = 49
         let mut ch = test_character();
         ch.identity.classes.push(ClassLevel {
             class: "Wizard".into(),
@@ -1807,7 +1814,26 @@ mod tests {
             hit_dice_used: 0,
         });
         let hp = ch.compute_hp_max();
-        assert_eq!(hp, 51);
+        assert_eq!(hp, 49);
+    }
+
+    #[wasm_bindgen_test]
+    fn compute_hp_max_multiclass_first_level() {
+        // Fighter 1 (d10) + Wizard 1 (d6), CON 12 (mod +1)
+        // Fighter (initial): 10; Wizard: 1 * 4 = 4; con = 2 * 1 = 2 → 16
+        let mut ch = test_character();
+        ch.identity.classes[0].level = 1;
+        ch.identity.classes.push(ClassLevel {
+            class: "Wizard".into(),
+            class_label: None,
+            subclass: None,
+            subclass_label: None,
+            level: 1,
+            hit_die_sides: 6,
+            hit_dice_used: 0,
+        });
+        let hp = ch.compute_hp_max();
+        assert_eq!(hp, 16);
     }
 
     #[wasm_bindgen_test]
