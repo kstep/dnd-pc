@@ -9256,6 +9256,21 @@
         "expr": "with(@SKILL(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Artificer`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Artificer)",
+    "prerequisites": "CLASS.`Artificer`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; TOOL.`Tinker's Tools`.ABIL = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9278,6 +9293,17 @@
         "expr": "with(@SKILL(ANIM, ATHL, INTI, NATU, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Barbarian`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Barbarian)",
+    "prerequisites": "CLASS.`Barbarian`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 12; PROF.SHIELDS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9289,6 +9315,21 @@
       },
       {
         "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Bard`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Bard)",
+    "prerequisites": "CLASS.`Bard`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; TOOL.COUNT += 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9313,6 +9354,17 @@
         "expr": "with(@SKILL(HIST, INSI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Cleric`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Cleric)",
+    "prerequisites": "CLASS.`Cleric`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9326,6 +9378,17 @@
         "expr": "with(@SKILL(ARCA, ANIM, INSI, MEDI, NATU, PERC, RELI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Druid`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Druid)",
+    "prerequisites": "CLASS.`Druid`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; PROF.SHIELDS = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9337,6 +9400,17 @@
       },
       {
         "expr": "with(@SKILL(ACRO, ANIM, ATHL, HIST, INSI, INTI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Fighter`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Fighter)",
+    "prerequisites": "CLASS.`Fighter`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 10; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9361,6 +9435,17 @@
         "expr": "with(@SKILL(ACRO, ATHL, HIST, INSI, RELI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Monk`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Monk)",
+    "prerequisites": "CLASS.`Monk`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9372,6 +9457,17 @@
       },
       {
         "expr": "with(@SKILL(ATHL, INSI, INTI, MEDI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Paladin`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Paladin)",
+    "prerequisites": "CLASS.`Paladin`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 10; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.MARTIAL_WEAPONS = 1",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9387,6 +9483,21 @@
         "expr": "with(@SKILL(ANIM, ATHL, INSI, INVE, NATU, PERC, STEA, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 3, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Ranger`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Ranger)",
+    "prerequisites": "CLASS.`Ranger`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 10; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.MARTIAL_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL(ANIM, ATHL, INSI, INVE, NATU, PERC, STEA, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9398,6 +9509,21 @@
       },
       {
         "expr": "with(@SKILL(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 4, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Rogue`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Rogue)",
+    "prerequisites": "CLASS.`Rogue`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; TOOL.`Thieves' Tools`.ABIL = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL(ACRO, ATHL, DECE, INSI, INTI, INVE, PERC, PERF, PERS, SLEI, STEA), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
     ]
@@ -9413,6 +9539,17 @@
         "expr": "with(@SKILL(ARCA, DECE, INSI, INTI, PERS, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Sorcerer`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Sorcerer)",
+    "prerequisites": "CLASS.`Sorcerer`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 6",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9426,6 +9563,17 @@
         "expr": "with(@SKILL(ARCA, DECE, HIST, INTI, INVE, NATU, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
         "when": "OnFeatureAdd"
       }
+    ],
+    "prerequisites": "CLASS.`Warlock`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Warlock)",
+    "prerequisites": "CLASS.`Warlock`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1",
+        "when": "OnFeatureAdd"
+      }
     ]
   },
   {
@@ -9437,6 +9585,17 @@
       },
       {
         "expr": "with(@SKILL(ARCA, HIST, INSI, INVE, MEDI, RELI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Wizard`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Wizard)",
+    "prerequisites": "CLASS.`Wizard`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 6",
         "when": "OnFeatureAdd"
       }
     ]
