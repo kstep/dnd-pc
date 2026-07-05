@@ -3,7 +3,23 @@ use std::{
     ops::{Add, AddAssign, Sub, SubAssign},
 };
 
-#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+use reactive_stores::Store;
+use serde::{Deserialize, Serialize};
+
+#[derive(
+    Default,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    Store
+)]
+#[serde(transparent)]
 pub struct Money {
     cp: u32,
 }
@@ -151,6 +167,16 @@ mod tests {
     fn from_constructors() {
         assert_eq!(Money::from_cp(1).whole_cp(), 1);
         assert_eq!(Money::from_gp(1).whole_cp(), 100);
+    }
+
+    #[test]
+    fn serde_transparent_cp() {
+        let json = serde_json::to_string(&Money::from_cp(150)).unwrap();
+        assert_eq!(json, "150");
+        assert_eq!(
+            serde_json::from_str::<Money>("150").unwrap(),
+            Money::from_cp(150)
+        );
     }
 
     #[test]
