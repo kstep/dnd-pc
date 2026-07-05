@@ -497,7 +497,18 @@ impl SpellSlotPool {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    EnumIter,
+    Display,
+    Default,
+    VariantArray
+)]
 #[repr(u8)]
 pub enum ArmorType {
     #[default]
@@ -529,7 +540,18 @@ impl ArmorType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, EnumIter, Display, Default)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    EnumIter,
+    Display,
+    Default,
+    VariantArray
+)]
 #[repr(u8)]
 pub enum WeaponCategory {
     #[default]

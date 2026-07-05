@@ -24,6 +24,7 @@ pub mod feature_field_row;
 pub mod feature_row;
 pub mod hint_banner;
 pub mod icon;
+pub mod item_modal;
 pub mod language_switcher;
 pub mod logo;
 pub mod markdown;

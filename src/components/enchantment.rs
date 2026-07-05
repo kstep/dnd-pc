@@ -4,7 +4,7 @@ use reactive_stores::Store;
 use strum::VariantArray;
 
 use crate::{
-    components::{icon::Icon, modal::Modal},
+    components::icon::Icon,
     model::{
         ActionType, Charges, EffectDefinition, EffectDuration, EffectRange, Expr, ItemEffects,
         ItemEffectsStoreFields, Translatable,
@@ -22,49 +22,8 @@ const GEAR_WHEN: &[WhenCondition] = &[
     WhenCondition::OnShortRest,
 ];
 
-/// Modal for editing an `ItemEffects` block on a piece of gear. Opens with a
-/// snapshot of the current value, edits a local draft, and commits via
-/// `on_save` only on the Save button. Cancel discards.
 #[component]
-pub fn EnchantmentModal(
-    show: RwSignal<bool>,
-    #[prop(into)] value: Signal<ItemEffects>,
-    on_save: Callback<ItemEffects>,
-) -> impl IntoView {
-    let draft = Store::new(ItemEffects::default());
-
-    Effect::new(move || {
-        if show.get() {
-            draft.set(value.get_untracked());
-        }
-    });
-
-    let save = move |_| {
-        on_save.run(draft.get_untracked());
-        show.set(false);
-    };
-
-    view! {
-        <Modal show title=move_tr!("enchantment-edit")>
-            <div class="modal-body enchantment-modal">
-                <ChargesSection draft />
-                <PassivesSection draft />
-                <ActionsSection draft />
-            </div>
-            <div class="modal-actions">
-                <button on:click=move |_| show.set(false)>
-                    {move_tr!("btn-cancel")}
-                </button>
-                <button class="btn-primary" on:click=save>
-                    {move_tr!("btn-save")}
-                </button>
-            </div>
-        </Modal>
-    }
-}
-
-#[component]
-fn ChargesSection(draft: Store<ItemEffects>) -> impl IntoView {
+pub fn ChargesSection(draft: Store<ItemEffects>) -> impl IntoView {
     let charges = draft.charges();
     let has_charges = move || charges.read().is_some();
 
@@ -148,7 +107,7 @@ fn ChargesEditor(charges: reactive_stores::Field<Option<Charges>>) -> impl IntoV
 }
 
 #[component]
-fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
+pub fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
     let assigns = draft.assign();
     let i18n = expect_context::<I18n>();
 
@@ -161,7 +120,6 @@ fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
 
     view! {
         <section class="enchant-section">
-            <h3>{move_tr!("enchantment-passives")}</h3>
             {move || {
                 let len = assigns.read().len();
                 if len == 0 {
@@ -178,7 +136,7 @@ fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
                 }
             }}
             <button class="btn-primary" on:click=add>
-                {move_tr!("btn-add-passive")}
+                "+ " {move_tr!("btn-add-effect")}
             </button>
         </section>
     }
@@ -240,7 +198,7 @@ fn PassiveRow(
                 <input
                     type="text"
                     class="entry-name"
-                    placeholder=move_tr!("effect-expr")
+                    placeholder=move_tr!("effect-expr-required")
                     prop:value=expr_str
                     on:change=on_expr
                 />
@@ -264,7 +222,7 @@ fn PassiveRow(
 }
 
 #[component]
-fn ActionsSection(draft: Store<ItemEffects>) -> impl IntoView {
+pub fn ActionsSection(draft: Store<ItemEffects>) -> impl IntoView {
     let actions = draft.actions();
 
     let add = move |_| {
@@ -286,7 +244,6 @@ fn ActionsSection(draft: Store<ItemEffects>) -> impl IntoView {
 
     view! {
         <section class="enchant-section">
-            <h3>{move_tr!("enchantment-actions")}</h3>
             {move || {
                 let len = actions.read().len();
                 if len == 0 {

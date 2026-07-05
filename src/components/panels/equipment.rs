@@ -3,10 +3,12 @@ use leptos_fluent::move_tr;
 use reactive_stores::Store;
 
 use crate::{
-    components::{enchantment::EnchantmentModal, icon::Icon, slot_box::SlotBox},
+    components::{
+        icon::Icon, item_modal::ItemModal, slot_box::SlotBox, toggle_button::ToggleButton,
+    },
     model::{
-        Character, CharacterStoreFields, CurrencyStoreFields, DamageEffect, EquipmentStoreFields,
-        Item, ItemEffects, ItemKind,
+        Ability, Character, CharacterStoreFields, CurrencyStoreFields, DamageEffect,
+        EquipmentStoreFields, Item, ItemKind,
     },
 };
 
@@ -49,23 +51,28 @@ pub fn EquipmentPanel() -> impl IntoView {
     let show_ep = move || currency_expanded.get() || currency.ep().get() > 0;
     let show_pp = move || currency_expanded.get() || currency.pp().get() > 0;
 
-    // Effects modal state — references the currently-edited item slot.
+    // Item modal state — references the currently-edited item slot.
     let edit_target = RwSignal::new(None::<usize>);
-    let show_effects = RwSignal::new(false);
-    let editing_effects = Signal::derive(move || {
+    let show_editor = RwSignal::new(false);
+    let editing_item = Signal::derive(move || {
         edit_target
             .get()
-            .and_then(|index| items.read().get(index).map(|item| item.effects.clone()))
+            .and_then(|index| items.read().get(index).cloned())
             .unwrap_or_default()
     });
-    let save_effects = Callback::new(move |value: ItemEffects| {
+    let save_item = Callback::new(move |value: Item| {
         let Some(index) = edit_target.get_untracked() else {
             return;
         };
         if index < items.read().len() {
-            items.write()[index].effects = value;
+            items.write()[index] = value;
         }
     });
+
+    // Total carried weight vs STR × 15 carrying capacity (PHB).
+    let total_weight = move || store.read().equipment.total_weight();
+    let capacity = move || store.read().ability_score(Ability::Strength) * 15;
+    let overweight = move || (total_weight().0 as u64) > (capacity() as u64) * 100;
 
     view! {
         <section>
@@ -195,13 +202,18 @@ pub fn EquipmentPanel() -> impl IntoView {
                     </SlotBox>
                 </Show>
             </div>
+            <p class="inventory-weight" class:overweight=overweight>
+                {move_tr!("inventory-total-weight")} ": " {move || total_weight().to_string()}
+                " / " {capacity} " lb"
+            </p>
         </section>
 
-        <GearSection title=move_tr!("weapons") pred=Item::is_weapon make_kind=ItemKind::default_weapon edit_target show_effects />
-        <GearSection title=move_tr!("armor") pred=Item::is_armor make_kind=ItemKind::default_armor edit_target show_effects />
-        <GearSection title=move_tr!("items") pred=is_misc make_kind=misc_kind edit_target show_effects />
+        <GearSection title=move_tr!("weapons") pred=Item::is_weapon make_kind=ItemKind::default_weapon edit_target show_editor />
+        <GearSection title=move_tr!("armor") pred=Item::is_armor make_kind=ItemKind::default_armor edit_target show_editor />
+        <GearSection title=move_tr!("items") pred=is_misc make_kind=misc_kind edit_target show_editor />
 
-        <EnchantmentModal show=show_effects value=editing_effects on_save=save_effects />
+
+        <ItemModal show=show_editor value=editing_item on_save=save_item />
     }
 }
 
@@ -216,9 +228,9 @@ fn GearSection(
     #[prop(into)] title: Signal<String>,
     pred: fn(&Item) -> bool,
     make_kind: fn() -> ItemKind,
-    /// Slot index currently edited in the effects modal (shared with parent).
+    /// Slot index currently edited in the item modal (shared with parent).
     edit_target: RwSignal<Option<usize>>,
-    show_effects: RwSignal<bool>,
+    show_editor: RwSignal<bool>,
 ) -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let items = store.equipment().items();
@@ -232,8 +244,10 @@ fn GearSection(
             .map(|(i, item)| {
                 let name = item.name.clone();
                 let qty = item.quantity.to_string();
+                let desc = item.description.clone();
                 view! {
                     <div class="entry-item">
+                        <ToggleButton />
                         <div class="entry-content">
                             <input
                                 type="checkbox"
@@ -268,10 +282,10 @@ fn GearSection(
                         <div class="entry-actions">
                             <button
                                 class="btn-icon"
-                                title=move_tr!("enchantment-edit")
+                                title=move_tr!("item-edit")
                                 on:click=move |_| {
                                     edit_target.set(Some(i));
-                                    show_effects.set(true);
+                                    show_editor.set(true);
                                 }
                             >
                                 <Icon name="pencil" />
@@ -287,6 +301,14 @@ fn GearSection(
                                 <Icon name="x" />
                             </button>
                         </div>
+                        <textarea
+                            class="entry-desc"
+                            placeholder=move_tr!("description")
+                            prop:value=desc.clone()
+                            on:change=move |e| {
+                                items.write()[i].description = event_target_value(&e);
+                            }
+                        />
                     </div>
                 }
             })

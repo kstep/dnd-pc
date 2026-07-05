@@ -9,7 +9,7 @@ use crate::{
 /// Recompute derived character state. Call after any apply pipeline step
 /// that mutates `character.features` so callers can trust the result is
 /// finalized. Takes `Character` (not `CharacterCore`) because
-/// `compute_armor_class` reads `equipment.armors`.
+/// `compute_armor_class` reads equipped armor items.
 pub fn compute(character: &mut Character, feat_index: FeaturesView<'_>) {
     character.compute();
     assign(character, feat_index, WhenCondition::OnCompute);

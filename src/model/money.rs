@@ -95,6 +95,19 @@ impl Money {
     pub fn whole_cp(&self) -> u32 {
         self.cp
     }
+
+    /// Decimal GP string for input fields ("10", "1.5", "0.05").
+    pub fn to_gp_str(&self) -> String {
+        let gp = self.cp / Self::CP_PER_GP;
+        let frac = self.cp % Self::CP_PER_GP;
+        if frac == 0 {
+            gp.to_string()
+        } else if frac.is_multiple_of(10) {
+            format!("{gp}.{}", frac / 10)
+        } else {
+            format!("{gp}.{frac:02}")
+        }
+    }
 }
 
 impl fmt::Display for Money {
@@ -167,6 +180,14 @@ mod tests {
     fn from_constructors() {
         assert_eq!(Money::from_cp(1).whole_cp(), 1);
         assert_eq!(Money::from_gp(1).whole_cp(), 100);
+    }
+
+    #[test]
+    fn to_gp_str_roundtrips_with_from_gp_str() {
+        for text in ["10", "1.5", "0.05", "0", "3.99"] {
+            let money = Money::from_gp_str(text).unwrap();
+            assert_eq!(money.to_gp_str(), text, "{text}");
+        }
     }
 
     #[test]

@@ -4765,6 +4765,7 @@ dialog.modal:has(.enchantment-modal) {
   }
 }
 
+
 @media (max-width: 600px) {
   .entry-item:has(> .passive-row) {
     align-items: start;
@@ -4994,5 +4995,86 @@ dialog.modal:has(.enchantment-modal) {
     .field-inline:has(select) {
       flex-basis: 100%;
     }
+  }
+}
+
+/* ---- Item edit modal ---- */
+
+/* Modal tabs are non-router <a> links — same look, pointer cursor. */
+a.tab-nav-link:not([href]) {
+  cursor: pointer;
+}
+
+/* The modal body carries its own padding — no extra gap under the tabs;
+   the bar must not squash when the dialog runs out of height. */
+dialog.modal .tab-nav {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.item-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+  width: min(560px, 85vw);
+}
+
+/* Same airy column rhythm as the effects sections. */
+.item-general {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-3);
+
+  .field-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+
+    > input,
+    > textarea {
+      width: 100%;
+    }
+  }
+
+}
+
+
+/* Damage line inside a standard .entry-item: name + type + remove on top,
+   expression on its own full-width row (mirrors .passive-row). */
+.damage-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12em auto;
+  gap: var(--size-1);
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+
+  > select {
+    width: 100%;
+  }
+
+  > .effect-expr-input {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    > select {
+      grid-column: 1;
+    }
+  }
+}
+
+.inventory-weight {
+  margin: var(--size-1) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-0);
+
+  &.overweight {
+    color: var(--danger, #c33);
+    font-weight: var(--font-weight-6);
   }
 }
