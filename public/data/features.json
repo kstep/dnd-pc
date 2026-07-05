@@ -1321,16 +1321,34 @@
     "name": "Flash of Genius"
   },
   {
-    "name": "Magic Item Adept"
+    "name": "Magic Item Adept",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 4",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Spell-Storing Item"
   },
   {
-    "name": "Advanced Artifice"
+    "name": "Advanced Artifice",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 5",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
-    "name": "Magic Item Master"
+    "name": "Magic Item Master",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 6",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Epic Boon",
