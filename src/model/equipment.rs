@@ -36,6 +36,14 @@ impl Equipment {
     pub fn total_weight(&self) -> Weight {
         self.items.iter().map(Item::total_weight).sum()
     }
+
+    /// Attuned items (attunement binds an item, not a stack).
+    pub fn attuned_count(&self) -> usize {
+        self.items
+            .iter()
+            .filter(|item| item.requires_attunement && item.attuned)
+            .count()
+    }
 }
 
 /// Kind-specific parameters. Pure data — every formula (attack bonus, AC)
@@ -136,6 +144,10 @@ pub struct Item {
     #[serde(default)]
     pub equipped: bool,
     #[serde(default)]
+    pub requires_attunement: bool,
+    #[serde(default)]
+    pub attuned: bool,
+    #[serde(default)]
     pub kind: ItemKind,
     #[serde(default, skip_serializing_if = "ItemEffects::is_empty")]
     pub effects: ItemEffects,
@@ -150,6 +162,8 @@ impl Default for Item {
             weight: Weight::default(),
             price: Money::default(),
             equipped: false,
+            requires_attunement: false,
+            attuned: false,
             kind: ItemKind::default(),
             effects: ItemEffects::default(),
         }
@@ -158,7 +172,7 @@ impl Default for Item {
 
 impl Item {
     pub fn is_active(&self) -> bool {
-        self.equipped
+        self.equipped && (!self.requires_attunement || self.attuned)
     }
 
     pub fn is_weapon(&self) -> bool {
@@ -408,6 +422,42 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn is_active_gates_on_attunement() {
+        let mut item = Item {
+            equipped: true,
+            ..Item::default()
+        };
+        assert!(item.is_active(), "plain equipped item is active");
+        item.requires_attunement = true;
+        assert!(!item.is_active(), "equipped but unattuned is inactive");
+        item.attuned = true;
+        assert!(item.is_active(), "equipped and attuned is active");
+        item.equipped = false;
+        assert!(!item.is_active(), "attuned but not equipped is inactive");
+    }
+
+    #[wasm_bindgen_test]
+    fn attuned_count_ignores_quantity_and_plain_items() {
+        let mut equipment = Equipment::default();
+        equipment.items.push(Item {
+            requires_attunement: true,
+            attuned: true,
+            quantity: 5,
+            ..Item::default()
+        });
+        equipment.items.push(Item {
+            requires_attunement: true,
+            ..Item::default()
+        });
+        equipment.items.push(Item {
+            // Stray flag without the requirement doesn't count.
+            attuned: true,
+            ..Item::default()
+        });
+        assert_eq!(equipment.attuned_count(), 1);
+    }
+
+    #[wasm_bindgen_test]
     fn assignments_gate_on_gear_active_only() {
         let mut equipment = Equipment::default();
         for (equipped, kind) in [
@@ -444,6 +494,21 @@ mod tests {
             .map(|(index, _)| index)
             .collect();
         assert_eq!(rest, vec![0, 1, 2]);
+
+        // Unattuned attunement-requiring gear stops firing OnGearActive.
+        equipment.items[1].requires_attunement = true;
+        let active: Vec<usize> = equipment
+            .assignments(WhenCondition::OnGearActive)
+            .map(|(index, _)| index)
+            .collect();
+        assert!(active.is_empty(), "equipped but unattuned doesn't fire");
+
+        equipment.items[1].attuned = true;
+        let active: Vec<usize> = equipment
+            .assignments(WhenCondition::OnGearActive)
+            .map(|(index, _)| index)
+            .collect();
+        assert_eq!(active, vec![1], "attuned fires again");
     }
 
     #[wasm_bindgen_test]
