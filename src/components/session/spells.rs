@@ -19,7 +19,7 @@ use crate::{
     model::{
         Ability, ActionType, Attribute, Character, CharacterCoreStoreFields, CharacterStoreFields,
         CombatStatsStoreFields, EffectDuration, EffectRange, FeatureValue, FeaturesStoreFields,
-        SpellSlotLevel, SpellSlotPool, format_bonus,
+        SpellSlotPool, format_bonus,
     },
     rules::{CastTime, RulesRegistry},
 };
@@ -154,7 +154,6 @@ pub fn SpellsBlock() -> impl IntoView {
 
                 let spell_slots_map = spell_slots.read();
                 let pool = spell_data.pool;
-                let pool_slots = spell_slots_map.get(&pool);
                 let fname = StoredValue::new(name.to_string());
                 let casting_ability = spell_data.casting_ability;
                 let all_spells = spell_data
@@ -176,12 +175,10 @@ pub fn SpellsBlock() -> impl IntoView {
                         {
                             return true;
                         }
-                        if (spell.level..=9).any(|sl| {
-                            let idx = (sl - 1) as usize;
-                            pool_slots
-                                .and_then(|slots| slots.get(idx))
-                                .is_some_and(SpellSlotLevel::is_available)
-                        }) {
+                        if CastOption::slot_options(&spell_slots_map, spell.level, pool)
+                            .next()
+                            .is_some()
+                        {
                             return true;
                         }
                         // Show ritual spells even without available slots
@@ -339,22 +336,14 @@ pub fn SpellsBlock() -> impl IntoView {
                             }
                         }
 
-                        // Slot level options
+                        // Slot level options (either pool — PHB: slots are
+                        // interchangeable across Spellcasting and Pact Magic)
                         if spell.level > 0 {
-                            for sl in spell.level..=9 {
-                                let idx = (sl - 1) as usize;
-                                let remaining = pool_slots
-                                    .and_then(|slots| slots.get(idx))
-                                    .map(|slot| slot.available())
-                                    .unwrap_or(0);
-                                if remaining > 0 {
-                                    cast_options.push(CastOption::SpellSlot {
-                                        level: sl,
-                                        remaining,
-                                        natural: sl == spell.level,
-                                    });
-                                }
-                            }
+                            cast_options.extend(CastOption::slot_options(
+                                &spell_slots_map,
+                                spell.level,
+                                pool,
+                            ));
                         }
 
                         // Single registry lookup yields all flags this spell-row needs
@@ -424,9 +413,9 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     });
                                                 });
                                             }
-                                            CastOption::SpellSlot { level: slot_level, .. } => {
+                                            CastOption::SpellSlot { pool: slot_pool, level: slot_level, .. } => {
                                                 spell_slots.update(|pools| {
-                                                    if let Some(slots) = pools.get_mut(&pool) {
+                                                    if let Some(slots) = pools.get_mut(&slot_pool) {
                                                         let idx = (slot_level - 1) as usize;
                                                         if let Some(slot) = slots.get_mut(idx) {
                                                             slot.used = slot.used.saturating_add(1).min(slot.total);

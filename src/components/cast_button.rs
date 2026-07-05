@@ -61,7 +61,7 @@ impl CastOption {
         matches!(self, CastOption::SpellSlot { natural: true, .. })
     }
 
-    fn view(self, i18n: I18n, foreign: bool) -> impl IntoView {
+    fn view(self) -> impl IntoView {
         match self {
             CastOption::FreeUse { available, max } => EitherOf4::A(view! {
                 <Icon name="gift" />
@@ -71,17 +71,10 @@ impl CastOption {
                 {cost}" "{suffix}
             }),
             CastOption::SpellSlot {
-                pool,
-                level,
-                remaining,
-                ..
+                level, remaining, ..
             } => EitherOf4::C(view! {
                 {level}
                 <sub class="slot-remaining">{remaining}</sub>
-                {foreign.then(|| {
-                    let label = Signal::derive(move || i18n.tr(pool.tr_key()));
-                    view! { <sub class="slot-pool">{label}</sub> }
-                })}
             }),
             CastOption::Ritual { .. } => EitherOf4::D(view! {
                 <Icon name="book-open" />
@@ -142,15 +135,19 @@ pub fn CastButton(
                             {options.with_value(|opts| {
                                 opts.iter().map(|opt| {
                                     let highlight = opt.is_natural();
-                                    let foreign = opt
+                                    let foreign_pool = opt
                                         .slot_pool()
-                                        .is_some_and(|pool| Some(pool) != native_slot_pool);
+                                        .filter(|pool| Some(*pool) != native_slot_pool);
+                                    let pool_title = foreign_pool
+                                        .map(|pool| Signal::derive(move || i18n.tr(pool.tr_key())));
                                     let opt_clone = opt.clone();
-                                    let opt_view = opt.clone().view(i18n, foreign);
+                                    let opt_view = opt.clone().view();
                                     view! {
                                         <button
                                             class="cast-slot-pill"
                                             class:natural-level=highlight
+                                            class:foreign-pool=foreign_pool.is_some()
+                                            title=pool_title
                                             on:click=move |_| {
                                                 on_cast.with_value(|callback| callback.run(opt_clone.clone()));
                                                 picker_open.set(false);

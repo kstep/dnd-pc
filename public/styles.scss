@@ -2518,6 +2518,12 @@ section:not(.expanded) > .textarea-field {
     color: var(--accent);
   }
 
+  /* Slot from the other pool (PHB cross-pool casting). */
+  &.foreign-pool {
+    border-color: var(--success);
+    color: var(--success);
+  }
+
   > .icon-wrapper {
     padding: 0;
     line-height: 0;
