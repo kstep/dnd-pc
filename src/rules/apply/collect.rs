@@ -64,6 +64,11 @@ pub fn collect_class_features<'a>(
             let Some(feat) = features_index.get(name) else {
                 return true;
             };
+            // Granted features honor their prerequisites (e.g. the
+            // class/multiclass proficiency pair) — skip until they hold.
+            if !feat.meets_prerequisites(character) {
+                return false;
+            }
             if character
                 .features
                 .contains(&feat.name, feat.stackable, source)
@@ -886,6 +891,84 @@ mod tests {
             names.contains(&"Reaper"),
             "subclass L1 features must be emitted even when class level is \
              marked applied; got {names:?}"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn collect_class_features_honors_prerequisites() {
+        // Mirrors the multiclass-proficiency pair: two features at class L1,
+        // one gated to "sole class", one to "not the initial class".
+        let mut character = Character::default().core;
+        character.identity.classes = vec![
+            ClassLevel {
+                class: "Fighter".into(),
+                level: 1,
+                ..ClassLevel::default()
+            },
+            ClassLevel {
+                class: "Warlock".into(),
+                level: 1,
+                ..ClassLevel::default()
+            },
+        ];
+
+        let mut feat_index: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+        let mut full = plain_feat("Class Proficiencies (Warlock)");
+        full.prerequisites = Some("CLASS.`Warlock`.LEVEL == LEVEL".parse().unwrap());
+        feat_index.insert(full.name.clone(), full);
+        let mut multi = plain_feat("Multiclass Proficiencies (Warlock)");
+        multi.prerequisites = Some("CLASS.`Warlock`.LEVEL < LEVEL".parse().unwrap());
+        feat_index.insert(multi.name.clone(), multi);
+        let view = FeaturesView::from_natural(&feat_index);
+
+        let class_def = class_def_levels(
+            "Warlock",
+            &[(
+                1u32,
+                &[
+                    "Class Proficiencies (Warlock)",
+                    "Multiclass Proficiencies (Warlock)",
+                ] as &[&str],
+            )],
+        );
+
+        // Warlock is the second class → only the multiclass variant surfaces.
+        let names: Vec<Box<str>> = collect_class_features(&character, 1, 1, &class_def, view)
+            .map(|pending| pending.name)
+            .collect();
+        assert!(
+            names
+                .iter()
+                .any(|name| &**name == "Multiclass Proficiencies (Warlock)"),
+            "multiclass variant must surface for a second class, got {names:?}"
+        );
+        assert!(
+            !names
+                .iter()
+                .any(|name| &**name == "Class Proficiencies (Warlock)"),
+            "full proficiencies must be filtered for a second class, got {names:?}"
+        );
+
+        // Solo Warlock → the full variant surfaces, multiclass one doesn't.
+        character.identity.classes = vec![ClassLevel {
+            class: "Warlock".into(),
+            level: 1,
+            ..ClassLevel::default()
+        }];
+        let names: Vec<Box<str>> = collect_class_features(&character, 0, 1, &class_def, view)
+            .map(|pending| pending.name)
+            .collect();
+        assert!(
+            names
+                .iter()
+                .any(|name| &**name == "Class Proficiencies (Warlock)"),
+            "full proficiencies must surface for the sole class, got {names:?}"
+        );
+        assert!(
+            !names
+                .iter()
+                .any(|name| &**name == "Multiclass Proficiencies (Warlock)"),
+            "multiclass variant must be filtered for the sole class, got {names:?}"
         );
     }
 }
