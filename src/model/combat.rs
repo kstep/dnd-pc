@@ -34,10 +34,16 @@ pub struct CombatStats {
     pub inspiration: bool,
     #[serde(default = "default_attack_count")]
     pub attack_count: u32,
+    #[serde(default = "default_attunement_max")]
+    pub attunement_max: u32,
 }
 
 fn default_attack_count() -> u32 {
     1
+}
+
+pub fn default_attunement_max() -> u32 {
+    3
 }
 
 impl Default for CombatStats {
@@ -55,6 +61,7 @@ impl Default for CombatStats {
             initiative_misc_bonus: 0,
             inspiration: false,
             attack_count: 1,
+            attunement_max: default_attunement_max(),
         }
     }
 }

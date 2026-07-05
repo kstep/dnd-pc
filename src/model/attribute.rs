@@ -95,6 +95,9 @@ pub enum Attribute {
     Immunity(DamageType),
     DamageReduction(DamageType),
     Attacks,
+    /// Current number of attuned items (read-only, Character-level).
+    Attunement,
+    AttunementMax,
     Slot(Option<SpellSlotPool>, u8),
     SlotUsed(Option<SpellSlotPool>, u8),
     SlotPool,
@@ -434,6 +437,7 @@ impl FromStr for Attribute {
                 "INIT" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
                 "ATTACKS" => Ok(Self::Attacks),
+                "ATTUNE" => Ok(Self::Attunement),
                 "POINTS" => Ok(Self::Points(AttrKey::Scoped)),
                 "FREE_USES" => Ok(Self::FreeUses(AttrKey::Scoped)),
                 "COST" => Ok(Self::Cost),
@@ -518,6 +522,10 @@ impl FromStr for Attribute {
                 "MAX" => Ok(Self::ChargesMax),
                 "USED" => Ok(Self::ChargesUsed),
                 _ => Err("unknown CHARGES suffix (expected MAX or USED)"),
+            },
+            "ATTUNE" => match rest {
+                "MAX" => Ok(Self::AttunementMax),
+                _ => Err("unknown ATTUNE suffix (expected MAX)"),
             },
             "POINTS" => match rest {
                 "MAX" => Ok(Self::PointsMax(AttrKey::Scoped)),
@@ -722,6 +730,8 @@ impl fmt::Display for Attribute {
             Self::Immunity(dt) => write!(f, "IMMUNE.{}", dt.abbr()),
             Self::DamageReduction(dt) => write!(f, "DR.{}", dt.abbr()),
             Self::Attacks => f.write_str("ATTACKS"),
+            Self::Attunement => f.write_str("ATTUNE"),
+            Self::AttunementMax => f.write_str("ATTUNE.MAX"),
             Self::Slot(None, n) => write!(f, "SLOT.{n}"),
             Self::Slot(Some(SpellSlotPool::Arcane), n) => write!(f, "SLOT.ARCANE.{n}"),
             Self::Slot(Some(SpellSlotPool::Pact), n) => write!(f, "SLOT.PACT.{n}"),
@@ -875,6 +885,8 @@ impl Attribute {
                 )
             }
             Self::Attacks => tr!(i18n, "attack-count"),
+            Self::Attunement => tr!(i18n, "attuned"),
+            Self::AttunementMax => tr!(i18n, "max-attunes"),
             Self::Arg(_) => "?".to_string(),
             Self::Feature(name) => name.to_string(),
             Self::Language(name) => name.to_string(),

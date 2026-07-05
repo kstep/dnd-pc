@@ -14,7 +14,7 @@ use crate::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
         DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
         IdentitySlot, Item, ItemKind, Note, Personality, Skills, SpellData, SpellSlots, ToolEntry,
-        Tools, enums::*,
+        Tools, default_attunement_max, enums::*,
     },
     vecset::VecSet,
 };
@@ -403,6 +403,7 @@ impl CharacterCore {
         self.compute_speed();
         self.combat.initiative_misc_bonus = 0;
         self.combat.attack_count = 1;
+        self.combat.attunement_max = default_attunement_max();
     }
 
     /// True if there are forward-only changes that can be materialized
@@ -725,7 +726,11 @@ impl expr::Context<Attribute, i32> for Character {
     }
 
     fn resolve(&self, var: Attribute) -> Result<i32, expr::Error> {
-        self.core.resolve(var)
+        // Equipment lives on Character, not CharacterCore.
+        match var {
+            Attribute::Attunement => Ok(self.equipment.attuned_count() as i32),
+            _ => self.core.resolve(var),
+        }
     }
 }
 
@@ -755,6 +760,9 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             }
             Attribute::Attacks => {
                 self.combat.attack_count = value.max(1) as u32;
+            }
+            Attribute::AttunementMax => {
+                self.combat.attunement_max = value.max(0) as u32;
             }
             Attribute::InitiativeBonus => {
                 self.combat.initiative_misc_bonus = value;
@@ -889,6 +897,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::ProfBonus => Ok(self.proficiency_bonus()),
             Attribute::AttackBonus => Ok(self.combat.attack_bonus),
             Attribute::Attacks => Ok(self.combat.attack_count as i32),
+            Attribute::AttunementMax => Ok(self.combat.attunement_max as i32),
             Attribute::Initiative => Ok(self.initiative()),
             Attribute::InitiativeBonus => Ok(self.combat.initiative_misc_bonus),
             Attribute::Inspiration => Ok(self.combat.inspiration as i32),
@@ -982,6 +991,7 @@ impl Character {
                     initiative_misc_bonus: 0,
                     inspiration: false,
                     attack_count: 1,
+                    attunement_max: 3,
                 },
                 features: Features::from_parts(
                     vec![Feature {
@@ -1051,7 +1061,7 @@ mod tests {
         expr::Context as _,
         model::{
             AttrKey, ClassLevel, Currency, Expr, Feature, FeatureCategory, FeatureData,
-            FeatureField, FeatureSource, FeatureValue, FreeUses, Money, Spell, SpellData,
+            FeatureField, FeatureSource, FeatureValue, FreeUses, Item, Money, Spell, SpellData,
         },
         rules::apply::ApplyContext,
         vecset::VecSet,
@@ -1107,6 +1117,7 @@ mod tests {
                     initiative_misc_bonus: 0,
                     inspiration: false,
                     attack_count: 1,
+                    attunement_max: 3,
                 },
                 features: Features::default(),
                 proficiencies: [
@@ -2152,6 +2163,40 @@ mod tests {
         let speed = ch.compute_speed();
         assert_eq!(speed, 30);
         assert_eq!(ch.combat.speed, 30);
+    }
+
+    #[wasm_bindgen_test]
+    fn attune_max_default_assign_and_reset() {
+        let mut ch = test_character();
+        assert_eq!(ch.resolve(Attribute::AttunementMax).unwrap(), 3);
+        ch.assign(Attribute::AttunementMax, 5).unwrap();
+        assert_eq!(ch.resolve(Attribute::AttunementMax).unwrap(), 5);
+        ch.compute();
+        assert_eq!(
+            ch.resolve(Attribute::AttunementMax).unwrap(),
+            3,
+            "compute resets the base"
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn attune_max_parses_and_displays() {
+        let expr: Expr = "ATTUNE.MAX = 4".parse().unwrap();
+        assert_eq!(expr.to_string(), "ATTUNE.MAX = 4");
+    }
+
+    #[wasm_bindgen_test]
+    fn attune_resolves_current_count_on_character() {
+        let mut ch = test_character();
+        ch.equipment.items.push(Item {
+            requires_attunement: true,
+            attuned: true,
+            ..Item::default()
+        });
+        assert_eq!(ch.resolve(Attribute::Attunement).unwrap(), 1);
+        // Read-only and Character-level: core doesn't know equipment.
+        assert!(ch.core.resolve(Attribute::Attunement).is_err());
+        assert!(ch.assign(Attribute::Attunement, 2).is_err());
     }
 
     // --- new spell-attribute resolvers (Context-level) ---
