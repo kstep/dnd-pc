@@ -119,8 +119,13 @@ pub fn apply_feature(
     // can address it by name even if no spells/assigns populate it.
     let feature_data = character.features.entry(feat_def.name.clone()).or_default();
 
-    // 2. Spells skeleton (idempotent — `get_or_insert`).
-    if feat_def.spells.is_some() {
+    // 2. Spells skeleton (idempotent — `get_or_insert`). Extender lists
+    // feed the host caster's learn list instead of a block of their own.
+    if feat_def
+        .spells
+        .as_ref()
+        .is_some_and(|spells| spells.extends.is_none())
+    {
         feature_data.spells.get_or_insert_with(Default::default);
     }
 

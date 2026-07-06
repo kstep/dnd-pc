@@ -5,11 +5,7 @@ use strum::{Display, EnumIter, EnumString, VariantArray};
 
 use crate::{
     demap::{self, Named},
-    model::{
-        ActionType, Character, EffectDefinition, EffectDuration, EffectRange, SpellData,
-        Translatable,
-    },
-    rules::feature::FeatureDefinition,
+    model::{ActionType, EffectDefinition, EffectDuration, EffectRange, Translatable},
 };
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -251,19 +247,6 @@ impl<'de> Deserialize<'de> for SpellEntry {
     }
 }
 
-impl SpellsDefinition {
-    /// Per-feature SpellData skeleton init. Sticky imports and free_uses
-    /// pool tracking are now expressed as OnCompute STICKY/FREE_USES
-    /// assigns, materialized lazily by the Context handlers.
-    pub fn apply(&self, feat_def: &FeatureDefinition, character: &mut Character) {
-        if self.extends.is_some() {
-            return;
-        }
-        let entry = character.features.entry(feat_def.name.clone()).or_default();
-        entry.spells.get_or_insert_with(SpellData::default);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::path::Path;
@@ -322,7 +305,10 @@ mod tests {
 
     #[wasm_bindgen_test::wasm_bindgen_test]
     fn apply_skips_spell_data_for_extenders() {
-        use crate::{model::Character, rules::FeatureDefinition};
+        use crate::{
+            model::{Character, Feature},
+            rules::{FeatureDefinition, WhenCondition, apply::apply_feature},
+        };
 
         let plain: FeatureDefinition = serde_json::from_value(serde_json::json!({
             "name": "Pact Magic",
@@ -336,15 +322,21 @@ mod tests {
         .expect("extender def");
 
         let mut character = Character::default();
-        plain.spells.as_ref().unwrap().apply(&plain, &mut character);
-        extender
-            .spells
-            .as_ref()
-            .unwrap()
-            .apply(&extender, &mut character);
+        for def in [&plain, &extender] {
+            let pos = character.features.push(Feature {
+                name: def.name.clone(),
+                applied: true,
+                ..Feature::default()
+            });
+            apply_feature(def, &mut character, pos, WhenCondition::OnFeatureAdd);
+        }
 
         assert!(
-            character.features.data().get("Pact Magic").is_some(),
+            character
+                .features
+                .data()
+                .get("Pact Magic")
+                .is_some_and(|entry| entry.spells.is_some()),
             "plain spell feature gets its SpellData block"
         );
         assert!(
@@ -352,8 +344,8 @@ mod tests {
                 .features
                 .data()
                 .get("Expanded Spell List (Dao)")
-                .is_none(),
-            "extender must not get a block of its own"
+                .is_none_or(|entry| entry.spells.is_none()),
+            "extender must not get a spellcasting block of its own"
         );
     }
 
