@@ -119,6 +119,9 @@
   "background.Noble": {
     "description": "Aristocrat raised in wealth and privilege. Feat: Skilled."
   },
+  "background.Prisoner": {
+    "description": "Convict who endured captivity and learned to survive by cunning. Feat: Alert."
+  },
   "background.Sage": {
     "description": "Scholar devoted to learning. Feat: Magic Initiate (Wizard)."
   },
