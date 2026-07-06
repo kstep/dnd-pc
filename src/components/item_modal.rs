@@ -177,19 +177,31 @@ fn GeneralTab(draft: Store<Item>) -> impl IntoView {
                     />
                 </label>
             </div>
-            <div class="option-card-meta">
-                {move || match draft.kind().read().clone() {
-                    ItemKind::Misc => ().into_any(),
-                    ItemKind::Weapon { category, ability, magic_bonus } => view! {
+            {move || match draft.kind().get() {
+                ItemKind::Misc => ().into_any(),
+                ItemKind::Weapon { category, ability, magic_bonus } => view! {
+                    <div class="option-card-meta">
                         <WeaponParams draft category ability magic_bonus />
-                    }
-                    .into_any(),
-                    ItemKind::Armor { armor_type, base_ac } => view! {
+                    </div>
+                }
+                .into_any(),
+                ItemKind::Armor { armor_type, base_ac } => view! {
+                    <div class="option-card-meta">
                         <ArmorParams draft armor_type base_ac />
+                    </div>
+                }
+                .into_any(),
+            }}
+            <label class="field-inline">
+                <input
+                    type="checkbox"
+                    prop:checked=move || draft.requires_attunement().get()
+                    on:change=move |e| {
+                        draft.requires_attunement().set(event_target_checked(&e));
                     }
-                    .into_any(),
-                }}
-            </div>
+                />
+                {move_tr!("requires-attunement")}
+            </label>
             {move || derived_expr().map(|expr| view! { <ExprDetails expr /> })}
         </section>
     }

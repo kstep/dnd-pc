@@ -32,27 +32,45 @@ pub fn WeaponsBlock() -> impl IntoView {
             .read()
             .iter()
             .enumerate()
-            .filter(|(_, w)| w.is_weapon() && !w.name.is_empty())
-            .map(|(idx, w)| {
-                let total_atk = eff.weapon_attack_bonus(w);
-                let name_atk = w.name.clone();
-                let quantity = w.quantity;
-                let equipped = w.equipped;
+            .filter(|(_, weapon)| weapon.is_weapon() && !weapon.name.is_empty())
+            .map(|(idx, weapon)| {
+                let total_atk = eff.weapon_attack_bonus(weapon);
+                let name_atk = weapon.name.clone();
+                let quantity = weapon.quantity;
+                let equipped = weapon.equipped;
 
+                let attune_toggle = weapon.requires_attunement.then(|| {
+                    view! {
+                        <button
+                            class="btn-icon attune-toggle"
+                            class:attuned=move || items.read()[idx].attuned
+                            title=move_tr!("attuned")
+                            on:click=move |_| {
+                                let attuned = items.read()[idx].attuned;
+                                items.write()[idx].attuned = !attuned;
+                            }
+                        >
+                            <Icon name="wand-sparkles" />
+                        </button>
+                    }
+                });
                 let equipped_checkbox = view! {
-                    <input
-                        type="checkbox"
-                        class="entry-equipped"
-                        title=move_tr!("equipped")
-                        prop:checked=equipped
-                        on:change=move |e| {
-                            items.write()[idx].equipped = event_target_checked(&e);
-                        }
-                    />
+                    <>
+                        <input
+                            type="checkbox"
+                            class="entry-equipped"
+                            title=move_tr!("equipped")
+                            prop:checked=equipped
+                            on:change=move |e| {
+                                items.write()[idx].equipped = event_target_checked(&e);
+                            }
+                        />
+                        {attune_toggle}
+                    </>
                 }
                 .into_any();
 
-                let active_effects: Vec<_> = w
+                let active_effects: Vec<_> = weapon
                     .effects
                     .damage
                     .iter()
@@ -107,7 +125,7 @@ pub fn WeaponsBlock() -> impl IntoView {
                 };
 
                 let cast_button = has_effects.then(|| {
-                    let effects: Vec<EffectDefinition> = w
+                    let effects: Vec<EffectDefinition> = weapon
                         .effects
                         .damage
                         .iter()

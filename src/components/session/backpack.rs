@@ -106,16 +106,32 @@ pub fn BackpackBlock() -> impl IntoView {
                         let qty = item.quantity;
                         let desc = item.description.clone();
                         let equipped = item.equipped;
-                        let equipped_checkbox = view! {
-                            <input
-                                type="checkbox"
-                                class="entry-equipped"
-                                title=move_tr!("equipped")
-                                prop:checked=equipped
-                                on:change=move |e| {
-                                    items_store.write()[idx].equipped = event_target_checked(&e);
+                        let attune_toggle = item.requires_attunement.then(|| view! {
+                            <button
+                                class="btn-icon attune-toggle"
+                                class:attuned=move || items_store.read()[idx].attuned
+                                title=move_tr!("attuned")
+                                on:click=move |_| {
+                                    let attuned = items_store.read()[idx].attuned;
+                                    items_store.write()[idx].attuned = !attuned;
                                 }
-                            />
+                            >
+                                <Icon name="wand-sparkles" />
+                            </button>
+                        });
+                        let equipped_checkbox = view! {
+                            <>
+                                <input
+                                    type="checkbox"
+                                    class="entry-equipped"
+                                    title=move_tr!("equipped")
+                                    prop:checked=equipped
+                                    on:change=move |e| {
+                                        items_store.write()[idx].equipped = event_target_checked(&e);
+                                    }
+                                />
+                                {attune_toggle}
+                            </>
                         }
                         .into_any();
                         let qty_input = view! {

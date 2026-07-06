@@ -74,6 +74,18 @@ pub fn CombatPanel() -> impl IntoView {
                         }
                     />
                 </StatBox>
+                <StatBox label=move_tr!("max-attunes")>
+                    <input
+                        type="number"
+                        min="0"
+                        prop:value=move || combat.attunement_max().get().to_string()
+                        on:input=move |event| {
+                            if let Ok(value) = event_target_value(&event).parse::<u32>() {
+                                combat.attunement_max().set(value);
+                            }
+                        }
+                    />
+                </StatBox>
                 <StatBox label=move_tr!("hp")>
                         <input
                             type="number"

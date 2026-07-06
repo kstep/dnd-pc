@@ -2544,6 +2544,14 @@ section:not(.expanded) > .textarea-field {
   border-color: var(--panel-border);
   line-height: 1;
 
+  &.attune-toggle {
+    --btn-color: var(--text-secondary);
+
+    &.attuned {
+      --btn-color: var(--accent);
+    }
+  }
+
   &--danger {
     --btn-color: var(--danger);
   }
@@ -5079,7 +5087,8 @@ dialog.modal .tab-nav {
   color: var(--text-secondary);
   font-size: var(--font-size-0);
 
-  &.overweight {
+  &.overweight,
+  .overweight {
     color: var(--danger, #c33);
     font-weight: var(--font-weight-6);
   }

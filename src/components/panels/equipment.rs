@@ -74,6 +74,10 @@ pub fn EquipmentPanel() -> impl IntoView {
     let capacity = move || store.read().ability_score(Ability::Strength) * 15;
     let overweight = move || (total_weight().0 as u64) > (capacity() as u64) * 100;
 
+    let attuned_count = move || store.read().equipment.attuned_count();
+    let attune_max = move || store.read().combat.attunement_max;
+    let over_attuned = move || attuned_count() > attune_max() as usize;
+
     view! {
         <section>
             <div class="section-header">
@@ -202,9 +206,15 @@ pub fn EquipmentPanel() -> impl IntoView {
                     </SlotBox>
                 </Show>
             </div>
-            <p class="inventory-weight" class:overweight=overweight>
-                {move_tr!("inventory-total-weight")} ": " {move || total_weight().to_string()}
-                " / " {capacity} " lb"
+            <p class="inventory-weight">
+                <span class:overweight=overweight>
+                    {move_tr!("inventory-total-weight")} ": "
+                    {move || total_weight().to_string()} " / " {capacity} " lb"
+                </span>
+                " \u{00b7} "
+                <span class:overweight=over_attuned>
+                    {move_tr!("inventory-attuned")} ": " {attuned_count} " / " {attune_max}
+                </span>
             </p>
         </section>
 
@@ -245,6 +255,19 @@ fn GearSection(
                 let name = item.name.clone();
                 let qty = item.quantity.to_string();
                 let desc = item.description.clone();
+                let attune_toggle = item.requires_attunement.then(|| view! {
+                    <button
+                        class="btn-icon attune-toggle"
+                        class:attuned=move || items.read()[i].attuned
+                        title=move_tr!("attuned")
+                        on:click=move |_| {
+                            let attuned = items.read()[i].attuned;
+                            items.write()[i].attuned = !attuned;
+                        }
+                    >
+                        <Icon name="wand-sparkles" />
+                    </button>
+                });
                 view! {
                     <div class="entry-item">
                         <ToggleButton />
@@ -258,6 +281,7 @@ fn GearSection(
                                     items.write()[i].equipped = event_target_checked(&e);
                                 }
                             />
+                            {attune_toggle}
                             <input
                                 type="text"
                                 class="entry-name"
