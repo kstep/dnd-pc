@@ -155,13 +155,102 @@
       }
     },
     {
-      "name": "The Genie",
+      "name": "The Genie (Dao)",
       "levels": {
         "1": {
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "Genie's Vessel"
+            "Genie's Vessel",
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Dao)"
+          ]
+        },
+        "6": {
+          "features": [
+            "Elemental Gift"
+          ]
+        },
+        "10": {
+          "features": [
+            "Sanctuary Vessel"
+          ]
+        },
+        "14": {
+          "features": [
+            "Limited Wish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Genie (Djinni)",
+      "levels": {
+        "1": {
+          "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Djinni)"
+          ]
+        },
+        "6": {
+          "features": [
+            "Elemental Gift"
+          ]
+        },
+        "10": {
+          "features": [
+            "Sanctuary Vessel"
+          ]
+        },
+        "14": {
+          "features": [
+            "Limited Wish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Genie (Efreeti)",
+      "levels": {
+        "1": {
+          "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Efreeti)"
+          ]
+        },
+        "6": {
+          "features": [
+            "Elemental Gift"
+          ]
+        },
+        "10": {
+          "features": [
+            "Sanctuary Vessel"
+          ]
+        },
+        "14": {
+          "features": [
+            "Limited Wish"
+          ]
+        }
+      }
+    },
+    {
+      "name": "The Genie (Marid)",
+      "levels": {
+        "1": {
+          "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Marid)"
           ]
         },
         "6": {

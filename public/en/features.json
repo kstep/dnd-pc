@@ -5782,5 +5782,20 @@
   },
   "Multiclass Proficiencies (Wizard)": {
     "description": "No additional proficiencies."
+  },
+  "Expanded Spell List (Genie)": {
+    "description": "These spells are added to the warlock spell list for you — choose from them when you learn a warlock spell."
+  },
+  "Expanded Spell List (Dao)": {
+    "description": "Spells of your dao patron, added to the warlock spell list for you."
+  },
+  "Expanded Spell List (Djinni)": {
+    "description": "Spells of your djinni patron, added to the warlock spell list for you."
+  },
+  "Expanded Spell List (Efreeti)": {
+    "description": "Spells of your efreeti patron, added to the warlock spell list for you."
+  },
+  "Expanded Spell List (Marid)": {
+    "description": "Spells of your marid patron, added to the warlock spell list for you."
   }
 }

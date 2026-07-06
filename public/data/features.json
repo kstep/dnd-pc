@@ -8251,6 +8251,129 @@
     "name": "Genie's Vessel"
   },
   {
+    "name": "Expanded Spell List (Genie)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Detect Evil and Good"
+        },
+        {
+          "name": "Phantasmal Force"
+        },
+        {
+          "name": "Create Food and Water"
+        },
+        {
+          "name": "Phantasmal Killer"
+        },
+        {
+          "name": "Creation"
+        },
+        {
+          "name": "Wish"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Expanded Spell List (Dao)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Sanctuary"
+        },
+        {
+          "name": "Spike Growth"
+        },
+        {
+          "name": "Meld into Stone"
+        },
+        {
+          "name": "Stone Shape"
+        },
+        {
+          "name": "Wall of Stone"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Expanded Spell List (Djinni)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Thunderwave"
+        },
+        {
+          "name": "Gust of Wind"
+        },
+        {
+          "name": "Wind Wall"
+        },
+        {
+          "name": "Greater Invisibility"
+        },
+        {
+          "name": "Seeming"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Expanded Spell List (Efreeti)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Burning Hands"
+        },
+        {
+          "name": "Scorching Ray"
+        },
+        {
+          "name": "Fireball"
+        },
+        {
+          "name": "Fire Shield"
+        },
+        {
+          "name": "Flame Strike"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Expanded Spell List (Marid)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Fog Cloud"
+        },
+        {
+          "name": "Blur"
+        },
+        {
+          "name": "Sleet Storm"
+        },
+        {
+          "name": "Control Water"
+        },
+        {
+          "name": "Cone of Cold"
+        }
+      ]
+    }
+  },
+  {
     "name": "Elemental Gift",
     "assign": [
       {
