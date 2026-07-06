@@ -490,6 +490,9 @@
   "Background Abilities (Noble)": {
     "description": "Distribute 3 points between STR, INT, CHA. Skills: History, Persuasion."
   },
+  "Background Abilities (Prisoner)": {
+    "description": "Distribute 3 points between DEX, CON, CHA. Skills: Deception, Sleight of Hand."
+  },
   "Background Abilities (Sage)": {
     "description": "Distribute 3 points between CON, INT, WIS. Skills: Arcana, History."
   },

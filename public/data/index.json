@@ -222,6 +222,10 @@
       "url": "backgrounds/noble.json"
     },
     {
+      "name": "Prisoner",
+      "url": "backgrounds/prisoner.json"
+    },
+    {
       "name": "Sage",
       "url": "backgrounds/sage.json"
     },
