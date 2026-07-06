@@ -140,7 +140,9 @@ pub fn ClassReference() -> impl IntoView {
                         if pools.is_empty() {
                             continue;
                         }
-                        let per_level_per_pool = preview_pool_values(feat_def, &pools);
+                        let feature_level = def.feature_level(subname.as_deref(), feat_name);
+                        let per_level_per_pool =
+                            preview_pool_values(feat_def, &pools, feature_level);
                         for (pool_idx, pool) in pools.iter().enumerate() {
                             let label = registry
                                 .features()

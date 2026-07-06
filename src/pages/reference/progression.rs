@@ -14,16 +14,23 @@ use crate::{
 
 /// Per-level value snapshots for each pool of a feature's assigns,
 /// indexed `[level_index][pool_index]`. Level index is `level - 1`.
+/// Levels before `feature_level` (where the class grants the feature)
+/// render blank — the synthetic eval doesn't know grant levels itself.
 pub fn preview_pool_values(
     feat_def: &FeatureDefinition,
     pools: &[PoolSummary],
+    feature_level: u32,
 ) -> Vec<Vec<String>> {
     let mut rows = Vec::with_capacity(20);
-    eval_at_levels(feat_def, |_level, ctx| {
-        let row = pools
-            .iter()
-            .map(|pool| format_pool_value(ctx, pool.name, pool.kind))
-            .collect();
+    eval_at_levels(feat_def, |level, ctx| {
+        let row = if level < feature_level {
+            vec!["\u{2014}".to_string(); pools.len()]
+        } else {
+            pools
+                .iter()
+                .map(|pool| format_pool_value(ctx, pool.name, pool.kind))
+                .collect()
+        };
         rows.push(row);
     });
     rows
@@ -99,6 +106,36 @@ pub struct ProgressionPreview {
     pub has_cantrips: bool,
     pub has_ready: bool,
     pub has_known: bool,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rules::PoolSummarizer;
+
+    #[test]
+    fn pool_values_blank_before_the_feature_level() {
+        // Constant pool (Mystic Arcanum shape) granted at class level 11.
+        let feat_def: FeatureDefinition = serde_json::from_value(serde_json::json!({
+            "name": "Mystic Arcanum (6th)",
+            "assign": [
+                {"expr": "POINTS.`Mystic Arcanum (6th)`.MAX = 1", "when": "OnCompute"},
+            ],
+        }))
+        .expect("feature def");
+        let pools = PoolSummarizer::new(&feat_def).pools();
+        assert_eq!(pools.len(), 1);
+
+        let rows = preview_pool_values(&feat_def, &pools, 11);
+        assert!(
+            rows[..10].iter().all(|row| row[0] == "\u{2014}"),
+            "levels before the feature level stay blank: {rows:?}"
+        );
+        assert!(
+            rows[10..].iter().all(|row| row[0] == "1"),
+            "feature level onward shows the value: {rows:?}"
+        );
+    }
 }
 
 /// Per-class-level scaling preview (cantrips / slots / ready / known) for
