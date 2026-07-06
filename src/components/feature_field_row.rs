@@ -254,7 +254,13 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         .map(|(opt, key)| {
                             let (label, description) =
                                 registry.features().label_desc(key, &*opt.name);
-                            DatalistOption::with_signals(&*opt.name, label, description)
+                            let option =
+                                DatalistOption::with_signals(&*opt.name, label, description);
+                            if opt.level > 0 {
+                                option.with_count(opt.level)
+                            } else {
+                                option
+                            }
                         })
                         .collect(),
                 );
@@ -279,6 +285,7 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                         class="entry-name"
                                         list_id=choice_list_id.clone()
                                         options=suggestions
+                                        badge_key="option-level-badge"
                                         on_input=move |input, resolved| {
                                             feature_name.with_value(|key| {
                                                     let (cost, opt_description) = resolved

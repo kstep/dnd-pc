@@ -476,6 +476,7 @@ spell-level-badge = { $count ->
     [0] Заговор
    *[other] { $count } ур.
 }
+option-level-badge = { $count }+ ур.
 
 ## Портрет
 avatar-change = Сменить портрет

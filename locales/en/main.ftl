@@ -479,6 +479,7 @@ spell-level-badge = { $count ->
     [3] 3rd level
    *[other] { $count }th level
 }
+option-level-badge = Level { $count }+
 
 ## Avatar
 avatar-change = Change portrait
