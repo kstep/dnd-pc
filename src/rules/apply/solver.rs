@@ -160,6 +160,13 @@ fn enumerate_assign<'a>(
     )
 }
 
+/// Read-only solver environment shared by every recursion step.
+struct SolveCtx<'a> {
+    target: &'a CharacterCore,
+    features_index: FeaturesView<'a>,
+    caches: DefinitionCaches<'a>,
+}
+
 /// Recursively solve assigns of `feats[feat_idx]` starting from assign_idx.
 /// When all of this feat's assigns are filled, apply the whole feat to a
 /// baseline clone and recurse to the next feat. On deeper failure the
@@ -172,13 +179,11 @@ fn solve_assign(
     feat_idx: usize,
     assign_idx: usize,
     baseline: &CharacterCore,
-    target: &CharacterCore,
     attempts: &mut usize,
-    features_index: FeaturesView<'_>,
-    caches: DefinitionCaches<'_>,
+    ctx: &SolveCtx<'_>,
 ) -> bool {
     if feat_idx >= feats.len() {
-        return baseline.eq_derived(target);
+        return baseline.eq_derived(ctx.target);
     }
     if assign_idx >= feats[feat_idx].assigns.len() {
         // All assigns solved — apply the feat and recurse to next.
@@ -197,19 +202,10 @@ fn solve_assign(
             feats[feat_idx].pending,
             &inputs,
             WhenCondition::OnFeatureAdd,
-            features_index,
-            caches,
+            ctx.features_index,
+            ctx.caches,
         );
-        return solve_assign(
-            feats,
-            feat_idx + 1,
-            0,
-            &trial,
-            target,
-            attempts,
-            features_index,
-            caches,
-        );
+        return solve_assign(feats, feat_idx + 1, 0, &trial, attempts, ctx);
     }
 
     // Snapshot fields up-front so the recursive `solve_assign` call can
@@ -233,7 +229,7 @@ fn solve_assign(
         arg_count,
         forced.as_deref(),
         baseline,
-        target,
+        ctx.target,
     ) {
         if *attempts == 0 {
             break;
@@ -260,29 +256,12 @@ fn solve_assign(
         // signals and disables every visible checkbox.
         if fallback.is_none()
             && !is_zero
-            && candidate_changes_baseline(
-                feats,
-                feat_idx,
-                assign_idx,
-                &candidate,
-                baseline,
-                features_index,
-                caches,
-            )
+            && candidate_changes_baseline(feats, feat_idx, assign_idx, &candidate, baseline, ctx)
         {
             fallback = Some(candidate.clone());
         }
         feats[feat_idx].assigns[assign_idx].args = candidate;
-        if solve_assign(
-            feats,
-            feat_idx,
-            assign_idx + 1,
-            baseline,
-            target,
-            attempts,
-            features_index,
-            caches,
-        ) {
+        if solve_assign(feats, feat_idx, assign_idx + 1, baseline, attempts, ctx) {
             return true;
         }
     }
@@ -305,8 +284,7 @@ fn candidate_changes_baseline(
     assign_idx: usize,
     candidate: &[i32],
     baseline: &CharacterCore,
-    features_index: FeaturesView<'_>,
-    caches: DefinitionCaches<'_>,
+    ctx: &SolveCtx<'_>,
 ) -> bool {
     let inputs: Vec<AssignInputs> = feats[feat_idx]
         .assigns
@@ -331,8 +309,8 @@ fn candidate_changes_baseline(
         feats[feat_idx].pending,
         &inputs,
         WhenCondition::OnFeatureAdd,
-        features_index,
-        caches,
+        ctx.features_index,
+        ctx.caches,
     );
     !baseline.eq_derived(&trial)
 }
@@ -349,16 +327,12 @@ pub fn solve_all(
     caches: DefinitionCaches<'_>,
 ) -> bool {
     let mut attempts = MAX_TOTAL_ATTEMPTS;
-    solve_assign(
-        feats,
-        0,
-        0,
-        baseline,
+    let ctx = SolveCtx {
         target,
-        &mut attempts,
         features_index,
         caches,
-    )
+    };
+    solve_assign(feats, 0, 0, baseline, &mut attempts, &ctx)
 }
 
 #[cfg(test)]
