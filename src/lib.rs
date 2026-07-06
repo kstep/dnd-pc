@@ -10,7 +10,7 @@ use leptos_router::{
 };
 
 mod ai;
-mod components;
+pub mod components;
 pub mod constvec;
 mod demap;
 mod effective;
