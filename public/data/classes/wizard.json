@@ -65,12 +65,6 @@
     {
       "name": "School of Conjuration",
       "levels": {
-        "2": {
-          "features": [
-            "Conjuration Savant",
-            "Minor Conjuration"
-          ]
-        },
         "6": {
           "features": [
             "Benign Transposition"
@@ -85,18 +79,18 @@
           "features": [
             "Durable Summons"
           ]
+        },
+        "3": {
+          "features": [
+            "Conjuration Savant",
+            "Minor Conjuration"
+          ]
         }
       }
     },
     {
       "name": "School of Enchantment",
       "levels": {
-        "2": {
-          "features": [
-            "Enchantment Savant",
-            "Hypnotic Gaze"
-          ]
-        },
         "6": {
           "features": [
             "Instinctive Charm"
@@ -111,18 +105,18 @@
           "features": [
             "Alter Memories"
           ]
+        },
+        "3": {
+          "features": [
+            "Enchantment Savant",
+            "Hypnotic Gaze"
+          ]
         }
       }
     },
     {
       "name": "School of Necromancy",
       "levels": {
-        "2": {
-          "features": [
-            "Grim Harvest",
-            "Necromancy Savant"
-          ]
-        },
         "6": {
           "features": [
             "Undead Thralls"
@@ -137,18 +131,18 @@
           "features": [
             "Command Undead"
           ]
+        },
+        "3": {
+          "features": [
+            "Grim Harvest",
+            "Necromancy Savant"
+          ]
         }
       }
     },
     {
       "name": "School of Transmutation",
       "levels": {
-        "2": {
-          "features": [
-            "Minor Alchemy",
-            "Transmutation Savant"
-          ]
-        },
         "6": {
           "features": [
             "Transmuter's Stone"
@@ -163,18 +157,18 @@
           "features": [
             "Master Transmuter"
           ]
+        },
+        "3": {
+          "features": [
+            "Minor Alchemy",
+            "Transmutation Savant"
+          ]
         }
       }
     },
     {
       "name": "War Magic",
       "levels": {
-        "2": {
-          "features": [
-            "Arcane Deflection",
-            "Tactical Wit"
-          ]
-        },
         "6": {
           "features": [
             "Power Surge"
@@ -189,18 +183,18 @@
           "features": [
             "Deflecting Shroud"
           ]
+        },
+        "3": {
+          "features": [
+            "Arcane Deflection",
+            "Tactical Wit"
+          ]
         }
       }
     },
     {
       "name": "Chronurgy Magic",
       "levels": {
-        "2": {
-          "features": [
-            "Chronal Shift",
-            "Temporal Awareness"
-          ]
-        },
         "6": {
           "features": [
             "Momentary Stasis"
@@ -215,17 +209,18 @@
           "features": [
             "Convergent Future"
           ]
+        },
+        "3": {
+          "features": [
+            "Chronal Shift",
+            "Temporal Awareness"
+          ]
         }
       }
     },
     {
       "name": "Graviturgy Magic",
       "levels": {
-        "2": {
-          "features": [
-            "Adjust Density"
-          ]
-        },
         "6": {
           "features": [
             "Gravity Well"
@@ -240,18 +235,17 @@
           "features": [
             "Event Horizon"
           ]
+        },
+        "3": {
+          "features": [
+            "Adjust Density"
+          ]
         }
       }
     },
     {
       "name": "Order of Scribes",
       "levels": {
-        "2": {
-          "features": [
-            "Awakened Spellbook",
-            "Wizardly Quill"
-          ]
-        },
         "6": {
           "features": [
             "Manifest Mind"
@@ -265,6 +259,12 @@
         "14": {
           "features": [
             "One with the Word"
+          ]
+        },
+        "3": {
+          "features": [
+            "Awakened Spellbook",
+            "Wizardly Quill"
           ]
         }
       }

@@ -128,11 +128,6 @@
     {
       "name": "Circle of Dreams",
       "levels": {
-        "2": {
-          "features": [
-            "Balm of the Summer Court"
-          ]
-        },
         "6": {
           "features": [
             "Hearth of Moonlight and Shadow"
@@ -147,18 +142,17 @@
           "features": [
             "Walker in Dreams"
           ]
+        },
+        "3": {
+          "features": [
+            "Balm of the Summer Court"
+          ]
         }
       }
     },
     {
       "name": "Circle of the Shepherd",
       "levels": {
-        "2": {
-          "features": [
-            "Speech of the Woods",
-            "Spirit Totem"
-          ]
-        },
         "6": {
           "features": [
             "Mighty Summoner"
@@ -173,19 +167,18 @@
           "features": [
             "Faithful Summons"
           ]
+        },
+        "3": {
+          "features": [
+            "Speech of the Woods",
+            "Spirit Totem"
+          ]
         }
       }
     },
     {
       "name": "Circle of Spores",
       "levels": {
-        "2": {
-          "features": [
-            "Circle Spells",
-            "Halo of Spores",
-            "Symbiotic Entity"
-          ]
-        },
         "6": {
           "features": [
             "Fungal Infestation"
@@ -200,18 +193,19 @@
           "features": [
             "Fungal Body"
           ]
+        },
+        "3": {
+          "features": [
+            "Circle Spells",
+            "Halo of Spores",
+            "Symbiotic Entity"
+          ]
         }
       }
     },
     {
       "name": "Circle of Wildfire",
       "levels": {
-        "2": {
-          "features": [
-            "Circle Spells",
-            "Summon Wildfire Spirit"
-          ]
-        },
         "6": {
           "features": [
             "Enhanced Bond"
@@ -225,6 +219,12 @@
         "14": {
           "features": [
             "Blazing Revival"
+          ]
+        },
+        "3": {
+          "features": [
+            "Circle Spells",
+            "Summon Wildfire Spirit"
           ]
         }
       }

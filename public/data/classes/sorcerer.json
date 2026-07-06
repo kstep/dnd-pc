@@ -66,11 +66,6 @@
     {
       "name": "Pyromancer (PSK)",
       "levels": {
-        "1": {
-          "features": [
-            "Heart of Fire"
-          ]
-        },
         "6": {
           "features": [
             "Fire in the Veins"
@@ -85,18 +80,17 @@
           "features": [
             "Fiery Soul"
           ]
+        },
+        "3": {
+          "features": [
+            "Heart of Fire"
+          ]
         }
       }
     },
     {
       "name": "Divine Soul",
       "levels": {
-        "1": {
-          "features": [
-            "Divine Magic",
-            "Favored by the Gods"
-          ]
-        },
         "6": {
           "features": [
             "Empowered Healing"
@@ -111,18 +105,18 @@
           "features": [
             "Unearthly Recovery"
           ]
+        },
+        "3": {
+          "features": [
+            "Divine Magic",
+            "Favored by the Gods"
+          ]
         }
       }
     },
     {
       "name": "Shadow Magic",
       "levels": {
-        "1": {
-          "features": [
-            "Eyes of the Dark",
-            "Strength of the Grave"
-          ]
-        },
         "6": {
           "features": [
             "Hound of Ill Omen"
@@ -137,18 +131,18 @@
           "features": [
             "Umbral Form"
           ]
+        },
+        "3": {
+          "features": [
+            "Eyes of the Dark",
+            "Strength of the Grave"
+          ]
         }
       }
     },
     {
       "name": "Storm Sorcery",
       "levels": {
-        "1": {
-          "features": [
-            "Tempestuous Magic",
-            "Wind Speaker"
-          ]
-        },
         "6": {
           "features": [
             "Heart of the Storm",
@@ -164,18 +158,18 @@
           "features": [
             "Wind Soul"
           ]
+        },
+        "3": {
+          "features": [
+            "Tempestuous Magic",
+            "Wind Speaker"
+          ]
         }
       }
     },
     {
       "name": "Lunar Sorcery",
       "levels": {
-        "1": {
-          "features": [
-            "Lunar Embodiment",
-            "Moon Fire"
-          ]
-        },
         "6": {
           "features": [
             "Lunar Boons",
@@ -190,6 +184,12 @@
         "18": {
           "features": [
             "Lunar Phenomenon"
+          ]
+        },
+        "3": {
+          "features": [
+            "Lunar Embodiment",
+            "Moon Fire"
           ]
         }
       }
