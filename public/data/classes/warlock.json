@@ -79,11 +79,6 @@
     {
       "name": "The Undying",
       "levels": {
-        "1": {
-          "features": [
-            "Among the Dead"
-          ]
-        },
         "6": {
           "features": [
             "Defy Death"
@@ -98,18 +93,17 @@
           "features": [
             "Indestructible Life"
           ]
+        },
+        "3": {
+          "features": [
+            "Among the Dead"
+          ]
         }
       }
     },
     {
       "name": "The Hexblade",
       "levels": {
-        "1": {
-          "features": [
-            "Hex Warrior",
-            "Hexblade's Curse"
-          ]
-        },
         "6": {
           "features": [
             "Accursed Specter"
@@ -127,6 +121,8 @@
         },
         "3": {
           "features": [
+            "Hex Warrior",
+            "Hexblade's Curse",
             "Expanded Spell List (Hexblade)"
           ]
         }
@@ -135,12 +131,6 @@
     {
       "name": "The Fathomless",
       "levels": {
-        "1": {
-          "features": [
-            "Gift of the Sea",
-            "Tentacle of the Deeps"
-          ]
-        },
         "6": {
           "features": [
             "Guardian Coil",
@@ -156,19 +146,18 @@
           "features": [
             "Fathomless Plunge"
           ]
+        },
+        "3": {
+          "features": [
+            "Gift of the Sea",
+            "Tentacle of the Deeps"
+          ]
         }
       }
     },
     {
       "name": "The Genie (Dao)",
       "levels": {
-        "1": {
-          "features": [
-            "Bottled Respite",
-            "Genie's Wrath",
-            "Genie's Vessel"
-          ]
-        },
         "6": {
           "features": [
             "Elemental Gift"
@@ -186,6 +175,9 @@
         },
         "3": {
           "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
             "Expanded Spell List (Genie)",
             "Expanded Spell List (Dao)"
           ]
@@ -195,13 +187,6 @@
     {
       "name": "The Genie (Djinni)",
       "levels": {
-        "1": {
-          "features": [
-            "Bottled Respite",
-            "Genie's Wrath",
-            "Genie's Vessel"
-          ]
-        },
         "6": {
           "features": [
             "Elemental Gift"
@@ -219,6 +204,9 @@
         },
         "3": {
           "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
             "Expanded Spell List (Genie)",
             "Expanded Spell List (Djinni)"
           ]
@@ -228,13 +216,6 @@
     {
       "name": "The Genie (Efreeti)",
       "levels": {
-        "1": {
-          "features": [
-            "Bottled Respite",
-            "Genie's Wrath",
-            "Genie's Vessel"
-          ]
-        },
         "6": {
           "features": [
             "Elemental Gift"
@@ -252,6 +233,9 @@
         },
         "3": {
           "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
             "Expanded Spell List (Genie)",
             "Expanded Spell List (Efreeti)"
           ]
@@ -261,13 +245,6 @@
     {
       "name": "The Genie (Marid)",
       "levels": {
-        "1": {
-          "features": [
-            "Bottled Respite",
-            "Genie's Wrath",
-            "Genie's Vessel"
-          ]
-        },
         "6": {
           "features": [
             "Elemental Gift"
@@ -285,6 +262,9 @@
         },
         "3": {
           "features": [
+            "Bottled Respite",
+            "Genie's Wrath",
+            "Genie's Vessel",
             "Expanded Spell List (Genie)",
             "Expanded Spell List (Marid)"
           ]
@@ -294,11 +274,6 @@
     {
       "name": "The Undead",
       "levels": {
-        "1": {
-          "features": [
-            "Form of Dread"
-          ]
-        },
         "6": {
           "features": [
             "Grave Touched"
@@ -312,6 +287,11 @@
         "14": {
           "features": [
             "Spirit Projection"
+          ]
+        },
+        "3": {
+          "features": [
+            "Form of Dread"
           ]
         }
       }
