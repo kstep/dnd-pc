@@ -158,6 +158,10 @@ pub struct SpellsDefinition {
     /// the same feature.
     #[serde(default)]
     pub cost: Option<String>,
+    /// Host spellcasting feature whose learnable list this feature's `list`
+    /// extends. Extenders get no spellcasting block of their own.
+    #[serde(default)]
+    pub extends: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -252,6 +256,9 @@ impl SpellsDefinition {
     /// pool tracking are now expressed as OnCompute STICKY/FREE_USES
     /// assigns, materialized lazily by the Context handlers.
     pub fn apply(&self, feat_def: &FeatureDefinition, character: &mut Character) {
+        if self.extends.is_some() {
+            return;
+        }
         let entry = character.features.entry(feat_def.name.clone()).or_default();
         entry.spells.get_or_insert_with(SpellData::default);
     }
@@ -295,6 +302,59 @@ mod tests {
                 result.err()
             );
         }
+    }
+
+    #[test]
+    fn spells_definition_extends_deserializes() {
+        let extender: SpellsDefinition = serde_json::from_value(serde_json::json!({
+            "extends": "Pact Magic",
+            "list": [{"name": "Sanctuary"}],
+        }))
+        .expect("extender block");
+        assert_eq!(extender.extends.as_deref(), Some("Pact Magic"));
+
+        let plain: SpellsDefinition = serde_json::from_value(serde_json::json!({
+            "list": [{"name": "Magic Missile"}],
+        }))
+        .expect("plain block");
+        assert!(plain.extends.is_none());
+    }
+
+    #[wasm_bindgen_test::wasm_bindgen_test]
+    fn apply_skips_spell_data_for_extenders() {
+        use crate::{model::Character, rules::FeatureDefinition};
+
+        let plain: FeatureDefinition = serde_json::from_value(serde_json::json!({
+            "name": "Pact Magic",
+            "spells": {"list": [{"name": "Magic Missile"}]},
+        }))
+        .expect("plain def");
+        let extender: FeatureDefinition = serde_json::from_value(serde_json::json!({
+            "name": "Expanded Spell List (Dao)",
+            "spells": {"extends": "Pact Magic", "list": [{"name": "Sanctuary"}]},
+        }))
+        .expect("extender def");
+
+        let mut character = Character::default();
+        plain.spells.as_ref().unwrap().apply(&plain, &mut character);
+        extender
+            .spells
+            .as_ref()
+            .unwrap()
+            .apply(&extender, &mut character);
+
+        assert!(
+            character.features.data().get("Pact Magic").is_some(),
+            "plain spell feature gets its SpellData block"
+        );
+        assert!(
+            character
+                .features
+                .data()
+                .get("Expanded Spell List (Dao)")
+                .is_none(),
+            "extender must not get a block of its own"
+        );
     }
 
     #[test]
