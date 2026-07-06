@@ -75,6 +75,7 @@ pub fn detect_replacement(
 pub fn process_identity_events(
     events: Vec<IdentityChange>,
     character: &mut CharacterCore,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
     speculative: bool,
 ) -> Vec<PendingFeature> {
@@ -83,7 +84,7 @@ pub fn process_identity_events(
     if !speculative {
         apply_identity_flags(&events, character);
     }
-    derive_identity_follow_ups(events, character, caches)
+    derive_identity_follow_ups(events, character, features_index, caches)
 }
 
 /// Update `applied` flags from identity events. Real-apply paths run this;
@@ -106,11 +107,19 @@ pub fn apply_identity_flags(events: &[IdentityChange], character: &mut Character
 
 /// Derive the class/subclass/species/background `PendingFeature` follow-ups
 /// implied by the identity events, without mutating `applied` flags.
+/// Granted features honor their prerequisites (e.g. the class/multiclass
+/// proficiency pair) — same gate as the collect path.
 pub fn derive_identity_follow_ups(
     events: Vec<IdentityChange>,
     character: &CharacterCore,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
 ) -> Vec<PendingFeature> {
+    let meets_prereqs = |name: &&String| {
+        features_index
+            .get(name)
+            .is_none_or(|def| def.meets_prerequisites(character))
+    };
     let mut follow_ups = Vec::new();
 
     for event in events {
@@ -121,7 +130,7 @@ pub fn derive_identity_follow_ups(
                 };
                 let total_level = character.level().max(1);
                 let source = FeatureSource::Species(name.clone());
-                for feat_name in &species_def.features {
+                for feat_name in species_def.features.iter().filter(meets_prereqs) {
                     follow_ups.push(PendingFeature {
                         name: feat_name.as_str().into(),
                         source: source.clone(),
@@ -136,7 +145,7 @@ pub fn derive_identity_follow_ups(
                 };
                 let total_level = character.level().max(1);
                 let source = FeatureSource::Background(name.clone());
-                for feat_name in &bg_def.features {
+                for feat_name in bg_def.features.iter().filter(meets_prereqs) {
                     follow_ups.push(PendingFeature {
                         name: feat_name.as_str().into(),
                         source: source.clone(),
@@ -159,7 +168,7 @@ pub fn derive_identity_follow_ups(
                 for level in (old + 1)..=new {
                     if let Some(rules) = class_def.levels.get(&level) {
                         let class_source = FeatureSource::Class(class_def_name.clone(), level);
-                        for feat_name in &rules.features {
+                        for feat_name in rules.features.iter().filter(meets_prereqs) {
                             follow_ups.push(PendingFeature {
                                 name: feat_name.as_str().into(),
                                 source: class_source.clone(),
@@ -174,7 +183,7 @@ pub fn derive_identity_follow_ups(
                     {
                         let sc_source =
                             FeatureSource::Subclass(class_def_name.clone(), sc.clone(), level);
-                        for feat_name in &rules.features {
+                        for feat_name in rules.features.iter().filter(meets_prereqs) {
                             follow_ups.push(PendingFeature {
                                 name: feat_name.as_str().into(),
                                 source: sc_source.clone(),
@@ -204,7 +213,7 @@ pub fn derive_identity_follow_ups(
                     if let Some(rules) = subclass_def.levels.get(&level) {
                         let sc_source =
                             FeatureSource::Subclass(class_def_name.clone(), name.clone(), level);
-                        for feat_name in &rules.features {
+                        for feat_name in rules.features.iter().filter(meets_prereqs) {
                             follow_ups.push(PendingFeature {
                                 name: feat_name.as_str().into(),
                                 source: sc_source.clone(),
@@ -230,6 +239,7 @@ pub fn dry_run_apply_feature(
     pending: &PendingFeature,
     inputs: &[AssignInputs],
     when: WhenCondition,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
 ) -> Vec<PendingFeature> {
     let feature_pos = character.features.push(Feature {
@@ -241,7 +251,7 @@ pub fn dry_run_apply_feature(
         ..Feature::default()
     });
     let events = apply_feature(feat_def, character, feature_pos, when);
-    process_identity_events(events, character, caches, false)
+    process_identity_events(events, character, features_index, caches, false)
 }
 
 /// Apply `pending` to `character`, recursing on identity-driven follow-ups
@@ -406,7 +416,7 @@ pub fn apply_pending(
         feature_pos,
         WhenCondition::OnFeatureAdd,
     );
-    process_identity_events(events, character, caches, speculative)
+    process_identity_events(events, character, features_index, caches, speculative)
 }
 
 /// Re-apply user-driven state (Choice picks, Points/Die used, prepared

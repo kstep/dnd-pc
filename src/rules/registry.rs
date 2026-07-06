@@ -145,6 +145,11 @@ impl<'a> FeaturesView<'a> {
         }
     }
 
+    /// View over no features at all.
+    pub fn empty() -> Self {
+        Self::from_natural(&EMPTY_FEATURES_INDEX)
+    }
+
     pub fn get(&self, name: &str) -> Option<&'a FeatureDefinition> {
         self.natural.get(name).or_else(|| self.synth.get(name))
     }

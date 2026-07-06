@@ -4,7 +4,7 @@ use crate::{
     expr::{Context, GroupCursor, Op, VarSubgroup},
     model::{AssignInputs, Attribute, AttributeGroup, CharacterCore, Expr},
     rules::{
-        WhenCondition,
+        FeaturesView, WhenCondition,
         apply::{
             DefinitionCaches, args_ctx::WithArgsRef, dry_run_apply_feature, pending::PendingFeature,
         },
@@ -174,6 +174,7 @@ fn solve_assign(
     baseline: &CharacterCore,
     target: &CharacterCore,
     attempts: &mut usize,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
 ) -> bool {
     if feat_idx >= feats.len() {
@@ -196,9 +197,19 @@ fn solve_assign(
             feats[feat_idx].pending,
             &inputs,
             WhenCondition::OnFeatureAdd,
+            features_index,
             caches,
         );
-        return solve_assign(feats, feat_idx + 1, 0, &trial, target, attempts, caches);
+        return solve_assign(
+            feats,
+            feat_idx + 1,
+            0,
+            &trial,
+            target,
+            attempts,
+            features_index,
+            caches,
+        );
     }
 
     // Snapshot fields up-front so the recursive `solve_assign` call can
@@ -249,7 +260,15 @@ fn solve_assign(
         // signals and disables every visible checkbox.
         if fallback.is_none()
             && !is_zero
-            && candidate_changes_baseline(feats, feat_idx, assign_idx, &candidate, baseline, caches)
+            && candidate_changes_baseline(
+                feats,
+                feat_idx,
+                assign_idx,
+                &candidate,
+                baseline,
+                features_index,
+                caches,
+            )
         {
             fallback = Some(candidate.clone());
         }
@@ -261,6 +280,7 @@ fn solve_assign(
             baseline,
             target,
             attempts,
+            features_index,
             caches,
         ) {
             return true;
@@ -285,6 +305,7 @@ fn candidate_changes_baseline(
     assign_idx: usize,
     candidate: &[i32],
     baseline: &CharacterCore,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
 ) -> bool {
     let inputs: Vec<AssignInputs> = feats[feat_idx]
@@ -310,6 +331,7 @@ fn candidate_changes_baseline(
         feats[feat_idx].pending,
         &inputs,
         WhenCondition::OnFeatureAdd,
+        features_index,
         caches,
     );
     !baseline.eq_derived(&trial)
@@ -323,10 +345,20 @@ pub fn solve_all(
     feats: &mut [FeatState<'_>],
     baseline: &CharacterCore,
     target: &CharacterCore,
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches<'_>,
 ) -> bool {
     let mut attempts = MAX_TOTAL_ATTEMPTS;
-    solve_assign(feats, 0, 0, baseline, target, &mut attempts, caches)
+    solve_assign(
+        feats,
+        0,
+        0,
+        baseline,
+        target,
+        &mut attempts,
+        features_index,
+        caches,
+    )
 }
 
 #[cfg(test)]
@@ -409,6 +441,7 @@ mod tests {
             &mut feats,
             &baseline,
             &target,
+            FeaturesView::empty(),
             DefinitionCaches::empty()
         ));
         assert_eq!(feats[0].assigns[0].args[0], 2);
@@ -454,6 +487,7 @@ mod tests {
             &mut feats,
             &baseline,
             &target,
+            FeaturesView::empty(),
             DefinitionCaches::empty()
         ));
         assert_eq!(feats[0].assigns[0].args[3], 2, "ASI-L4 INT");
@@ -491,6 +525,7 @@ mod tests {
             &mut feats,
             &baseline,
             &target,
+            FeaturesView::empty(),
             DefinitionCaches::empty()
         ));
         assert_eq!(feats[0].assigns[0].args.iter().sum::<i32>(), 3);
@@ -513,6 +548,7 @@ mod tests {
             &mut feats,
             &baseline,
             &target,
+            FeaturesView::empty(),
             DefinitionCaches::empty()
         ));
     }
@@ -582,6 +618,7 @@ mod tests {
             &mut feats,
             &baseline,
             &target,
+            FeaturesView::empty(),
             DefinitionCaches::empty()
         ));
         // CHA = index 5 in ability order.
@@ -690,7 +727,13 @@ mod tests {
             .set(Skill::SleightOfHand, ProficiencyLevel::Expertise);
 
         assert!(
-            solve_all(&mut feats, &baseline, &target, DefinitionCaches::empty()),
+            solve_all(
+                &mut feats,
+                &baseline,
+                &target,
+                FeaturesView::empty(),
+                DefinitionCaches::empty(),
+            ),
             "solver must find a solution when stored Expertise follows unsolved CP in pipeline"
         );
 
@@ -865,7 +908,13 @@ mod tests {
             .skills
             .set(Skill::Stealth, ProficiencyLevel::Proficient);
 
-        let solved = solve_all(&mut feats, &baseline, &target, DefinitionCaches::empty());
+        let solved = solve_all(
+            &mut feats,
+            &baseline,
+            &target,
+            FeaturesView::empty(),
+            DefinitionCaches::empty(),
+        );
         // Unreachable by feat set — History/Nature/Religion off-mask, and
         // DEX=18 needs +10 while Criminal(+1) + ASI(+2) max out at +3.
         assert!(

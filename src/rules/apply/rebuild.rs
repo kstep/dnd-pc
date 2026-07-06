@@ -412,6 +412,7 @@ fn collect_rebuild_pending_inputs(
                         pending.level,
                         &validation_baseline,
                         stored,
+                        feat_index,
                         caches,
                     );
                 if has_interactive_onadd && !effective {
@@ -471,6 +472,7 @@ fn collect_rebuild_pending_inputs(
                         pending,
                         stored,
                         WhenCondition::OnFeatureAdd,
+                        feat_index,
                         caches,
                     );
                 }
@@ -487,6 +489,7 @@ fn collect_rebuild_pending_inputs(
                 &mut feat_states,
                 &solver_baseline.core,
                 &original.core,
+                feat_index,
                 caches,
             );
 
@@ -537,6 +540,7 @@ fn collect_rebuild_pending_inputs(
                         state.pending,
                         &inputs_vec,
                         WhenCondition::OnFeatureAdd,
+                        feat_index,
                         caches,
                     );
 
@@ -597,6 +601,7 @@ fn stored_inputs_effective(
     level: u32,
     baseline: &Character,
     stored: &[AssignInputs],
+    features_index: FeaturesView<'_>,
     caches: DefinitionCaches,
 ) -> bool {
     if !stored_inputs_usable(feat_def, stored) {
@@ -615,6 +620,7 @@ fn stored_inputs_effective(
         &pending,
         stored,
         WhenCondition::OnFeatureAdd,
+        features_index,
         caches,
     );
     !baseline.eq_derived(&trial)
@@ -1411,6 +1417,7 @@ mod tests {
             1,
             &baseline,
             &stored,
+            FeaturesView::empty(),
             caches,
         ));
 
@@ -1428,6 +1435,7 @@ mod tests {
             1,
             &baseline_prof,
             &stored,
+            FeaturesView::empty(),
             caches,
         ));
     }
