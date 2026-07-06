@@ -8374,6 +8374,45 @@
     }
   },
   {
+    "name": "Expanded Spell List (Hexblade)",
+    "category": "Class",
+    "spells": {
+      "extends": "Pact Magic",
+      "list": [
+        {
+          "name": "Shield"
+        },
+        {
+          "name": "Wrathful Smite"
+        },
+        {
+          "name": "Blur"
+        },
+        {
+          "name": "Branding Smite"
+        },
+        {
+          "name": "Blink"
+        },
+        {
+          "name": "Elemental Weapon"
+        },
+        {
+          "name": "Phantasmal Killer"
+        },
+        {
+          "name": "Staggering Smite"
+        },
+        {
+          "name": "Banishing Smite"
+        },
+        {
+          "name": "Cone of Cold"
+        }
+      ]
+    }
+  },
+  {
     "name": "Elemental Gift",
     "assign": [
       {

@@ -885,6 +885,22 @@
     ]
   },
   {
+    "name": "Branding Smite",
+    "level": 2,
+    "category": "Damage",
+    "effects": [
+      {
+        "name": "Radiant Damage",
+        "expr": "(SLOT.LEVEL)d6",
+        "range": "Caster",
+        "duration": {
+          "Rounds": 10
+        }
+      }
+    ],
+    "cast_time": "BonusAction"
+  },
+  {
     "name": "Burning Hands",
     "level": 1,
     "category": "Damage",

@@ -124,6 +124,11 @@
           "features": [
             "Master of Hexes"
           ]
+        },
+        "3": {
+          "features": [
+            "Expanded Spell List (Hexblade)"
+          ]
         }
       }
     },
@@ -161,9 +166,7 @@
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "Genie's Vessel",
-            "Expanded Spell List (Genie)",
-            "Expanded Spell List (Dao)"
+            "Genie's Vessel"
           ]
         },
         "6": {
@@ -179,6 +182,12 @@
         "14": {
           "features": [
             "Limited Wish"
+          ]
+        },
+        "3": {
+          "features": [
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Dao)"
           ]
         }
       }
@@ -190,9 +199,7 @@
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "Genie's Vessel",
-            "Expanded Spell List (Genie)",
-            "Expanded Spell List (Djinni)"
+            "Genie's Vessel"
           ]
         },
         "6": {
@@ -208,6 +215,12 @@
         "14": {
           "features": [
             "Limited Wish"
+          ]
+        },
+        "3": {
+          "features": [
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Djinni)"
           ]
         }
       }
@@ -219,9 +232,7 @@
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "Genie's Vessel",
-            "Expanded Spell List (Genie)",
-            "Expanded Spell List (Efreeti)"
+            "Genie's Vessel"
           ]
         },
         "6": {
@@ -237,6 +248,12 @@
         "14": {
           "features": [
             "Limited Wish"
+          ]
+        },
+        "3": {
+          "features": [
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Efreeti)"
           ]
         }
       }
@@ -248,9 +265,7 @@
           "features": [
             "Bottled Respite",
             "Genie's Wrath",
-            "Genie's Vessel",
-            "Expanded Spell List (Genie)",
-            "Expanded Spell List (Marid)"
+            "Genie's Vessel"
           ]
         },
         "6": {
@@ -266,6 +281,12 @@
         "14": {
           "features": [
             "Limited Wish"
+          ]
+        },
+        "3": {
+          "features": [
+            "Expanded Spell List (Genie)",
+            "Expanded Spell List (Marid)"
           ]
         }
       }

@@ -5797,5 +5797,8 @@
   },
   "Expanded Spell List (Marid)": {
     "description": "Spells of your marid patron, added to the warlock spell list for you."
+  },
+  "Expanded Spell List (Hexblade)": {
+    "description": "These spells are added to the warlock spell list for you — choose from them when you learn a warlock spell."
   }
 }
