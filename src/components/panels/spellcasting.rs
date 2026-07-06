@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
@@ -15,10 +17,10 @@ use crate::{
         toggle_button::ToggleButton,
     },
     model::{
-        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, FeaturesStoreFields,
-        Spell, SpellData, SpellSlotPool, Translatable, format_bonus,
+        Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, Features,
+        FeaturesStoreFields, Spell, SpellData, SpellSlotPool, Translatable, format_bonus,
     },
-    rules::{RulesRegistry, SpellMeta},
+    rules::{RulesRegistry, SpellMeta, SpellsList},
 };
 
 fn lookup_spell_meta(registry: RulesRegistry, spell_name: &str) -> Option<SpellMeta> {
@@ -206,7 +208,9 @@ fn FeatureSpellcastingSection(
         std::array::from_fn(|_| RwSignal::new(Vec::new()));
     Effect::new(move || {
         registry.track_spell_cache();
-        let mut data = feat_name.with_value(|key| resolve_feature_spell_list(&registry, key));
+        let mut data = feat_name.with_value(|key| {
+            resolve_feature_spell_list(&registry, key, &store.core().features().read())
+        });
         for (level, signal) in spell_suggestions.iter().enumerate() {
             signal.set(std::mem::take(&mut data[level]));
         }
@@ -734,27 +738,45 @@ fn FeatureSpellcastingSection(
 fn resolve_feature_spell_list(
     registry: &RulesRegistry,
     feature_name: &str,
+    features: &Features,
 ) -> [Vec<DatalistOption>; 10] {
-    registry
-        .with_feature(feature_name, |feat| {
-            let spells_def = feat.spells.as_ref()?;
-            let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
-            registry.with_spell_list_untracked(&spells_def.list, |iter| {
-                for spell in iter {
-                    if let Some(bucket) = by_level.get_mut(spell.level as usize) {
-                        let (label, description) =
-                            registry.spells().label_desc(&*spell.name, &*spell.name);
-                        bucket.push(
-                            DatalistOption::with_signals(&*spell.name, label, description)
-                                .with_count(spell.level),
-                        );
-                    }
+    let mut by_level: [Vec<DatalistOption>; 10] = Default::default();
+    let mut seen = BTreeSet::new();
+    let mut push_list = |list: &SpellsList| {
+        registry.with_spell_list_untracked(list, |iter| {
+            for spell in iter {
+                if !seen.insert(spell.name.clone()) {
+                    continue;
                 }
-            });
-            Some(by_level)
-        })
-        .flatten()
-        .unwrap_or_default()
+                if let Some(bucket) = by_level.get_mut(spell.level as usize) {
+                    let (label, description) =
+                        registry.spells().label_desc(&*spell.name, &*spell.name);
+                    bucket.push(
+                        DatalistOption::with_signals(&*spell.name, label, description)
+                            .with_count(spell.level),
+                    );
+                }
+            }
+        });
+    };
+
+    // The host feature's own list.
+    registry.with_feature(feature_name, |feat| {
+        if let Some(spells_def) = feat.spells.as_ref() {
+            push_list(&spells_def.list);
+        }
+    });
+    // Inline lists of applied extender features on the character.
+    for feature in features.iter().filter(|feature| feature.applied) {
+        registry.with_feature(&feature.name, |def| {
+            if let Some(spells_def) = def.spells.as_ref()
+                && spells_def.extends.as_deref() == Some(feature_name)
+            {
+                push_list(&spells_def.list);
+            }
+        });
+    }
+    by_level
 }
 
 #[component]
@@ -877,5 +899,100 @@ pub fn SpellcastingPanel() -> impl IntoView {
                     .collect_view()
             }}
         </Show>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeMap;
+
+    use leptos::prelude::Owner;
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::*;
+    use crate::{
+        model::{Feature, FeatureSource, Features},
+        rules::{FeatureDefinition, FeaturesIndex, SpellsIndex},
+    };
+
+    fn feature_row(name: &str) -> Feature {
+        Feature {
+            name: name.into(),
+            applied: true,
+            source: FeatureSource::Class("Warlock".into(), 1),
+            ..Feature::default()
+        }
+    }
+
+    #[wasm_bindgen_test]
+    async fn extenders_widen_host_learn_list() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        owner.set();
+
+        let mut defs = BTreeMap::<Box<str>, FeatureDefinition>::new();
+        for value in [
+            serde_json::json!({
+                "name": "Pact Magic",
+                "spells": {"list": [{"name": "Magic Missile"}]},
+            }),
+            serde_json::json!({
+                "name": "Expanded Spell List (Dao)",
+                "spells": {
+                    "extends": "Pact Magic",
+                    // Magic Missile duplicates the host list on purpose.
+                    "list": [{"name": "Sanctuary"}, {"name": "Magic Missile"}],
+                },
+            }),
+        ] {
+            let def: FeatureDefinition = serde_json::from_value(value).expect("feature def");
+            defs.insert(def.name.clone(), def);
+        }
+        let spells: SpellsIndex = serde_json::from_value(serde_json::json!([
+            {"name": "Magic Missile", "level": 1},
+            {"name": "Sanctuary", "level": 1},
+        ]))
+        .expect("spells index");
+
+        let registry = RulesRegistry::for_test(
+            FeaturesIndex(defs),
+            BTreeMap::new(),
+            BTreeMap::new(),
+            BTreeMap::new(),
+        )
+        .with_spells(spells);
+        registry.await_ready().await;
+
+        let mut features = Features::default();
+        features.push(feature_row("Pact Magic"));
+        features.push(feature_row("Expanded Spell List (Dao)"));
+
+        let buckets = resolve_feature_spell_list(&registry, "Pact Magic", &features);
+        let names: Vec<&str> = buckets[1].iter().map(|opt| opt.name.as_str()).collect();
+        assert!(
+            names.contains(&"Magic Missile"),
+            "host list stays: {names:?}"
+        );
+        assert!(
+            names.contains(&"Sanctuary"),
+            "extender list merges in: {names:?}"
+        );
+        assert_eq!(
+            names
+                .iter()
+                .filter(|name| **name == "Magic Missile")
+                .count(),
+            1,
+            "duplicates collapse: {names:?}"
+        );
+
+        let mut host_only = Features::default();
+        host_only.push(feature_row("Pact Magic"));
+        let buckets = resolve_feature_spell_list(&registry, "Pact Magic", &host_only);
+        let names: Vec<&str> = buckets[1].iter().map(|opt| opt.name.as_str()).collect();
+        assert!(
+            !names.contains(&"Sanctuary"),
+            "no extender on the character — no merge: {names:?}"
+        );
     }
 }

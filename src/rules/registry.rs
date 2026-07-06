@@ -407,6 +407,13 @@ impl RulesRegistry {
         }
     }
 
+    /// Test-only: replace the spells index of a `for_test` registry.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn with_spells(mut self, spells: SpellsIndex) -> Self {
+        self.spells_index = LocalizedIndex::for_test(spells, None);
+        self
+    }
+
     /// Test-only: drive the LocalResource futures so untracked reads
     /// return ready data.
     #[cfg(any(test, feature = "testing"))]
