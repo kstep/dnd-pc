@@ -65,9 +65,7 @@ fn build_choice_items(
             let show_button = item.cost > 0 || has_effects;
 
             let cost_badge = (item.cost > 0).then(|| {
-                view! {
-                    <span class="entry-badge session-choice-cost">{item.cost}</span>
-                }
+                view! { <span class="entry-badge session-choice-cost">{item.cost}</span> }
             });
 
             let cast_button = show_button.then(|| {
@@ -97,13 +95,8 @@ fn build_choice_items(
                 description: item.description,
                 badge: if action_icon.is_some() || cost_badge.is_some() {
                     Some(
-                        view! {
-                            <span class="entry-badge">
-                                {action_icon}
-                                {cost_badge}
-                            </span>
-                        }
-                        .into_any(),
+                        view! { <span class="entry-badge">{action_icon} {cost_badge}</span> }
+                            .into_any(),
                     )
                 } else {
                     None
@@ -373,31 +366,50 @@ pub fn ChoicesBlock() -> impl IntoView {
                             view! {
                                 <div class="entry-item">
                                     <div class="entry-content">
-                                        <select class="entry-name" on:change={move |event| {
-                                            let value = event_target_value(&event);
-                                            from_options.with_value(|opts| {
-                                                let Some(selected_option) = opts.iter().find(|opt| opt.name == value) else {
-                                                    return;
-                                                };
-                                                feat_name.with_value(|name| {
-                                                    feature_data.update(|features| {
-                                                        if let Some(entry) = features.get_mut(name.as_str())
-                                                            && let Some(field) = entry.fields.get_mut(field_index)
-                                                            && let FeatureValue::Choice { options } = &mut field.value
-                                                            && let Some(option) = options.get_mut(index)
-                                                        {
-                                                            option.clone_from(selected_option);
-                                                        }
+                                        <select
+                                            class="entry-name"
+                                            on:change=move |event| {
+                                                let value = event_target_value(&event);
+                                                from_options
+                                                    .with_value(|opts| {
+                                                        let Some(selected_option) = opts
+                                                            .iter()
+                                                            .find(|opt| opt.name == value) else {
+                                                            return;
+                                                        };
+                                                        feat_name
+                                                            .with_value(|name| {
+                                                                feature_data
+                                                                    .update(|features| {
+                                                                        if let Some(entry) = features.get_mut(name.as_str())
+                                                                            && let Some(field) = entry.fields.get_mut(field_index)
+                                                                            && let FeatureValue::Choice { options } = &mut field.value
+                                                                            && let Some(option) = options.get_mut(index)
+                                                                        {
+                                                                            option.clone_from(selected_option);
+                                                                        }
+                                                                    });
+                                                            });
                                                     });
-                                                });
-                                            });
-                                        }}>
+                                            }
+                                        >
                                             <option value="">""</option>
-                                            {from_options.with_value(|opts| opts.iter().map(|opt| {
-                                                view! {
-                                                    <option value=opt.name.clone() selected={opt.name == current_name}>{opt.label().to_string()}</option>
-                                                }
-                                            }).collect_view())}
+                                            {from_options
+                                                .with_value(|opts| {
+                                                    opts
+                                                        .iter()
+                                                        .map(|opt| {
+                                                            view! {
+                                                                <option
+                                                                    value=opt.name.clone()
+                                                                    selected=opt.name == current_name
+                                                                >
+                                                                    {opt.label().to_string()}
+                                                                </option>
+                                                            }
+                                                        })
+                                                        .collect_view()
+                                                })}
                                         </select>
                                     </div>
                                     <div class="entry-actions" />
@@ -410,7 +422,11 @@ pub fn ChoicesBlock() -> impl IntoView {
                                 <div class="session-subsection">
                                     <h4 class="session-subsection-title">{label}</h4>
                                     <div class="entry-list">
-                                        {options.iter().enumerate().map(choice_entry_factory).collect_view()}
+                                        {options
+                                            .iter()
+                                            .enumerate()
+                                            .map(choice_entry_factory)
+                                            .collect_view()}
                                     </div>
                                 </div>
                             }

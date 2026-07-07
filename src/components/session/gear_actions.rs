@@ -119,32 +119,19 @@ pub fn GearActionsBlock() -> impl IntoView {
                         }
                     });
                     let cost_badge = (opt.cost > 0).then(|| {
-                        view! {
-                            <span class="entry-badge session-choice-cost">
-                                {opt.cost} "/" {available_charges}
-                            </span>
-                        }
+                        view! { <span class="entry-badge session-choice-cost">{opt.cost} "/" {available_charges}</span> }
                     });
                     let consumes_badge = (opt.consumes > 0).then(|| {
-                        view! {
-                            <span class="entry-badge">
-                                "−" {opt.consumes}
-                            </span>
-                        }
+                        view! { <span class="entry-badge">"−" {opt.consumes}</span> }
                     });
-                    view! {
-                        <>{action_icon}{cost_badge}{consumes_badge}</>
-                    }
-                    .into_any()
+                    view! { <>{action_icon}{cost_badge}{consumes_badge}</> }.into_any()
                 };
 
                 let cast_owned = move |_: CastOption| {
                     cast(target, &owned_opt, owned_gear_name.clone());
                 };
-                let cast_button = view! {
-                    <CastButton on_cast=Callback::new(cast_owned) />
-                }
-                .into_any();
+                let cast_button =
+                    view! { <CastButton on_cast=Callback::new(cast_owned) /> }.into_any();
 
                 items.push(SessionListItem {
                     name: opt_name,
@@ -185,9 +172,7 @@ pub fn GearActionsBlock() -> impl IntoView {
         } else {
             Either::Right(view! {
                 <div class="session-subsection">
-                    <h4 class="session-subsection-title">
-                        {move_tr!("session-gear-actions")}
-                    </h4>
+                    <h4 class="session-subsection-title">{move_tr!("session-gear-actions")}</h4>
                     <SessionList items=items />
                 </div>
             })

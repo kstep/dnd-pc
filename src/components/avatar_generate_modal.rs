@@ -100,15 +100,15 @@ pub fn AvatarGenerateModal(
                                 </div>
 
                                 {move || {
-                                    error_text.get().map(|error| {
-                                        view! {
-                                            <p class="ai-generate-error">
-                                                {move_tr!("avatar-generate-failed")}
-                                                ": "
-                                                {error}
-                                            </p>
-                                        }
-                                    })
+                                    error_text
+                                        .get()
+                                        .map(|error| {
+                                            view! {
+                                                <p class="ai-generate-error">
+                                                    {move_tr!("avatar-generate-failed")} ": " {error}
+                                                </p>
+                                            }
+                                        })
                                 }}
 
                                 <div class="ai-generate-status">
@@ -137,11 +137,7 @@ pub fn AvatarGenerateModal(
                         {move_tr!("avatar-generate-button")}
                     </button>
                 </Show>
-                <button
-                    type="button"
-                    class="btn-link"
-                    on:click=move |_| show.set(false)
-                >
+                <button type="button" class="btn-link" on:click=move |_| show.set(false)>
                     {move_tr!("import-cancel")}
                 </button>
                 <button

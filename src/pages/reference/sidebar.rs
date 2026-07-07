@@ -21,15 +21,20 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
 
     view! {
         <aside class="reference-sidebar" class:open=move || open.get()>
-            {move || (!current_label.read().is_empty()).then(|| view! {
-                <button
-                    class="reference-nav-toggle"
-                    on:click=move |_| manually_open.update(|open| *open = !*open)
-                >
-                    {move || current_label.get()}
-                    <Icon name="chevron-down" />
-                </button>
-            })}
+            {move || {
+                (!current_label.read().is_empty())
+                    .then(|| {
+                        view! {
+                            <button
+                                class="reference-nav-toggle"
+                                on:click=move |_| manually_open.update(|open| *open = !*open)
+                            >
+                                {move || current_label.get()}
+                                <Icon name="chevron-down" />
+                            </button>
+                        }
+                    })
+            }}
             {move || children()}
         </aside>
     }

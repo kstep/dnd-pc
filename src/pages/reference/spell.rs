@@ -146,8 +146,8 @@ pub fn SpellReference() -> impl IntoView {
                     <For
                         each=move || SpellCategory::iter().filter(move |c| counts[*c as usize] > 0)
                         key=|category| *category
-                        children=move |category| view! {
-                            <SpellCatChip category counts selected set_filter />
+                        children=move |category| {
+                            view! { <SpellCatChip category counts selected set_filter /> }
                         }
                     />
                 </div>
@@ -168,8 +168,8 @@ pub fn SpellReference() -> impl IntoView {
                                     <For
                                         each=move || spells.clone()
                                         key=|spell_name| spell_name.clone()
-                                        children=move |spell_name| view! {
-                                            <SpellRowView name=spell_name />
+                                        children=move |spell_name| {
+                                            view! { <SpellRowView name=spell_name /> }
                                         }
                                     />
                                 </div>
@@ -202,9 +202,7 @@ pub fn SpellReference() -> impl IntoView {
                         kind=|n| IndexEntry::Spell(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">
-                    {detail}
-                </main>
+                <main class="reference-main">{detail}</main>
             </div>
         </div>
     }
@@ -249,15 +247,22 @@ fn SpellRowView(name: String) -> impl IntoView {
     view! {
         <div class="reference-feature" id=anchor_id>
             <h3>{move || label.get()}</h3>
-            {move || registry.spells().lookup(&name, |loc| {
-                let meta = loc.data.meta();
-                let components = loc.data.components.clone();
-                let effects = extract_spell_effects(loc.data);
-                view! {
-                    <SpellInfoBar meta=meta components=components />
-                    <SpellEffectsView effects />
-                }
-            })}
+            {move || {
+                registry
+                    .spells()
+                    .lookup(
+                        &name,
+                        |loc| {
+                            let meta = loc.data.meta();
+                            let components = loc.data.components.clone();
+                            let effects = extract_spell_effects(loc.data);
+                            view! {
+                                <SpellInfoBar meta=meta components=components />
+                                <SpellEffectsView effects />
+                            }
+                        },
+                    )
+            }}
             <Markdown text=description />
         </div>
     }

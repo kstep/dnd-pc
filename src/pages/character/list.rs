@@ -57,7 +57,8 @@ pub fn CharacterList() -> impl IntoView {
             if let Some(character) = import_state.get() {
                 return Either::Left(import_or_conflict(character, None));
             }
-            Either::Right(view! {
+            Either::Right(
+                view! {
                     <div class="character-list-page">
                         <div class="character-list-actions">
                             <button class="btn-primary" on:click=create_character>
@@ -80,7 +81,8 @@ pub fn CharacterList() -> impl IntoView {
                             </For>
                         </div>
                     </div>
-                })
+                },
+            )
         }}
     }
 }

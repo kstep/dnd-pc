@@ -125,9 +125,7 @@ pub fn FeatureReference() -> impl IntoView {
                             on:input=move |event| on_search(event_target_value(&event))
                         />
                     </div>
-                    <main class="reference-main">
-                        {features_view}
-                    </main>
+                    <main class="reference-main">{features_view}</main>
                 </div>
             </div>
         </div>

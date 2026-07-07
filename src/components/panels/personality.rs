@@ -31,7 +31,9 @@ pub fn PersonalityPanel() -> impl IntoView {
                     class:expanded=move || expanded.get()
                     on:click=toggle
                 />
-                <h3 class="clickable" on:click=toggle>{move_tr!("panel-personality")}</h3>
+                <h3 class="clickable" on:click=toggle>
+                    {move_tr!("panel-personality")}
+                </h3>
             </div>
             <div class="textarea-field">
                 <label>{move_tr!("alignment")}</label>

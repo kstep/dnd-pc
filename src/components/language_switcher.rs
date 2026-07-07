@@ -13,26 +13,26 @@ pub fn LanguageSwitcher() -> impl IntoView {
 
     view! {
         <div class="lang-switcher">
-            {i18n.languages.iter().map(|lang| {
-                let lang = *lang;
-                let is_active = move || pending.get() == lang;
-                view! {
-                    <button
-                        class="lang-btn"
-                        class:active=is_active
-                        on:click=move |_| {
-                            // Optimistic flip first (paint), then defer the real
-                            // locale change so the synchronous re-render cascade
-                            // (move_tr!, sync_labels, locale overlay refetches)
-                            // doesn't block the button's visual feedback.
-                            pending.set(lang);
-                            set_timeout(move || i18n.language.set(lang), Duration::ZERO);
-                        }
-                    >
-                        {lang.id.to_string().to_uppercase()}
-                    </button>
-                }
-            }).collect_view()}
+            {i18n
+                .languages
+                .iter()
+                .map(|lang| {
+                    let lang = *lang;
+                    let is_active = move || pending.get() == lang;
+                    view! {
+                        <button
+                            class="lang-btn"
+                            class:active=is_active
+                            on:click=move |_| {
+                                pending.set(lang);
+                                set_timeout(move || i18n.language.set(lang), Duration::ZERO);
+                            }
+                        >
+                            {lang.id.to_string().to_uppercase()}
+                        </button>
+                    }
+                })
+                .collect_view()}
         </div>
     }
 }

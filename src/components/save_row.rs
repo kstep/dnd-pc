@@ -27,9 +27,9 @@ pub fn SaveRow(ability: Ability) -> impl IntoView {
             }
         >
             <span class="stat-highlight">{bonus_display}</span>
-            <Icon
-                name=Signal::derive(move || if proficient.get() { "circle-dot" } else { "circle-dashed" })
-            />
+            <Icon name=Signal::derive(move || {
+                if proficient.get() { "circle-dot" } else { "circle-dashed" }
+            }) />
         </StatBox>
     }
 }

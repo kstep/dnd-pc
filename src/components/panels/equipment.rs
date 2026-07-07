@@ -86,10 +86,7 @@ pub fn EquipmentPanel() -> impl IntoView {
                     class:expanded=move || currency_expanded.get()
                     on:click=move |_| currency_expanded.update(|v| *v = !*v)
                 />
-                <h3
-                    class="clickable"
-                    on:click=move |_| currency_expanded.update(|v| *v = !*v)
-                >
+                <h3 class="clickable" on:click=move |_| currency_expanded.update(|v| *v = !*v)>
                     {move_tr!("currency")}
                 </h3>
             </div>
@@ -101,25 +98,39 @@ pub fn EquipmentPanel() -> impl IntoView {
                             min="0"
                             prop:value=move || currency.pp().get().to_string()
                             on:change=move |e| {
-                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                let value = event_target_value(&e)
+                                    .parse::<u32>()
+                                    .unwrap_or_default();
                                 currency.pp().set(value);
                             }
                         />
-                        <button class="btn-convert" title="→ GP" on:click=move |_| {
-                            if currency.pp().get_untracked() >= 1 {
-                                currency.pp().update(|v| *v -= 1);
-                                currency.gp().update(|v| *v += 10);
+                        <button
+                            class="btn-convert"
+                            title="→ GP"
+                            on:click=move |_| {
+                                if currency.pp().get_untracked() >= 1 {
+                                    currency.pp().update(|v| *v -= 1);
+                                    currency.gp().update(|v| *v += 10);
+                                }
                             }
-                        }>">"</button>
+                        >
+                            ">"
+                        </button>
                     </SlotBox>
                 </Show>
                 <SlotBox label="GP" label_after=true>
-                    <button class="btn-convert" title="→ PP" on:click=move |_| {
-                        if currency.gp().get_untracked() >= 10 {
-                            currency.gp().update(|v| *v -= 10);
-                            currency.pp().update(|v| *v += 1);
+                    <button
+                        class="btn-convert"
+                        title="→ PP"
+                        on:click=move |_| {
+                            if currency.gp().get_untracked() >= 10 {
+                                currency.gp().update(|v| *v -= 10);
+                                currency.pp().update(|v| *v += 1);
+                            }
                         }
-                    }>"<"</button>
+                    >
+                        "<"
+                    </button>
                     <input
                         type="number"
                         min="0"
@@ -129,77 +140,119 @@ pub fn EquipmentPanel() -> impl IntoView {
                             currency.gp().set(value);
                         }
                     />
-                    <button class="btn-convert" title="→ EP" on:click=move |_| {
-                        if currency.gp().get_untracked() >= 1 {
-                            currency.gp().update(|v| *v -= 1);
-                            currency.ep().update(|v| *v += 5);
+                    <button
+                        class="btn-convert"
+                        title="→ EP"
+                        on:click=move |_| {
+                            if currency.gp().get_untracked() >= 1 {
+                                currency.gp().update(|v| *v -= 1);
+                                currency.ep().update(|v| *v += 5);
+                            }
                         }
-                    }>">"</button>
+                    >
+                        ">"
+                    </button>
                 </SlotBox>
                 <Show when=show_ep>
                     <SlotBox label="EP" label_after=true>
-                        <button class="btn-convert" title="→ GP" on:click=move |_| {
-                            if currency.ep().get_untracked() >= 5 {
-                                currency.ep().update(|v| *v -= 5);
-                                currency.gp().update(|v| *v += 1);
+                        <button
+                            class="btn-convert"
+                            title="→ GP"
+                            on:click=move |_| {
+                                if currency.ep().get_untracked() >= 5 {
+                                    currency.ep().update(|v| *v -= 5);
+                                    currency.gp().update(|v| *v += 1);
+                                }
                             }
-                        }>"<"</button>
+                        >
+                            "<"
+                        </button>
                         <input
                             type="number"
                             min="0"
                             prop:value=move || currency.ep().get().to_string()
                             on:change=move |e| {
-                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                let value = event_target_value(&e)
+                                    .parse::<u32>()
+                                    .unwrap_or_default();
                                 currency.ep().set(value);
                             }
                         />
-                        <button class="btn-convert" title="→ SP" on:click=move |_| {
-                            if currency.ep().get_untracked() >= 1 {
-                                currency.ep().update(|v| *v -= 1);
-                                currency.sp().update(|v| *v += 5);
+                        <button
+                            class="btn-convert"
+                            title="→ SP"
+                            on:click=move |_| {
+                                if currency.ep().get_untracked() >= 1 {
+                                    currency.ep().update(|v| *v -= 1);
+                                    currency.sp().update(|v| *v += 5);
+                                }
                             }
-                        }>">"</button>
+                        >
+                            ">"
+                        </button>
                     </SlotBox>
                 </Show>
                 <Show when=show_sp>
                     <SlotBox label="SP" label_after=true>
-                        <button class="btn-convert" title="→ EP" on:click=move |_| {
-                            if currency.sp().get_untracked() >= 5 {
-                                currency.sp().update(|v| *v -= 5);
-                                currency.ep().update(|v| *v += 1);
+                        <button
+                            class="btn-convert"
+                            title="→ EP"
+                            on:click=move |_| {
+                                if currency.sp().get_untracked() >= 5 {
+                                    currency.sp().update(|v| *v -= 5);
+                                    currency.ep().update(|v| *v += 1);
+                                }
                             }
-                        }>"<"</button>
+                        >
+                            "<"
+                        </button>
                         <input
                             type="number"
                             min="0"
                             prop:value=move || currency.sp().get().to_string()
                             on:change=move |e| {
-                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                let value = event_target_value(&e)
+                                    .parse::<u32>()
+                                    .unwrap_or_default();
                                 currency.sp().set(value);
                             }
                         />
-                        <button class="btn-convert" title="→ CP" on:click=move |_| {
-                            if currency.sp().get_untracked() >= 1 {
-                                currency.sp().update(|v| *v -= 1);
-                                currency.cp().update(|v| *v += 10);
+                        <button
+                            class="btn-convert"
+                            title="→ CP"
+                            on:click=move |_| {
+                                if currency.sp().get_untracked() >= 1 {
+                                    currency.sp().update(|v| *v -= 1);
+                                    currency.cp().update(|v| *v += 10);
+                                }
                             }
-                        }>">"</button>
+                        >
+                            ">"
+                        </button>
                     </SlotBox>
                 </Show>
                 <Show when=show_cp>
                     <SlotBox label="CP" label_after=true>
-                        <button class="btn-convert" title="→ SP" on:click=move |_| {
-                            if currency.cp().get_untracked() >= 10 {
-                                currency.cp().update(|v| *v -= 10);
-                                currency.sp().update(|v| *v += 1);
+                        <button
+                            class="btn-convert"
+                            title="→ SP"
+                            on:click=move |_| {
+                                if currency.cp().get_untracked() >= 10 {
+                                    currency.cp().update(|v| *v -= 10);
+                                    currency.sp().update(|v| *v += 1);
+                                }
                             }
-                        }>"<"</button>
+                        >
+                            "<"
+                        </button>
                         <input
                             type="number"
                             min="0"
                             prop:value=move || currency.cp().get().to_string()
                             on:change=move |e| {
-                                let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                let value = event_target_value(&e)
+                                    .parse::<u32>()
+                                    .unwrap_or_default();
                                 currency.cp().set(value);
                             }
                         />
@@ -208,8 +261,8 @@ pub fn EquipmentPanel() -> impl IntoView {
             </div>
             <p class="inventory-weight">
                 <span class:overweight=overweight>
-                    {move_tr!("inventory-total-weight")} ": "
-                    {move || total_weight().to_string()} " / " {capacity} " lb"
+                    {move_tr!("inventory-total-weight")} ": " {move || total_weight().to_string()}
+                    " / " {capacity} " lb"
                 </span>
                 " \u{00b7} "
                 <span class:overweight=over_attuned>
@@ -218,10 +271,27 @@ pub fn EquipmentPanel() -> impl IntoView {
             </p>
         </section>
 
-        <GearSection title=move_tr!("weapons") pred=Item::is_weapon make_kind=ItemKind::default_weapon edit_target show_editor />
-        <GearSection title=move_tr!("armor") pred=Item::is_armor make_kind=ItemKind::default_armor edit_target show_editor />
-        <GearSection title=move_tr!("items") pred=is_misc make_kind=misc_kind edit_target show_editor />
-
+        <GearSection
+            title=move_tr!("weapons")
+            pred=Item::is_weapon
+            make_kind=ItemKind::default_weapon
+            edit_target
+            show_editor
+        />
+        <GearSection
+            title=move_tr!("armor")
+            pred=Item::is_armor
+            make_kind=ItemKind::default_armor
+            edit_target
+            show_editor
+        />
+        <GearSection
+            title=move_tr!("items")
+            pred=is_misc
+            make_kind=misc_kind
+            edit_target
+            show_editor
+        />
 
         <ItemModal show=show_editor value=editing_item on_save=save_item />
     }
@@ -255,18 +325,20 @@ fn GearSection(
                 let name = item.name.clone();
                 let qty = item.quantity.to_string();
                 let desc = item.description.clone();
-                let attune_toggle = item.requires_attunement.then(|| view! {
-                    <button
-                        class="btn-icon attune-toggle"
-                        class:attuned=move || items.read()[i].attuned
-                        title=move_tr!("attuned")
-                        on:click=move |_| {
-                            let attuned = items.read()[i].attuned;
-                            items.write()[i].attuned = !attuned;
-                        }
-                    >
-                        <Icon name="wand-sparkles" />
-                    </button>
+                let attune_toggle = item.requires_attunement.then(|| {
+                    view! {
+                        <button
+                            class="btn-icon attune-toggle"
+                            class:attuned=move || items.read()[i].attuned
+                            title=move_tr!("attuned")
+                            on:click=move |_| {
+                                let attuned = items.read()[i].attuned;
+                                items.write()[i].attuned = !attuned;
+                            }
+                        >
+                            <Icon name="wand-sparkles" />
+                        </button>
+                    }
                 });
                 view! {
                     <div class="entry-item">
@@ -298,7 +370,9 @@ fn GearSection(
                                 min="0"
                                 prop:value=qty
                                 on:change=move |e| {
-                                    let value = event_target_value(&e).parse::<u32>().unwrap_or_default();
+                                    let value = event_target_value(&e)
+                                        .parse::<u32>()
+                                        .unwrap_or_default();
                                     items.write()[i].quantity = value;
                                 }
                             />

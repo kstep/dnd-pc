@@ -39,11 +39,7 @@ pub fn ChargesSection(draft: Store<ItemEffects>) -> impl IntoView {
     view! {
         <section class="enchant-section">
             <label class="enchant-section-toggle">
-                <input
-                    type="checkbox"
-                    prop:checked=has_charges
-                    on:change=toggle
-                />
+                <input type="checkbox" prop:checked=has_charges on:change=toggle />
                 <h3>{move_tr!("enchantment-charges")}</h3>
             </label>
             <Show when=has_charges>
@@ -128,15 +124,20 @@ pub fn PassivesSection(draft: Store<ItemEffects>) -> impl IntoView {
                 } else {
                     view! {
                         <div class="entry-list">
-                            {(0..len).map(|i| {
-                                view! { <PassiveRow assigns=assigns.into() index=i i18n=i18n /> }
-                            }).collect_view()}
+                            {(0..len)
+                                .map(|i| {
+                                    view! {
+                                        <PassiveRow assigns=assigns.into() index=i i18n=i18n />
+                                    }
+                                })
+                                .collect_view()}
                         </div>
-                    }.into_any()
+                    }
+                        .into_any()
                 }
-            }}
-            <button class="btn-primary" on:click=add>
-                "+ " {move_tr!("btn-add-effect")}
+            }} <button class="btn-primary" on:click=add>
+                "+ "
+                {move_tr!("btn-add-effect")}
             </button>
         </section>
     }
@@ -203,13 +204,18 @@ fn PassiveRow(
                     on:change=on_expr
                 />
                 <select on:change=on_when>
-                    {GEAR_WHEN.iter().map(|&when| {
-                        let label = Signal::derive(move || i18n.tr(when.tr_key()));
-                        let selected = move || current_when() == when;
-                        view! {
-                            <option value=when.to_string() selected=selected>{label}</option>
-                        }
-                    }).collect_view()}
+                    {GEAR_WHEN
+                        .iter()
+                        .map(|&when| {
+                            let label = Signal::derive(move || i18n.tr(when.tr_key()));
+                            let selected = move || current_when() == when;
+                            view! {
+                                <option value=when.to_string() selected=selected>
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
                 </select>
             </div>
             <div class="entry-actions">
@@ -252,14 +258,14 @@ pub fn ActionsSection(draft: Store<ItemEffects>) -> impl IntoView {
                 } else {
                     view! {
                         <div class="entry-list">
-                            {(0..len).map(|i| view! {
-                                <ActionRow actions=actions.into() index=i />
-                            }).collect_view()}
+                            {(0..len)
+                                .map(|i| view! { <ActionRow actions=actions.into() index=i /> })
+                                .collect_view()}
                         </div>
-                    }.into_any()
+                    }
+                        .into_any()
                 }
-            }}
-            <button class="btn-primary" on:click=add>
+            }} <button class="btn-primary" on:click=add>
                 {move_tr!("btn-add-action")}
             </button>
         </section>
@@ -352,10 +358,13 @@ fn OptionsList(
 
     view! {
         <div class="action-options">
-            {move || (0..options_count()).map(|opt_idx| view! {
-                <OptionRow actions=actions index=index opt_idx=opt_idx />
-            }).collect_view()}
-            <button class="btn-secondary" on:click=add_option>
+            {move || {
+                (0..options_count())
+                    .map(|opt_idx| {
+                        view! { <OptionRow actions=actions index=index opt_idx=opt_idx /> }
+                    })
+                    .collect_view()
+            }} <button class="btn-secondary" on:click=add_option>
                 {move_tr!("btn-add-option")}
             </button>
         </div>
@@ -467,21 +476,11 @@ fn OptionRow(
             <div class="option-card-meta">
                 <label class="field-inline field-cost">
                     <span class="field-label">{move_tr!("choice-cost")}</span>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=cost
-                        on:change=on_cost
-                    />
+                    <input type="number" min="0" prop:value=cost on:change=on_cost />
                 </label>
                 <label class="field-inline">
                     <span class="field-label">{move_tr!("choice-consumes")}</span>
-                    <input
-                        type="number"
-                        min="0"
-                        prop:value=consumes
-                        on:change=on_consumes
-                    />
+                    <input type="number" min="0" prop:value=consumes on:change=on_consumes />
                 </label>
                 <label class="field-inline">
                     <span class="field-label">{move_tr!("action-type")}</span>
@@ -489,13 +488,18 @@ fn OptionRow(
                         <option value="" selected=move || read_action_type().is_none()>
                             "—"
                         </option>
-                        {ActionType::VARIANTS.iter().map(|&action_type| {
-                            let label = Signal::derive(move || i18n.tr(action_type.tr_key()));
-                            let selected = move || read_action_type() == Some(action_type);
-                            view! {
-                                <option value=action_type.to_string() selected=selected>{label}</option>
-                            }
-                        }).collect_view()}
+                        {ActionType::VARIANTS
+                            .iter()
+                            .map(|&action_type| {
+                                let label = Signal::derive(move || i18n.tr(action_type.tr_key()));
+                                let selected = move || read_action_type() == Some(action_type);
+                                view! {
+                                    <option value=action_type.to_string() selected=selected>
+                                        {label}
+                                    </option>
+                                }
+                            })
+                            .collect_view()}
                     </select>
                 </label>
             </div>
@@ -503,7 +507,8 @@ fn OptionRow(
                 <h5 class="option-effects-title">{move_tr!("effects")}</h5>
                 <EffectsList actions=actions index=index opt_idx=opt_idx />
                 <button class="btn-secondary btn-add-effect" on:click=add_effect>
-                    "+ " {move_tr!("btn-add-effect")}
+                    "+ "
+                    {move_tr!("btn-add-effect")}
                 </button>
             </div>
         </div>
@@ -528,9 +533,15 @@ fn EffectsList(
     };
 
     view! {
-        {move || (0..count()).map(|eff_idx| view! {
-            <EffectRow actions=actions index=index opt_idx=opt_idx eff_idx=eff_idx />
-        }).collect_view()}
+        {move || {
+            (0..count())
+                .map(|eff_idx| {
+                    view! {
+                        <EffectRow actions=actions index=index opt_idx=opt_idx eff_idx=eff_idx />
+                    }
+                })
+                .collect_view()
+        }}
     }
 }
 
@@ -719,10 +730,7 @@ fn EffectRow(
             <div class="effect-card-meta">
                 <label class="field-inline">
                     <span class="field-label">{move_tr!("effect-range")}</span>
-                    <select
-                        prop:value=move || range_kind_idx().to_string()
-                        on:change=on_range_kind
-                    >
+                    <select prop:value=move || range_kind_idx().to_string() on:change=on_range_kind>
                         <option value="0">{move_tr!("range-caster")}</option>
                         <option value="1">{move_tr!("range-touch")}</option>
                         <option value="2">{move_tr!("range-feet")}</option>
@@ -756,11 +764,7 @@ fn EffectRow(
                     </Show>
                 </label>
                 <label class="field-inline">
-                    <input
-                        type="checkbox"
-                        prop:checked=stackable
-                        on:change=on_stackable
-                    />
+                    <input type="checkbox" prop:checked=stackable on:change=on_stackable />
                     {move_tr!("effect-stackable")}
                 </label>
                 <details class="field-advanced">

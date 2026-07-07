@@ -255,45 +255,61 @@ pub fn ClassReference() -> impl IntoView {
                 view! {
                     <Title text=title.clone() />
                     <div class="reference-detail">
-                        <h1>{if let Some(sc_label) = subclass_label {
-                            let class_href = format!("/r/class/{name}");
-                            Either::Left(view! {
-                                <Ref href=class_href>{class_label}</Ref>
-                                {" \u{2014} "}
-                                {sc_label}
-                            })
-                        } else {
-                            Either::Right(class_label)
-                        }}</h1>
+                        <h1>
+                            {if let Some(sc_label) = subclass_label {
+                                let class_href = format!("/r/class/{name}");
+                                Either::Left(
+                                    view! {
+                                        <Ref href=class_href>{class_label}</Ref>
+                                        {" \u{2014} "}
+                                        {sc_label}
+                                    },
+                                )
+                            } else {
+                                Either::Right(class_label)
+                            }}
+                        </h1>
                         <Markdown text=description />
 
-                        {(!subclass_desc.is_empty()).then(|| view! {
-                            <Markdown text=subclass_desc />
-                        })}
+                        {(!subclass_desc.is_empty())
+                            .then(|| view! { <Markdown text=subclass_desc /> })}
 
                         <div class="reference-info-bar">
-                            {hit_die.map(|hd| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("ref-hit-die")}</span>
-                                    <span class="info-value">{hd}</span>
-                                </div>
-                            })}
-                            {(!prerequisites.is_empty()).then(|| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("ref-prerequisites")}</span>
-                                    <span class="info-value">{prerequisites.clone()}</span>
-                                </div>
-                            })}
-                            {spell_list_name.map(|sln| view! {
-                                <div class="info-item">
-                                    <span class="info-label">{move_tr!("ref-spell-list-link")}</span>
-                                    <span class="info-value">
-                                        <Ref href=format!("/r/spell/{sln}")>
-                                            {move_tr!("ref-spell-list-link")}
-                                        </Ref>
-                                    </span>
-                                </div>
-                            })}
+                            {hit_die
+                                .map(|hd| {
+                                    view! {
+                                        <div class="info-item">
+                                            <span class="info-label">{move_tr!("ref-hit-die")}</span>
+                                            <span class="info-value">{hd}</span>
+                                        </div>
+                                    }
+                                })}
+                            {(!prerequisites.is_empty())
+                                .then(|| {
+                                    view! {
+                                        <div class="info-item">
+                                            <span class="info-label">
+                                                {move_tr!("ref-prerequisites")}
+                                            </span>
+                                            <span class="info-value">{prerequisites.clone()}</span>
+                                        </div>
+                                    }
+                                })}
+                            {spell_list_name
+                                .map(|sln| {
+                                    view! {
+                                        <div class="info-item">
+                                            <span class="info-label">
+                                                {move_tr!("ref-spell-list-link")}
+                                            </span>
+                                            <span class="info-value">
+                                                <Ref href=format!(
+                                                    "/r/spell/{sln}",
+                                                )>{move_tr!("ref-spell-list-link")}</Ref>
+                                            </span>
+                                        </div>
+                                    }
+                                })}
                         </div>
 
                         <h2>{move_tr!("ref-progression")}</h2>
@@ -304,55 +320,132 @@ pub fn ClassReference() -> impl IntoView {
                                         <th>{move_tr!("ref-level")}</th>
                                         <th>{move_tr!("prof-bonus")}</th>
                                         <th>{move_tr!("ref-features")}</th>
-                                        {progression_meta.map(|(max_slot_level, has_cantrips, has_ready, has_known)| view! {
-                                            {has_cantrips.then(|| view! { <th>{move_tr!("ref-cantrips")}</th> })}
-                                            {has_ready.then(|| view! { <th>{move_tr!("ref-spells-ready")}</th> })}
-                                            {has_known.then(|| view! { <th>{move_tr!("ref-spells-known")}</th> })}
-                                            {(1..=max_slot_level).map(|slot_level| {
-                                                view! { <th>{slot_level}</th> }
-                                            }).collect_view()}
-                                        })}
-                                        {field_columns.iter().map(|fc| {
-                                            let label = fc.label.clone();
-                                            view! { <th>{label}</th> }
-                                        }).collect_view()}
+                                        {progression_meta
+                                            .map(|(max_slot_level, has_cantrips, has_ready, has_known)| {
+                                                view! {
+                                                    {has_cantrips
+                                                        .then(|| view! { <th>{move_tr!("ref-cantrips")}</th> })}
+                                                    {has_ready
+                                                        .then(|| view! { <th>{move_tr!("ref-spells-ready")}</th> })}
+                                                    {has_known
+                                                        .then(|| view! { <th>{move_tr!("ref-spells-known")}</th> })}
+                                                    {(1..=max_slot_level)
+                                                        .map(|slot_level| {
+                                                            view! { <th>{slot_level}</th> }
+                                                        })
+                                                        .collect_view()}
+                                                }
+                                            })}
+                                        {field_columns
+                                            .iter()
+                                            .map(|fc| {
+                                                let label = fc.label.clone();
+                                                view! { <th>{label}</th> }
+                                            })
+                                            .collect_view()}
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {table_rows.into_iter().map(|(level, prof_bonus, features, field_values, progression_row)| {
-                                        view! {
-                                            <tr>
-                                                <td>{level}</td>
-                                                <td>{format_bonus(prof_bonus)}</td>
-                                                <td class="features-cell">{
-                                                    features.into_iter().enumerate().map(|(index, (feat_name, label))| {
-                                                        view! {
-                                                            {(index > 0).then_some(", ")}
-                                                            <a href=hash_href(&format!("feat-{feat_name}")) rel="external">{label}</a>
-                                                        }
-                                                    }).collect_view()
-                                                }</td>
-                                                {progression_row.zip(progression_meta).map(|(row, (max_slot_level, has_cantrips, has_ready, has_known))| view! {
-                                                    {has_cantrips.then(|| view! {
-                                                        <td>{if row.cantrips > 0 { Either::Left(row.cantrips) } else { Either::Right("\u{2014}") }}</td>
-                                                    })}
-                                                    {has_ready.then(|| view! {
-                                                        <td>{if row.ready > 0 { Either::Left(row.ready) } else { Either::Right("\u{2014}") }}</td>
-                                                    })}
-                                                    {has_known.then(|| view! {
-                                                        <td>{if row.known > 0 { Either::Left(row.known) } else { Either::Right("\u{2014}") }}</td>
-                                                    })}
-                                                    {(1..=max_slot_level).map(|slot_level| {
-                                                        let total = row.slots[(slot_level - 1) as usize];
-                                                        view! { <td>{if total > 0 { Either::Left(total) } else { Either::Right("\u{2014}") }}</td> }
-                                                    }).collect_view()}
-                                                })}
-                                                {field_values.into_iter().map(|value| {
-                                                    view! { <td>{value}</td> }
-                                                }).collect_view()}
-                                            </tr>
-                                        }
-                                    }).collect_view()}
+                                    {table_rows
+                                        .into_iter()
+                                        .map(|
+                                            (
+                                                level,
+                                                prof_bonus,
+                                                features,
+                                                field_values,
+                                                progression_row,
+                                            )|
+                                        {
+                                            view! {
+                                                <tr>
+                                                    <td>{level}</td>
+                                                    <td>{format_bonus(prof_bonus)}</td>
+                                                    <td class="features-cell">
+                                                        {features
+                                                            .into_iter()
+                                                            .enumerate()
+                                                            .map(|(index, (feat_name, label))| {
+                                                                view! {
+                                                                    {(index > 0).then_some(", ")}
+                                                                    <a
+                                                                        href=hash_href(&format!("feat-{feat_name}"))
+                                                                        rel="external"
+                                                                    >
+                                                                        {label}
+                                                                    </a>
+                                                                }
+                                                            })
+                                                            .collect_view()}
+                                                    </td>
+                                                    {progression_row
+                                                        .zip(progression_meta)
+                                                        .map(|
+                                                            (row, (max_slot_level, has_cantrips, has_ready, has_known))|
+                                                        {
+                                                            view! {
+                                                                {has_cantrips
+                                                                    .then(|| {
+                                                                        view! {
+                                                                            <td>
+                                                                                {if row.cantrips > 0 {
+                                                                                    Either::Left(row.cantrips)
+                                                                                } else {
+                                                                                    Either::Right("\u{2014}")
+                                                                                }}
+                                                                            </td>
+                                                                        }
+                                                                    })}
+                                                                {has_ready
+                                                                    .then(|| {
+                                                                        view! {
+                                                                            <td>
+                                                                                {if row.ready > 0 {
+                                                                                    Either::Left(row.ready)
+                                                                                } else {
+                                                                                    Either::Right("\u{2014}")
+                                                                                }}
+                                                                            </td>
+                                                                        }
+                                                                    })}
+                                                                {has_known
+                                                                    .then(|| {
+                                                                        view! {
+                                                                            <td>
+                                                                                {if row.known > 0 {
+                                                                                    Either::Left(row.known)
+                                                                                } else {
+                                                                                    Either::Right("\u{2014}")
+                                                                                }}
+                                                                            </td>
+                                                                        }
+                                                                    })}
+                                                                {(1..=max_slot_level)
+                                                                    .map(|slot_level| {
+                                                                        let total = row.slots[(slot_level - 1) as usize];
+                                                                        view! {
+                                                                            <td>
+                                                                                {if total > 0 {
+                                                                                    Either::Left(total)
+                                                                                } else {
+                                                                                    Either::Right("\u{2014}")
+                                                                                }}
+                                                                            </td>
+                                                                        }
+                                                                    })
+                                                                    .collect_view()}
+                                                            }
+                                                        })}
+                                                    {field_values
+                                                        .into_iter()
+                                                        .map(|value| {
+                                                            view! { <td>{value}</td> }
+                                                        })
+                                                        .collect_view()}
+                                                </tr>
+                                            }
+                                        })
+                                        .collect_view()}
                                 </tbody>
                             </table>
                         </div>
@@ -365,21 +458,27 @@ pub fn ClassReference() -> impl IntoView {
                         {if subclass_list.is_empty() {
                             None
                         } else {
-                            let cards = subclass_list.into_iter().map(|(sc_name, sc_label, sc_desc)| {
-                                let href = format!("/r/class/{name_for_link}/{}", encode_name(&sc_name));
+                            let cards = subclass_list
+                                .into_iter()
+                                .map(|(sc_name, sc_label, sc_desc)| {
+                                    let href = format!(
+                                        "/r/class/{name_for_link}/{}",
+                                        encode_name(&sc_name),
+                                    );
+                                    view! {
+                                        <Ref href=href attr:class="reference-card">
+                                            <h3>{sc_label}</h3>
+                                            <p>{sc_desc}</p>
+                                        </Ref>
+                                    }
+                                })
+                                .collect_view();
+                            Some(
                                 view! {
-                                    <Ref href=href attr:class="reference-card">
-                                        <h3>{sc_label}</h3>
-                                        <p>{sc_desc}</p>
-                                    </Ref>
-                                }
-                            }).collect_view();
-                            Some(view! {
-                                <h2>{move_tr!("ref-subclasses")}</h2>
-                                <div class="reference-card-grid">
-                                    {cards}
-                                </div>
-                            })
+                                    <h2>{move_tr!("ref-subclasses")}</h2>
+                                    <div class="reference-card-grid">{cards}</div>
+                                },
+                            )
                         }}
                     </div>
                 }
@@ -402,15 +501,16 @@ pub fn ClassReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     <RefSidebarEntries
-                        names=Signal::derive(move || registry.with_class_defs(|defs| {
-                            defs.keys().map(|name| name.to_string()).collect()
-                        }))
+                        names=Signal::derive(move || {
+                            registry
+                                .with_class_defs(|defs| {
+                                    defs.keys().map(|name| name.to_string()).collect()
+                                })
+                        })
                         kind=|n| IndexEntry::Class(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">
-                    {detail}
-                </main>
+                <main class="reference-main">{detail}</main>
             </div>
         </div>
     }

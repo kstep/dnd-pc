@@ -88,26 +88,24 @@ pub fn EffectsBlock() -> impl IntoView {
 
             // -- Add effect form --
             <div class="entry-item effect-add-form">
-                <button class="btn-icon btn-icon--success"
+                <button
+                    class="btn-icon btn-icon--success"
                     title=move_tr!("effect-add")
                     on:click=move |_| {
                         let Some(expr_el) = expr_input.get() else { return };
-
                         let label_text = effect_label.get_untracked();
                         let label_text = label_text.trim();
-                        if label_text.is_empty() { return; }
-
+                        if label_text.is_empty() {
+                            return;
+                        }
                         let Ok(expr) = parse_expr(&expr_el.value()) else {
                             return;
                         };
-
                         let (name, label) = match effect_key.get_untracked() {
                             Some(key) => (key, Some(label_text.to_owned())),
                             None => (label_text.to_owned(), None),
                         };
-
                         let description = effect_desc.get_untracked();
-
                         let scope = effect_scope.get_untracked();
                         let effect = ActiveEffect {
                             name,
@@ -118,9 +116,11 @@ pub fn EffectsBlock() -> impl IntoView {
                             enabled: true,
                             scope,
                         };
-
-                        // Check if expression has dice rolls
-                        let rolls = effect.expr.as_ref().map(|expr_ref| expr_ref.dice_rolls(&*store.read())).unwrap_or_default();
+                        let rolls = effect
+                            .expr
+                            .as_ref()
+                            .map(|expr_ref| expr_ref.dice_rolls(&*store.read()))
+                            .unwrap_or_default();
                         if rolls.is_empty() {
                             commit_effect(effect);
                         } else {
@@ -129,7 +129,9 @@ pub fn EffectsBlock() -> impl IntoView {
                             open_dice_modal(None, expr);
                         }
                     }
-                ><Icon name="circle-plus" /></button>
+                >
+                    <Icon name="circle-plus" />
+                </button>
                 <div class="entry-content">
                     <DatalistInput
                         value=effect_label
@@ -141,31 +143,38 @@ pub fn EffectsBlock() -> impl IntoView {
                             effect_label.set(input);
                             effect_key.set(resolved.clone());
                             if let Some(name) = resolved {
-                                registry.effects().with(|index, locale| {
-                                    if let Some(template) = index.0.get(name.as_str()) {
-                                        if let Some(el) = expr_input.get() {
-                                            let val = template
-                                                .expr
-                                                .as_ref()
-                                                .map(ToString::to_string)
+                                registry
+                                    .effects()
+                                    .with(|index, locale| {
+                                        if let Some(template) = index.0.get(name.as_str()) {
+                                            if let Some(el) = expr_input.get() {
+                                                let val = template
+                                                    .expr
+                                                    .as_ref()
+                                                    .map(ToString::to_string)
+                                                    .unwrap_or_default();
+                                                el.set_value(&val);
+                                            }
+                                            let description = locale
+                                                .and_then(|map| map.get(name.as_str()))
+                                                .and_then(|text| text.description.clone())
                                                 .unwrap_or_default();
-                                            el.set_value(&val);
+                                            effect_desc.set(description);
+                                            effect_scope.set(template.scope.clone());
                                         }
-                                        let description = locale
-                                            .and_then(|map| map.get(name.as_str()))
-                                            .and_then(|text| text.description.clone())
-                                            .unwrap_or_default();
-                                        effect_desc.set(description);
-                                        effect_scope.set(template.scope.clone());
-                                    }
-                                });
+                                    });
                             }
                         }
                     />
                 </div>
                 <div class="entry-actions" />
                 <div class="entry-value">
-                    <input type="text" class="session-item-expr" placeholder=move_tr!("effect-expr") node_ref=expr_input />
+                    <input
+                        type="text"
+                        class="session-item-expr"
+                        placeholder=move_tr!("effect-expr")
+                        node_ref=expr_input
+                    />
                 </div>
             </div>
 
@@ -176,122 +185,166 @@ pub fn EffectsBlock() -> impl IntoView {
                 if effect_list.is_empty() {
                     return None;
                 }
-                Some(view! {
-                    <div class="entry-list">
-                        {effect_list.iter().enumerate().map(|(i, effect)| {
-                            let name = effect.label().to_owned();
-                            let expr_str = effect.expr.as_ref().map(ToString::to_string).unwrap_or_default();
-                            let pool_str = effect.pool.as_ref().map(ToString::to_string);
-                            let dice_rolls = effect.expr.as_ref().map(|expr_ref| expr_ref.dice_rolls(&*store.read())).unwrap_or_default();
-                            let description = effect.description.clone();
-                            let scope = effect.scope.clone();
-                            let enabled = effect.enabled;
-                            let effect_expr = effect.expr.clone();
-                            view! {
-                                <div class="entry-item" class:disabled=!enabled>
-                                    <ToggleButton />
-                                    <div class="entry-content">
-                                        <label class="spell-prepared">
-                                            <input
-                                                type="checkbox"
-                                                prop:checked=enabled
-                                                on:change=move |_| {
-                                                    effects.update(|active| active.toggle(i));
-                                                }
-                                            />
-                                        </label>
-                                        <input
-                                            type="text"
-                                            class="entry-name"
-                                            prop:value=name
-                                            on:change=move |ev| {
-                                                let new_name = event_target_value(&ev).trim().to_string();
-                                                if new_name.is_empty() { return; }
-                                                effects.update(|active| active.update_field(i, |eff| {
-                                                    eff.set_label(new_name);
-                                                }));
-                                            }
-                                        />
-                                    </div>
-                                    <div class="entry-actions">
-                                        <button
-                                            class="btn-icon btn-icon--danger"
-                                            title=move_tr!("effect-remove")
-                                            on:click=move |_| {
-                                                effects.update(|active| { active.remove(i); });
-                                            }
-                                        >
-                                            <Icon name="circle-minus" />
-                                        </button>
-                                    </div>
-                                    {scope.map(|s| view! {
-                                        <span class="entry-sublabel">{s.to_string()}</span>
-                                    })}
-                                        <div class="entry-full-row session-item-expr-row">
-                                            <input
-                                                type="text"
-                                                class="entry-name session-item-expr"
-                                                placeholder=move_tr!("effect-expr")
-                                                prop:value=expr_str.clone()
-                                                on:change=move |ev| {
-                                                    let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
-                                                        return;
-                                                    };
-                                                    let rolls = expr.as_ref().map(|parsed| parsed.dice_rolls(&*store.read())).unwrap_or_default();
-                                                    let has_dice = !rolls.is_empty();
-                                                    let dice_expr = expr.clone();
-                                                    registry.with_features_index_untracked(|feat_index| {
-                                                        effects.update(|effects| {
-                                                            effects.update_field(i, |eff| {
-                                                                eff.pool = None;
-                                                                eff.expr = expr;
-                                                            });
-                                                            effects.recompute(&store.read(), feat_index);
-                                                        });
-                                                    });
-                                                    if has_dice
-                                                        && let Some(expr) = dice_expr
-                                                    {
-                                                        open_dice_modal(Some(i), expr);
-                                                    }
-                                                }
-                                            />
-                                            {(!dice_rolls.is_empty()).then(|| {
-                                                let effect_expr = effect_expr.clone();
-                                                view! {
-                                                    <button
-                                                        class="btn-icon"
-                                                        title=move_tr!("effect-reroll")
-                                                        on:click=move |_| {
-                                                            if let Some(expr) = effect_expr.clone() {
-                                                                open_dice_modal(Some(i), expr);
-                                                            }
+                Some(
+                    view! {
+                        <div class="entry-list">
+                            {effect_list
+                                .iter()
+                                .enumerate()
+                                .map(|(i, effect)| {
+                                    let name = effect.label().to_owned();
+                                    let expr_str = effect
+                                        .expr
+                                        .as_ref()
+                                        .map(ToString::to_string)
+                                        .unwrap_or_default();
+                                    let pool_str = effect.pool.as_ref().map(ToString::to_string);
+                                    let dice_rolls = effect
+                                        .expr
+                                        .as_ref()
+                                        .map(|expr_ref| expr_ref.dice_rolls(&*store.read()))
+                                        .unwrap_or_default();
+                                    let description = effect.description.clone();
+                                    let scope = effect.scope.clone();
+                                    let enabled = effect.enabled;
+                                    let effect_expr = effect.expr.clone();
+                                    view! {
+                                        <div class="entry-item" class:disabled=!enabled>
+                                            <ToggleButton />
+                                            <div class="entry-content">
+                                                <label class="spell-prepared">
+                                                    <input
+                                                        type="checkbox"
+                                                        prop:checked=enabled
+                                                        on:change=move |_| {
+                                                            effects.update(|active| active.toggle(i));
                                                         }
-                                                    >
-                                                        <Icon name="dices" />
-                                                    </button>
+                                                    />
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    class="entry-name"
+                                                    prop:value=name
+                                                    on:change=move |ev| {
+                                                        let new_name = event_target_value(&ev).trim().to_string();
+                                                        if new_name.is_empty() {
+                                                            return;
+                                                        }
+                                                        effects
+                                                            .update(|active| {
+                                                                active
+                                                                    .update_field(
+                                                                        i,
+                                                                        |eff| {
+                                                                            eff.set_label(new_name);
+                                                                        },
+                                                                    )
+                                                            });
+                                                    }
+                                                />
+                                            </div>
+                                            <div class="entry-actions">
+                                                <button
+                                                    class="btn-icon btn-icon--danger"
+                                                    title=move_tr!("effect-remove")
+                                                    on:click=move |_| {
+                                                        effects
+                                                            .update(|active| {
+                                                                active.remove(i);
+                                                            });
+                                                    }
+                                                >
+                                                    <Icon name="circle-minus" />
+                                                </button>
+                                            </div>
+                                            {scope
+                                                .map(|s| {
+                                                    view! {
+                                                        <span class="entry-sublabel">{s.to_string()}</span>
+                                                    }
+                                                })}
+                                            <div class="entry-full-row session-item-expr-row">
+                                                <input
+                                                    type="text"
+                                                    class="entry-name session-item-expr"
+                                                    placeholder=move_tr!("effect-expr")
+                                                    prop:value=expr_str.clone()
+                                                    on:change=move |ev| {
+                                                        let Ok(expr) = parse_expr(&event_target_value(&ev)) else {
+                                                            return;
+                                                        };
+                                                        let rolls = expr
+                                                            .as_ref()
+                                                            .map(|parsed| parsed.dice_rolls(&*store.read()))
+                                                            .unwrap_or_default();
+                                                        let has_dice = !rolls.is_empty();
+                                                        let dice_expr = expr.clone();
+                                                        registry
+                                                            .with_features_index_untracked(|feat_index| {
+                                                                effects
+                                                                    .update(|effects| {
+                                                                        effects
+                                                                            .update_field(
+                                                                                i,
+                                                                                |eff| {
+                                                                                    eff.pool = None;
+                                                                                    eff.expr = expr;
+                                                                                },
+                                                                            );
+                                                                        effects.recompute(&store.read(), feat_index);
+                                                                    });
+                                                            });
+                                                        if has_dice && let Some(expr) = dice_expr {
+                                                            open_dice_modal(Some(i), expr);
+                                                        }
+                                                    }
+                                                />
+                                                {(!dice_rolls.is_empty())
+                                                    .then(|| {
+                                                        let effect_expr = effect_expr.clone();
+                                                        view! {
+                                                            <button
+                                                                class="btn-icon"
+                                                                title=move_tr!("effect-reroll")
+                                                                on:click=move |_| {
+                                                                    if let Some(expr) = effect_expr.clone() {
+                                                                        open_dice_modal(Some(i), expr);
+                                                                    }
+                                                                }
+                                                            >
+                                                                <Icon name="dices" />
+                                                            </button>
+                                                        }
+                                                    })}
+                                            </div>
+                                            {pool_str
+                                                .clone()
+                                                .map(|pool| {
+                                                    view! {
+                                                        <span class="entry-sublabel session-item-dice">
+                                                            {move_tr!("effect-dice")} ": " {pool}
+                                                        </span>
+                                                    }
+                                                })}
+                                            <textarea
+                                                class="entry-desc"
+                                                placeholder=move_tr!("description")
+                                                prop:value=description.clone()
+                                                on:input=move |ev| {
+                                                    let val = event_target_value(&ev);
+                                                    effects
+                                                        .update(|active| {
+                                                            active.update_field(i, |eff| eff.description = val)
+                                                        });
                                                 }
-                                            })}
+                                            />
                                         </div>
-                                        {pool_str.clone().map(|pool| view! {
-                                            <span class="entry-sublabel session-item-dice">
-                                                {move_tr!("effect-dice")} ": " {pool}
-                                            </span>
-                                        })}
-                                        <textarea
-                                            class="entry-desc"
-                                            placeholder=move_tr!("description")
-                                            prop:value=description.clone()
-                                            on:input=move |ev| {
-                                                let val = event_target_value(&ev);
-                                                effects.update(|active| active.update_field(i, |eff| eff.description = val));
-                                            }
-                                        />
-                                </div>
-                            }
-                        }).collect_view()}
-                    </div>
-                })
+                                    }
+                                })
+                                .collect_view()}
+                        </div>
+                    },
+                )
             }}
 
             // Dice modal using ExprArgsInput
@@ -301,53 +354,60 @@ pub fn EffectsBlock() -> impl IntoView {
                         return None;
                     }
                     let expr = pending_expr.get_untracked()?;
-
                     let on_ready = move |parts: ExprArgsInputParts| {
                         dice_parts.set_value(Some(parts));
                     };
-
                     let on_submit = move |event: web_sys::SubmitEvent| {
                         event.prevent_default();
                         let pool: DicePool = dice_parts
                             .with_value(|parts| parts.as_ref().map(|p| p.collect_dice()))
                             .unwrap_or_default();
-
                         if let Some(effect_index) = reroll_index.get_untracked() {
-                            // Re-roll existing effect
-                            registry.with_features_index_untracked(|feat_index| {
-                                effects.update(|active| {
-                                    active.update_field(effect_index, |eff| eff.pool = Some(pool));
-                                    active.recompute(&store.read(), feat_index);
+                            registry
+                                .with_features_index_untracked(|feat_index| {
+                                    effects
+                                        .update(|active| {
+                                            active
+                                                .update_field(effect_index, |eff| eff.pool = Some(pool));
+                                            active.recompute(&store.read(), feat_index);
+                                        });
                                 });
-                            });
                             reroll_index.set(None);
                         } else {
-                            // New effect
-                            pending_effect.update(|pending| {
-                                if let Some(mut effect) = pending.take() {
-                                    effect.pool = Some(pool);
-                                    commit_effect(effect);
-                                }
-                            });
+                            pending_effect
+                                .update(|pending| {
+                                    if let Some(mut effect) = pending.take() {
+                                        effect.pool = Some(pool);
+                                        commit_effect(effect);
+                                    }
+                                });
                         }
                         show_dice_modal.set(false);
                         pending_expr.set(None);
                     };
+                    let character: Signal<Arc<CharacterCore>> = Signal::derive(move || Arc::new(
+                        store.get().core.clone(),
+                    ));
+                    let expr_input =
+                    // Re-roll existing effect
+                    // New effect
 
-                    let character: Signal<Arc<CharacterCore>> =
-                        Signal::derive(move || Arc::new(store.get().core.clone()));
-                    let expr_input = view! { <ExprArgsInput expr=expr character on_ready /> };
-                    Some(view! {
-                        <form class="dice-pool-form" on:submit=on_submit>
-                            {expr_input}
-                            <div class="dice-pool-footer">
-                                <button type="submit" class="btn-confirm">
-                                    <Icon name="check" size=16 />
-                                    " " {move_tr!("btn-confirm")}
-                                </button>
-                            </div>
-                        </form>
-                    }.into_any())
+                    view! { <ExprArgsInput expr=expr character on_ready /> };
+                    Some(
+                        view! {
+                            <form class="dice-pool-form" on:submit=on_submit>
+                                {expr_input}
+                                <div class="dice-pool-footer">
+                                    <button type="submit" class="btn-confirm">
+                                        <Icon name="check" size=16 />
+                                        " "
+                                        {move_tr!("btn-confirm")}
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                            .into_any(),
+                    )
                 }}
             </Modal>
         </div>

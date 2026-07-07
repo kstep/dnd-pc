@@ -12,7 +12,9 @@ fn format_components(components: SpellComponents) -> Option<impl IntoView> {
     if components.verbal {
         icons.push(
             view! {
-                <span title=move_tr!("ref-spell-comp-verbal")><Icon name="audio-lines" /></span>
+                <span title=move_tr!("ref-spell-comp-verbal")>
+                    <Icon name="audio-lines" />
+                </span>
             }
             .into_any(),
         );
@@ -20,7 +22,9 @@ fn format_components(components: SpellComponents) -> Option<impl IntoView> {
     if components.somatic {
         icons.push(
             view! {
-                <span title=move_tr!("ref-spell-comp-somatic")><Icon name="hand-helping" /></span>
+                <span title=move_tr!("ref-spell-comp-somatic")>
+                    <Icon name="hand-helping" />
+                </span>
             }
             .into_any(),
         );
@@ -35,13 +39,11 @@ fn format_components(components: SpellComponents) -> Option<impl IntoView> {
             move_tr!("ref-spell-comp-material")
         };
         view! {
-            <span title=title><Icon name=icon /></span>
-            {(!name.is_empty()).then(|| view! {
-                <span class="spell-tag">{name}</span>
-            })}
-            {price.map(|price| view! {
-                <span class="spell-tag">{price}</span>
-            })}
+            <span title=title>
+                <Icon name=icon />
+            </span>
+            {(!name.is_empty()).then(|| view! { <span class="spell-tag">{name}</span> })}
+            {price.map(|price| view! { <span class="spell-tag">{price}</span> })}
         }
     });
     if icons.is_empty() && material.is_none() {
@@ -72,9 +74,7 @@ fn format_cast_time(cast_time: CastTime, ritual: bool) -> impl IntoView {
     };
     view! {
         {base}
-        {ritual.then(|| view! {
-            <span class="spell-tag">{move_tr!("ref-spell-ritual")}</span>
-        })}
+        {ritual.then(|| view! { <span class="spell-tag">{move_tr!("ref-spell-ritual")}</span> })}
     }
 }
 
@@ -124,23 +124,37 @@ pub fn SpellInfoBar(
                 <span class="info-label">{move_tr!("ref-spell-cast-time")}</span>
                 <span class="info-value">{format_cast_time(meta.cast_time, meta.ritual)}</span>
             </div>
-            {meta.range.map(|range| view! {
-                <div class="info-item">
-                    <span class="info-label">{move_tr!("ref-spell-range")}</span>
-                    <span class="info-value">{format_range(range)}</span>
-                </div>
-            })}
-            {meta.duration.map(|duration| view! {
-                <div class="info-item">
-                    <span class="info-label">{move_tr!("ref-spell-duration")}</span>
-                    <span class="info-value">
-                        {format_duration(duration)}
-                        {meta.concentration.then(|| view! {
-                            <span class="spell-tag">{move_tr!("ref-spell-concentration")}</span>
-                        })}
-                    </span>
-                </div>
-            })}
+            {meta
+                .range
+                .map(|range| {
+                    view! {
+                        <div class="info-item">
+                            <span class="info-label">{move_tr!("ref-spell-range")}</span>
+                            <span class="info-value">{format_range(range)}</span>
+                        </div>
+                    }
+                })}
+            {meta
+                .duration
+                .map(|duration| {
+                    view! {
+                        <div class="info-item">
+                            <span class="info-label">{move_tr!("ref-spell-duration")}</span>
+                            <span class="info-value">
+                                {format_duration(duration)}
+                                {meta
+                                    .concentration
+                                    .then(|| {
+                                        view! {
+                                            <span class="spell-tag">
+                                                {move_tr!("ref-spell-concentration")}
+                                            </span>
+                                        }
+                                    })}
+                            </span>
+                        </div>
+                    }
+                })}
             {format_components(components)}
         </div>
     }

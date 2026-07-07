@@ -484,21 +484,32 @@ fn ArgsFeatureInput(
     view! {
         <div class="args-modal-feature">
             <h4>
-                {move || feature_label.get()}
-                <span class="args-modal-source">{source_label}</span>
+                {move || feature_label.get()} <span class="args-modal-source">{source_label}</span>
             </h4>
             <Show when=move || has_description.get()>
                 <div class="args-modal-description">
                     <Markdown text=description.clone() />
                 </div>
             </Show>
-            <div style:display=move || if is_replacing.get() { "none" } else { "" }>
-                {expr_views}
-            </div>
-            {replaceable.then(|| {
-                let source = source.clone();
-                view! { <ReplacementPicker replace_with replacement_choice replacement_prefill character state replacement_valids source replace_only /> }
-            })}
+            <div style:display=move || {
+                if is_replacing.get() { "none" } else { "" }
+            }>{expr_views}</div>
+            {replaceable
+                .then(|| {
+                    let source = source.clone();
+                    view! {
+                        <ReplacementPicker
+                            replace_with
+                            replacement_choice
+                            replacement_prefill
+                            character
+                            state
+                            replacement_valids
+                            source
+                            replace_only
+                        />
+                    }
+                })}
         </div>
     }
 }
@@ -652,10 +663,6 @@ fn ReplacementPicker(
                         let checked = event_target_checked(&ev);
                         replacing.set(checked);
                         if !checked {
-                            // Same disposed-signal hazard as `on_input(_, None)` —
-                            // the inner view about to drop owns the replacement's
-                            // ARG signals. Clean their registrations before
-                            // `<Show>` unmounts.
                             clear_replacement_registrations();
                             replacement_prefill.set_value(Vec::new());
                             prev_replacement.set(None);
@@ -689,52 +696,56 @@ fn ReplacementPicker(
                     if exprs.is_empty() {
                         return None;
                     }
-
-                    let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> =
-                        StoredValue::new(Vec::new());
-                    let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> =
-                        StoredValue::new(Vec::new());
-                    let key = FeatureKey::new(feat_name, source.get_value());
-                    // Swap-section: lives under the replacement's own key,
-                    // carries no replacement of its own. `downstream` is a
-                    // sentinel — nothing reads it because this key is not
-                    // in the For-loop pending list.
-                    let swap_section = state.open_section(
-                        key.clone(),
-                        Arc::new(CharacterCore::default()),
-                        None,
+                    let signal_groups: StoredValue<Vec<StoredValue<Vec<RwSignal<i32>>>>> = StoredValue::new(
+                        Vec::new(),
                     );
-
+                    let dice_groups: StoredValue<Vec<StoredValue<DiceGroupSignals>>> = StoredValue::new(
+                        Vec::new(),
+                    );
+                    let key = FeatureKey::new(feat_name, source.get_value());
+                    let swap_section = state
+                        .open_section(key.clone(), Arc::new(CharacterCore::default()), None);
                     let expr_views: Vec<_> = exprs
                         .into_iter()
                         .enumerate()
                         .map(|(expr_idx, expr)| {
-                            // Per-expr indexing: a short prefill Vec leaves
-                            // later exprs explicitly empty. No broadcast.
-                            let prefill = replacement_prefill.with_value(|prefills| {
-                                prefills.get(expr_idx).cloned().unwrap_or_default()
-                            });
+                            let prefill = replacement_prefill
+                                .with_value(|prefills| {
+                                    prefills.get(expr_idx).cloned().unwrap_or_default()
+                                });
                             let on_ready = move |parts: ExprArgsInputParts| {
-                                signal_groups.update_value(|groups| {
-                                    groups.push(StoredValue::new(parts.arg_signals));
-                                });
-                                dice_groups.update_value(|groups| {
-                                    groups.push(StoredValue::new(parts.dice_signals));
-                                });
+                                signal_groups
+                                    .update_value(|groups| {
+                                        groups.push(StoredValue::new(parts.arg_signals));
+                                    });
+                                dice_groups
+                                    .update_value(|groups| {
+                                        groups.push(StoredValue::new(parts.dice_signals));
+                                    });
                                 replacement_valids
                                     .update(|validations| validations.push(parts.is_valid));
                             };
+
+                            // Swap-section: lives under the replacement's own key,
+                            // carries no replacement of its own. `downstream` is a
+                            // sentinel — nothing reads it because this key is not
+                            // in the For-loop pending list.
+
+                            // Per-expr indexing: a short prefill Vec leaves
+                            // later exprs explicitly empty. No broadcast.
                             view! {
                                 <ExprDetails expr=expr.clone() />
                                 <ExprArgsInput expr character prefill on_ready />
                             }
                         })
                         .collect();
-
                     swap_section.args.set(signal_groups.with_value(Clone::clone));
                     swap_section.dice.set(dice_groups.with_value(Clone::clone));
+                    Some(
 
-                    Some(view! { <div class="replacement-args">{expr_views}</div> }.into_any())
+                        view! { <div class="replacement-args">{expr_views}</div> }
+                            .into_any(),
+                    )
                 }}
             </Show>
         </div>
@@ -897,13 +908,8 @@ pub fn ArgsModal() -> impl IntoView {
                             register_hidden_signals(&pending_inputs, state);
                             ().into_any()
                         } else {
-                            view! {
-                                <ArgsFeatureInput
-                                    pending_inputs
-                                    character=upstream
-                                    state
-                                />
-                            }.into_any()
+                            view! { <ArgsFeatureInput pending_inputs character=upstream state /> }
+                                .into_any()
                         }
                     }
                 </For>

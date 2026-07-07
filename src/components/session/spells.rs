@@ -202,14 +202,20 @@ pub fn SpellsBlock() -> impl IntoView {
                                             match sd.cast_time {
                                                 CastTime::Action(ActionType::BonusAction) => {
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("action-type-bonus-action")>
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("action-type-bonus-action")
+                                                        >
                                                             <Icon name="zap" />
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 CastTime::Action(ActionType::Reaction) => {
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("action-type-reaction")>
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("action-type-reaction")
+                                                        >
                                                             <Icon name="shield" />
                                                         </span>
                                                     }.into_any());
@@ -217,8 +223,12 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 CastTime::Rounds(rounds) => {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("ref-spell-cast-time")>
-                                                            <Icon name="clock" />{label}
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("ref-spell-cast-time")
+                                                        >
+                                                            <Icon name="clock" />
+                                                            {label}
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -229,7 +239,10 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectRange::Caster) => {}
                                                 Some(EffectRange::Touch) => {
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("ref-spell-range-touch")>
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("ref-spell-range-touch")
+                                                        >
                                                             <Icon name="hand" />
                                                         </span>
                                                     }.into_any());
@@ -237,7 +250,8 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectRange::Feet(feet)) => {
                                                     badges.push(view! {
                                                         <span class="entry-badge" title=move_tr!("ref-spell-range")>
-                                                            <Icon name="ruler" />{feet}
+                                                            <Icon name="ruler" />
+                                                            {feet}
                                                         </span>
                                                     }.into_any());
                                                 }
@@ -248,14 +262,21 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 Some(EffectDuration::Rounds(rounds)) => {
                                                     let label = format_rounds(rounds);
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("ref-spell-duration")>
-                                                            <Icon name="hourglass" />{label}
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("ref-spell-duration")
+                                                        >
+                                                            <Icon name="hourglass" />
+                                                            {label}
                                                         </span>
                                                     }.into_any());
                                                 }
                                                 Some(EffectDuration::Forever) => {
                                                     badges.push(view! {
-                                                        <span class="entry-badge" title=move_tr!("ref-spell-duration-forever")>
+                                                        <span
+                                                            class="entry-badge"
+                                                            title=move_tr!("ref-spell-duration-forever")
+                                                        >
                                                             <Icon name="infinity" />
                                                         </span>
                                                     }.into_any());
@@ -265,7 +286,10 @@ pub fn SpellsBlock() -> impl IntoView {
                                             // Concentration
                                             if sd.concentration {
                                                 badges.push(view! {
-                                                    <span class="entry-badge" title=move_tr!("ref-spell-concentration")>
+                                                    <span
+                                                        class="entry-badge"
+                                                        title=move_tr!("ref-spell-concentration")
+                                                    >
                                                         <Icon name="crosshair" />
                                                     </span>
                                                 }.into_any());
@@ -273,14 +297,20 @@ pub fn SpellsBlock() -> impl IntoView {
                                             // Components (V/S/M)
                                             if sd.components.verbal {
                                                 badges.push(view! {
-                                                    <span class="entry-badge" title=move_tr!("ref-spell-comp-verbal")>
+                                                    <span
+                                                        class="entry-badge"
+                                                        title=move_tr!("ref-spell-comp-verbal")
+                                                    >
                                                         <Icon name="audio-lines" />
                                                     </span>
                                                 }.into_any());
                                             }
                                             if sd.components.somatic {
                                                 badges.push(view! {
-                                                    <span class="entry-badge" title=move_tr!("ref-spell-comp-somatic")>
+                                                    <span
+                                                        class="entry-badge"
+                                                        title=move_tr!("ref-spell-comp-somatic")
+                                                    >
                                                         <Icon name="hand-helping" />
                                                     </span>
                                                 }.into_any());
@@ -333,11 +363,7 @@ pub fn SpellsBlock() -> impl IntoView {
                         let cost_badge = show_cost.then(|| {
                             let cost = spell.cost;
                             let suffix = cost_short.clone();
-                            view! {
-                                <span class="entry-badge">
-                                    {cost} " " {suffix}
-                                </span>
-                            }
+                            view! { <span class="entry-badge">{cost} " " {suffix}</span> }
                         });
 
                         // Build cast options: free use, points cost, slot levels
@@ -405,58 +431,82 @@ pub fn SpellsBlock() -> impl IntoView {
                                 <CastButton
                                     options=cast_options
                                     on_cast=Callback::new(move |opt: CastOption| {
-                                        // Open effects calculator (before deducting — we need the original state for display)
-                                        fname.with_value(|key| {
-                                            spell_name.with_value(|sname| {
-                                                open_calc(sname, spell_level, key, pool, casting_ability, &opt);
-                                                if is_concentration {
-                                                    store.core().combat().concentrating().set(Some(sname.to_string()));
-                                                }
+                                        fname
+                                            .with_value(|key| {
+                                                spell_name
+                                                    .with_value(|sname| {
+                                                        open_calc(
+                                                            sname,
+                                                            spell_level,
+                                                            key,
+                                                            pool,
+                                                            casting_ability,
+                                                            &opt,
+                                                        );
+                                                        if is_concentration {
+                                                            store
+                                                                .core()
+                                                                .combat()
+                                                                .concentrating()
+                                                                .set(Some(sname.to_string()));
+                                                        }
+                                                    });
                                             });
-                                        });
-
-                                        // Deduct resources (Ritual consumes nothing)
                                         match opt {
                                             CastOption::Ritual { .. } => {}
                                             CastOption::FreeUse { .. } => {
-                                                fname.with_value(|key| {
-                                                    feature_data.update(|map| {
-                                                        if let Some(spell) = map.get_mut(key.as_str())
-                                                            .and_then(|e| e.spells.as_mut())
-                                                            .and_then(|sc| sc.spells.get_mut(spell_idx))
-                                                            && let Some(fu) = &mut spell.free_uses
-                                                        {
-                                                            fu.used = fu
-                                                                .used
-                                                                .saturating_add(spell.cost.max(1))
-                                                                .min(fu.max);
-                                                        }
+                                                fname
+                                                    .with_value(|key| {
+                                                        feature_data
+                                                            .update(|map| {
+                                                                if let Some(spell) = map
+                                                                    .get_mut(key.as_str())
+                                                                    .and_then(|e| e.spells.as_mut())
+                                                                    .and_then(|sc| sc.spells.get_mut(spell_idx))
+                                                                    && let Some(fu) = &mut spell.free_uses
+                                                                {
+                                                                    fu.used = fu
+                                                                        .used
+                                                                        .saturating_add(spell.cost.max(1))
+                                                                        .min(fu.max);
+                                                                }
+                                                            });
                                                     });
-                                                });
                                             }
                                             CastOption::PointsCost { .. } => {
-                                                fname.with_value(|key| {
-                                                    cost_field_name.with_value(|cost_name| {
-                                                        feature_data.update(|map| {
-                                                            if let Some(entry) = map.get_mut(key.as_str())
-                                                                && let Some(field) = entry.fields.iter_mut().find(|f| f.name == *cost_name)
-                                                                && let FeatureValue::Points { used, max } = &mut field.value
-                                                            {
-                                                                *used = (*used + spell_cost).min(*max);
-                                                            }
-                                                        });
+                                                fname
+                                                    .with_value(|key| {
+                                                        cost_field_name
+                                                            .with_value(|cost_name| {
+                                                                feature_data
+                                                                    .update(|map| {
+                                                                        if let Some(entry) = map.get_mut(key.as_str())
+                                                                            && let Some(field) = entry
+                                                                                .fields
+                                                                                .iter_mut()
+                                                                                .find(|f| f.name == *cost_name)
+                                                                            && let FeatureValue::Points { used, max } = &mut field.value
+                                                                        {
+                                                                            *used = (*used + spell_cost).min(*max);
+                                                                        }
+                                                                    });
+                                                            });
                                                     });
-                                                });
                                             }
-                                            CastOption::SpellSlot { pool: slot_pool, level: slot_level, .. } => {
-                                                spell_slots.update(|pools| {
-                                                    if let Some(slots) = pools.get_mut(&slot_pool) {
-                                                        let idx = (slot_level - 1) as usize;
-                                                        if let Some(slot) = slots.get_mut(idx) {
-                                                            slot.used = slot.used.saturating_add(1).min(slot.total);
+                                            CastOption::SpellSlot {
+                                                pool: slot_pool,
+                                                level: slot_level,
+                                                ..
+                                            } => {
+                                                spell_slots
+                                                    .update(|pools| {
+                                                        if let Some(slots) = pools.get_mut(&slot_pool) {
+                                                            let idx = (slot_level - 1) as usize;
+                                                            if let Some(slot) = slots.get_mut(idx) {
+                                                                slot.used = slot.used.saturating_add(1).min(slot.total);
+                                                            }
                                                         }
-                                                    }
-                                                });
+                                                    });
                                             }
                                         }
                                     })

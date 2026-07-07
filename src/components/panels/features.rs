@@ -126,11 +126,6 @@ pub fn FeaturesPanel() -> impl IntoView {
             >
                 {
                     let (idx, _dom_id) = row;
-                    // Reactive group-head: row k is a group head if the next
-                    // non-System feature in list order (i.e. the one rendered
-                    // immediately above it after .rev()) has a different
-                    // source — or doesn't exist. Recomputes on every list
-                    // mutation so additions don't leave stale headers.
                     let header_label = Signal::derive(move || {
                         let list = features.list().read();
                         let feature = list.get(idx)?;
@@ -148,17 +143,24 @@ pub fn FeaturesPanel() -> impl IntoView {
                     });
                     let feature: Field<Feature> = features.list().at_unkeyed(idx).into();
                     let row_previews = Signal::derive(move || {
-                        assign_previews
-                            .with(|all| all.get(idx).cloned())
-                            .unwrap_or_default()
+                        assign_previews.with(|all| all.get(idx).cloned()).unwrap_or_default()
                     });
                     let visible = Signal::derive(move || {
                         idx < features.list().read().len() && !feature.read().removed
                     });
+                    // Reactive group-head: row k is a group head if the next
+                    // non-System feature in list order (i.e. the one rendered
+                    // immediately above it after .rev()) has a different
+                    // source — or doesn't exist. Recomputes on every list
+                    // mutation so additions don't leave stale headers.
                     view! {
-                        {move || header_label.get().map(|label| view! {
-                            <h3 class="features-group-header">{label}</h3>
-                        })}
+                        {move || {
+                            header_label
+                                .get()
+                                .map(|label| {
+                                    view! { <h3 class="features-group-header">{label}</h3> }
+                                })
+                        }}
                         <Show when=move || visible.get() fallback=|| ()>
                             <FeatureRow
                                 feature=feature

@@ -36,11 +36,7 @@ fn StorySidebar(char_id: Uuid, stories: RwSignal<Vec<Story>>) -> impl IntoView {
             >
                 {move_tr!("story-new")}
             </Ref>
-            <For
-                each=move || stories.get()
-                key=|story| story.id
-                let:story
-            >
+            <For each=move || stories.get() key=|story| story.id let:story>
                 <Ref
                     href=format!("/c/{char_id}/story/{}", story.id)
                     attr:class="reference-nav-item"
@@ -143,22 +139,34 @@ fn NewStoryView(
                     let text = streaming_text.get();
                     let err = error_msg.get();
                     if let Some(error) = err {
-                        Either::Left(view! {
-                            <div class="story-error">
-                                <p><strong>{move_tr!("story-error")}</strong></p>
-                                <p>{error}</p>
-                            </div>
-                        })
+                        Either::Left(
+                            view! {
+                                <div class="story-error">
+                                    <p>
+                                        <strong>{move_tr!("story-error")}</strong>
+                                    </p>
+                                    <p>{error}</p>
+                                </div>
+                            },
+                        )
                     } else if text.is_empty() && !is_streaming.get() {
-                        Either::Right(Either::Left(view! {
-                            <p class="story-placeholder">{move_tr!("story-select")}</p>
-                        }))
+                        Either::Right(
+                            Either::Left(
+                                view! {
+                                    <p class="story-placeholder">{move_tr!("story-select")}</p>
+                                },
+                            ),
+                        )
                     } else {
-                        Either::Right(Either::Right(view! {
-                            <div class="story-content">
-                                <pre>{text}</pre>
-                            </div>
-                        }))
+                        Either::Right(
+                            Either::Right(
+                                view! {
+                                    <div class="story-content">
+                                        <pre>{text}</pre>
+                                    </div>
+                                },
+                            ),
+                        )
                     }
                 }}
             </div>
@@ -166,51 +174,54 @@ fn NewStoryView(
             <div class="story-input">
                 {move || {
                     if !has_key() {
-                        Either::Left(view! {
-                            <div class="story-no-key">
-                                <p>{move_tr!("story-no-api-key")}</p>
-                                <button on:click=move |_| show_settings.set(true)>
-                                    {move_tr!("story-settings")}
-                                </button>
-                            </div>
-                        })
-                    } else {
-                        Either::Right(view! {
-                            <form class="story-prompt" on:submit=on_generate>
-                                <textarea
-                                    class="notes-textarea"
-                                    required
-                                    placeholder=move_tr!("story-prompt-placeholder")
-                                    prop:value=move || prompt.get()
-                                    on:input=move |event| {
-                                        prompt.set(event_target_value(&event));
-                                    }
-                                    disabled=move || is_streaming.get()
-                                />
-                                <div class="story-actions">
-                                    <button
-                                        type="submit"
-                                        class="btn-primary"
-                                    >
-                                        {move || if is_streaming.get() {
-                                            move_tr!("story-stop")
-                                        } else if error_msg.get().is_some() {
-                                            move_tr!("story-retry")
-                                        } else {
-                                            move_tr!("story-generate")
-                                        }}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="btn-icon"
-                                        title=move_tr!("story-settings")
-                                        on:click=move |_| show_settings.set(true)
-                                    >
-                                        <Icon name="settings" size=18 />
-                                    </button>
+                        Either::Left(
+                            view! {
+                                <div class="story-no-key">
+                                    <p>{move_tr!("story-no-api-key")}</p>
+                                    <button on:click=move |_| {
+                                        show_settings.set(true)
+                                    }>{move_tr!("story-settings")}</button>
                                 </div>
-                            </form>
-                        })
+                            },
+                        )
+                    } else {
+                        Either::Right(
+                            view! {
+                                <form class="story-prompt" on:submit=on_generate>
+                                    <textarea
+                                        class="notes-textarea"
+                                        required
+                                        placeholder=move_tr!("story-prompt-placeholder")
+                                        prop:value=move || prompt.get()
+                                        on:input=move |event| {
+                                            prompt.set(event_target_value(&event));
+                                        }
+                                        disabled=move || is_streaming.get()
+                                    />
+                                    <div class="story-actions">
+                                        <button type="submit" class="btn-primary">
+                                            {move || {
+                                                if is_streaming.get() {
+                                                    move_tr!("story-stop")
+                                                } else if error_msg.get().is_some() {
+                                                    move_tr!("story-retry")
+                                                } else {
+                                                    move_tr!("story-generate")
+                                                }
+                                            }}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn-icon"
+                                            title=move_tr!("story-settings")
+                                            on:click=move |_| show_settings.set(true)
+                                        >
+                                            <Icon name="settings" size=18 />
+                                        </button>
+                                    </div>
+                                </form>
+                            },
+                        )
                     }
                 }}
             </div>
@@ -230,58 +241,61 @@ fn ViewStoryView(char_id: Uuid, story_id: Uuid, stories: RwSignal<Vec<Story>>) -
     let navigate = use_navigate();
 
     view! {
-        {move || story.get().map(|story| {
-            let navigate = navigate.clone();
+        {move || {
+            story
+                .get()
+                .map(|story| {
+                    let navigate = navigate.clone();
+                    let on_delete = move |_| {
+                        stories.update(|list| list.retain(|story| story.id != story_id));
+                        storage::save_stories(&char_id, &stories.get_untracked());
+                        if let Some(uid) = crate::firebase::current_uid() {
+                            storage::queue::push(storage::queue::CloudOp::DeleteStory {
+                                uid,
+                                char_id,
+                                story_id,
+                            });
+                        }
+                        navigate(&format!("/c/{char_id}/story"), Default::default());
+                    };
+                    let on_copy = move |_| {
+                        let content = stories
+                            .with(|list| {
+                                list.iter()
+                                    .find(|story| story.id == story_id)
+                                    .map(|story| story.content.clone())
+                            });
+                        if let Some(text) = content {
+                            crate::export::copy_to_clipboard(&text);
+                        }
+                    };
 
-            let on_delete = move |_| {
-                stories.update(|list| list.retain(|story| story.id != story_id));
-                storage::save_stories(&char_id, &stories.get_untracked());
-                if let Some(uid) = crate::firebase::current_uid() {
-                    storage::queue::push(storage::queue::CloudOp::DeleteStory {
-                        uid,
-                        char_id,
-                        story_id,
-                    });
-                }
-                navigate(&format!("/c/{char_id}/story"), Default::default());
-            };
-
-            let on_copy = move |_| {
-                let content = stories.with(|list| {
-                    list.iter()
-                        .find(|story| story.id == story_id)
-                        .map(|story| story.content.clone())
-                });
-                if let Some(text) = content {
-                    crate::export::copy_to_clipboard(&text);
-                }
-            };
-
-            view! {
-                <div class="story-view">
-                    <div class="story-view-header">
-                        <h2>{story.title.clone()}</h2>
-                        <div class="story-view-date">{story.short_date().to_string()}</div>
-                    </div>
-                    <div class="story-view-prompt">
-                        <em>{story.prompt.clone()}</em>
-                    </div>
-                    <div class="story-content">
-                        <pre>{story.content}</pre>
-                    </div>
-                    <div class="story-actions">
-                        <button on:click=on_copy>
-                            <Icon name="copy" size=16 />
-                            {move_tr!("story-copy")}
-                        </button>
-                        <button class="btn-danger" on:click=on_delete>
-                            <Icon name="trash-2" size=16 />
-                            {move_tr!("story-delete")}
-                        </button>
-                    </div>
-                </div>
-            }
-        })}
+                    view! {
+                        <div class="story-view">
+                            <div class="story-view-header">
+                                <h2>{story.title.clone()}</h2>
+                                <div class="story-view-date">{story.short_date().to_string()}</div>
+                            </div>
+                            <div class="story-view-prompt">
+                                <em>{story.prompt.clone()}</em>
+                            </div>
+                            <div class="story-content">
+                                <pre>{story.content}</pre>
+                            </div>
+                            <div class="story-actions">
+                                <button on:click=on_copy>
+                                    <Icon name="copy" size=16 />
+                                    {move_tr!("story-copy")}
+                                </button>
+                                <button class="btn-danger" on:click=on_delete>
+                                    <Icon name="trash-2" size=16 />
+                                    {move_tr!("story-delete")}
+                                </button>
+                            </div>
+                        </div>
+                    }
+                })
+        }}
     }
 }
 
@@ -303,12 +317,10 @@ pub fn CharacterStory() -> impl IntoView {
                 <StorySidebar char_id stories />
                 <main class="reference-main">
                     {move || match story_id() {
-                        Some(sid) => Either::Left(view! {
-                            <ViewStoryView char_id story_id=sid stories />
-                        }),
-                        None => Either::Right(view! {
-                            <NewStoryView char_id stories settings />
-                        }),
+                        Some(sid) => {
+                            Either::Left(view! { <ViewStoryView char_id story_id=sid stories /> })
+                        }
+                        None => Either::Right(view! { <NewStoryView char_id stories settings /> }),
                     }}
                 </main>
             </div>

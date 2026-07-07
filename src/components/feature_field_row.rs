@@ -42,15 +42,22 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                     placeholder=move_tr!("description")
                     prop:value=desc.clone()
                     on:change=move |e| {
-                        feature_name.with_value(|key| {
-                            store.core().features().data().update(|m| {
-                                if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                    && let Some(f) = fields.get_mut(field_idx)
-                                {
-                                    f.description = event_target_value(&e);
-                                }
+                        feature_name
+                            .with_value(|key| {
+                                store
+                                    .core()
+                                    .features()
+                                    .data()
+                                    .update(|m| {
+                                        if let Some(fields) = m
+                                            .get_mut(key.as_str())
+                                            .map(|e| &mut e.fields)
+                                            && let Some(f) = fields.get_mut(field_idx)
+                                        {
+                                            f.description = event_target_value(&e);
+                                        }
+                                    });
                             });
-                        });
                     }
                 />
             }
@@ -71,20 +78,28 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                             prop:value=used_val
                             on:input=move |e| {
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    feature_name.with_value(|key| {
-                                        store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                && let Some(f) = fields.get_mut(field_idx)
-                                                && let FeatureValue::Die { used, .. } = &mut f.value
-                                            {
-                                                *used = value.min(max);
-                                            }
+                                    feature_name
+                                        .with_value(|key| {
+                                            store
+                                                .core()
+                                                .features()
+                                                .data()
+                                                .update(|m| {
+                                                    if let Some(fields) = m
+                                                        .get_mut(key.as_str())
+                                                        .map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                        && let FeatureValue::Die { used, .. } = &mut f.value
+                                                    {
+                                                        *used = value.min(max);
+                                                    }
+                                                });
                                         });
-                                    });
                                 }
                             }
                         />
-                        " / " {max}
+                        " / "
+                        {max}
                     </SlotBox>
                 }))
             }
@@ -118,16 +133,23 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                             prop:value=used_val
                             on:input=move |e| {
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    feature_name.with_value(|key| {
-                                        store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                && let Some(f) = fields.get_mut(field_idx)
-                                                && let FeatureValue::Points { used, .. } = &mut f.value
-                                            {
-                                                *used = value;
-                                            }
+                                    feature_name
+                                        .with_value(|key| {
+                                            store
+                                                .core()
+                                                .features()
+                                                .data()
+                                                .update(|m| {
+                                                    if let Some(fields) = m
+                                                        .get_mut(key.as_str())
+                                                        .map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                        && let FeatureValue::Points { used, .. } = &mut f.value
+                                                    {
+                                                        *used = value;
+                                                    }
+                                                });
                                         });
-                                    });
                                 }
                             }
                         />
@@ -139,16 +161,23 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                             prop:value=max_val
                             on:input=move |e| {
                                 if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                    feature_name.with_value(|key| {
-                                        store.core().features().data().update(|m| {
-                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                && let Some(f) = fields.get_mut(field_idx)
-                                                && let FeatureValue::Points { max, .. } = &mut f.value
-                                            {
-                                                *max = value;
-                                            }
+                                    feature_name
+                                        .with_value(|key| {
+                                            store
+                                                .core()
+                                                .features()
+                                                .data()
+                                                .update(|m| {
+                                                    if let Some(fields) = m
+                                                        .get_mut(key.as_str())
+                                                        .map(|e| &mut e.fields)
+                                                        && let Some(f) = fields.get_mut(field_idx)
+                                                        && let FeatureValue::Points { max, .. } = &mut f.value
+                                                    {
+                                                        *max = value;
+                                                    }
+                                                });
                                         });
-                                    });
                                 }
                             }
                         />
@@ -179,21 +208,16 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                         .map(|opt| {
                             let action_icon = opt.action.map(|action_type| {
                                 let title = i18n.tr(action_type.tr_key());
-                                view! {
-                                    <Icon name=action_type.icon_name() title=title />
-                                }
+                                view! { <Icon name=action_type.icon_name() title=title /> }
                             });
                             let cost_str = (opt.cost > 0).then(|| format!(" ({})", opt.cost));
                             let label = opt.label().to_string();
                             view! {
                                 <div class="entry-item choice-entry-readonly">
                                     <div class="entry-content">
-                                        {action_icon}
-                                        <EntryName>{label}</EntryName>
+                                        {action_icon} <EntryName>{label}</EntryName>
                                     </div>
-                                    <div class="entry-actions">
-                                        {cost_str}
-                                    </div>
+                                    <div class="entry-actions">{cost_str}</div>
                                 </div>
                             }
                         })
@@ -287,13 +311,15 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                         options=suggestions
                                         badge_key="option-level-badge"
                                         on_input=move |input, resolved| {
-                                            feature_name.with_value(|key| {
+                                            feature_name
+                                                .with_value(|key| {
                                                     let (cost, opt_description) = resolved
                                                         .as_ref()
                                                         .map(|name| {
                                                             let classes = store.core().identity().classes().read();
                                                             let data = store.core().features().data().read();
-                                                            let char_fields = data.get(key.as_str())
+                                                            let char_fields = data
+                                                                .get(key.as_str())
                                                                 .map(|e| e.fields.as_slice())
                                                                 .unwrap_or(&[]);
                                                             registry
@@ -304,66 +330,89 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                                                 .unwrap_or_default()
                                                         })
                                                         .unwrap_or_default();
-                                                    store.core().features().data().update(|m| {
-                                                        if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                            && let Some(f) = fields.get_mut(field_idx)
-                                                            && let FeatureValue::Choice { options } = &mut f.value
-                                                            && let Some(opt) = options.get_mut(opt_idx)
-                                                        {
-                                                            if let Some(key) = resolved {
-                                                                opt.name = key;
-                                                                opt.label = Some(input);
-                                                            } else {
-                                                                opt.set_label(input);
-                                                            }
-                                                            opt.description = opt_description.unwrap_or_default();
-                                                            if let Some(cost) = cost {
-                                                                opt.cost = cost;
-                                                            }
-                                                        }
-                                                    });
-                                            });
-                                        }
-                                    />
-                                    {(has_cost).then(move || view! {
-                                        <input
-                                            type="number"
-                                            class="choice-cost"
-                                            min="0"
-                                            prop:value=opt_cost.clone()
-                                            on:input=move |e| {
-                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                    feature_name.with_value(|key| {
-                                                        store.core().features().data().update(|m| {
-                                                            if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
+                                                    store
+                                                        .core()
+                                                        .features()
+                                                        .data()
+                                                        .update(|m| {
+                                                            if let Some(fields) = m
+                                                                .get_mut(key.as_str())
+                                                                .map(|e| &mut e.fields)
                                                                 && let Some(f) = fields.get_mut(field_idx)
                                                                 && let FeatureValue::Choice { options } = &mut f.value
                                                                 && let Some(opt) = options.get_mut(opt_idx)
                                                             {
-                                                                opt.cost = value;
+                                                                if let Some(key) = resolved {
+                                                                    opt.name = key;
+                                                                    opt.label = Some(input);
+                                                                } else {
+                                                                    opt.set_label(input);
+                                                                }
+                                                                opt.description = opt_description.unwrap_or_default();
+                                                                if let Some(cost) = cost {
+                                                                    opt.cost = cost;
+                                                                }
                                                             }
                                                         });
-                                                    });
-                                                }
+                                                });
+                                        }
+                                    />
+                                    {(has_cost)
+                                        .then(move || {
+                                            view! {
+                                                <input
+                                                    type="number"
+                                                    class="choice-cost"
+                                                    min="0"
+                                                    prop:value=opt_cost.clone()
+                                                    on:input=move |e| {
+                                                        if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                            feature_name
+                                                                .with_value(|key| {
+                                                                    store
+                                                                        .core()
+                                                                        .features()
+                                                                        .data()
+                                                                        .update(|m| {
+                                                                            if let Some(fields) = m
+                                                                                .get_mut(key.as_str())
+                                                                                .map(|e| &mut e.fields)
+                                                                                && let Some(f) = fields.get_mut(field_idx)
+                                                                                && let FeatureValue::Choice { options } = &mut f.value
+                                                                                && let Some(opt) = options.get_mut(opt_idx)
+                                                                            {
+                                                                                opt.cost = value;
+                                                                            }
+                                                                        });
+                                                                });
+                                                        }
+                                                    }
+                                                />
                                             }
-                                        />
-                                    })}
+                                        })}
                                 </div>
                                 <div class="entry-actions">
                                     <button
                                         class="btn-remove"
                                         on:click=move |_| {
-                                            feature_name.with_value(|key| {
-                                                store.core().features().data().update(|m| {
-                                                    if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                        && let Some(f) = fields.get_mut(field_idx)
-                                                        && let FeatureValue::Choice { options } = &mut f.value
-                                                        && opt_idx < options.len()
-                                                    {
-                                                        options.remove(opt_idx);
-                                                    }
+                                            feature_name
+                                                .with_value(|key| {
+                                                    store
+                                                        .core()
+                                                        .features()
+                                                        .data()
+                                                        .update(|m| {
+                                                            if let Some(fields) = m
+                                                                .get_mut(key.as_str())
+                                                                .map(|e| &mut e.fields)
+                                                                && let Some(f) = fields.get_mut(field_idx)
+                                                                && let FeatureValue::Choice { options } = &mut f.value
+                                                                && opt_idx < options.len()
+                                                            {
+                                                                options.remove(opt_idx);
+                                                            }
+                                                        });
                                                 });
-                                            });
                                         }
                                     >
                                         <Icon name="x" />
@@ -374,17 +423,24 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                                     placeholder=move_tr!("description")
                                     prop:value=opt_desc.clone()
                                     on:change=move |e| {
-                                        feature_name.with_value(|key| {
-                                            store.core().features().data().update(|m| {
-                                                if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                                    && let Some(f) = fields.get_mut(field_idx)
-                                                    && let FeatureValue::Choice { options } = &mut f.value
-                                                    && let Some(opt) = options.get_mut(opt_idx)
-                                                {
-                                                    opt.description = event_target_value(&e);
-                                                }
+                                        feature_name
+                                            .with_value(|key| {
+                                                store
+                                                    .core()
+                                                    .features()
+                                                    .data()
+                                                    .update(|m| {
+                                                        if let Some(fields) = m
+                                                            .get_mut(key.as_str())
+                                                            .map(|e| &mut e.fields)
+                                                            && let Some(f) = fields.get_mut(field_idx)
+                                                            && let FeatureValue::Choice { options } = &mut f.value
+                                                            && let Some(opt) = options.get_mut(opt_idx)
+                                                        {
+                                                            opt.description = event_target_value(&e);
+                                                        }
+                                                    });
                                             });
-                                        });
                                     }
                                 />
                             </div>
@@ -414,16 +470,23 @@ pub fn FeatureFieldRow(feature_name: StoredValue<String>, field_idx: usize) -> i
                     <button
                         class="btn-primary"
                         on:click=move |_| {
-                            feature_name.with_value(|key| {
-                                store.core().features().data().update(|m| {
-                                    if let Some(fields) = m.get_mut(key.as_str()).map(|e| &mut e.fields)
-                                        && let Some(f) = fields.get_mut(field_idx)
-                                        && let FeatureValue::Choice { options } = &mut f.value
-                                    {
-                                        options.push(FeatureOption::default());
-                                    }
+                            feature_name
+                                .with_value(|key| {
+                                    store
+                                        .core()
+                                        .features()
+                                        .data()
+                                        .update(|m| {
+                                            if let Some(fields) = m
+                                                .get_mut(key.as_str())
+                                                .map(|e| &mut e.fields)
+                                                && let Some(f) = fields.get_mut(field_idx)
+                                                && let FeatureValue::Choice { options } = &mut f.value
+                                            {
+                                                options.push(FeatureOption::default());
+                                            }
+                                        });
                                 });
-                            });
                         }
                     >
                         {move_tr!("btn-add-option")}

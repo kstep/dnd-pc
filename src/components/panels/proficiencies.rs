@@ -41,9 +41,9 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                     store.core().proficiencies().update(|profs| profs.toggle(prof));
                                 }
                             >
-                                <Icon
-                                    name=Signal::derive(move || if active.get() { "circle-dot" } else { "circle-dashed" })
-                                />
+                                <Icon name=Signal::derive(move || {
+                                    if active.get() { "circle-dot" } else { "circle-dashed" }
+                                }) />
                             </SlotBox>
                         }
                     })
@@ -142,7 +142,9 @@ pub fn ProficienciesPanel() -> impl IntoView {
                                         <select
                                             class="tool-ability"
                                             on:change=move |e| {
-                                                let Some(ability) = Ability::from_u8_str(&event_target_value(&e)) else { return };
+                                                let Some(ability) = Ability::from_u8_str(
+                                                    &event_target_value(&e),
+                                                ) else { return };
                                                 if let Some(entry) = tools.write().get_mut(i) {
                                                     entry.ability = ability;
                                                 }

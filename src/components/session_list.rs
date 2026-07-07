@@ -28,34 +28,34 @@ pub fn SessionList(items: Vec<SessionListItem>) -> impl IntoView {
                 .into_iter()
                 .map(|item| {
                     let has_desc = !item.description.is_empty() || item.description_view.is_some();
-                    let description_content = item.description_view.or_else(|| {
-                        (!item.description.is_empty()).then(|| {
-                            view! { <Markdown text=item.description.clone() /> }.into_any()
-                        })
-                    });
-                    let description = description_content.map(|content| {
-                        view! { <div class="entry-desc">{content}</div> }
-                    });
+                    let description_content = item
+                        .description_view
+                        .or_else(|| {
+                            (!item.description.is_empty())
+                                .then(|| {
+                                    view! { <Markdown text=item.description.clone() /> }.into_any()
+                                })
+                        });
+                    let description = description_content
+                        .map(|content| {
+                            view! { <div class="entry-desc">{content}</div> }
+                        });
                     view! {
                         <div class="entry-item">
                             {if has_desc {
                                 Either::Left(view! { <ToggleButton /> })
                             } else {
-                                Either::Right(view! {
-                                    <button class="btn-toggle-desc" disabled=true />
-                                })
+                                Either::Right(
+                                    view! { <button class="btn-toggle-desc" disabled=true /> },
+                                )
                             }}
                             <div class="entry-content">
-                                {item.name_prefix}
-                                <EntryName>{item.name}</EntryName>
+                                {item.name_prefix} <EntryName>{item.name}</EntryName>
                             </div>
-                            {item.badge.map(|badges| view! {
-                                <div class="entry-badges">{badges}</div>
-                            })}
-                            <div class="entry-actions">
-                                {item.name_extra}
-                                {item.actions}
-                            </div>
+                            {item
+                                .badge
+                                .map(|badges| view! { <div class="entry-badges">{badges}</div> })}
+                            <div class="entry-actions">{item.name_extra} {item.actions}</div>
                             {description}
                         </div>
                     }

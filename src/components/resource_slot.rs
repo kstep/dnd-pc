@@ -29,7 +29,8 @@ pub fn ResourceSlot(
                     set_remaining(value);
                 }
             />
-            " / " {max}
+            " / "
+            {max}
             <button
                 class="btn-icon"
                 title=move_tr!("spend")

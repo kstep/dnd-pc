@@ -67,10 +67,13 @@ pub fn SpeciesReference() -> impl IntoView {
                     <h1>{title}</h1>
                     <Markdown text=description />
 
-                    {(!features.is_empty()).then(|| view! {
-                        <h2>{move_tr!("ref-features")}</h2>
-                        <ReferenceFeaturesView features />
-                    })}
+                    {(!features.is_empty())
+                        .then(|| {
+                            view! {
+                                <h2>{move_tr!("ref-features")}</h2>
+                                <ReferenceFeaturesView features />
+                            }
+                        })}
                 </div>
             }
             .into_any(),
@@ -91,15 +94,16 @@ pub fn SpeciesReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     <RefSidebarEntries
-                        names=Signal::derive(move || registry.with_species_defs(|defs| {
-                            defs.keys().map(|name| name.to_string()).collect()
-                        }))
+                        names=Signal::derive(move || {
+                            registry
+                                .with_species_defs(|defs| {
+                                    defs.keys().map(|name| name.to_string()).collect()
+                                })
+                        })
                         kind=|n| IndexEntry::Species(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">
-                    {detail}
-                </main>
+                <main class="reference-main">{detail}</main>
             </div>
         </div>
     }

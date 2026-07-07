@@ -355,20 +355,19 @@ fn FeatureSpellcastingSection(
             <div class="section-header">
                 <h3>{panel_title}</h3>
                 <Ref href=build_href scroll=false attr:class="entry-spell-link">
-                    "← "{move_tr!("tab-build")}
+                    "← "
+                    {move_tr!("tab-build")}
                 </Ref>
             </div>
 
             <div class="slot-box-list">
                 <SlotBox label=move_tr!("casting-ability")>
-                    <select
-                        on:change=move |e| {
-                            let value = event_target_value(&e);
-                            if let Some(ability) = Ability::from_u8_str(&value) {
-                                update_spells(feat_name, store, |sc| sc.casting_ability = ability);
-                            }
+                    <select on:change=move |e| {
+                        let value = event_target_value(&e);
+                        if let Some(ability) = Ability::from_u8_str(&value) {
+                            update_spells(feat_name, store, |sc| sc.casting_ability = ability);
                         }
-                    >
+                    }>
                         {Ability::iter()
                             .map(|ability| {
                                 let tr_key = ability.tr_key();
@@ -385,14 +384,10 @@ fn FeatureSpellcastingSection(
                     </select>
                 </SlotBox>
                 <SlotBox label=move_tr!("spell-save-dc")>
-                    <span class="stat-highlight">
-                        {move || spell_save_dc.get().to_string()}
-                    </span>
+                    <span class="stat-highlight">{move || spell_save_dc.get().to_string()}</span>
                 </SlotBox>
                 <SlotBox label=move_tr!("spell-attack")>
-                    <span class="stat-highlight">
-                        {move || format_bonus(spell_attack.get())}
-                    </span>
+                    <span class="stat-highlight">{move || format_bonus(spell_attack.get())}</span>
                 </SlotBox>
             </div>
 
@@ -403,16 +398,21 @@ fn FeatureSpellcastingSection(
                     <button
                         class="btn-toggle-desc"
                         on:click=move |_| {
-                            update_spells(feat_name, store, |sc| {
-                                if let Some(known) = &mut sc.known {
-                                    known.sort_by(|a, b| {
-                                        b.sticky
-                                            .cmp(&a.sticky)
-                                            .then_with(|| a.level.cmp(&b.level))
-                                            .then_with(|| a.name.cmp(&b.name))
-                                    });
-                                }
-                            });
+                            update_spells(
+                                feat_name,
+                                store,
+                                |sc| {
+                                    if let Some(known) = &mut sc.known {
+                                        known
+                                            .sort_by(|a, b| {
+                                                b.sticky
+                                                    .cmp(&a.sticky)
+                                                    .then_with(|| a.level.cmp(&b.level))
+                                                    .then_with(|| a.name.cmp(&b.name))
+                                            });
+                                    }
+                                },
+                            );
                         }
                     >
                         <Icon name="arrow-down-a-z" size=16 />
@@ -421,121 +421,169 @@ fn FeatureSpellcastingSection(
                 <div class="entry-list">
                     {move || {
                         let guard = store.core().features().data().read();
-                        feat_name.with_value(|key| {
-                            guard
-                                .get(key.as_str())
-                                .and_then(|e| e.spells.as_ref())
-                                .and_then(|sc| sc.known.as_ref())
-                        }).map(|known| known
-                            .iter()
-                            .enumerate()
-                            .map(|(i, spell)| {
-                                let spell_name = spell.name.clone();
-                                let spell_label = spell.label().to_string();
-                                let spell_level = spell.level.to_string();
-                                let spell_sticky = spell.sticky;
-                                let options = pick_options(spell.level, false);
-                                // Spellbook spells autocomplete from the full class
-                                // spell list (prefer_known = false).
-                                let list_id = pick_list_id.run((spell.level, false));
-                                view! {
-                                    <div class="entry-item">
-                                        <ToggleButton />
-                                        <div class="entry-content">
-                                            {if spell_sticky {
-                                                Either::Left(view! {
-                                                    <EntryName>{spell_label.clone()}</EntryName>
-                                                })
-                                            } else {
-                                                Either::Right(view! {
-                                                    <DatalistInput
-                                                        value=spell_label
-                                                        placeholder=move_tr!("spell-name")
-                                                        class="entry-name"
-                                                        list_id=list_id
-                                                        options=options
-                                                        badge_key="spell-level-badge"
-                                                        on_input=move |input, resolved| {
-                                                            let (desc, level) = lookup_pick(options, resolved.as_deref());
-                                                            update_known_spell(feat_name, store, i, |spell| {
-                                                                apply_spell_pick(spell, input, resolved, desc, level);
-                                                            });
+                        feat_name
+                            .with_value(|key| {
+                                guard
+                                    .get(key.as_str())
+                                    .and_then(|e| e.spells.as_ref())
+                                    .and_then(|sc| sc.known.as_ref())
+                            })
+                            .map(|known| {
+                                known
+                                    .iter()
+                                    .enumerate()
+                                    .map(|(i, spell)| {
+                                        let spell_name = spell.name.clone();
+                                        let spell_label = spell.label().to_string();
+                                        let spell_level = spell.level.to_string();
+                                        let spell_sticky = spell.sticky;
+                                        let options = pick_options(spell.level, false);
+                                        let list_id = pick_list_id.run((spell.level, false));
+                                        // Spellbook spells autocomplete from the full class
+                                        // spell list (prefer_known = false).
+                                        view! {
+                                            <div class="entry-item">
+                                                <ToggleButton />
+                                                <div class="entry-content">
+                                                    {if spell_sticky {
+                                                        Either::Left(
+                                                            view! { <EntryName>{spell_label.clone()}</EntryName> },
+                                                        )
+                                                    } else {
+                                                        Either::Right(
+                                                            view! {
+                                                                <DatalistInput
+                                                                    value=spell_label
+                                                                    placeholder=move_tr!("spell-name")
+                                                                    class="entry-name"
+                                                                    list_id=list_id
+                                                                    options=options
+                                                                    badge_key="spell-level-badge"
+                                                                    on_input=move |input, resolved| {
+                                                                        let (desc, level) = lookup_pick(
+                                                                            options,
+                                                                            resolved.as_deref(),
+                                                                        );
+                                                                        update_known_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| {
+                                                                                apply_spell_pick(spell, input, resolved, desc, level);
+                                                                            },
+                                                                        );
+                                                                    }
+                                                                />
+                                                            },
+                                                        )
+                                                    }}
+                                                    <input
+                                                        type="number"
+                                                        class="short-input"
+                                                        min="0"
+                                                        max="9"
+                                                        placeholder="Lv"
+                                                        disabled=spell_sticky
+                                                        prop:value=spell_level
+                                                        on:change=move |e| {
+                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                update_known_spell(
+                                                                    feat_name,
+                                                                    store,
+                                                                    i,
+                                                                    |spell| spell.level = value,
+                                                                );
+                                                            }
                                                         }
-                                            />
-                                                })
-                                            }}
-                                            <input
-                                                type="number"
-                                                class="short-input"
-                                                min="0"
-                                                max="9"
-                                                placeholder="Lv"
-                                                disabled=spell_sticky
-                                                prop:value=spell_level
-                                                on:change=move |e| {
-                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                        update_known_spell(feat_name, store, i, |spell| spell.level = value);
+                                                    />
+                                                </div>
+                                                <div class="entry-actions">
+                                                    <Show when=move || !spell_sticky>
+                                                        <button
+                                                            class="btn-remove"
+                                                            on:click=move |_| {
+                                                                update_spells(
+                                                                    feat_name,
+                                                                    store,
+                                                                    |sc| {
+                                                                        if let Some(known) = &mut sc.known && i < known.len() {
+                                                                            known.remove(i);
+                                                                        }
+                                                                    },
+                                                                );
+                                                            }
+                                                        >
+                                                            <Icon name="x" />
+                                                        </button>
+                                                    </Show>
+                                                </div>
+                                                {
+                                                    let info = lookup_spell_meta(registry, &spell_name);
+                                                    view! {
+                                                        {info
+                                                            .clone()
+                                                            .map(|(meta, components)| {
+                                                                view! { <SpellInfoBar meta components /> }
+                                                            })}
+                                                        {if info.is_some() {
+                                                            Either::Left(
+                                                                view! {
+                                                                    <div class="entry-desc">
+                                                                        <Markdown text=move || read_known_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| spell.description.clone(),
+                                                                        ) />
+                                                                    </div>
+                                                                },
+                                                            )
+                                                        } else {
+                                                            Either::Right(
+                                                                view! {
+                                                                    <textarea
+                                                                        class="entry-desc"
+                                                                        placeholder=move_tr!("description")
+                                                                        prop:value=move || read_known_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| spell.description.clone(),
+                                                                        )
+                                                                        on:change=move |e| {
+                                                                            let value = event_target_value(&e);
+                                                                            update_known_spell(
+                                                                                feat_name,
+                                                                                store,
+                                                                                i,
+                                                                                |spell| spell.description = value,
+                                                                            );
+                                                                        }
+                                                                    />
+                                                                },
+                                                            )
+                                                        }}
                                                     }
                                                 }
-                                            />
-                                        </div>
-                                        <div class="entry-actions">
-                                            <Show when=move || !spell_sticky>
-                                                <button
-                                                    class="btn-remove"
-                                                    on:click=move |_| {
-                                                        update_spells(feat_name, store, |sc| {
-                                                            if let Some(known) = &mut sc.known
-                                                                && i < known.len()
-                                                            {
-                                                                known.remove(i);
-                                                            }
-                                                        });
-                                                    }
-                                                >
-                                                    <Icon name="x" />
-                                                </button>
-                                            </Show>
-                                        </div>
-                                        {
-                                            let info = lookup_spell_meta(registry, &spell_name);
-                                            view! {
-                                                {info.clone().map(|(meta, components)| view! { <SpellInfoBar meta components /> })}
-                                                {if info.is_some() {
-                                                    Either::Left(view! {
-                                                        <div class="entry-desc">
-                                                            <Markdown text=move || read_known_spell(feat_name, store, i, |spell| spell.description.clone()) />
-                                                        </div>
-                                                    })
-                                                } else {
-                                                    Either::Right(view! {
-                                                        <textarea
-                                                            class="entry-desc"
-                                                            placeholder=move_tr!("description")
-                                                            prop:value=move || read_known_spell(feat_name, store, i, |spell| spell.description.clone())
-                                                            on:change=move |e| {
-                                                                let value = event_target_value(&e);
-                                                                update_known_spell(feat_name, store, i, |spell| spell.description = value);
-                                                            }
-                                                        />
-                                                    })
-                                                }}
-                                            }
+                                            </div>
                                         }
-                                    </div>
-                                }
+                                    })
+                                    .collect_view()
                             })
-                            .collect_view())
                     }}
                 </div>
                 <button
                     class="btn-primary"
                     on:click=move |_| {
-                        update_spells(feat_name, store, |sc| {
-                            if let Some(known) = &mut sc.known {
-                                known.push(Spell::default());
-                            }
-                        });
+                        update_spells(
+                            feat_name,
+                            store,
+                            |sc| {
+                                if let Some(known) = &mut sc.known {
+                                    known.push(Spell::default());
+                                }
+                            },
+                        );
                     }
                 >
                     {move_tr!("btn-add-spell")}
@@ -544,20 +592,31 @@ fn FeatureSpellcastingSection(
 
             // Prepared spells section (or single-tier spell list)
             <div class="section-header">
-                <h4>{move || if is_two_tier.get() { move_tr!("prepared-spells") } else { move_tr!("spells") }}</h4>
+                <h4>
+                    {move || {
+                        if is_two_tier.get() {
+                            move_tr!("prepared-spells")
+                        } else {
+                            move_tr!("spells")
+                        }
+                    }}
+                </h4>
                 <button
                     class="btn-toggle-desc"
                     on:click=move |_| {
-                        update_spells(feat_name, store, |sc| {
-                            sc.spells.sort_by(|a, b| {
-                                b.sticky
-                                    .cmp(&a.sticky)
-                                    .then_with(|| a.level.cmp(&b.level))
-                                    .then_with(|| {
-                                        a.name.cmp(&b.name)
-                                    })
-                            });
-                        });
+                        update_spells(
+                            feat_name,
+                            store,
+                            |sc| {
+                                sc.spells
+                                    .sort_by(|a, b| {
+                                        b.sticky
+                                            .cmp(&a.sticky)
+                                            .then_with(|| a.level.cmp(&b.level))
+                                            .then_with(|| { a.name.cmp(&b.name) })
+                                    });
+                            },
+                        );
                     }
                 >
                     <Icon name="arrow-down-a-z" size=16 />
@@ -567,166 +626,249 @@ fn FeatureSpellcastingSection(
                 {move || {
                     let guard = store.core().features().data().read();
                     let two_tier = is_two_tier.get();
-                    feat_name.with_value(|key| {
-                        guard
-                            .get(key.as_str())
-                            .and_then(|e| e.spells.as_ref())
-                    }).map(|sc| sc.spells
-                        .iter()
-                        .enumerate()
-                        .map(|(i, spell)| {
-                            let spell_name = spell.name.clone();
-                            let spell_label = spell.label().to_string();
-                            let spell_level = spell.level.to_string();
-                            let spell_sticky = spell.sticky;
-                            let has_free_uses = spell.free_uses.is_some();
-                            // Two-tier: autocomplete from spellbook; single-tier/cantrips: from registry
-                            let options = pick_options(spell.level, two_tier);
-                            // Prepared spells: two-tier casters autocomplete from
-                            // the spellbook subset, single-tier from the full list.
-                            let list_id = pick_list_id.run((spell.level, two_tier));
-                            view! {
-                                <div class="entry-item">
-                                    <ToggleButton />
-                                    <div class="entry-content">
-                                        {if spell_sticky {
-                                            Either::Left(view! {
-                                                <EntryName>{spell_label.clone()}</EntryName>
-                                            })
-                                        } else {
-                                            Either::Right(view! {
-                                                <DatalistInput
-                                                    value=spell_label
-                                                    placeholder=move_tr!("spell-name")
-                                                    class="entry-name"
-                                                    list_id=list_id
-                                                    options=options
-                                                    badge_key="spell-level-badge"
-                                                    on_input=move |input, resolved| {
-                                                        let (desc, level) = lookup_pick(options, resolved.as_deref());
-                                                        update_spell(feat_name, store, i, |spell| {
-                                                            apply_spell_pick(spell, input, resolved, desc, level);
-                                                        });
-                                                    }
-                                                />
-                                            })
-                                        }}
-                                        <input
-                                            type="number"
-                                            class="short-input"
-                                            min="0"
-                                            max="9"
-                                            placeholder="Lv"
-                                            disabled=spell_sticky
-                                            prop:value=spell_level
-                                            on:change=move |e| {
-                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                    update_spell(feat_name, store, i, |spell| spell.level = value);
-                                                }
-                                            }
-                                        />
-                                    </div>
-                                    <div class="entry-actions">
-                                        <Show when=move || !spell_sticky>
-                                            <button
-                                                class="btn-remove"
-                                                on:click=move |_| {
-                                                    update_spells(feat_name, store, |sc| {
-                                                        if i < sc.spells.len() {
-                                                            sc.spells.remove(i);
-                                                        }
-                                                    });
-                                                }
-                                            >
-                                                <Icon name="x" />
-                                            </button>
-                                        </Show>
-                                    </div>
-                                    <Show when=move || has_free_uses || has_cost_field>
-                                        <div class="entry-full-row spell-cost-row">
-                                            <Show when=move || has_free_uses>
-                                                <SlotBox label=move_tr!("free-uses")>
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        prop:value=move || read_spell(feat_name, store, i, |spell| {
-                                                            spell.free_uses.as_ref().map(|fu| fu.used.to_string()).unwrap_or_default()
-                                                        })
-                                                        on:change=move |e| {
-                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                update_spell(feat_name, store, i, |spell| {
-                                                                    if let Some(fu) = &mut spell.free_uses {
-                                                                        fu.used = value;
-                                                                    }
-                                                                });
-                                                            }
-                                                        }
-                                                    />
-                                                    " / "
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        prop:value=move || read_spell(feat_name, store, i, |spell| {
-                                                            spell.free_uses.as_ref().map(|fu| fu.max.to_string()).unwrap_or_default()
-                                                        })
-                                                        on:change=move |e| {
-                                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                update_spell(feat_name, store, i, |spell| {
-                                                                    if let Some(fu) = &mut spell.free_uses {
-                                                                        fu.max = value;
-                                                                    }
-                                                                });
-                                                            }
-                                                        }
-                                                    />
-                                                </SlotBox>
-                                            </Show>
-                                            <SlotBox label=move_tr!("cost")>
+                    feat_name
+                        .with_value(|key| {
+                            guard.get(key.as_str()).and_then(|e| e.spells.as_ref())
+                        })
+                        .map(|sc| {
+                            sc
+                                .spells
+                                .iter()
+                                .enumerate()
+                                .map(|(i, spell)| {
+                                    let spell_name = spell.name.clone();
+                                    let spell_label = spell.label().to_string();
+                                    let spell_level = spell.level.to_string();
+                                    let spell_sticky = spell.sticky;
+                                    let has_free_uses = spell.free_uses.is_some();
+                                    let options = pick_options(spell.level, two_tier);
+                                    let list_id = pick_list_id.run((spell.level, two_tier));
+                                    // Two-tier: autocomplete from spellbook; single-tier/cantrips: from registry
+                                    // Prepared spells: two-tier casters autocomplete from
+                                    // the spellbook subset, single-tier from the full list.
+                                    view! {
+                                        <div class="entry-item">
+                                            <ToggleButton />
+                                            <div class="entry-content">
+                                                {if spell_sticky {
+                                                    Either::Left(
+                                                        view! { <EntryName>{spell_label.clone()}</EntryName> },
+                                                    )
+                                                } else {
+                                                    Either::Right(
+                                                        view! {
+                                                            <DatalistInput
+                                                                value=spell_label
+                                                                placeholder=move_tr!("spell-name")
+                                                                class="entry-name"
+                                                                list_id=list_id
+                                                                options=options
+                                                                badge_key="spell-level-badge"
+                                                                on_input=move |input, resolved| {
+                                                                    let (desc, level) = lookup_pick(
+                                                                        options,
+                                                                        resolved.as_deref(),
+                                                                    );
+                                                                    update_spell(
+                                                                        feat_name,
+                                                                        store,
+                                                                        i,
+                                                                        |spell| {
+                                                                            apply_spell_pick(spell, input, resolved, desc, level);
+                                                                        },
+                                                                    );
+                                                                }
+                                                            />
+                                                        },
+                                                    )
+                                                }}
                                                 <input
                                                     type="number"
+                                                    class="short-input"
                                                     min="0"
-                                                    prop:value=move || read_spell(feat_name, store, i, |spell| spell.cost.to_string())
+                                                    max="9"
+                                                    placeholder="Lv"
+                                                    disabled=spell_sticky
+                                                    prop:value=spell_level
                                                     on:change=move |e| {
                                                         if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                            update_spell(feat_name, store, i, |spell| spell.cost = value);
+                                                            update_spell(
+                                                                feat_name,
+                                                                store,
+                                                                i,
+                                                                |spell| spell.level = value,
+                                                            );
                                                         }
                                                     }
                                                 />
-                                                <Show when=move || has_cost_field>
-                                                    {cost_short.get_value()}
+                                            </div>
+                                            <div class="entry-actions">
+                                                <Show when=move || !spell_sticky>
+                                                    <button
+                                                        class="btn-remove"
+                                                        on:click=move |_| {
+                                                            update_spells(
+                                                                feat_name,
+                                                                store,
+                                                                |sc| {
+                                                                    if i < sc.spells.len() {
+                                                                        sc.spells.remove(i);
+                                                                    }
+                                                                },
+                                                            );
+                                                        }
+                                                    >
+                                                        <Icon name="x" />
+                                                    </button>
                                                 </Show>
-                                            </SlotBox>
-                                        </div>
-                                    </Show>
-                                        {
-                                            let info = lookup_spell_meta(registry, &spell_name);
-                                            view! {
-                                                {info.clone().map(|(meta, components)| view! { <SpellInfoBar meta components /> })}
-                                                {if info.is_some() {
-                                                    Either::Left(view! {
-                                                        <div class="entry-desc">
-                                                            <Markdown text=move || read_spell(feat_name, store, i, |spell| spell.description.clone()) />
-                                                        </div>
-                                                    })
-                                                } else {
-                                                    Either::Right(view! {
-                                                        <textarea
-                                                            class="entry-desc"
-                                                            placeholder=move_tr!("description")
-                                                            prop:value=move || read_spell(feat_name, store, i, |spell| spell.description.clone())
+                                            </div>
+                                            <Show when=move || has_free_uses || has_cost_field>
+                                                <div class="entry-full-row spell-cost-row">
+                                                    <Show when=move || has_free_uses>
+                                                        <SlotBox label=move_tr!("free-uses")>
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                prop:value=move || read_spell(
+                                                                    feat_name,
+                                                                    store,
+                                                                    i,
+                                                                    |spell| {
+                                                                        spell
+                                                                            .free_uses
+                                                                            .as_ref()
+                                                                            .map(|fu| fu.used.to_string())
+                                                                            .unwrap_or_default()
+                                                                    },
+                                                                )
+                                                                on:change=move |e| {
+                                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                        update_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| {
+                                                                                if let Some(fu) = &mut spell.free_uses {
+                                                                                    fu.used = value;
+                                                                                }
+                                                                            },
+                                                                        );
+                                                                    }
+                                                                }
+                                                            />
+                                                            " / "
+                                                            <input
+                                                                type="number"
+                                                                min="0"
+                                                                prop:value=move || read_spell(
+                                                                    feat_name,
+                                                                    store,
+                                                                    i,
+                                                                    |spell| {
+                                                                        spell
+                                                                            .free_uses
+                                                                            .as_ref()
+                                                                            .map(|fu| fu.max.to_string())
+                                                                            .unwrap_or_default()
+                                                                    },
+                                                                )
+                                                                on:change=move |e| {
+                                                                    if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                        update_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| {
+                                                                                if let Some(fu) = &mut spell.free_uses {
+                                                                                    fu.max = value;
+                                                                                }
+                                                                            },
+                                                                        );
+                                                                    }
+                                                                }
+                                                            />
+                                                        </SlotBox>
+                                                    </Show>
+                                                    <SlotBox label=move_tr!("cost")>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            prop:value=move || read_spell(
+                                                                feat_name,
+                                                                store,
+                                                                i,
+                                                                |spell| spell.cost.to_string(),
+                                                            )
                                                             on:change=move |e| {
-                                                                let value = event_target_value(&e);
-                                                                update_spell(feat_name, store, i, |spell| spell.description = value);
+                                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                                    update_spell(
+                                                                        feat_name,
+                                                                        store,
+                                                                        i,
+                                                                        |spell| spell.cost = value,
+                                                                    );
+                                                                }
                                                             }
                                                         />
-                                                    })
-                                                }}
+                                                        <Show when=move || {
+                                                            has_cost_field
+                                                        }>{cost_short.get_value()}</Show>
+                                                    </SlotBox>
+                                                </div>
+                                            </Show>
+                                            {
+                                                let info = lookup_spell_meta(registry, &spell_name);
+                                                view! {
+                                                    {info
+                                                        .clone()
+                                                        .map(|(meta, components)| {
+                                                            view! { <SpellInfoBar meta components /> }
+                                                        })}
+                                                    {if info.is_some() {
+                                                        Either::Left(
+                                                            view! {
+                                                                <div class="entry-desc">
+                                                                    <Markdown text=move || read_spell(
+                                                                        feat_name,
+                                                                        store,
+                                                                        i,
+                                                                        |spell| spell.description.clone(),
+                                                                    ) />
+                                                                </div>
+                                                            },
+                                                        )
+                                                    } else {
+                                                        Either::Right(
+                                                            view! {
+                                                                <textarea
+                                                                    class="entry-desc"
+                                                                    placeholder=move_tr!("description")
+                                                                    prop:value=move || read_spell(
+                                                                        feat_name,
+                                                                        store,
+                                                                        i,
+                                                                        |spell| spell.description.clone(),
+                                                                    )
+                                                                    on:change=move |e| {
+                                                                        let value = event_target_value(&e);
+                                                                        update_spell(
+                                                                            feat_name,
+                                                                            store,
+                                                                            i,
+                                                                            |spell| spell.description = value,
+                                                                        );
+                                                                    }
+                                                                />
+                                                            },
+                                                        )
+                                                    }}
+                                                }
                                             }
-                                        }
-                                </div>
-                            }
+                                        </div>
+                                    }
+                                })
+                                .collect_view()
                         })
-                        .collect_view())
                 }}
             </div>
             <button
@@ -829,9 +971,9 @@ pub fn SpellcastingPanel() -> impl IntoView {
                         .map(|pool| {
                             let slots: Vec<_> = character.spell_slots.iter_pool(pool).collect();
                             let pool_header = if multiple_pools {
-                                Some(view! {
-                                    <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5>
-                                })
+                                Some(
+                                    view! { <h5 class="pool-header">{i18n.tr(pool.tr_key())}</h5> },
+                                )
                             } else {
                                 None
                             };
@@ -853,11 +995,14 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         prop:value=slot.used.to_string()
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                store.core().spell_slots().update(|pools| {
-                                                                    if let Some(slots) = pools.get_mut(&pool) {
-                                                                        slots[idx].used = value;
-                                                                    }
-                                                                });
+                                                                store
+                                                                    .core()
+                                                                    .spell_slots()
+                                                                    .update(|pools| {
+                                                                        if let Some(slots) = pools.get_mut(&pool) {
+                                                                            slots[idx].used = value;
+                                                                        }
+                                                                    });
                                                             }
                                                         }
                                                     />
@@ -869,11 +1014,14 @@ pub fn SpellcastingPanel() -> impl IntoView {
                                                         prop:value=slot.total.to_string()
                                                         on:change=move |e| {
                                                             if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                                store.core().spell_slots().update(|pools| {
-                                                                    if let Some(slots) = pools.get_mut(&pool) {
-                                                                        slots[idx].total = value;
-                                                                    }
-                                                                });
+                                                                store
+                                                                    .core()
+                                                                    .spell_slots()
+                                                                    .update(|pools| {
+                                                                        if let Some(slots) = pools.get_mut(&pool) {
+                                                                            slots[idx].total = value;
+                                                                        }
+                                                                    });
                                                             }
                                                         }
                                                     />
@@ -889,18 +1037,20 @@ pub fn SpellcastingPanel() -> impl IntoView {
             </section>
             {move || {
                 store
-                    .core().features().data()
+                    .core()
+                    .features()
+                    .data()
                     .read()
                     .iter()
                     .filter_map(|(name, entry)| {
-                        entry
-                            .spells
-                            .as_ref()
-                            .map(|sc| (name.clone(), sc.casting_ability))
+                        entry.spells.as_ref().map(|sc| (name.clone(), sc.casting_ability))
                     })
                     .map(|(feature_name, default_ability)| {
                         view! {
-                            <FeatureSpellcastingSection feature_name=feature_name default_ability=default_ability />
+                            <FeatureSpellcastingSection
+                                feature_name=feature_name
+                                default_ability=default_ability
+                            />
                         }
                     })
                     .collect_view()

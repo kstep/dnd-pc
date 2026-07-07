@@ -500,55 +500,61 @@ pub fn ImportConflict(
             <p>{message}</p>
 
             {if has_diffs {
-                Either::Left(view! {
-                    <table class="diff-table">
-                        <thead>
-                            <tr>
-                                <th>{move_tr!("diff-field")}</th>
-                                <th class="diff-local">{move_tr!("diff-local")}</th>
-                                <th class="diff-imported">{move_tr!("diff-imported")}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sections
-                                .into_iter()
-                                .map(|(section_key, rows)| {
-                                    let section_title = untrack(|| i18n.tr(section_key));
-                                    view! {
-                                        <tr class="diff-section">
-                                            <td colspan="3">{section_title}</td>
-                                        </tr>
-                                        {rows
-                                            .into_iter()
-                                            .map(|row| {
-                                                let label = untrack(|| i18n.tr(row.label));
-                                                view! {
-                                                    <tr>
-                                                        <td>{label}</td>
-                                                        <td class="diff-local">{row.local}</td>
-                                                        <td class="diff-imported">
-                                                            {row.imported}
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            })
-                                            .collect_view()}
-                                    }
-                                })
-                                .collect_view()}
-                        </tbody>
-                    </table>
-                })
+                Either::Left(
+                    view! {
+                        <table class="diff-table">
+                            <thead>
+                                <tr>
+                                    <th>{move_tr!("diff-field")}</th>
+                                    <th class="diff-local">{move_tr!("diff-local")}</th>
+                                    <th class="diff-imported">{move_tr!("diff-imported")}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {sections
+                                    .into_iter()
+                                    .map(|(section_key, rows)| {
+                                        let section_title = untrack(|| i18n.tr(section_key));
+                                        view! {
+                                            <tr class="diff-section">
+                                                <td colspan="3">{section_title}</td>
+                                            </tr>
+                                            {rows
+                                                .into_iter()
+                                                .map(|row| {
+                                                    let label = untrack(|| i18n.tr(row.label));
+                                                    view! {
+                                                        <tr>
+                                                            <td>{label}</td>
+                                                            <td class="diff-local">{row.local}</td>
+                                                            <td class="diff-imported">{row.imported}</td>
+                                                        </tr>
+                                                    }
+                                                })
+                                                .collect_view()}
+                                        }
+                                    })
+                                    .collect_view()}
+                            </tbody>
+                        </table>
+                    },
+                )
             } else {
-                Either::Right(view! {
-                    <p class="diff-no-differences">{move_tr!("diff-no-differences")}</p>
-                })
+                Either::Right(
+                    view! { <p class="diff-no-differences">{move_tr!("diff-no-differences")}</p> },
+                )
             }}
 
             <div class="import-conflict-actions">
-                <button class="btn-primary" on:click=import_anyway>{move_tr!("import-anyway")}</button>
-                <button class="btn-primary" on:click=import_as_copy>{move_tr!("import-as-copy")}</button>
-                <Ref href="/" attr:class="btn-cancel">{move_tr!("import-cancel")}</Ref>
+                <button class="btn-primary" on:click=import_anyway>
+                    {move_tr!("import-anyway")}
+                </button>
+                <button class="btn-primary" on:click=import_as_copy>
+                    {move_tr!("import-as-copy")}
+                </button>
+                <Ref href="/" attr:class="btn-cancel">
+                    {move_tr!("import-cancel")}
+                </Ref>
             </div>
         </div>
     }
@@ -582,9 +588,9 @@ pub fn import_or_conflict(character: Character, avatar: Option<Avatar>) -> impl 
         .is_some_and(|existing| existing.updated_at > character.updated_at);
 
     if has_conflict {
-        Either::Left(view! {
-            <ImportConflict incoming=character existing=existing.unwrap() avatar=avatar />
-        })
+        Either::Left(
+            view! { <ImportConflict incoming=character existing=existing.unwrap() avatar=avatar /> },
+        )
     } else {
         Either::Right(do_import(character, avatar))
     }
@@ -636,18 +642,24 @@ pub fn ImportCloudCharacter() -> impl IntoView {
     });
 
     Either::Right(view! {
-        <Suspense fallback=move || view! {
-            <div class="panel">
-                <p>{move_tr!("share-loading")}</p>
-            </div>
+        <Suspense fallback=move || {
+            view! {
+                <div class="panel">
+                    <p>{move_tr!("share-loading")}</p>
+                </div>
+            }
         }>
             {move || {
-                character.get().map(|result| {
-                    match result {
-                        Some((character, avatar)) => Either::Left(import_or_conflict(character, avatar)),
-                        None => Either::Right(not_found_view()),
-                    }
-                })
+                character
+                    .get()
+                    .map(|result| {
+                        match result {
+                            Some((character, avatar)) => {
+                                Either::Left(import_or_conflict(character, avatar))
+                            }
+                            None => Either::Right(not_found_view()),
+                        }
+                    })
             }}
         </Suspense>
     })

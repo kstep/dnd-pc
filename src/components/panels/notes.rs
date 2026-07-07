@@ -40,11 +40,16 @@ pub fn NotesPanel() -> impl IntoView {
                     on:click=move |_| {
                         let level = store.get_untracked().level();
                         let created_at = now_epoch_secs();
-                        notes.write().insert(0, Note {
-                            created_at,
-                            level,
-                            text: String::new(),
-                        });
+                        notes
+                            .write()
+                            .insert(
+                                0,
+                                Note {
+                                    created_at,
+                                    level,
+                                    text: String::new(),
+                                },
+                            );
                         pending_focus_ts.set(created_at);
                     }
                 >
@@ -52,71 +57,75 @@ pub fn NotesPanel() -> impl IntoView {
                 </button>
             </div>
             <div class="entry-list">
-                {move || notes.read().iter().enumerate().map(|(i, note)| {
-                    let text = note.text.clone();
-                    let level = note.level;
-                    let created_at = note.created_at;
-                    let initial_expanded = text.is_empty();
-                    let level_label = if level > 0 {
-                        tr!("slot-level", {"level" => level})
-                    } else {
-                        "\u{2014}".into()
-                    };
-                    let date_label = format_epoch_date(created_at, i18n.language.get().id);
-                    let preview = text
-                        .lines()
-                        .next()
-                        .unwrap_or("")
-                        .to_string();
-                    let textarea_ref: NodeRef<html::Textarea> = NodeRef::new();
-                    if created_at != 0 && created_at == pending_focus_ts.get_untracked() {
-                        textarea_ref.on_load(move |el| {
-                            let _ = el.focus();
-                            pending_focus_ts.set(0);
-                        });
-                    }
-                    view! {
-                        <div class="entry-item note-entry" class:expanded=initial_expanded>
-                            <ToggleButton />
-                            <div
-                                class="entry-content"
-                                on:click=move |e| {
-                                    let target: web_sys::HtmlElement = event_target(&e);
-                                    let Ok(Some(entry)) = target.closest(".entry-item") else {
-                                        return;
-                                    };
-                                    let _ = entry.class_list().toggle("expanded");
-                                }
-                            >
-                                <span class="note-level">{level_label}</span>
-                                <span class="note-date">{date_label}</span>
-                                <span class="note-preview">{preview}</span>
-                            </div>
-                            <div class="entry-actions">
-                                <button
-                                    class="btn-remove"
-                                    on:click=move |_| {
-                                        if i < notes.read().len() {
-                                            notes.write().remove(i);
+                {move || {
+                    notes
+                        .read()
+                        .iter()
+                        .enumerate()
+                        .map(|(i, note)| {
+                            let text = note.text.clone();
+                            let level = note.level;
+                            let created_at = note.created_at;
+                            let initial_expanded = text.is_empty();
+                            let level_label = if level > 0 {
+                                tr!("slot-level", {"level" => level})
+                            } else {
+                                "\u{2014}".into()
+                            };
+                            let date_label = format_epoch_date(created_at, i18n.language.get().id);
+                            let preview = text.lines().next().unwrap_or("").to_string();
+                            let textarea_ref: NodeRef<html::Textarea> = NodeRef::new();
+                            if created_at != 0 && created_at == pending_focus_ts.get_untracked() {
+                                textarea_ref
+                                    .on_load(move |el| {
+                                        let _ = el.focus();
+                                        pending_focus_ts.set(0);
+                                    });
+                            }
+                            view! {
+                                <div class="entry-item note-entry" class:expanded=initial_expanded>
+                                    <ToggleButton />
+                                    <div
+                                        class="entry-content"
+                                        on:click=move |e| {
+                                            let target: web_sys::HtmlElement = event_target(&e);
+                                            let Ok(Some(entry)) = target.closest(".entry-item") else {
+                                                return;
+                                            };
+                                            let _ = entry.class_list().toggle("expanded");
                                         }
-                                    }
-                                >
-                                    <Icon name="x" />
-                                </button>
-                            </div>
-                            <div class="entry-full-row">
-                                <textarea
-                                    class="notes-textarea"
-                                    node_ref=textarea_ref
-                                    prop:value=text
-                                    on:change=move |e| {
-                                        notes.write()[i].text = event_target_value(&e);
-                                    }
-                                />
-                            </div>
-                        </div>
-                    }
-                }).collect_view()}
+                                    >
+                                        <span class="note-level">{level_label}</span>
+                                        <span class="note-date">{date_label}</span>
+                                        <span class="note-preview">{preview}</span>
+                                    </div>
+                                    <div class="entry-actions">
+                                        <button
+                                            class="btn-remove"
+                                            on:click=move |_| {
+                                                if i < notes.read().len() {
+                                                    notes.write().remove(i);
+                                                }
+                                            }
+                                        >
+                                            <Icon name="x" />
+                                        </button>
+                                    </div>
+                                    <div class="entry-full-row">
+                                        <textarea
+                                            class="notes-textarea"
+                                            node_ref=textarea_ref
+                                            prop:value=text
+                                            on:change=move |e| {
+                                                notes.write()[i].text = event_target_value(&e);
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            }
+                        })
+                        .collect_view()
+                }}
             </div>
         </section>
     }

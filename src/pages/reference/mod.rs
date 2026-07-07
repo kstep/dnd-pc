@@ -168,12 +168,17 @@ pub fn SpellEffectsView(effects: Vec<(String, Expr)>) -> impl IntoView {
     (!effects.is_empty()).then(|| {
         view! {
             <div class="spell-effects">
-                {effects.into_iter().map(|(name, expr)| view! {
-                    <div class="spell-effect">
-                        <strong>{name}</strong>
-                        <ExprView expr />
-                    </div>
-                }).collect_view()}
+                {effects
+                    .into_iter()
+                    .map(|(name, expr)| {
+                        view! {
+                            <div class="spell-effect">
+                                <strong>{name}</strong>
+                                <ExprView expr />
+                            </div>
+                        }
+                    })
+                    .collect_view()}
             </div>
         }
     })
@@ -706,15 +711,19 @@ fn FeatureRowView(key: FeatureKey, anchors: bool) -> impl IntoView {
             <h3>{move || label.get()}</h3>
             <p class="feature-prerequisites">
                 {move || category_label.get()}
-                {has_prerequisites.then(|| view! {
-                    {" · "}{move_tr!("ref-prerequisites")}{": "}
-                    {move || prerequisites.get()}
-                })}
+                {has_prerequisites
+                    .then(|| {
+                        view! {
+                            {" · "}
+                            {move_tr!("ref-prerequisites")}
+                            {": "}
+                            {move || prerequisites.get()}
+                        }
+                    })}
             </p>
             <Markdown text=description />
-            {has_assignments.then(|| view! {
-                <p class="feature-assignments">{move || assignments.get()}</p>
-            })}
+            {has_assignments
+                .then(|| view! { <p class="feature-assignments">{move || assignments.get()}</p> })}
             <FeatureSpellsView spells=key.spells />
             <FeatureChoicesView choices=key.choices />
         </div>
@@ -752,7 +761,8 @@ fn ChoiceFieldRow(key: ChoiceFieldKey) -> impl IntoView {
             <strong>{move || field_label.get()}</strong>
             {move || {
                 let desc = field_description.get();
-                (!desc.is_empty()).then(|| view! { <Markdown text=field_description_for_md.clone() /> })
+                (!desc.is_empty())
+                    .then(|| view! { <Markdown text=field_description_for_md.clone() /> })
             }}
             <div class="feature-choice-options">
                 <For
@@ -784,48 +794,85 @@ fn ChoiceOptionRow(key: ChoiceOptionKey) -> impl IntoView {
     view! {
         <div class="feature-choice-entry">
             <strong>{move || opt_label.get()}</strong>
-            {move || registry.features().lookup(&feat_name, |loc| {
-                let action_def = loc.data.actions.get(field_name.as_str())?;
-                let ChoiceOptions::List(list) = &action_def.options else { return None; };
-                let opt = list.iter().find(|o| *o.name == name)?;
-                let level = opt.level;
-                let cost = opt.cost;
-                let unit = action_def.cost.clone();
-                let effects: Vec<(String, Expr)> = opt
-                    .effects
-                    .iter()
-                    .filter_map(|effect| {
-                        effect.expr.clone().map(|expr| (effect.label().to_string(), expr))
-                    })
-                    .collect();
-                Some(view! {
-                    {(level > 0 || (cost > 0 && unit.is_some())).then(|| view! {
-                        {" ("}
-                        {(level > 0).then(|| view! {
-                            {move_tr!("ref-spell-min-level", { "level" => level.to_string() })}
-                        })}
-                        {(cost > 0).then(|| {
-                            let u = unit.clone().unwrap_or_default();
-                            let sep = if level > 0 { ", " } else { "" };
-                            view! { {sep}{cost.to_string()}{" "}{u} }
-                        })}
-                        {")"}
-                    })}
-                    {(!effects.is_empty()).then(|| view! {
-                        <div class="spell-effects">
-                            {effects.into_iter().map(|(name, expr)| view! {
-                                <div class="spell-effect">
-                                    <strong>{name}</strong>
-                                    <ExprView expr />
-                                </div>
-                            }).collect_view()}
-                        </div>
-                    })}
-                })
-            })}
+            {move || {
+                registry
+                    .features()
+                    .lookup(
+                        &feat_name,
+                        |loc| {
+                            let action_def = loc.data.actions.get(field_name.as_str())?;
+                            let ChoiceOptions::List(list) = &action_def.options else {
+                                return None;
+                            };
+                            let opt = list.iter().find(|o| *o.name == name)?;
+                            let level = opt.level;
+                            let cost = opt.cost;
+                            let unit = action_def.cost.clone();
+                            let effects: Vec<(String, Expr)> = opt
+                                .effects
+                                .iter()
+                                .filter_map(|effect| {
+                                    effect
+                                        .expr
+                                        .clone()
+                                        .map(|expr| (effect.label().to_string(), expr))
+                                })
+                                .collect();
+                            Some(
+                                view! {
+                                    {(level > 0 || (cost > 0 && unit.is_some()))
+                                        .then(|| {
+                                            view! {
+                                                {" ("}
+                                                {(level > 0)
+                                                    .then(|| {
+                                                        view! {
+                                                            {move_tr!(
+                                                                "ref-spell-min-level", { "level" => level.to_string() }
+                                                            )}
+                                                        }
+                                                    })}
+                                                {(cost > 0)
+                                                    .then(|| {
+                                                        let u = unit.clone().unwrap_or_default();
+                                                        let sep = if level > 0 { ", " } else { "" };
+                                                        view! {
+                                                            {sep}
+                                                            {cost.to_string()}
+                                                            {" "}
+                                                            {u}
+                                                        }
+                                                    })}
+                                                {")"}
+                                            }
+                                        })}
+                                    {(!effects.is_empty())
+                                        .then(|| {
+                                            view! {
+                                                <div class="spell-effects">
+                                                    {effects
+                                                        .into_iter()
+                                                        .map(|(name, expr)| {
+                                                            view! {
+                                                                <div class="spell-effect">
+                                                                    <strong>{name}</strong>
+                                                                    <ExprView expr />
+                                                                </div>
+                                                            }
+                                                        })
+                                                        .collect_view()}
+                                                </div>
+                                            }
+                                        })}
+                                },
+                            )
+                        },
+                    )
+            }}
             {move || {
                 let desc = opt_description.get();
-                (!desc.is_empty()).then(|| view! { <Markdown text=opt_description_for_md.clone() /> })
+                (!desc.is_empty())
+                    .then(|| view! { <Markdown text=opt_description_for_md.clone() /> })
             }}
         </div>
     }
@@ -836,9 +883,7 @@ pub fn FeatureSpellsView(spells: FeatureSpells) -> impl IntoView {
     match spells {
         FeatureSpells::Link(list_name) => EitherOf3::A(view! {
             <p class="feature-spell-link">
-                <Ref href=format!("/r/spell/{list_name}")>
-                    {move_tr!("ref-spell-list-link")}
-                </Ref>
+                <Ref href=format!("/r/spell/{list_name}")>{move_tr!("ref-spell-list-link")}</Ref>
             </p>
         }),
         FeatureSpells::Inline(rows) => EitherOf3::B(view! {
@@ -868,28 +913,48 @@ fn InlineSpellRowView(key: InlineSpellKey) -> impl IntoView {
         <div class="feature-spell-entry">
             <strong>{move || label.get()}</strong>
             {move || {
-                let extracted = registry.spells().lookup(&name, |loc| {
-                    (loc.data.level, loc.data.meta(), loc.data.components.clone(), extract_spell_effects(loc.data))
-                });
-                extracted.map(|(level, meta, components, effects)| {
-                    let level_text = if level == 0 {
-                        move_tr!("ref-cantrips-level")
-                    } else {
-                        move_tr!("ref-spell-level", {"level" => level})
-                    };
-                    view! {
-                        {" ("}{level_text}
-                        {sticky.then(|| view! {
-                            {", "}{move_tr!("ref-spell-always-ready")}
-                        })}
-                        {(min_level > 0).then(|| view! {
-                            {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
-                        })}
-                        {")"}
-                        <SpellInfoBar meta=meta components=components />
-                        <SpellEffectsView effects />
-                    }
-                })
+                let extracted = registry
+                    .spells()
+                    .lookup(
+                        &name,
+                        |loc| {
+                            (
+                                loc.data.level,
+                                loc.data.meta(),
+                                loc.data.components.clone(),
+                                extract_spell_effects(loc.data),
+                            )
+                        },
+                    );
+                extracted
+                    .map(|(level, meta, components, effects)| {
+                        let level_text = if level == 0 {
+                            move_tr!("ref-cantrips-level")
+                        } else {
+                            move_tr!("ref-spell-level", {"level" => level})
+                        };
+                        view! {
+                            {" ("}
+                            {level_text}
+                            {sticky
+                                .then(|| {
+                                    view! {
+                                        {", "}
+                                        {move_tr!("ref-spell-always-ready")}
+                                    }
+                                })}
+                            {(min_level > 0)
+                                .then(|| {
+                                    view! {
+                                        {", "}
+                                        {move_tr!("ref-spell-min-level", {"level" => min_level})}
+                                    }
+                                })}
+                            {")"}
+                            <SpellInfoBar meta=meta components=components />
+                            <SpellEffectsView effects />
+                        }
+                    })
             }}
             <Markdown text=description />
         </div>

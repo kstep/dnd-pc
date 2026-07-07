@@ -16,12 +16,6 @@ pub fn Dropdown(
         <div
             class="dropdown-wrapper"
             on:click=move |ev| {
-                // Ignore clicks bubbling from the open dropdown panel — without
-                // this guard the wrapper toggle would re-open it after the
-                // panel handler set open=false. We can't stop_propagation in the
-                // panel handler because that would also kill leptos-router's
-                // window-level click listener and turn link clicks into full
-                // page reloads.
                 let target = event_target::<web_sys::Element>(&ev);
                 if target.closest(".dropdown").ok().flatten().is_some() {
                     return;

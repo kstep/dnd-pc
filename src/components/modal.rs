@@ -63,7 +63,10 @@ pub fn Modal(
             on:click=on_click
             on:animationend=on_animationend
         >
-            <div class="modal-content" on:click=move |ev: web_sys::MouseEvent| ev.stop_propagation()>
+            <div
+                class="modal-content"
+                on:click=move |ev: web_sys::MouseEvent| ev.stop_propagation()
+            >
                 <div class="modal-header">
                     <span>{move || title.get()}</span>
                     <button type="button" class="modal-close" on:click=move |_| show.set(false)>

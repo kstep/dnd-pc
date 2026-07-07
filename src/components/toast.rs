@@ -253,11 +253,7 @@ pub fn ToastContainer() -> impl IntoView {
     let entries = expect_context::<ToastCtx>().entries;
     view! {
         <div class="toast-container">
-            <For
-                each=move || entries.get()
-                key=|entry| entry.id
-                let:entry
-            >
+            <For each=move || entries.get() key=|entry| entry.id let:entry>
                 <ToastView entry />
             </For>
         </div>
@@ -280,21 +276,22 @@ fn ToastView(entry: Entry) -> impl IntoView {
         <div class=format!("toast {kind_class}") class:exiting=move || exiting.get()>
             <span class="toast-icon" aria-hidden="true" />
             <span class="toast-message">{move || message.get()}</span>
-            {action.map(|action| {
-                let on_click = action.on_click;
-                let label = action.label;
-                view! {
-                    <button
-                        class="toast-action"
-                        on:click=move |_| {
-                            on_click.run(());
-                            dismiss_toast(id);
-                        }
-                    >
-                        {move || label.get()}
-                    </button>
-                }
-            })}
+            {action
+                .map(|action| {
+                    let on_click = action.on_click;
+                    let label = action.label;
+                    view! {
+                        <button
+                            class="toast-action"
+                            on:click=move |_| {
+                                on_click.run(());
+                                dismiss_toast(id);
+                            }
+                        >
+                            {move || label.get()}
+                        </button>
+                    }
+                })}
             <button
                 class="toast-dismiss"
                 on:click=move |_| dismiss_toast(id)

@@ -6,7 +6,11 @@ use crate::model::Expr;
 /// Renders an expression formula as a styled `<pre><code>` block with wrapping.
 #[component]
 pub fn ExprView(expr: Expr) -> impl IntoView {
-    view! { <pre class="expr-view"><code>{expr.to_string()}</code></pre> }
+    view! {
+        <pre class="expr-view">
+            <code>{expr.to_string()}</code>
+        </pre>
+    }
 }
 
 /// Collapsible expression details: "Show expression" toggle with `ExprView`

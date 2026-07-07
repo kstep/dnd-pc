@@ -87,26 +87,26 @@ pub fn CombatPanel() -> impl IntoView {
                     />
                 </StatBox>
                 <StatBox label=move_tr!("hp")>
-                        <input
-                            type="number"
-                            prop:value=move || combat.hp_current().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse() {
-                                    combat.hp_current().set(value);
-                                }
+                    <input
+                        type="number"
+                        prop:value=move || combat.hp_current().get().to_string()
+                        on:input=move |e| {
+                            if let Ok(value) = event_target_value(&e).parse() {
+                                combat.hp_current().set(value);
                             }
-                        />
-                        <span>"/"</span>
-                        <input
-                            type="number"
-                            prop:value=move || combat.hp_max().get().to_string()
-                            on:input=move |e| {
-                                if let Ok(value) = event_target_value(&e).parse() {
-                                    combat.hp_max().set(value);
-                                }
+                        }
+                    />
+                    <span>"/"</span>
+                    <input
+                        type="number"
+                        prop:value=move || combat.hp_max().get().to_string()
+                        on:input=move |e| {
+                            if let Ok(value) = event_target_value(&e).parse() {
+                                combat.hp_max().set(value);
                             }
-                        />
-                    </StatBox>
+                        }
+                    />
+                </StatBox>
                 <StatBox label=move_tr!("temp-hp")>
                     <input
                         type="number"
@@ -123,51 +123,51 @@ pub fn CombatPanel() -> impl IntoView {
             <div class="hit-dice-section">
                 <h4>{move_tr!("hit-dice")}</h4>
                 <div class="slot-box-list">
-                {move || {
-                    classes
-                        .read()
-                        .iter()
-                        .enumerate()
-                        .filter(|(_, c)| c.level > 0)
-                        .map(|(i, class)| {
-                            let class_label = if class.class.is_empty() {
-                                format!("Class {}", i + 1)
-                            } else {
-                                class.class_label().to_string()
-                            };
-                            let label = format!("{class_label} d{}", class.hit_die_sides);
-                            let total = class.level;
-                            let used_val = class.hit_dice_used;
-                            view! {
-                                <SlotBox label=label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        prop:max=total
-                                        prop:value=used_val
-                                        on:input=move |e| {
-                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                let max = classes.read()[i].level;
-                                                classes.write()[i].hit_dice_used = value.min(max);
+                    {move || {
+                        classes
+                            .read()
+                            .iter()
+                            .enumerate()
+                            .filter(|(_, c)| c.level > 0)
+                            .map(|(i, class)| {
+                                let class_label = if class.class.is_empty() {
+                                    format!("Class {}", i + 1)
+                                } else {
+                                    class.class_label().to_string()
+                                };
+                                let label = format!("{class_label} d{}", class.hit_die_sides);
+                                let total = class.level;
+                                let used_val = class.hit_dice_used;
+                                view! {
+                                    <SlotBox label=label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            prop:max=total
+                                            prop:value=used_val
+                                            on:input=move |e| {
+                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                    let max = classes.read()[i].level;
+                                                    classes.write()[i].hit_dice_used = value.min(max);
+                                                }
                                             }
-                                        }
-                                    />
-                                    " / "
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        prop:value=total
-                                        on:input=move |e| {
-                                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                                classes.write()[i].level = value;
+                                        />
+                                        " / "
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            prop:value=total
+                                            on:input=move |e| {
+                                                if let Ok(value) = event_target_value(&e).parse::<u32>() {
+                                                    classes.write()[i].level = value;
+                                                }
                                             }
-                                        }
-                                    />
-                                </SlotBox>
-                            }
-                        })
-                        .collect_view()
-                }}
+                                        />
+                                    </SlotBox>
+                                }
+                            })
+                            .collect_view()
+                    }}
                 </div>
             </div>
 

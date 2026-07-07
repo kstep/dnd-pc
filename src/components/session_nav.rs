@@ -28,9 +28,5 @@ pub fn SessionNav() -> impl IntoView {
         })
         .collect_view();
 
-    view! {
-        <nav class="floating-nav">
-            {items}
-        </nav>
-    }
+    view! { <nav class="floating-nav">{items}</nav> }
 }

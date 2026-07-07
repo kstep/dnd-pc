@@ -42,11 +42,7 @@ pub fn TabNav(#[prop(into)] base: Signal<String>, items: Vec<TabItem>) -> impl I
                 .map(|item| {
                     let TabItem { path, label, icon, visible, has_updates } = item;
                     let class = move || {
-                        if has_updates.get() {
-                            "tab-nav-link has-updates"
-                        } else {
-                            "tab-nav-link"
-                        }
+                        if has_updates.get() { "tab-nav-link has-updates" } else { "tab-nav-link" }
                     };
                     view! {
                         <Show when=move || visible.get()>

@@ -12,8 +12,7 @@ pub fn SlotBox(
     view! {
         <div class="slot-box" class:label-after=label_after>
             <span class="slot-box-label">
-                {icon.map(|name| view! { <Icon name=name /> })}
-                {label}
+                {icon.map(|name| view! { <Icon name=name /> })} {label}
             </span>
             {children.map(|c| view! { <span class="slot-box-value">{c()}</span> })}
         </div>

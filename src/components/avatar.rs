@@ -105,58 +105,73 @@ pub fn Avatar(
         Memo::new(move |_| avatar.with(|av| av.as_ref().is_some_and(|a| !a.is_empty())));
 
     view! {
-        <div class="avatar"
-             node_ref=avatar_ref
-             class:avatar-editable=move || editable
-             class:avatar-edit=move || expanded.get()
-             style=style
-             on:click=on_root_click
-             on:keydown=on_keydown
-             tabindex=move || if expanded.get() { "0" } else { "-1" }
+        <div
+            class="avatar"
+            node_ref=avatar_ref
+            class:avatar-editable=move || editable
+            class:avatar-edit=move || expanded.get()
+            style=style
+            on:click=on_root_click
+            on:keydown=on_keydown
+            tabindex=move || if expanded.get() { "0" } else { "-1" }
         >
             <Show
                 when=move || has_avatar.get()
-                fallback=move || view! {
-                    <Show
-                        when=move || !initials.get().is_empty()
-                        fallback=|| view! { <SilhouetteSvg /> }
-                    >
-                        <Monogram initials=initials hue=hue />
-                    </Show>
+                fallback=move || {
+                    view! {
+                        <Show
+                            when=move || !initials.get().is_empty()
+                            fallback=|| view! { <SilhouetteSvg /> }
+                        >
+                            <Monogram initials=initials hue=hue />
+                        </Show>
+                    }
                 }
             >
-                <img class="avatar-image"
-                     src=move || avatar.with(|av| av.as_ref().map(|a| a.data_uri.clone()).unwrap_or_default())
-                     alt="" />
+                <img
+                    class="avatar-image"
+                    src=move || {
+                        avatar
+                            .with(|av| av.as_ref().map(|a| a.data_uri.clone()).unwrap_or_default())
+                    }
+                    alt=""
+                />
             </Show>
             <Show when=move || editable>
-                <button class="avatar-close"
-                        on:click=on_close_click
-                        aria-label=move || tr!("avatar-close")
-                        title=move || tr!("avatar-close")
-                        inert=move || !expanded.get()>
+                <button
+                    class="avatar-close"
+                    on:click=on_close_click
+                    aria-label=move || tr!("avatar-close")
+                    title=move || tr!("avatar-close")
+                    inert=move || !expanded.get()
+                >
                     <Icon name="x" />
                 </button>
-                <div class="avatar-actions"
-                     inert=move || !expanded.get()>
-                    <button on:click=open_picker
-                            aria-label=move || tr!("avatar-change")
-                            title=move || tr!("avatar-change")>
+                <div class="avatar-actions" inert=move || !expanded.get()>
+                    <button
+                        on:click=open_picker
+                        aria-label=move || tr!("avatar-change")
+                        title=move || tr!("avatar-change")
+                    >
                         <Icon name="camera" />
                     </button>
                     <Show when=move || on_generate.is_some()>
-                        <button class="accent"
-                                on:click=on_generate_click
-                                aria-label=move || tr!("avatar-generate")
-                                title=move || tr!("avatar-generate")>
+                        <button
+                            class="accent"
+                            on:click=on_generate_click
+                            aria-label=move || tr!("avatar-generate")
+                            title=move || tr!("avatar-generate")
+                        >
                             <Icon name="sparkles" />
                         </button>
                     </Show>
                     <Show when=move || has_avatar.get()>
-                        <button class="danger"
-                                on:click=on_remove_click
-                                aria-label=move || tr!("avatar-remove")
-                                title=move || tr!("avatar-remove")>
+                        <button
+                            class="danger"
+                            on:click=on_remove_click
+                            aria-label=move || tr!("avatar-remove")
+                            title=move || tr!("avatar-remove")
+                        >
                             <Icon name="trash-2" />
                         </button>
                     </Show>
@@ -188,8 +203,8 @@ fn Monogram(initials: Memo<String>, hue: Memo<u32>) -> impl IntoView {
 fn SilhouetteSvg() -> impl IntoView {
     view! {
         <svg class="avatar-silhouette" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M3 22 C 3 16, 7 14, 9 14 L 12 19 L 15 14 C 17 14, 21 16, 21 22 Z"/>
+            <circle cx="12" cy="8" r="4" />
+            <path d="M3 22 C 3 16, 7 14, 9 14 L 12 19 L 15 14 C 17 14, 21 16, 21 22 Z" />
         </svg>
     }
 }

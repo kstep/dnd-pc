@@ -165,84 +165,93 @@ pub fn FeatureRow(
             class:collapsed=move || state.get() == Some(false)
             class:has-pending=move || row_info.get().0
         >
-            <button
-                class="btn-toggle-desc"
-                on:click=move |_| toggle()
-            />
+            <button class="btn-toggle-desc" on:click=move |_| toggle() />
             <div class="entry-content">
                 {if is_readonly {
-                    Either::Left(view! {
-                        <span
-                            class="entry-name entry-name-readonly"
-                            on:click=move |_| toggle()
-                        >
-                            {move || {
-                                let feat = feature.read();
-                                let replaces = feat.replaces.as_deref()?;
-                                let (label, _) = registry.feature_label_desc(replaces);
-                                Some(view! {
-                                    <span class="entry-replaces-placeholder">{label.get()}</span>
-                                    <wbr/>
-                                })
-                            }}
-                            {move || feature.read().label().to_string()}
-                        </span>
-                    })
+                    Either::Left(
+                        view! {
+                            <span class="entry-name entry-name-readonly" on:click=move |_| toggle()>
+                                {move || {
+                                    let feat = feature.read();
+                                    let replaces = feat.replaces.as_deref()?;
+                                    let (label, _) = registry.feature_label_desc(replaces);
+                                    Some(
+                                        view! {
+                                            <span class="entry-replaces-placeholder">
+                                                {label.get()}
+                                            </span>
+                                            <wbr />
+                                        },
+                                    )
+                                }}
+                                {move || feature.read().label().to_string()}
+                            </span>
+                        },
+                    )
                 } else {
-                    Either::Right(view! {
-                        <SharedDatalist id=feature_list_id.clone() options=options />
-                        <DatalistInput
-                            value=initial_label
-                            placeholder=move_tr!("feature-name")
-                            class="entry-name"
-                            list_id=feature_list_id.clone()
-                            options=options
-                            on_input=move |input, resolved| {
-                                let mut w = feature.write();
-                                if let Some(key) = resolved {
-                                    // Resolved to a real feat: bind name to
-                                    // the registry key and pull canonical
-                                    // label/description from the index.
-                                    w.name = key.as_str().into();
-                                    let (label, description) = registry
-                                        .features()
-                                        .lookup_untracked(key.as_str(), |loc| {
-                                            let label = loc
-                                                .locale
-                                                .and_then(|map| map.get(&*loc.data.name))
-                                                .and_then(|text| text.label.clone());
-                                            (label, loc.description().to_string())
-                                        })
-                                        .unwrap_or_default();
-                                    w.label = label;
-                                    w.description = description;
-                                } else {
-                                    // Free text: keep label only, drop any
-                                    // prior registry binding so this row
-                                    // stops being treated as an indexed feat.
-                                    w.name = Box::default();
-                                    w.set_label(input);
-                                    w.description.clear();
+                    Either::Right(
+                        view! {
+                            <SharedDatalist id=feature_list_id.clone() options=options />
+                            <DatalistInput
+                                value=initial_label
+                                placeholder=move_tr!("feature-name")
+                                class="entry-name"
+                                list_id=feature_list_id.clone()
+                                options=options
+                                on_input=move |input, resolved| {
+                                    let mut w = feature.write();
+                                    if let Some(key) = resolved {
+                                        w.name = key.as_str().into();
+                                        let (label, description) = registry
+                                            .features()
+                                            .lookup_untracked(
+                                                key.as_str(),
+                                                |loc| {
+                                                    let label = loc
+                                                        .locale
+                                                        .and_then(|map| map.get(&*loc.data.name))
+                                                        .and_then(|text| text.label.clone());
+                                                    (label, loc.description().to_string())
+                                                },
+                                            )
+                                            .unwrap_or_default();
+                                        w.label = label;
+                                        w.description = description;
+                                    } else {
+                                        w.name = Box::default();
+                                        w.set_label(input);
+                                        w.description.clear();
+                                    }
                                 }
-                            }
-                        />
-                    })
+                            />
+                        },
+                    )
                 }}
-                {move || row_info.get().1
-                    .into_iter()
-                    .flatten()
-                    .map(|(icon, count)| view! {
-                        <span class="entry-badge">
-                            <Icon name=icon />
-                            {count}
-                        </span>
-                    })
-                    .collect_view()}
-                {spell_link.map(|href| view! {
-                    <Ref href=href scroll=false attr:class="entry-spell-link">
-                        {move_tr!("tab-magic")}" →"
-                    </Ref>
-                })}
+                {move || {
+                    row_info
+                        .get()
+                        .1
+                        .into_iter()
+                        .flatten()
+                        .map(|(icon, count)| {
+                            view! {
+                                <span class="entry-badge">
+                                    <Icon name=icon />
+                                    {count}
+                                </span>
+                            }
+                        })
+                        .collect_view()
+                }}
+                {spell_link
+                    .map(|href| {
+                        view! {
+                            <Ref href=href scroll=false attr:class="entry-spell-link">
+                                {move_tr!("tab-magic")}
+                                " →"
+                            </Ref>
+                        }
+                    })}
             </div>
             <div class="entry-actions">
                 <Show when=move || is_editable.get()>
@@ -260,34 +269,28 @@ pub fn FeatureRow(
                                     )
                                 });
                             if is_applied {
-                                // Edit-mode: open modal with pre-edit cascade snapshot, on
-                                // submit just stash new inputs + mark dirty. Rebuild banner
-                                // picks it up and performs the full-character re-apply.
-                                // Full clone — base feeds build_clean which expects a full
-                                // Character (equipment, personality, notes survive `merge_preserved`).
                                 let mut truncated_clone = store.read_untracked().clone();
                                 truncated_clone.features.truncate(&current_name, &source);
                                 let pre_edit_character = level_up_plan(
-                                    &truncated_clone.core,
-                                    &registry,
-                                )
-                                .and_then(|plan| {
-                                    build_clean(
-                                        &truncated_clone,
-                                        &plan,
+                                        &truncated_clone.core,
                                         &registry,
-                                        &ApplyInputs::default(),
                                     )
-                                })
-                                .map(|outcome| outcome.character)
-                                .unwrap_or(truncated_clone);
-                                // For a swap (`replaces = Some(orig)`), open the modal for
-                                // the placeholder so its picker shows the current swap
-                                // pre-selected. Non-swap edits open for the feature's own name.
-                                let placeholder_name =
-                                    replaces.clone().unwrap_or_else(|| current_name.clone());
-                                let current_name_for_modal =
-                                    replaces.is_some().then(|| current_name.clone());
+                                    .and_then(|plan| {
+                                        build_clean(
+                                            &truncated_clone,
+                                            &plan,
+                                            &registry,
+                                            &ApplyInputs::default(),
+                                        )
+                                    })
+                                    .map(|outcome| outcome.character)
+                                    .unwrap_or(truncated_clone);
+                                let placeholder_name = replaces
+                                    .clone()
+                                    .unwrap_or_else(|| current_name.clone());
+                                let current_name_for_modal = replaces
+                                    .is_some()
+                                    .then(|| current_name.clone());
                                 edit_inputs_modal(
                                     store,
                                     registry,
@@ -298,12 +301,14 @@ pub fn FeatureRow(
                                 );
                             } else {
                                 let level = source.added_at_level();
-                                let pending = vec![PendingFeature {
-                                    name: current_name,
-                                    source,
-                                    level,
-                                    replaces: None,
-                                }];
+                                let pending = vec![
+                                    PendingFeature {
+                                        name: current_name,
+                                        source,
+                                        level,
+                                        replaces: None,
+                                    },
+                                ];
                                 apply_with_modal(store, registry, pending, None, None, |_| {});
                             }
                         }
@@ -311,51 +316,77 @@ pub fn FeatureRow(
                         <Icon name="pencil" />
                     </button>
                 </Show>
-                <button
-                    class="btn-remove"
-                    on:click=move |_| on_remove.run(())
-                >
+                <button class="btn-remove" on:click=move |_| on_remove.run(())>
                     <Icon name="x" />
                 </button>
             </div>
             {if is_readonly {
-                Either::Left(view! {
-                    <div class="entry-desc">
-                        <Markdown text=Signal::derive(move || feature.read().description.clone()) />
-                    </div>
-                })
+                Either::Left(
+                    view! {
+                        <div class="entry-desc">
+                            <Markdown text=Signal::derive(move || {
+                                feature.read().description.clone()
+                            }) />
+                        </div>
+                    },
+                )
             } else {
-                Either::Right(view! {
-                    <textarea
-                        class="entry-desc"
-                        placeholder=move_tr!("description")
-                        prop:value=initial_desc.clone()
-                        on:change=move |event| {
-                            let value = event_target_value(&event);
-                            feature.write().description = value;
-                        }
-                    />
-                })
+                Either::Right(
+                    view! {
+                        <textarea
+                            class="entry-desc"
+                            placeholder=move_tr!("description")
+                            prop:value=initial_desc.clone()
+                            on:change=move |event| {
+                                let value = event_target_value(&event);
+                                feature.write().description = value;
+                            }
+                        />
+                    },
+                )
             }}
             {move || {
                 let count = field_count.get();
-                (count > 0).then(|| view! {
-                    <div class="feature-fields" style="grid-column: 1 / -1">
-                        {(0..count)
-                            .map(|field_idx| view! {
-                                <FeatureFieldRow feature_name=stored_name field_idx=field_idx />
-                            })
-                            .collect_view()}
-                    </div>
-                })
+                (count > 0)
+                    .then(|| {
+                        view! {
+                            <div class="feature-fields" style="grid-column: 1 / -1">
+                                {(0..count)
+                                    .map(|field_idx| {
+                                        view! {
+                                            <FeatureFieldRow
+                                                feature_name=stored_name
+                                                field_idx=field_idx
+                                            />
+                                        }
+                                    })
+                                    .collect_view()}
+                            </div>
+                        }
+                    })
             }}
-            {move || row_previews.with(|entries| (!entries.is_empty()).then(|| view! {
-                <div class="entry-full-row feature-assignments">
-                    {entries.iter().map(|entry| view! {
-                        <span class="feature-assignment-entry">{entry.clone()}</span>
-                    }).collect_view()}
-                </div>
-            }))}
+            {move || {
+                row_previews
+                    .with(|entries| {
+                        (!entries.is_empty())
+                            .then(|| {
+                                view! {
+                                    <div class="entry-full-row feature-assignments">
+                                        {entries
+                                            .iter()
+                                            .map(|entry| {
+                                                view! {
+                                                    <span class="feature-assignment-entry">
+                                                        {entry.clone()}
+                                                    </span>
+                                                }
+                                            })
+                                            .collect_view()}
+                                    </div>
+                                }
+                            })
+                    })
+            }}
         </div>
     })
 }

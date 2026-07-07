@@ -398,10 +398,17 @@ pub fn EffectsCalcModal(
                                 <div class="effects-calc-header">
                                     <span class="effects-calc-label">{label}</span>
                                     <strong class="effects-calc-result">
-                                        {move || result.get().map_or_else(
-                                            || view! { <span class="effects-calc-error">"\u{2014}"</span> }.into_any(),
-                                            |v| v.into_any(),
-                                        )}
+                                        {move || {
+                                            result
+                                                .get()
+                                                .map_or_else(
+                                                    || {
+                                                        view! { <span class="effects-calc-error">"\u{2014}"</span> }
+                                                            .into_any()
+                                                    },
+                                                    |v| v.into_any(),
+                                                )
+                                        }}
                                     </strong>
                                     <button
                                         type="button"
@@ -498,13 +505,10 @@ pub fn EffectsCalcModal(
 
                 view! {
                     <div class="effects-calc-footer">
-                        <button
-                            type="button"
-                            class="btn-confirm"
-                            on:click=apply_effect
-                        >
+                        <button type="button" class="btn-confirm" on:click=apply_effect>
                             <Icon name="shield-plus" size=16 />
-                            " " {move_tr!("apply-effect")}
+                            " "
+                            {move_tr!("apply-effect")}
                         </button>
                     </div>
                 }
@@ -519,9 +523,7 @@ pub fn EffectsCalcModal(
 
     view! {
         <Modal show=show title=title>
-            <div class="effects-calc">
-                {content}
-            </div>
+            <div class="effects-calc">{content}</div>
         </Modal>
     }
 }

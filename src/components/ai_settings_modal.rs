@@ -93,37 +93,50 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                                 type="checkbox"
                                 prop:checked=is_proxy
                                 on:change=move |event| {
-                                    draft.provider().set(if event_target_checked(&event) {
-                                        AiProvider::Proxy
-                                    } else {
-                                        AiProvider::OpenAI
-                                    });
+                                    draft
+                                        .provider()
+                                        .set(
+                                            if event_target_checked(&event) {
+                                                AiProvider::Proxy
+                                            } else {
+                                                AiProvider::OpenAI
+                                            },
+                                        );
                                 }
                             />
-                            " " {move_tr!("ai-settings-provider-hosted")}
+                            " "
+                            {move_tr!("ai-settings-provider-hosted")}
                         </label>
                     </div>
                 </Show>
-                <Show when=is_proxy fallback=move || view! {
-                    <div class="textarea-field">
-                        <label>
-                            {move_tr!("story-api-key")}
-                            " "
-                            <a href="https://platform.openai.com/api-keys" target="_blank">
-                                {move_tr!("story-get-key")}
-                            </a>
-                        </label>
-                        <input
-                            type="text"
-                            autocomplete="off"
-                            class="secret-input"
-                            aria-invalid=move || fetch_error().is_some().then_some("true")
-                            prop:value=move || draft.api_key().get()
-                            on:change=move |event| draft.api_key().set(event_target_value(&event))
-                        />
-                    </div>
-                }>
-                    <Show when=move || firebase::current_provider().as_deref() != Some("google.com")>
+                <Show
+                    when=is_proxy
+                    fallback=move || {
+                        view! {
+                            <div class="textarea-field">
+                                <label>
+                                    {move_tr!("story-api-key")} " "
+                                    <a href="https://platform.openai.com/api-keys" target="_blank">
+                                        {move_tr!("story-get-key")}
+                                    </a>
+                                </label>
+                                <input
+                                    type="text"
+                                    autocomplete="off"
+                                    class="secret-input"
+                                    aria-invalid=move || fetch_error().is_some().then_some("true")
+                                    prop:value=move || draft.api_key().get()
+                                    on:change=move |event| {
+                                        draft.api_key().set(event_target_value(&event))
+                                    }
+                                />
+                            </div>
+                        }
+                    }
+                >
+                    <Show when=move || {
+                        firebase::current_provider().as_deref() != Some("google.com")
+                    }>
                         <div class="textarea-field">
                             <p class="field-hint">{move_tr!("ai-settings-google-required")}</p>
                             <button
@@ -136,19 +149,24 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                         </div>
                     </Show>
                 </Show>
-                {move || fetch_error().map(|err| view! {
-                    <p class="field-error">
-                        {move_tr!("ai-settings-fetch-failed")}
-                        ": "
-                        {err}
-                    </p>
-                })}
+                {move || {
+                    fetch_error()
+                        .map(|err| {
+                            view! {
+                                <p class="field-error">
+                                    {move_tr!("ai-settings-fetch-failed")} ": " {err}
+                                </p>
+                            }
+                        })
+                }}
                 <div class="textarea-field">
                     <label>{move_tr!("story-model")}</label>
-                    <Suspense fallback=move || view! {
-                        <select disabled>
-                            <option>{move || draft.model().get()} " ⏳"</option>
-                        </select>
+                    <Suspense fallback=move || {
+                        view! {
+                            <select disabled>
+                                <option>{move || draft.model().get()} " ⏳"</option>
+                            </select>
+                        }
                     }>
                         {move || {
                             let current_model = draft.model().get();
@@ -157,11 +175,18 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                                 <select on:change=move |event| {
                                     draft.model().set(event_target_value(&event));
                                 }>
-                                    {models.into_iter().map(|model| {
-                                        let selected = model == *current_model;
-                                        let label = model.clone();
-                                        view! { <option value=model selected=selected>{label}</option> }
-                                    }).collect::<Vec<_>>()}
+                                    {models
+                                        .into_iter()
+                                        .map(|model| {
+                                            let selected = model == *current_model;
+                                            let label = model.clone();
+                                            view! {
+                                                <option value=model selected=selected>
+                                                    {label}
+                                                </option>
+                                            }
+                                        })
+                                        .collect::<Vec<_>>()}
                                 </select>
                             }
                         }}
@@ -169,10 +194,12 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                 </div>
                 <div class="textarea-field">
                     <label>{move_tr!("ai-settings-image-model")}</label>
-                    <Suspense fallback=move || view! {
-                        <select disabled>
-                            <option>{move || draft.image_model().get()} " ⏳"</option>
-                        </select>
+                    <Suspense fallback=move || {
+                        view! {
+                            <select disabled>
+                                <option>{move || draft.image_model().get()} " ⏳"</option>
+                            </select>
+                        }
                     }>
                         {move || {
                             let current_model = draft.image_model().get();
@@ -181,11 +208,18 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                                 <select on:change=move |event| {
                                     draft.image_model().set(event_target_value(&event));
                                 }>
-                                    {models.into_iter().map(|model| {
-                                        let selected = model == *current_model;
-                                        let label = model.clone();
-                                        view! { <option value=model selected=selected>{label}</option> }
-                                    }).collect::<Vec<_>>()}
+                                    {models
+                                        .into_iter()
+                                        .map(|model| {
+                                            let selected = model == *current_model;
+                                            let label = model.clone();
+                                            view! {
+                                                <option value=model selected=selected>
+                                                    {label}
+                                                </option>
+                                            }
+                                        })
+                                        .collect::<Vec<_>>()}
                                 </select>
                             }
                         }}
@@ -193,7 +227,9 @@ fn AiSettingsContent(show: RwSignal<bool>, settings: RwSignal<AiSettings>) -> im
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="btn-primary" on:click=on_save>{move_tr!("story-save")}</button>
+                <button class="btn-primary" on:click=on_save>
+                    {move_tr!("story-save")}
+                </button>
             </div>
         </>
     }

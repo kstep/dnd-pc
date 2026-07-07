@@ -26,35 +26,39 @@ pub fn CharacterSession() -> impl IntoView {
         <div class="session-page">
 
             <div class="session-top-row">
-            // === Section: What Can I Do? ===
-            <div class="session-section session-section-actions" id="session-actions">
-                <h3 class="session-section-title">{move_tr!("session-actions")}</h3>
-                <div class="session-rest-actions">
-                    <button class="session-rest-btn" title=move_tr!("short-rest")
-                        on:click=move |_| store.update(|ch| registry.short_rest(ch))
-                    >
-                        <Icon name="coffee" />
-                    </button>
-                    <button class="session-rest-btn" title=move_tr!("long-rest")
-                        on:click=move |_| store.update(|ch| registry.long_rest(ch))
-                    >
-                        <Icon name="moon" />
-                    </button>
+                // === Section: What Can I Do? ===
+                <div class="session-section session-section-actions" id="session-actions">
+                    <h3 class="session-section-title">{move_tr!("session-actions")}</h3>
+                    <div class="session-rest-actions">
+                        <button
+                            class="session-rest-btn"
+                            title=move_tr!("short-rest")
+                            on:click=move |_| store.update(|ch| registry.short_rest(ch))
+                        >
+                            <Icon name="coffee" />
+                        </button>
+                        <button
+                            class="session-rest-btn"
+                            title=move_tr!("long-rest")
+                            on:click=move |_| store.update(|ch| registry.long_rest(ch))
+                        >
+                            <Icon name="moon" />
+                        </button>
+                    </div>
+                    <WeaponsBlock />
+                    <SpellsBlock />
+                    <GearActionsBlock />
+                    <ChoicesBlock />
+                    <LanguagesBlock />
+                    <DamageModifiersBlock />
                 </div>
-                <WeaponsBlock />
-                <SpellsBlock />
-                <GearActionsBlock />
-                <ChoicesBlock />
-                <LanguagesBlock />
-                <DamageModifiersBlock />
-            </div>
 
-            // === Right column: Effects + Stats + Resources ===
-            <div class="session-right-column">
-                <EffectsBlock />
-                <ResourcesBlock />
-                <StatsBlock />
-            </div>
+                // === Right column: Effects + Stats + Resources ===
+                <div class="session-right-column">
+                    <EffectsBlock />
+                    <ResourcesBlock />
+                    <StatsBlock />
+                </div>
             </div>
 
             // === Section: Backpack ===

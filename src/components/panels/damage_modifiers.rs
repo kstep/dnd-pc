@@ -52,65 +52,78 @@ pub fn DamageModifiersPanel() -> impl IntoView {
                 </h3>
             </div>
             <div class="slot-box-list">
-            {move || {
-                let expanded = dmg_expanded.get();
-                DamageType::iter()
-                    .filter(move |damage_type| {
-                        expanded || store.core().damage_modifiers().read().get_entry(*damage_type).is_active()
-                    })
-                    .map(|damage_type| {
-                        let current = Memo::new(move |_| {
-                            store.core().damage_modifiers().read().get_entry(damage_type)
-                        });
-                        let tr_key = damage_type.tr_key();
-                        let label = Signal::derive(move || i18n.tr(tr_key));
-                        let icon = damage_type.icon_name();
+                {move || {
+                    let expanded = dmg_expanded.get();
+                    DamageType::iter()
+                        .filter(move |damage_type| {
+                            expanded
+                                || store
+                                    .core()
+                                    .damage_modifiers()
+                                    .read()
+                                    .get_entry(*damage_type)
+                                    .is_active()
+                        })
+                        .map(|damage_type| {
+                            let current = Memo::new(move |_| {
+                                store.core().damage_modifiers().read().get_entry(damage_type)
+                            });
+                            let tr_key = damage_type.tr_key();
+                            let label = Signal::derive(move || i18n.tr(tr_key));
+                            let icon = damage_type.icon_name();
+                            let toggle_field = move |field: fn(&mut DamageModifier) -> &mut bool| {
+                                store
+                                    .core()
+                                    .damage_modifiers()
+                                    .update(|dm| dm.toggle(damage_type, field));
+                            };
 
-                        let toggle_field = move |field: fn(&mut DamageModifier) -> &mut bool| {
-                            store
-                                .core().damage_modifiers()
-                                .update(|dm| dm.toggle(damage_type, field));
-                        };
-
-                        view! {
-                            <SlotBox label=label icon=icon>
-                                <DamageToggle
-                                    icon="shield-half"
-                                    title=move_tr!("damage-resistance")
-                                    active=Memo::new(move |_| current.get().resistant)
-                                    on_toggle=move || toggle_field(|modifiers| &mut modifiers.resistant)
-                                />
-                                <DamageToggle
-                                    icon="shield-off"
-                                    title=move_tr!("damage-vulnerability")
-                                    active=Memo::new(move |_| current.get().vulnerable)
-                                    on_toggle=move || toggle_field(|modifiers| &mut modifiers.vulnerable)
-                                />
-                                <DamageToggle
-                                    icon="shield-check"
-                                    title=move_tr!("damage-immunity")
-                                    active=Memo::new(move |_| current.get().immune)
-                                    on_toggle=move || toggle_field(|modifiers| &mut modifiers.immune)
-                                />
-                                <Icon name="shield-minus" />
-                                <input
-                                    type="number"
-                                    min="0"
-                                    prop:value=move || current.get().reduction
-                                    on:input=move |event| {
-                                        let value = event_target_value(&event)
-                                            .parse::<u32>()
-                                            .unwrap_or(0);
-                                        store
-                                            .core().damage_modifiers()
-                                            .update(|dm| dm.set_reduction(damage_type, value));
-                                    }
-                                />
-                            </SlotBox>
-                        }
-                    })
-                    .collect_view()
-            }}
+                            view! {
+                                <SlotBox label=label icon=icon>
+                                    <DamageToggle
+                                        icon="shield-half"
+                                        title=move_tr!("damage-resistance")
+                                        active=Memo::new(move |_| current.get().resistant)
+                                        on_toggle=move || toggle_field(|modifiers| {
+                                            &mut modifiers.resistant
+                                        })
+                                    />
+                                    <DamageToggle
+                                        icon="shield-off"
+                                        title=move_tr!("damage-vulnerability")
+                                        active=Memo::new(move |_| current.get().vulnerable)
+                                        on_toggle=move || toggle_field(|modifiers| {
+                                            &mut modifiers.vulnerable
+                                        })
+                                    />
+                                    <DamageToggle
+                                        icon="shield-check"
+                                        title=move_tr!("damage-immunity")
+                                        active=Memo::new(move |_| current.get().immune)
+                                        on_toggle=move || toggle_field(|modifiers| {
+                                            &mut modifiers.immune
+                                        })
+                                    />
+                                    <Icon name="shield-minus" />
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        prop:value=move || current.get().reduction
+                                        on:input=move |event| {
+                                            let value = event_target_value(&event)
+                                                .parse::<u32>()
+                                                .unwrap_or(0);
+                                            store
+                                                .core()
+                                                .damage_modifiers()
+                                                .update(|dm| dm.set_reduction(damage_type, value));
+                                        }
+                                    />
+                                </SlotBox>
+                            }
+                        })
+                        .collect_view()
+                }}
             </div>
         </section>
     }

@@ -23,9 +23,5 @@ pub use weapons::WeaponsBlock;
 
 #[component]
 pub fn FreeUsesBadge(available: u32, max: u32) -> impl IntoView {
-    view! {
-        <span class="entry-badge">
-            {available} "/" {max}
-        </span>
-    }
+    view! { <span class="entry-badge">{available} "/" {max}</span> }
 }

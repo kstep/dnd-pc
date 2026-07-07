@@ -75,9 +75,7 @@ pub fn ItemModal(
         <Modal show title=move_tr!("item-edit")>
             <nav class="tab-nav">
                 {tab_link(Tab::General, "info", move_tr!("item-tab-general"))}
-                <Show when=is_weapon>
-                    {tab_link(Tab::Damage, "swords", move_tr!("damage"))}
-                </Show>
+                <Show when=is_weapon>{tab_link(Tab::Damage, "swords", move_tr!("damage"))}</Show>
                 {tab_link(Tab::Effects, "sparkles", move_tr!("item-tab-effects"))}
                 {tab_link(Tab::Actions, "zap", move_tr!("enchantment-actions"))}
             </nav>
@@ -97,9 +95,7 @@ pub fn ItemModal(
                 </Show>
             </div>
             <div class="modal-actions">
-                <button on:click=move |_| show.set(false)>
-                    {move_tr!("btn-cancel")}
-                </button>
+                <button on:click=move |_| show.set(false)>{move_tr!("btn-cancel")}</button>
                 <button class="btn-primary" on:click=save>
                     {move_tr!("btn-save")}
                 </button>
@@ -179,18 +175,22 @@ fn GeneralTab(draft: Store<Item>) -> impl IntoView {
             </div>
             {move || match draft.kind().get() {
                 ItemKind::Misc => ().into_any(),
-                ItemKind::Weapon { category, ability, magic_bonus } => view! {
-                    <div class="option-card-meta">
-                        <WeaponParams draft category ability magic_bonus />
-                    </div>
+                ItemKind::Weapon { category, ability, magic_bonus } => {
+                    view! {
+                        <div class="option-card-meta">
+                            <WeaponParams draft category ability magic_bonus />
+                        </div>
+                    }
+                        .into_any()
                 }
-                .into_any(),
-                ItemKind::Armor { armor_type, base_ac } => view! {
-                    <div class="option-card-meta">
-                        <ArmorParams draft armor_type base_ac />
-                    </div>
+                ItemKind::Armor { armor_type, base_ac } => {
+                    view! {
+                        <div class="option-card-meta">
+                            <ArmorParams draft armor_type base_ac />
+                        </div>
+                    }
+                        .into_any()
                 }
-                .into_any(),
             }}
             <label class="field-inline">
                 <input
@@ -233,17 +233,20 @@ fn WeaponParams(
                     let category = WeaponCategory::try_from(index).unwrap_or_default();
                     set_kind(category, ability, magic_bonus);
                 }>
-                    {WeaponCategory::VARIANTS.iter().map(|&variant| {
-                        let label = Signal::derive(move || i18n.tr(variant.tr_key()));
-                        view! {
-                            <option
-                                value=(variant as u8).to_string()
-                                selected=move || variant == category
-                            >
-                                {label}
-                            </option>
-                        }
-                    }).collect_view()}
+                    {WeaponCategory::VARIANTS
+                        .iter()
+                        .map(|&variant| {
+                            let label = Signal::derive(move || i18n.tr(variant.tr_key()));
+                            view! {
+                                <option
+                                    value=(variant as u8).to_string()
+                                    selected=move || variant == category
+                                >
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
                 </select>
             </label>
             <label class="field-inline">
@@ -253,17 +256,20 @@ fn WeaponParams(
                     let ability = Ability::try_from(index).unwrap_or_default();
                     set_kind(category, ability, magic_bonus);
                 }>
-                    {Ability::VARIANTS.iter().map(|&variant| {
-                        let label = Signal::derive(move || i18n.tr(variant.tr_key()));
-                        view! {
-                            <option
-                                value=(variant as u8).to_string()
-                                selected=move || variant == ability
-                            >
-                                {label}
-                            </option>
-                        }
-                    }).collect_view()}
+                    {Ability::VARIANTS
+                        .iter()
+                        .map(|&variant| {
+                            let label = Signal::derive(move || i18n.tr(variant.tr_key()));
+                            view! {
+                                <option
+                                    value=(variant as u8).to_string()
+                                    selected=move || variant == ability
+                                >
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
                 </select>
             </label>
             <label class="field-inline">
@@ -301,17 +307,20 @@ fn ArmorParams(draft: Store<Item>, armor_type: ArmorType, base_ac: u32) -> impl 
                     let armor_type = ArmorType::try_from(index).unwrap_or_default();
                     set_kind(armor_type, base_ac);
                 }>
-                    {ArmorType::VARIANTS.iter().map(|&variant| {
-                        let label = Signal::derive(move || i18n.tr(variant.tr_key()));
-                        view! {
-                            <option
-                                value=(variant as u8).to_string()
-                                selected=move || variant == armor_type
-                            >
-                                {label}
-                            </option>
-                        }
-                    }).collect_view()}
+                    {ArmorType::VARIANTS
+                        .iter()
+                        .map(|&variant| {
+                            let label = Signal::derive(move || i18n.tr(variant.tr_key()));
+                            view! {
+                                <option
+                                    value=(variant as u8).to_string()
+                                    selected=move || variant == armor_type
+                                >
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
                 </select>
             </label>
             <label class="field-inline">
@@ -344,15 +353,21 @@ fn DamageSection(draft: Store<ItemEffects>) -> impl IntoView {
         <section class="enchant-section">
             {move || {
                 let len = damage.read().len();
-                (len > 0).then(|| view! {
-                    <div class="entry-list">
-                        {(0..len).map(|index| view! {
-                            <DamageRow damage=damage.into() index=index i18n=i18n />
-                        }).collect_view()}
-                    </div>
-                })
-            }}
-            <button class="btn-primary" on:click=add>
+                (len > 0)
+                    .then(|| {
+                        view! {
+                            <div class="entry-list">
+                                {(0..len)
+                                    .map(|index| {
+                                        view! {
+                                            <DamageRow damage=damage.into() index=index i18n=i18n />
+                                        }
+                                    })
+                                    .collect_view()}
+                            </div>
+                        }
+                    })
+            }} <button class="btn-primary" on:click=add>
                 {move_tr!("btn-add-damage")}
             </button>
         </section>
@@ -417,18 +432,23 @@ fn DamageRow(
                     on:change=on_name
                 />
                 <select on:change=on_type>
-                    <option value="" selected=move || damage_type().is_none()>"—"</option>
-                    {DamageType::VARIANTS.iter().map(|&variant| {
-                        let label = Signal::derive(move || i18n.tr(variant.tr_key()));
-                        view! {
-                            <option
-                                value=(variant as u8).to_string()
-                                selected=move || damage_type() == Some(variant)
-                            >
-                                {label}
-                            </option>
-                        }
-                    }).collect_view()}
+                    <option value="" selected=move || damage_type().is_none()>
+                        "—"
+                    </option>
+                    {DamageType::VARIANTS
+                        .iter()
+                        .map(|&variant| {
+                            let label = Signal::derive(move || i18n.tr(variant.tr_key()));
+                            view! {
+                                <option
+                                    value=(variant as u8).to_string()
+                                    selected=move || damage_type() == Some(variant)
+                                >
+                                    {label}
+                                </option>
+                            }
+                        })
+                        .collect_view()}
                 </select>
                 <div class="entry-actions">
                     <button class="btn-remove" on:click=remove>

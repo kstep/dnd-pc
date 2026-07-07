@@ -72,43 +72,58 @@ pub fn Navbar() -> impl IntoView {
                     <Logo />
                     <span class="navbar-title">{move_tr!("page-characters")}</span>
                 </Ref>
-                {move || active_id.get().map(|id| {
-                    let editor_base = format!("{BASE_URL}/c/{id}");
-                    let editor_current = {
-                        let editor_base = editor_base.clone();
-                        move || {
-                            let path = location.pathname.read();
-                            match path.strip_prefix(&editor_base) {
-                                Some(rest) if rest.is_empty() || rest.starts_with('/') => {
-                                    if rest.starts_with("/session") || rest.starts_with("/story") {
-                                        None
-                                    } else {
-                                        Some("page")
+                {move || {
+                    active_id
+                        .get()
+                        .map(|id| {
+                            let editor_base = format!("{BASE_URL}/c/{id}");
+                            let editor_current = {
+                                let editor_base = editor_base.clone();
+                                move || {
+                                    let path = location.pathname.read();
+                                    match path.strip_prefix(&editor_base) {
+                                        Some(rest) if rest.is_empty() || rest.starts_with('/') => {
+                                            if rest.starts_with("/session")
+                                                || rest.starts_with("/story")
+                                            {
+                                                None
+                                            } else {
+                                                Some("page")
+                                            }
+                                        }
+                                        _ => None,
                                     }
                                 }
-                                _ => None,
+                            };
+                            view! {
+                                <div class="navbar-links">
+                                    <a
+                                        href=editor_base.clone()
+                                        class="navbar-link"
+                                        aria-current=editor_current
+                                    >
+                                        {move_tr!("view-editor")}
+                                    </a>
+                                    <Ref
+                                        href=format!("/c/{id}/session")
+                                        exact=true
+                                        attr:class="navbar-link navbar-link-session"
+                                    >
+                                        {move_tr!("view-session")}
+                                    </Ref>
+                                    <Ref
+                                        href=format!("/c/{id}/story")
+                                        attr:class="navbar-link navbar-link-story"
+                                    >
+                                        <Icon name="book-open" size=16 />
+                                        <span class="navbar-link-label">
+                                            {move_tr!("view-story")}
+                                        </span>
+                                    </Ref>
+                                </div>
                             }
-                        }
-                    };
-                    view! {
-                        <div class="navbar-links">
-                            <a
-                                href=editor_base.clone()
-                                class="navbar-link"
-                                aria-current=editor_current
-                            >
-                                {move_tr!("view-editor")}
-                            </a>
-                            <Ref href=format!("/c/{id}/session") exact=true attr:class="navbar-link navbar-link-session">
-                                {move_tr!("view-session")}
-                            </Ref>
-                            <Ref href=format!("/c/{id}/story") attr:class="navbar-link navbar-link-story">
-                                <Icon name="book-open" size=16 />
-                                <span class="navbar-link-label">{move_tr!("view-story")}</span>
-                            </Ref>
-                        </div>
-                    }
-                })}
+                        })
+                }}
                 <div class="navbar-ref">
                     <Dropdown class="navbar-ref-dropdown">
                         <DropdownTrigger slot>

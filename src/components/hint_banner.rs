@@ -20,16 +20,14 @@ pub fn HintBanner(
             <div class=root_class.clone()>
                 <Icon name=icon size=24 />
                 <div class="hint-banner-body">{children()}</div>
-                {action.map(|(label, callback)| {
-                    view! {
-                        <button
-                            class="hint-banner-btn"
-                            on:click=move |_| callback.run(())
-                        >
-                            {move || label.get()}
-                        </button>
-                    }
-                })}
+                {action
+                    .map(|(label, callback)| {
+                        view! {
+                            <button class="hint-banner-btn" on:click=move |_| callback.run(())>
+                                {move || label.get()}
+                            </button>
+                        }
+                    })}
             </div>
         </Show>
     }

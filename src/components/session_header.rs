@@ -47,18 +47,33 @@ pub fn SessionHeader() -> impl IntoView {
                 <span class="session-header-stat">
                     {move_tr!("prof-bonus")} ": +" <strong>{prof_bonus}</strong>
                 </span>
-                {move || store.core().combat().concentrating().with(|name| name.as_ref().map(|name| view! {
-                    <span class="concentration-indicator">
-                        <Icon name="crosshair" />
-                        {name.clone()}
-                        <button class="concentration-drop"
-                            title=move_tr!("drop-concentration")
-                            on:click=move |_| store.core().combat().concentrating().set(None)
-                        >
-                            <Icon name="x" size=12 />
-                        </button>
-                    </span>
-                }))}
+                {move || {
+                    store
+                        .core()
+                        .combat()
+                        .concentrating()
+                        .with(|name| {
+                            name
+                                .as_ref()
+                                .map(|name| {
+                                    view! {
+                                        <span class="concentration-indicator">
+                                            <Icon name="crosshair" />
+                                            {name.clone()}
+                                            <button
+                                                class="concentration-drop"
+                                                title=move_tr!("drop-concentration")
+                                                on:click=move |_| {
+                                                    store.core().combat().concentrating().set(None)
+                                                }
+                                            >
+                                                <Icon name="x" size=12 />
+                                            </button>
+                                        </span>
+                                    }
+                                })
+                        })
+                }}
             </div>
         </div>
     }

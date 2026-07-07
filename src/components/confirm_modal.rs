@@ -21,9 +21,7 @@ pub fn ConfirmModal(
                 <p>{move || message.get()}</p>
             </div>
             <div class="modal-actions">
-                <button on:click=move |_| show.set(false)>
-                    {move_tr!("btn-cancel")}
-                </button>
+                <button on:click=move |_| show.set(false)>{move_tr!("btn-cancel")}</button>
                 <button class="btn-danger" on:click=do_confirm>
                     {move_tr!("btn-confirm")}
                 </button>

@@ -151,8 +151,7 @@ pub fn CharacterHeader() -> impl IntoView {
                                 >
                                     <Icon name="arrow-up" />
                                     <span class="btn-level-up-label">
-                                        " "
-                                        {move_tr!("level-up")}
+                                        " " {move_tr!("level-up")}
                                     </span>
                                 </button>
                             </Show>
@@ -170,9 +169,13 @@ pub fn CharacterHeader() -> impl IntoView {
                                     <input
                                         type="checkbox"
                                         prop:checked=move || store.shared().get()
-                                        on:change=move |event| store.shared().set(event_target_checked(&event))
+                                        on:change=move |event| {
+                                            store.shared().set(event_target_checked(&event))
+                                        }
                                     />
-                                    <span class="dropdown-item-label">{move_tr!("share-toggle")}</span>
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("share-toggle")}
+                                    </span>
                                 </label>
                                 <button
                                     class="dropdown-item"
@@ -182,26 +185,39 @@ pub fn CharacterHeader() -> impl IntoView {
                                         on_share();
                                     }
                                 >
-                                    <Icon name=move || if share_copied.get() { "check" } else { "share-2" } size=16 />
-                                    <span class="dropdown-item-label">{move_tr!("share-link")}</span>
+                                    <Icon
+                                        name=move || {
+                                            if share_copied.get() { "check" } else { "share-2" }
+                                        }
+                                        size=16
+                                    />
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("share-link")}
+                                    </span>
                                 </button>
 
                                 <div class="dropdown-separator"></div>
 
                                 <button class="dropdown-item" on:click=on_export>
                                     <Icon name="download" size=16 />
-                                    <span class="dropdown-item-label">{move_tr!("export-json")}</span>
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("export-json")}
+                                    </span>
                                 </button>
                                 <button class="dropdown-item" on:click=on_import>
                                     <Icon name="upload" size=16 />
-                                    <span class="dropdown-item-label">{move_tr!("import-json")}</span>
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("import-json")}
+                                    </span>
                                 </button>
 
                                 <div class="dropdown-separator"></div>
 
                                 <button class="dropdown-item" on:click=on_copy>
                                     <Icon name="copy" size=16 />
-                                    <span class="dropdown-item-label">{move_tr!("copy-character")}</span>
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("copy-character")}
+                                    </span>
                                 </button>
 
                                 <div class="dropdown-separator"></div>
@@ -218,79 +234,86 @@ pub fn CharacterHeader() -> impl IntoView {
                                     on:click=move |_| show_reset_confirm.set(true)
                                 >
                                     <Icon name="rotate-ccw" size=16 />
-                                    <span class="dropdown-item-label">{move_tr!("reset-character")}</span>
+                                    <span class="dropdown-item-label">
+                                        {move_tr!("reset-character")}
+                                    </span>
                                 </button>
                             </Dropdown>
                         </div>
                     </div>
 
                     <div class="header-class-tags">
-                        {move || classes
-                            .read()
-                            .iter()
-                            .enumerate()
-                            .filter(|(_, cl)| !cl.class.is_empty())
-                            .map(|(index, cl)| {
-                                let class_key = cl.class.clone();
-                                let class_label = cl.class_label().to_string();
-                                let subclass_key = cl.subclass.clone().unwrap_or_default();
-                                let subclass_label = cl
-                                    .subclass_label()
-                                    .map(str::to_string)
-                                    .or_else(|| cl.subclass.as_deref().map(str::to_string));
-                                let level = cl.level;
-                                let subclass_view = subclass_label.map(|label| view! {
-                                    <Ref
-                                        href=format!("/r/class/{class_key}/{subclass_key}")
-                                        attr:class="class-tag-subclass"
-                                    >
-                                        {label}
-                                    </Ref>
-                                });
-                                let remove_target = class_key.clone();
-                                let on_level_change = move |event| {
-                                    if let Ok(value) = event_target_value(&event).parse::<u32>() {
-                                        let clamped = value.clamp(1, MAX_CLASS_LEVEL);
-                                        store.core().identity().classes().write()[index].level = clamped;
-                                    }
-                                };
-                                view! {
-                                    <span class="class-tag">
-                                        <Ref
-                                            href=format!("/r/class/{class_key}")
-                                            attr:class="class-tag-name"
-                                        >
-                                            {class_label}
-                                        </Ref>
-                                        {subclass_view}
-                                        <input
-                                            class="class-tag-level inline-input"
-                                            type="number"
-                                            min="1"
-                                            max=MAX_CLASS_LEVEL
-                                            prop:value=level
-                                            on:change=on_level_change
-                                        />
-                                        <Show when=move || multiclass.get()>
-                                            <button
-                                                class="class-tag-remove"
-                                                title=move_tr!("remove-class")
-                                                on:click={
-                                                    let target = remove_target.clone();
-                                                    move |_| {
-                                                        remove_class_target.set(Some(target.clone()));
-                                                        show_remove_class.set(true);
-                                                    }
-                                                }
+                        {move || {
+                            classes
+                                .read()
+                                .iter()
+                                .enumerate()
+                                .filter(|(_, cl)| !cl.class.is_empty())
+                                .map(|(index, cl)| {
+                                    let class_key = cl.class.clone();
+                                    let class_label = cl.class_label().to_string();
+                                    let subclass_key = cl.subclass.clone().unwrap_or_default();
+                                    let subclass_label = cl
+                                        .subclass_label()
+                                        .map(str::to_string)
+                                        .or_else(|| cl.subclass.as_deref().map(str::to_string));
+                                    let level = cl.level;
+                                    let subclass_view = subclass_label
+                                        .map(|label| {
+                                            view! {
+                                                <Ref
+                                                    href=format!("/r/class/{class_key}/{subclass_key}")
+                                                    attr:class="class-tag-subclass"
+                                                >
+                                                    {label}
+                                                </Ref>
+                                            }
+                                        });
+                                    let remove_target = class_key.clone();
+                                    let on_level_change = move |event| {
+                                        if let Ok(value) = event_target_value(&event).parse::<u32>()
+                                        {
+                                            let clamped = value.clamp(1, MAX_CLASS_LEVEL);
+                                            store.core().identity().classes().write()[index].level = clamped;
+                                        }
+                                    };
+                                    view! {
+                                        <span class="class-tag">
+                                            <Ref
+                                                href=format!("/r/class/{class_key}")
+                                                attr:class="class-tag-name"
                                             >
-                                                <Icon name="x" size=12 />
-                                            </button>
-                                        </Show>
-                                    </span>
-                                }
-                            })
-                            .collect_view()
-                        }
+                                                {class_label}
+                                            </Ref>
+                                            {subclass_view}
+                                            <input
+                                                class="class-tag-level inline-input"
+                                                type="number"
+                                                min="1"
+                                                max=MAX_CLASS_LEVEL
+                                                prop:value=level
+                                                on:change=on_level_change
+                                            />
+                                            <Show when=move || multiclass.get()>
+                                                <button
+                                                    class="class-tag-remove"
+                                                    title=move_tr!("remove-class")
+                                                    on:click={
+                                                        let target = remove_target.clone();
+                                                        move |_| {
+                                                            remove_class_target.set(Some(target.clone()));
+                                                            show_remove_class.set(true);
+                                                        }
+                                                    }
+                                                >
+                                                    <Icon name="x" size=12 />
+                                                </button>
+                                            </Show>
+                                        </span>
+                                    }
+                                })
+                                .collect_view()
+                        }}
                     </div>
 
                     <div class="header-stats-row">
@@ -305,7 +328,9 @@ pub fn CharacterHeader() -> impl IntoView {
                         <div class="header-stat">
                             <span class="header-stat-label">{move_tr!("background")}</span>
                             <IdentitySlotDisplay
-                                name=Signal::derive(move || store.core().identity().background().get())
+                                name=Signal::derive(move || {
+                                    store.core().identity().background().get()
+                                })
                                 kind=|background_name: &str| IndexEntry::Background(background_name)
                                 ref_prefix="background"
                             />
@@ -386,14 +411,16 @@ where
             if current.is_empty() {
                 Either::Left(view! { <span class="identity-slot-empty">"—"</span> })
             } else {
-                Either::Right(view! {
-                    <Ref
-                        href=format!("/r/{ref_prefix}/{}", *current)
-                        attr:class="identity-slot-link"
-                    >
-                        {label}
-                    </Ref>
-                })
+                Either::Right(
+                    view! {
+                        <Ref
+                            href=format!("/r/{ref_prefix}/{}", *current)
+                            attr:class="identity-slot-link"
+                        >
+                            {label}
+                        </Ref>
+                    },
+                )
             }
         }}
     }

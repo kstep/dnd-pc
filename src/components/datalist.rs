@@ -214,11 +214,17 @@ pub fn DatalistInput(
                     on_input_change(input, resolved);
                 }
             />
-            {move || ref_href.get().map(|href| view! {
-                <Ref href=href attr:class="datalist-ref-link" attr:title="Reference">
-                    <Icon name="info" size=12 />
-                </Ref>
-            })}
+            {move || {
+                ref_href
+                    .get()
+                    .map(|href| {
+                        view! {
+                            <Ref href=href attr:class="datalist-ref-link" attr:title="Reference">
+                                <Icon name="info" size=12 />
+                            </Ref>
+                        }
+                    })
+            }}
             <button
                 type="button"
                 class="datalist-browse-btn"
@@ -227,10 +233,15 @@ pub fn DatalistInput(
                     let title = placeholder.get_untracked();
                     let opts = options.get();
                     let callback = Arc::clone(&on_input_pick);
-                    ctx.open(opts, title, badge_key, move |label, name| {
-                        display_value.set(label.clone());
-                        callback(label, Some(name));
-                    });
+                    ctx.open(
+                        opts,
+                        title,
+                        badge_key,
+                        move |label, name| {
+                            display_value.set(label.clone());
+                            callback(label, Some(name));
+                        },
+                    );
                 }
             >
                 <Icon name="chevron-down" />
@@ -248,18 +259,29 @@ pub fn SharedDatalist(
     #[prop(into)] options: Signal<Vec<DatalistOption>>,
 ) -> impl IntoView {
     view! {
-        <datalist id=move || id.get()>
-            {move || options.with(|opts| {
-                opts.iter().map(|opt| {
-                    let label = opt.label.clone();
-                    let description = opt.description.clone();
-                    view! {
-                        <option value=move || label.get()>
-                            {move || description.with(|d| (!d.is_empty()).then(|| d.clone()))}
-                        </option>
-                    }
-                }).collect_view()
-            })}
+        <datalist id=move || {
+            id.get()
+        }>
+            {move || {
+                options
+                    .with(|opts| {
+                        opts.iter()
+                            .map(|opt| {
+                                let label = opt.label.clone();
+                                let description = opt.description.clone();
+                                view! {
+                                    <option value=move || {
+                                        label.get()
+                                    }>
+                                        {move || {
+                                            description.with(|d| (!d.is_empty()).then(|| d.clone()))
+                                        }}
+                                    </option>
+                                }
+                            })
+                            .collect_view()
+                    })
+            }}
         </datalist>
     }
 }
@@ -315,12 +337,7 @@ pub fn DatalistModal() -> impl IntoView {
                     each=filtered
                     key=|opt| opt.name.clone()
                     children=move |opt| {
-                        let DatalistOption {
-                            name,
-                            label,
-                            description,
-                            count,
-                        } = opt;
+                        let DatalistOption { name, label, description, count } = opt;
                         let selected_name = name.clone();
                         let label_for_click = label.clone();
                         let badge = ctx
@@ -340,17 +357,16 @@ pub fn DatalistModal() -> impl IntoView {
                                 class="datalist-option"
                                 on:click=move |_| {
                                     if let Some(callback) = ctx.on_pick.get_value() {
-                                        // `label` may change with locale; pick
-                                        // the current value at click time.
-                                        callback(label_for_click.get_untracked(), selected_name.clone());
+                                        callback(
+                                            label_for_click.get_untracked(),
+                                            selected_name.clone(),
+                                        );
                                     }
                                     ctx.show.set(false);
                                 }
                             >
                                 <div class="datalist-option-header">
-                                    <span class="datalist-option-value">
-                                        {move || label.get()}
-                                    </span>
+                                    <span class="datalist-option-value">{move || label.get()}</span>
                                     {badge}
                                 </div>
                                 <div class="datalist-option-label">

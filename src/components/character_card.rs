@@ -37,28 +37,34 @@ pub fn CharacterCard(
     let deleting = RwSignal::new(false);
 
     view! {
-        <div class="character-card" class:card-flipped=flipped class:card-remove=deleting
-             on:animationend=move |_| if deleting.get() { on_delete(id) }
+        <div
+            class="character-card"
+            class:card-flipped=flipped
+            class:card-remove=deleting
+            on:animationend=move |_| {
+                if deleting.get() {
+                    on_delete(id)
+                }
+            }
         >
             <div class="card-inner">
                 <div class="card-front">
                     <Ref href=href attr:class="card-link">
                         <div class="card-row">
-                            <AvatarView
-                                name=name.clone()
-                                avatar=avatar
-                                char_id=id
-                                size=64
-                            />
+                            <AvatarView name=name.clone() avatar=avatar char_id=id size=64 />
                             <div class="card-text">
                                 <h3>{name.clone()}</h3>
                                 <p class="card-subtitle">
                                     {move_tr!("level-prefix")} " " {summary.level} " "
-                                    <span>{move || if class_empty {
-                                        tr!("no-class")
-                                    } else {
-                                        class_str.clone()
-                                    }}</span>
+                                    <span>
+                                        {move || {
+                                            if class_empty {
+                                                tr!("no-class")
+                                            } else {
+                                                class_str.clone()
+                                            }
+                                        }}
+                                    </span>
                                 </p>
                             </div>
                         </div>
@@ -80,15 +86,11 @@ pub fn CharacterCard(
                         <p class="card-subtitle">{move_tr!("confirm-delete")}</p>
                     </div>
                     <div class="card-back-buttons">
-                        <button
-                            on:click=move |event| {
-                                event.prevent_default();
-                                event.stop_propagation();
-                                flipped.set(false);
-                            }
-                        >
-                            {move_tr!("btn-cancel")}
-                        </button>
+                        <button on:click=move |event| {
+                            event.prevent_default();
+                            event.stop_propagation();
+                            flipped.set(false);
+                        }>{move_tr!("btn-cancel")}</button>
                         <button
                             class="btn-danger"
                             on:click=move |event| {

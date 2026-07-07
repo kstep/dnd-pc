@@ -8,8 +8,6 @@ fn main() {
     tracing_wasm::set_as_global_default();
 
     mount_to_body(|| {
-        view! {
-            <App />
-        }
+        view! { <App /> }
     })
 }

@@ -493,9 +493,7 @@ pub fn AiGenerateModal(
                     if !has_key.get() {
                         Either::Left(
                             view! {
-                                <p class="ai-generate-no-key">
-                                    {move_tr!("ai-generate-no-key")}
-                                </p>
+                                <p class="ai-generate-no-key">{move_tr!("ai-generate-no-key")}</p>
                             },
                         )
                     } else {
@@ -515,15 +513,15 @@ pub fn AiGenerateModal(
                                 </div>
 
                                 {move || {
-                                    error_text.get().map(|error| {
-                                        view! {
-                                            <p class="ai-generate-error">
-                                                {move_tr!("ai-generate-error")}
-                                                ": "
-                                                {error}
-                                            </p>
-                                        }
-                                    })
+                                    error_text
+                                        .get()
+                                        .map(|error| {
+                                            view! {
+                                                <p class="ai-generate-error">
+                                                    {move_tr!("ai-generate-error")} ": " {error}
+                                                </p>
+                                            }
+                                        })
                                 }}
 
                                 <div class="ai-generate-status">
@@ -531,9 +529,9 @@ pub fn AiGenerateModal(
                                     <Show when=move || generating.get()>
                                         <p class="ai-generate-phase">
                                             {move || {
-                                            let i18n = expect_context::<I18n>();
-                                            i18n.tr(phase.get())
-                                        }}
+                                                let i18n = expect_context::<I18n>();
+                                                i18n.tr(phase.get())
+                                            }}
                                         </p>
                                     </Show>
                                 </div>
@@ -557,11 +555,7 @@ pub fn AiGenerateModal(
                         {move_tr!("ai-generate-button")}
                     </button>
                 </Show>
-                <button
-                    type="button"
-                    class="btn-link"
-                    on:click=move |_| show.set(false)
-                >
+                <button type="button" class="btn-link" on:click=move |_| show.set(false)>
                     {move_tr!("import-cancel")}
                 </button>
                 <button

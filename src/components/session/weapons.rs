@@ -81,7 +81,10 @@ pub fn WeaponsBlock() -> impl IntoView {
                 let attack_badge = view! {
                     <span class="entry-badge">
                         <Icon name="swords" />
-                        " " {move_tr!("attack")} " " {format!("{total_atk:+}")}
+                        " "
+                        {move_tr!("attack")}
+                        " "
+                        {format!("{total_atk:+}")}
                     </span>
                 };
 
@@ -96,7 +99,13 @@ pub fn WeaponsBlock() -> impl IntoView {
                         Some(effect.name.clone())
                     };
                     let expr = effect.expr.to_string();
-                    view! { <span class="entry-badge" title=title>{icon}" "{expr}</span> }
+                    view! {
+                        <span class="entry-badge" title=title>
+                            {icon}
+                            " "
+                            {expr}
+                        </span>
+                    }
                 });
                 let more = (active_effects.len() > 1)
                     .then(|| view! { <span class="entry-badge">"\u{2026}"</span> });
@@ -179,17 +188,20 @@ pub fn WeaponsBlock() -> impl IntoView {
         let attack_count = eff.attack_count();
 
         if rows.is_empty() {
-            Either::Left(view! {
-                <p class="session-empty">{move_tr!("session-no-weapons")}</p>
-            })
+            Either::Left(view! { <p class="session-empty">{move_tr!("session-no-weapons")}</p> })
         } else {
             Either::Right(view! {
                 <div class="session-subsection">
                     <h4 class="session-subsection-title">
                         {move_tr!("weapons")}
-                        {(attack_count > 1).then(|| view! {
-                            <span class="entry-badge">{move_tr!("attack-count")} ": " {attack_count}</span>
-                        })}
+                        {(attack_count > 1)
+                            .then(|| {
+                                view! {
+                                    <span class="entry-badge">
+                                        {move_tr!("attack-count")} ": " {attack_count}
+                                    </span>
+                                }
+                            })}
                     </h4>
                     <SessionList items=rows />
                 </div>
