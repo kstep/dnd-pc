@@ -1842,6 +1842,12 @@ select.tool-ability {
   }
 }
 
+.package-badge {
+  font-size: var(--font-size-0);
+  opacity: 0.6;
+  margin-inline-start: auto;
+}
+
 .entry-actions {
   grid-column: 3;
   display: flex;

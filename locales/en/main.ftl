@@ -446,6 +446,7 @@ spell-cat-summon = Summon
 spell-cat-social = Social
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
+ref-package = Package
 expr-and = and
 expr-or = or
 expr-not = not

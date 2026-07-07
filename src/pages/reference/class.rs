@@ -78,6 +78,7 @@ pub fn ClassReference() -> impl IntoView {
                     None => class_label.clone(),
                 };
                 let description = loc.description().to_string();
+                let package = def.package.to_string();
 
                 // Hit-die size lives on the `Class Proficiencies (X)` feature
                 // as a `HIT_DICE.SIDES = N` assign — eval the OnFeatureAdd
@@ -307,6 +308,16 @@ pub fn ClassReference() -> impl IntoView {
                                                     "/r/spell/{sln}",
                                                 )>{move_tr!("ref-spell-list-link")}</Ref>
                                             </span>
+                                        </div>
+                                    }
+                                })}
+                            {(!package.is_empty())
+                                .then(|| {
+                                    let package_label = registry.package_display_name(&package);
+                                    view! {
+                                        <div class="info-item">
+                                            <span class="info-label">{move_tr!("ref-package")}</span>
+                                            <span class="info-value">{package_label}</span>
                                         </div>
                                     }
                                 })}

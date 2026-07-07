@@ -45,13 +45,15 @@ pub fn SpeciesReference() -> impl IntoView {
             );
         }
 
-        let (title, description, feature_names) = registry.species().lookup(&name, |loc| {
-            (
-                loc.label().to_string(),
-                loc.description().to_string(),
-                loc.data.features.clone(),
-            )
-        })?;
+        let (title, description, feature_names, package) =
+            registry.species().lookup(&name, |loc| {
+                (
+                    loc.label().to_string(),
+                    loc.description().to_string(),
+                    loc.data.features.clone(),
+                    loc.data.package.to_string(),
+                )
+            })?;
 
         let features = registry.with_features_index(|features_index| {
             let iter = feature_names
@@ -66,6 +68,19 @@ pub fn SpeciesReference() -> impl IntoView {
                 <div class="reference-detail">
                     <h1>{title}</h1>
                     <Markdown text=description />
+
+                    {(!package.is_empty())
+                        .then(|| {
+                            let package_label = registry.package_display_name(&package);
+                            view! {
+                                <div class="reference-info-bar">
+                                    <div class="info-item">
+                                        <span class="info-label">{move_tr!("ref-package")}</span>
+                                        <span class="info-value">{package_label}</span>
+                                    </div>
+                                </div>
+                            }
+                        })}
 
                     {(!features.is_empty())
                         .then(|| {

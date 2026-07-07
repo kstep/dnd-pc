@@ -617,6 +617,7 @@ pub struct FeatureKey {
     pub has_assignments: bool,
     pub spells: FeatureSpells,
     pub choices: Option<Vec<ChoiceFieldKey>>,
+    pub package: String,
 }
 
 #[cfg_attr(
@@ -634,6 +635,7 @@ pub fn collect_feature_views<'a>(
             has_assignments: feat.assign.as_deref().is_some_and(|a| !a.is_empty()),
             spells: FeatureSpells::from_feature(feat),
             choices: feature_choices(&feat.name, &feat.actions),
+            package: feat.package.to_string(),
         })
         .collect()
 }
@@ -671,6 +673,7 @@ fn FeatureRowView(key: FeatureKey, anchors: bool) -> impl IntoView {
     let has_prerequisites = key.has_prerequisites;
     let has_assignments = key.has_assignments;
     let name = key.name.clone();
+    let package = key.package.clone();
 
     let (label, description) = registry.features().label_desc(&name, &name);
     let category_label = Signal::derive(move || i18n.tr(category.tr_key()));
@@ -709,6 +712,11 @@ fn FeatureRowView(key: FeatureKey, anchors: bool) -> impl IntoView {
     view! {
         <div class="reference-feature" id=id>
             <h3>{move || label.get()}</h3>
+            {(!package.is_empty())
+                .then(|| {
+                    let label = registry.package_display_name(&package);
+                    view! { <span class="entry-badge package-badge">{label}</span> }
+                })}
             <p class="feature-prerequisites">
                 {move || category_label.get()}
                 {has_prerequisites

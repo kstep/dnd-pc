@@ -446,6 +446,7 @@ spell-cat-summon = Призыв
 spell-cat-social = Социальное
 ref-prerequisites = Требования
 ref-spell-list-link = Список заклинаний
+ref-package = Набор
 expr-and = и
 expr-or = или
 expr-not = не

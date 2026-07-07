@@ -256,8 +256,16 @@ fn SpellRowView(name: String) -> impl IntoView {
                             let meta = loc.data.meta();
                             let components = loc.data.components.clone();
                             let effects = extract_spell_effects(loc.data);
+                            let package = loc.data.package.to_string();
                             view! {
                                 <SpellInfoBar meta=meta components=components />
+                                {(!package.is_empty())
+                                    .then(|| {
+                                        let label = registry.package_display_name(&package);
+                                        view! {
+                                            <span class="entry-badge package-badge">{label}</span>
+                                        }
+                                    })}
                                 <SpellEffectsView effects />
                             }
                         },
