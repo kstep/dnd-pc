@@ -270,6 +270,39 @@ pub fn SpellsBlock() -> impl IntoView {
                                                     </span>
                                                 }.into_any());
                                             }
+                                            // Components (V/S/M)
+                                            if sd.components.verbal {
+                                                badges.push(view! {
+                                                    <span class="entry-badge" title=move_tr!("ref-spell-comp-verbal")>
+                                                        <Icon name="audio-lines" />
+                                                    </span>
+                                                }.into_any());
+                                            }
+                                            if sd.components.somatic {
+                                                badges.push(view! {
+                                                    <span class="entry-badge" title=move_tr!("ref-spell-comp-somatic")>
+                                                        <Icon name="hand-helping" />
+                                                    </span>
+                                                }.into_any());
+                                            }
+                                            if let Some(material) = &sd.components.material {
+                                                let icon = if material.consumable { "gem" } else { "stone" };
+                                                let label = if material.consumable {
+                                                    tr!("ref-spell-comp-consumable")
+                                                } else {
+                                                    tr!("ref-spell-comp-material")
+                                                };
+                                                let title = if material.name.is_empty() {
+                                                    label
+                                                } else {
+                                                    format!("{label}: {}", material.name)
+                                                };
+                                                badges.push(view! {
+                                                    <span class="entry-badge" title=title>
+                                                        <Icon name=icon />
+                                                    </span>
+                                                }.into_any());
+                                            }
                                             // // Ritual
                                             // if sd.ritual {
                                             //     badges.push(view! {

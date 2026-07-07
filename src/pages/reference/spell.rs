@@ -252,9 +252,10 @@ fn SpellRowView(name: String) -> impl IntoView {
             <h3>{move || label.get()}</h3>
             {move || registry.spells().lookup(&name, |loc| {
                 let meta = loc.data.meta();
+                let components = loc.data.components.clone();
                 let effects = extract_spell_effects(loc.data);
                 view! {
-                    <SpellInfoBar meta=meta />
+                    <SpellInfoBar meta=meta components=components />
                     <SpellEffectsView effects />
                 }
             })}

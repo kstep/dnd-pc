@@ -3539,6 +3539,16 @@ dialog.modal.closing::backdrop {
   margin-left: 0.3em;
 }
 
+.spell-comp-value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-1);
+
+  .spell-tag {
+    margin-left: 0;
+  }
+}
+
 .feature-spells-inline {
   margin-top: var(--size-2);
   display: flex;

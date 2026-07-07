@@ -2,9 +2,54 @@ use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 use crate::{
+    components::icon::Icon,
     model::{ActionType, EffectDuration, EffectRange, Translatable},
-    rules::{CastTime, SpellMeta},
+    rules::{CastTime, SpellComponents, SpellMeta},
 };
+
+fn format_components(components: SpellComponents) -> Option<impl IntoView> {
+    let mut icons: Vec<AnyView> = Vec::new();
+    if components.verbal {
+        icons.push(
+            view! {
+                <span title=move_tr!("ref-spell-comp-verbal")><Icon name="audio-lines" /></span>
+            }
+            .into_any(),
+        );
+    }
+    if components.somatic {
+        icons.push(
+            view! {
+                <span title=move_tr!("ref-spell-comp-somatic")><Icon name="hand-helping" /></span>
+            }
+            .into_any(),
+        );
+    }
+    let material = components.material.map(|material| {
+        let name = material.name.to_string();
+        let icon = if material.consumable { "gem" } else { "stone" };
+        let title = if material.consumable {
+            move_tr!("ref-spell-comp-consumable")
+        } else {
+            move_tr!("ref-spell-comp-material")
+        };
+        view! {
+            <span title=title><Icon name=icon /></span>
+            {(!name.is_empty()).then(|| view! {
+                <span class="spell-tag">{name}</span>
+            })}
+        }
+    });
+    if icons.is_empty() && material.is_none() {
+        return None;
+    }
+    Some(view! {
+        <div class="info-item">
+            <span class="info-label">{move_tr!("ref-spell-components")}</span>
+            <span class="info-value spell-comp-value">{icons}{material}</span>
+        </div>
+    })
+}
 
 fn format_cast_time(cast_time: CastTime, ritual: bool) -> impl IntoView {
     let base = match cast_time {
@@ -58,7 +103,10 @@ fn format_duration(duration: EffectDuration) -> impl IntoView {
 }
 
 #[component]
-pub fn SpellInfoBar(meta: SpellMeta) -> impl IntoView {
+pub fn SpellInfoBar(
+    meta: SpellMeta,
+    #[prop(optional)] components: SpellComponents,
+) -> impl IntoView {
     let i18n = expect_context::<leptos_fluent::I18n>();
     let category_key = meta.category.tr_key();
     let category_label = Signal::derive(move || i18n.tr(category_key));
@@ -89,6 +137,7 @@ pub fn SpellInfoBar(meta: SpellMeta) -> impl IntoView {
                     </span>
                 </div>
             })}
+            {format_components(components)}
         </div>
     }
 }

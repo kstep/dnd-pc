@@ -20,14 +20,21 @@ use crate::{
         Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, Features,
         FeaturesStoreFields, Spell, SpellData, SpellSlotPool, Translatable, format_bonus,
     },
-    rules::{RulesRegistry, SpellMeta, SpellsList},
+    rules::{RulesRegistry, SpellComponents, SpellMeta, SpellsList},
 };
 
-fn lookup_spell_meta(registry: RulesRegistry, spell_name: &str) -> Option<SpellMeta> {
+fn lookup_spell_meta(
+    registry: RulesRegistry,
+    spell_name: &str,
+) -> Option<(SpellMeta, SpellComponents)> {
     if spell_name.is_empty() {
         return None;
     }
-    registry.with_spells_index(|index| index.get(spell_name).map(|def| def.meta()))
+    registry.with_spells_index(|index| {
+        index
+            .get(spell_name)
+            .map(|def| (def.meta(), def.components.clone()))
+    })
 }
 
 fn update_spells(
@@ -491,10 +498,10 @@ fn FeatureSpellcastingSection(
                                             </Show>
                                         </div>
                                         {
-                                            let meta = lookup_spell_meta(registry, &spell_name);
+                                            let info = lookup_spell_meta(registry, &spell_name);
                                             view! {
-                                                {meta.map(|meta| view! { <SpellInfoBar meta /> })}
-                                                {if meta.is_some() {
+                                                {info.clone().map(|(meta, components)| view! { <SpellInfoBar meta components /> })}
+                                                {if info.is_some() {
                                                     Either::Left(view! {
                                                         <div class="entry-desc">
                                                             <Markdown text=move || read_known_spell(feat_name, store, i, |spell| spell.description.clone()) />
@@ -692,10 +699,10 @@ fn FeatureSpellcastingSection(
                                         </div>
                                     </Show>
                                         {
-                                            let meta = lookup_spell_meta(registry, &spell_name);
+                                            let info = lookup_spell_meta(registry, &spell_name);
                                             view! {
-                                                {meta.map(|meta| view! { <SpellInfoBar meta /> })}
-                                                {if meta.is_some() {
+                                                {info.clone().map(|(meta, components)| view! { <SpellInfoBar meta components /> })}
+                                                {if info.is_some() {
                                                     Either::Left(view! {
                                                         <div class="entry-desc">
                                                             <Markdown text=move || read_spell(feat_name, store, i, |spell| spell.description.clone()) />

@@ -869,9 +869,9 @@ fn InlineSpellRowView(key: InlineSpellKey) -> impl IntoView {
             <strong>{move || label.get()}</strong>
             {move || {
                 let extracted = registry.spells().lookup(&name, |loc| {
-                    (loc.data.level, loc.data.meta(), extract_spell_effects(loc.data))
+                    (loc.data.level, loc.data.meta(), loc.data.components.clone(), extract_spell_effects(loc.data))
                 });
-                extracted.map(|(level, meta, effects)| {
+                extracted.map(|(level, meta, components, effects)| {
                     let level_text = if level == 0 {
                         move_tr!("ref-cantrips-level")
                     } else {
@@ -886,7 +886,7 @@ fn InlineSpellRowView(key: InlineSpellKey) -> impl IntoView {
                             {", "}{move_tr!("ref-spell-min-level", {"level" => min_level})}
                         })}
                         {")"}
-                        <SpellInfoBar meta=meta />
+                        <SpellInfoBar meta=meta components=components />
                         <SpellEffectsView effects />
                     }
                 })
