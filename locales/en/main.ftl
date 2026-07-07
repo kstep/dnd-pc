@@ -559,3 +559,6 @@ weapon-category = Category
 ability = Ability
 armor-type = Armor type
 magic-bonus = Magic bonus
+
+# --- Package picker ---
+package-locked = Used by: { $names }

@@ -158,6 +158,43 @@ impl RulesRegistry {
             .map(|entries| f(entries))
     }
 
+    /// Package id → labels of the character's features that come from it.
+    /// A package with entries here cannot be toggled off. One pass over the
+    /// feature rows — identity rows are synth features and spells arrive
+    /// through features, so features are the single accounting point.
+    pub fn locked_packages(&self, character: &Character) -> BTreeMap<Box<str>, Vec<String>> {
+        self.with_features_index(|view| {
+            let mut locked: BTreeMap<Box<str>, Vec<String>> = BTreeMap::new();
+            for feature in character.features.iter() {
+                if feature.name.is_empty() {
+                    continue;
+                }
+                let Some(def) = view.get(&feature.name) else {
+                    continue;
+                };
+                if def.package.is_empty() {
+                    continue;
+                }
+                locked
+                    .entry(def.package.clone())
+                    .or_default()
+                    .push(feature.label().to_string());
+            }
+            locked
+        })
+    }
+
+    /// Manifest display name for a package id; falls back to the raw id.
+    pub fn package_display_name(&self, id: &str) -> String {
+        let guard = self.manifest.read();
+        guard
+            .as_ref()
+            .and_then(|result| result.as_ref().ok())
+            .and_then(|entries| entries.iter().find(|entry| entry.id == id))
+            .map(|entry| entry.name.clone())
+            .unwrap_or_else(|| id.to_string())
+    }
+
     /// Tracked access to the merged class definitions map (empty until the
     /// defs index resolves).
     pub fn with_class_defs<R>(
@@ -1653,6 +1690,7 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
+    use crate::model::Feature;
 
     wasm_bindgen_test_configure!(run_in_browser);
 
@@ -1800,5 +1838,32 @@ mod tests {
         );
         // Settle the refetches before the Owner drops (see synth test note).
         registry.await_ready().await;
+    }
+
+    #[wasm_bindgen_test]
+    async fn locked_packages_groups_features_by_stamp() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let registry = owner.with(|| {
+            let mut features: FeaturesIndex =
+                serde_json::from_str(r#"[{"name": "Tinker's Magic"}, {"name": "Rage"}]"#).unwrap();
+            features.0.get_mut("Tinker's Magic").unwrap().package = "efoa".into();
+            features.0.get_mut("Rage").unwrap().package = "phb24".into();
+            RulesRegistry::for_test(features, BTreeMap::new(), BTreeMap::new(), BTreeMap::new())
+        });
+        registry.await_ready().await;
+
+        let mut character = Character::new();
+        character.features.push(Feature {
+            name: "Tinker's Magic".into(),
+            ..Feature::default()
+        });
+
+        let locked = registry.locked_packages(&character);
+        assert_eq!(locked.len(), 1);
+        assert_eq!(locked["efoa"], vec!["Tinker's Magic".to_string()]);
+
+        let empty = registry.locked_packages(&Character::new());
+        assert!(empty.is_empty());
     }
 }

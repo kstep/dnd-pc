@@ -554,3 +554,6 @@ weapon-category = Категория
 ability = Характеристика
 armor-type = Тип доспеха
 magic-bonus = Магический бонус
+
+# --- Package picker ---
+package-locked = Используется: { $names }
