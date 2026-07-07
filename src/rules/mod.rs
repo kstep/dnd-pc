@@ -29,8 +29,8 @@ pub use preview::{PreviewContext, eval_at_levels};
 pub use registry::{FeaturesView, RulesRegistry, make_system_feature};
 pub use species::SpeciesDefinition;
 pub use spells::{
-    CastTime, SpellCategory, SpellDefinition, SpellEntry, SpellMeta, SpellsDefinition, SpellsIndex,
-    SpellsList,
+    CastTime, MaterialComponent, SpellCategory, SpellComponents, SpellDefinition, SpellEntry,
+    SpellMeta, SpellsDefinition, SpellsIndex, SpellsList,
 };
 pub use summarizer::{PoolKind, PoolSummarizer, PoolSummary, StickyGrant};
 pub use utils::LevelRules;

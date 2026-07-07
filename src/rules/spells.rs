@@ -80,6 +80,26 @@ pub struct SpellDefinition {
     pub category: SpellCategory,
     #[serde(default)]
     pub effects: Vec<EffectDefinition>,
+    #[serde(default)]
+    pub components: SpellComponents,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct SpellComponents {
+    #[serde(default)]
+    pub verbal: bool,
+    #[serde(default)]
+    pub somatic: bool,
+    #[serde(default)]
+    pub material: Option<MaterialComponent>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct MaterialComponent {
+    #[serde(default)]
+    pub consumable: bool,
+    #[serde(default)]
+    pub name: Box<str>,
 }
 
 #[derive(Clone, Copy)]
@@ -301,6 +321,33 @@ mod tests {
         }))
         .expect("plain block");
         assert!(plain.extends.is_none());
+    }
+
+    #[test]
+    fn spell_with_full_components_deserializes() {
+        let json = serde_json::json!({
+            "name": "Test Spell",
+            "components": {
+                "verbal": true,
+                "somatic": false,
+                "material": { "consumable": true, "name": "a pinch of sulfur" }
+            }
+        });
+        let def: SpellDefinition = serde_json::from_value(json).expect("must deserialize");
+        assert!(def.components.verbal);
+        assert!(!def.components.somatic);
+        let material = def.components.material.expect("material present");
+        assert!(material.consumable);
+        assert_eq!(&*material.name, "a pinch of sulfur");
+    }
+
+    #[test]
+    fn spell_without_components_defaults_to_empty() {
+        let json = serde_json::json!({ "name": "Bare Spell" });
+        let def: SpellDefinition = serde_json::from_value(json).expect("must deserialize");
+        assert!(!def.components.verbal);
+        assert!(!def.components.somatic);
+        assert!(def.components.material.is_none());
     }
 
     #[wasm_bindgen_test::wasm_bindgen_test]
