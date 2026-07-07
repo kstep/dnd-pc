@@ -1223,6 +1223,7 @@ mod tests {
         replace_with: ReplaceWith,
     ) -> FeatureDefinition {
         FeatureDefinition {
+            package: Box::default(),
             name: name.into(),
             stackable: false,
             category,
@@ -1880,6 +1881,7 @@ mod tests {
             index.insert(
                 Box::from(name),
                 FeatureDefinition {
+                    package: Box::default(),
                     name: Box::from(name),
                     stackable: false,
                     category,

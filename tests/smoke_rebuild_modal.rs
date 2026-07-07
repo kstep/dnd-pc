@@ -39,6 +39,7 @@ wasm_bindgen_test_configure!(run_in_browser);
 
 fn placeholder_def(name: &str, slot: IdentitySlot) -> FeatureDefinition {
     FeatureDefinition {
+        package: Box::default(),
         name: name.into(),
         stackable: false,
         category: FeatureCategory::Generation,
@@ -64,6 +65,7 @@ fn background_marker_def(name: &str) -> FeatureDefinition {
     // IdentityChange::Background and unblocks derive_identity_follow_ups.
     let expr_str = format!("BACKGROUND.`{name}` = 1");
     FeatureDefinition {
+        package: Box::default(),
         name: name.into(),
         stackable: false,
         category: FeatureCategory::System(IdentitySlot::Background),
@@ -83,6 +85,7 @@ fn background_ability_def(name: &str, abilities: &str) -> FeatureDefinition {
         "with(@ABIL({abilities}), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
     );
     FeatureDefinition {
+        package: Box::default(),
         name: name.into(),
         stackable: false,
         category: FeatureCategory::Origin,
@@ -96,6 +99,7 @@ fn background_ability_def(name: &str, abilities: &str) -> FeatureDefinition {
 
 fn plain_feat_def(name: &str) -> FeatureDefinition {
     FeatureDefinition {
+        package: Box::default(),
         name: name.into(),
         stackable: false,
         category: FeatureCategory::Origin,
@@ -130,6 +134,7 @@ fn build_registry() -> RulesRegistry {
     backgrounds.insert(
         "Entertainer".into(),
         BackgroundDefinition {
+            package: Box::default(),
             name: "Entertainer".into(),
             features: VecSet::from(vec![
                 "Background Abilities (Entertainer)".to_string(),
@@ -140,6 +145,7 @@ fn build_registry() -> RulesRegistry {
     backgrounds.insert(
         "Criminal".into(),
         BackgroundDefinition {
+            package: Box::default(),
             name: "Criminal".into(),
             features: VecSet::from(vec![
                 "Background Abilities (Criminal)".to_string(),

@@ -6,7 +6,7 @@ use crate::{
     demap,
     expr::{self, Context, DicePool},
     model::{Ability, Attribute, Character, CharacterCore, Charges, DamageEffect, Expr},
-    rules::{FeaturesView, WhenCondition},
+    rules::{FeaturesView, WhenCondition, packages::HasPackage},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -146,6 +146,9 @@ impl demap::Named for ActiveEffect {
 /// `ActiveEffect` after the template is materialized.
 #[derive(Debug, Clone, Deserialize)]
 pub struct EffectTemplate {
+    /// Source package id, stamped during merge; empty = unknown.
+    #[serde(skip)]
+    pub package: Box<str>,
     pub name: Box<str>,
     #[serde(default)]
     pub expr: Option<Expr>,
@@ -156,6 +159,12 @@ pub struct EffectTemplate {
 impl demap::Named for EffectTemplate {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+
+impl HasPackage for EffectTemplate {
+    fn set_package(&mut self, package: &str) {
+        self.package = package.into();
     }
 }
 

@@ -154,18 +154,18 @@ pub async fn fetch_json_opt<T: for<'de> Deserialize<'de>>(url: &str) -> Result<O
 }
 
 /// Fetch one file per package (set order) and fold the parts.
-pub async fn fetch_merged_json<T>(urls: &[String]) -> Result<T, String>
+pub async fn fetch_merged_json<T>(sources: &[(String, String)]) -> Result<T, String>
 where
     T: PackageMerge + Default + for<'de> Deserialize<'de>,
 {
-    let parts = join_all(urls.iter().map(|url| fetch_json_opt::<T>(url))).await;
+    let parts = join_all(sources.iter().map(|(_, url)| fetch_json_opt::<T>(url))).await;
     let mut merged = T::default();
     let mut contributed = false;
     let mut first_error = None;
-    for part in parts {
+    for ((package, _), part) in sources.iter().zip(parts) {
         match part {
             Ok(Some(value)) => {
-                merged.absorb(value);
+                merged.absorb(value, package);
                 contributed = true;
             }
             Ok(None) => {}

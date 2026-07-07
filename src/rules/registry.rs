@@ -522,9 +522,11 @@ impl RulesRegistry {
             species_defs.with_data(|maybe_defs| {
                 let Some(defs) = maybe_defs else { return };
                 synth_features.update_value(|map| {
-                    for name in defs.0.keys() {
+                    for (name, species_def) in defs.0.iter() {
                         map.entry(name.clone()).or_insert_with(|| {
-                            make_system_feature(name.clone(), IdentitySlot::Species)
+                            let mut feat = make_system_feature(name.clone(), IdentitySlot::Species);
+                            feat.package = species_def.package.clone();
+                            feat
                         });
                     }
                 });
@@ -532,9 +534,12 @@ impl RulesRegistry {
             background_defs.with_data(|maybe_defs| {
                 let Some(defs) = maybe_defs else { return };
                 synth_features.update_value(|map| {
-                    for name in defs.0.keys() {
+                    for (name, background_def) in defs.0.iter() {
                         map.entry(name.clone()).or_insert_with(|| {
-                            make_system_feature(name.clone(), IdentitySlot::Background)
+                            let mut feat =
+                                make_system_feature(name.clone(), IdentitySlot::Background);
+                            feat.package = background_def.package.clone();
+                            feat
                         });
                     }
                 });
@@ -548,6 +553,7 @@ impl RulesRegistry {
                             let prereq = compose_class_prereq(name, prerequisites);
                             let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
                             feat.prerequisites = prereq;
+                            feat.package = class_def.package.clone();
                             feat
                         });
                         // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1`
@@ -560,6 +566,7 @@ impl RulesRegistry {
                                     IdentitySlot::Subclass,
                                 );
                                 feat.prerequisites = Some(parent_class_prereq(name));
+                                feat.package = class_def.package.clone();
                                 feat
                             });
                         }
@@ -663,12 +670,13 @@ impl RulesRegistry {
 
     // ---- Internal helpers ----
 
-    /// One URL per active package for a package-relative data path.
-    fn package_data_urls(&self, path: &str) -> Vec<String> {
+    /// One `(package_id, url)` pair per active package for a package-relative
+    /// data path.
+    fn package_data_sources(&self, path: &str) -> Vec<(String, String)> {
         self.packages
             .read_untracked()
             .iter()
-            .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{path}"))
+            .map(|pkg| (pkg.clone(), format!("{BASE_URL}/rules/{pkg}/data/{path}")))
             .collect()
     }
 
@@ -880,7 +888,7 @@ impl RulesRegistry {
     /// locale-less — just `["Acid Splash", ...]`.
     pub fn fetch_spell_list_untracked(&self, path: &str) {
         self.spell_names_cache
-            .fetch_merged(path, self.package_data_urls(path), "spell list");
+            .fetch_merged(path, self.package_data_sources(path), "spell list");
     }
 
     /// Same as `fetch_spell_list_untracked` — `Ref { from }` values are
@@ -1193,6 +1201,7 @@ pub fn make_system_feature(name: Box<str>, slot: IdentitySlot) -> FeatureDefinit
         }
     };
     FeatureDefinition {
+        package: Box::default(),
         name: Box::from(interned),
         stackable,
         category: FeatureCategory::System(slot),
@@ -1311,21 +1320,31 @@ where
         // explicitly by the Effects below so we have a single point that
         // toggles the in-flight counter.
         let data = LocalResource::new(move || {
-            let urls: Vec<String> = packages
+            let sources: Vec<(String, String)> = packages
                 .read_untracked()
                 .iter()
-                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{file_name}"))
+                .map(|pkg| {
+                    (
+                        pkg.clone(),
+                        format!("{BASE_URL}/rules/{pkg}/data/{file_name}"),
+                    )
+                })
                 .collect();
-            async move { fetch_merged_json::<T>(&urls).await }
+            async move { fetch_merged_json::<T>(&sources).await }
         });
         let locale_resource = LocalResource::new(move || {
             let lang = locale.get_untracked();
-            let urls: Vec<String> = packages
+            let sources: Vec<(String, String)> = packages
                 .read_untracked()
                 .iter()
-                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/{lang}/{file_name}"))
+                .map(|pkg| {
+                    (
+                        pkg.clone(),
+                        format!("{BASE_URL}/rules/{pkg}/{lang}/{file_name}"),
+                    )
+                })
                 .collect();
-            async move { fetch_merged_json::<L>(&urls).await.ok() }
+            async move { fetch_merged_json::<L>(&sources).await.ok() }
         });
 
         let loading = Signal::derive(move || in_flight.get() > 0);

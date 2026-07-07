@@ -9,7 +9,7 @@ use crate::{
         ActionType, AssignInputs, Attribute, CharacterCore, EffectDefinition, Expr,
         FeatureCategory, FeatureField, Translatable, short_name,
     },
-    rules::{locale::LocaleKey, spells::SpellsDefinition},
+    rules::{locale::LocaleKey, packages::HasPackage, spells::SpellsDefinition},
 };
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize)]
@@ -32,6 +32,9 @@ impl ReplaceWith {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct FeatureDefinition {
+    /// Source package id, stamped during merge; empty = unknown.
+    #[serde(skip)]
+    pub package: Box<str>,
     pub name: Box<str>,
     #[serde(default)]
     pub stackable: bool,
@@ -110,6 +113,12 @@ impl Translatable for WhenCondition {
 impl Named for FeatureDefinition {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+
+impl HasPackage for FeatureDefinition {
+    fn set_package(&mut self, package: &str) {
+        self.package = package.into();
     }
 }
 
@@ -359,12 +368,14 @@ mod tests {
         let rules_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
         let mut merged = FeaturesIndex::default();
         for entry in std::fs::read_dir(&rules_dir).expect("read public/rules") {
-            let path = entry.expect("dir entry").path().join("data/features.json");
+            let entry = entry.expect("dir entry");
+            let pkg_id = entry.file_name().to_string_lossy().to_string();
+            let path = entry.path().join("data/features.json");
             let Ok(data) = std::fs::read_to_string(&path) else {
                 continue;
             };
             let part: FeaturesIndex = serde_json::from_str(&data).expect("parse features.json");
-            merged.absorb(part);
+            merged.absorb(part, &pkg_id);
         }
         merged
     }
@@ -414,6 +425,7 @@ mod tests {
 
     fn def_with_assigns(assigns: Vec<Assignment>) -> FeatureDefinition {
         FeatureDefinition {
+            package: Box::default(),
             name: "T".into(),
             stackable: false,
             category: FeatureCategory::default(),

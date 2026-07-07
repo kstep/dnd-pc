@@ -335,6 +335,7 @@ mod tests {
         replace_with: ReplaceWith,
     ) -> FeatureDefinition {
         FeatureDefinition {
+            package: Box::default(),
             name: name.into(),
             stackable: false,
             category,
