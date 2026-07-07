@@ -7,6 +7,7 @@ pub mod feature;
 mod index;
 mod labels;
 pub mod locale;
+pub mod packages;
 mod preview;
 mod registry;
 mod resolve;
@@ -25,6 +26,7 @@ pub use feature::{
 pub use index::{
     BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,
 };
+pub use packages::{BUILTIN_PACKAGES, DefsIndex, PackageMerge, default_packages};
 pub use preview::{PreviewContext, eval_at_levels};
 pub use registry::{FeaturesView, RulesRegistry, make_system_feature};
 pub use species::SpeciesDefinition;

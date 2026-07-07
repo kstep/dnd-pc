@@ -114,7 +114,7 @@ impl Named for FeatureDefinition {
 }
 
 /// Global features index, loaded from `features.json`.
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct FeaturesIndex(pub BTreeMap<Box<str>, FeatureDefinition>);
 
 /// Empty fallback for callers that need a stable reference when the index
