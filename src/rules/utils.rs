@@ -1,10 +1,12 @@
 use std::{collections::BTreeMap, ops::Deref};
 
+use futures::future::join_all;
 use serde::{Deserialize, Deserializer, de};
 
 use crate::{
     expr,
     model::{Attribute, AttributeGroup},
+    rules::packages::PackageMerge,
 };
 
 /// A newtype around `BTreeMap<u32, T>` for level-based progressions.
@@ -120,6 +122,55 @@ pub async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, St
     do_fetch_json(url).await.inspect_err(|error| {
         log::error!("fetch_json {url} failed: {error}");
     })
+}
+
+/// Fetch JSON treating HTTP 404 as "package doesn't ship this file".
+pub async fn fetch_json_opt<T: for<'de> Deserialize<'de>>(url: &str) -> Result<Option<T>, String> {
+    let resp = gloo_net::http::Request::get(url)
+        .send()
+        .await
+        .map_err(|error| format!("fetch error: {error}"))?;
+    if resp.status() == 404 {
+        return Ok(None);
+    }
+    let result = if resp.ok() {
+        resp.json()
+            .await
+            .map(Some)
+            .map_err(|error| format!("parse error: {error}"))
+    } else {
+        Err(format!("HTTP {}", resp.status()))
+    };
+    result.inspect_err(|error| log::error!("fetch_json_opt {url} failed: {error}"))
+}
+
+/// Fetch one file per package (set order) and fold the parts.
+pub async fn fetch_merged_json<T>(urls: &[String]) -> Result<T, String>
+where
+    T: PackageMerge + Default + for<'de> Deserialize<'de>,
+{
+    let parts = join_all(urls.iter().map(|url| fetch_json_opt::<T>(url))).await;
+    let mut merged = T::default();
+    let mut contributed = false;
+    let mut first_error = None;
+    for part in parts {
+        match part {
+            Ok(Some(value)) => {
+                merged.absorb(value);
+                contributed = true;
+            }
+            Ok(None) => {}
+            Err(error) => {
+                if first_error.is_none() {
+                    first_error = Some(error);
+                }
+            }
+        }
+    }
+    match first_error {
+        Some(error) if !contributed => Err(error),
+        _ => Ok(merged),
+    }
 }
 
 async fn do_fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, String> {
