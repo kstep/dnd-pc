@@ -72,7 +72,7 @@ fn unknown_chips(
                 view! {
                     <button
                         type="button"
-                        class="entry-badge package-chip is-active is-unknown"
+                        class="slot-box package-chip highlighted is-unknown"
                         on:click=move |_| {
                             let mut set = value.get_untracked();
                             set.remove(&id);
@@ -102,8 +102,6 @@ pub fn PackagePicker(
     compact: bool,
 ) -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
-    // Which locked chip currently shows its blockers popover.
-    let open_lock: RwSignal<Option<String>> = RwSignal::new(None);
 
     let locked = Memo::new(move |_| match guard {
         Some(store) => store.with(|character| registry.locked_packages(character)),
@@ -148,7 +146,7 @@ pub fn PackagePicker(
                                 let selected = value.read().contains(base.id.as_str());
                                 view! {
                                     <option value=base.id.clone() selected=selected>
-                                        {base.name.clone()}
+                                        {if compact { base.id.clone() } else { base.name.clone() }}
                                     </option>
                                 }
                             })
@@ -170,8 +168,8 @@ pub fn PackagePicker(
                             view! {
                                 <button
                                     type="button"
-                                    class="entry-badge package-chip"
-                                    class:is-active=is_on
+                                    class="slot-box package-chip"
+                                    class:highlighted=is_on
                                     class:is-locked={
                                         let lock_names = lock_names.clone();
                                         move || lock_names().is_some()
@@ -179,16 +177,24 @@ pub fn PackagePicker(
                                     on:click={
                                         let lock_names = lock_names.clone();
                                         move |_| {
-                                            if lock_names().is_some() {
-                                                open_lock.set(Some(click_id.clone()));
-                                            } else {
-                                                open_lock.set(None);
+                                            if lock_names().is_none() {
                                                 toggle(click_id.clone());
                                             }
                                         }
                                     }
+                                    title={
+                                        let lock_names = lock_names.clone();
+                                        let full_name = addon.name.clone();
+                                        move || match lock_names() {
+                                            Some(names) => {
+                                                Some(tr!("package-locked", { "names" => names.join(", ") }))
+                                            }
+                                            None if compact => Some(full_name.clone()),
+                                            None => None,
+                                        }
+                                    }
                                 >
-                                    {addon.name.clone()}
+                                    {if compact { addon.id.clone() } else { addon.name.clone() }}
                                     {
                                         let lock_names = lock_names.clone();
                                         move || {
@@ -198,20 +204,6 @@ pub fn PackagePicker(
                                         }
                                     }
                                 </button>
-                                {move || {
-                                    (open_lock.read().as_deref() == Some(id.as_str()))
-                                        .then(|| {
-                                            let names = lock_names().unwrap_or_default().join(", ");
-                                            view! {
-                                                <div
-                                                    class="package-locked-pop"
-                                                    on:click=move |_| open_lock.set(None)
-                                                >
-                                                    {tr!("package-locked", { "names" => names })}
-                                                </div>
-                                            }
-                                        })
-                                }}
                             }
                         })
                         .collect_view()}

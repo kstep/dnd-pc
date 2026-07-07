@@ -536,7 +536,8 @@ input.inline-input {
   justify-content: space-between;
 }
 
-.quick-start-section {
+.quick-start-section,
+.package-picker-panel {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-2);
@@ -3285,6 +3286,7 @@ dialog.modal.closing::backdrop {
   border-bottom: 1px solid var(--panel-border);
 }
 
+
 .reference-nav-item {
   display: block;
   padding: var(--size-2) var(--size-3);
@@ -3544,16 +3546,6 @@ dialog.modal.closing::backdrop {
 
 .package-chip {
   cursor: pointer;
-  border: 1px dashed var(--panel-border);
-  background: transparent;
-  border-radius: var(--radius-round);
-  padding: 0 var(--size-2);
-
-  &.is-active {
-    background: color-mix(in srgb, var(--accent) 15%, transparent);
-    border: 1px solid var(--accent);
-    color: var(--text-primary);
-  }
 
   &.is-locked {
     cursor: not-allowed;
@@ -3563,19 +3555,6 @@ dialog.modal.closing::backdrop {
   &.is-unknown {
     border-style: dashed;
   }
-}
-
-.package-locked-pop {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 10;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: var(--radius-2);
-  padding: var(--size-2) var(--size-3);
-  box-shadow: var(--shadow-3);
-  font-size: var(--font-size-0);
 }
 
 .reference-feature {

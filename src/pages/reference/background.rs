@@ -71,7 +71,7 @@ pub fn BackgroundReference() -> impl IntoView {
 
                     {(!package.is_empty())
                         .then(|| {
-                            let package_label = registry.package_display_name(&package);
+                            let package_label = move || registry.package_display_name(&package);
                             view! {
                                 <div class="reference-info-bar">
                                     <div class="info-item">

@@ -264,7 +264,7 @@ fn SpellRowView(name: String) -> impl IntoView {
                     let package = package.get();
                     (!package.is_empty())
                         .then(|| {
-                            let label = registry.package_display_name(&package);
+                            let label = move || registry.package_display_name(&package);
                             view! { <span class="entry-badge package-badge">{label}</span> }
                         })
                 }}

@@ -313,7 +313,9 @@ pub fn ClassReference() -> impl IntoView {
                                 })}
                             {(!package.is_empty())
                                 .then(|| {
-                                    let package_label = registry.package_display_name(&package);
+                                    let package_label = move || {
+                                        registry.package_display_name(&package)
+                                    };
                                     view! {
                                         <div class="info-item">
                                             <span class="info-label">{move_tr!("ref-package")}</span>
