@@ -1,11 +1,13 @@
 use std::collections::BTreeMap;
 
+use leptos::prelude::*;
 use serde::{Deserialize, Deserializer};
 
 use crate::{
     demap::{self, Named},
     model::EffectsIndex,
     rules::{feature::FeaturesIndex, spells::SpellsIndex},
+    storage::load_active_packages,
     vecset::VecSet,
 };
 
@@ -18,6 +20,19 @@ pub fn default_packages() -> VecSet<String> {
         .iter()
         .map(|id| (*id).to_string())
         .collect()
+}
+
+/// App-root context: the package set the registry currently resolves against.
+/// Follows the open character; reference screens read the last active set.
+#[derive(Clone, Copy)]
+pub struct ActivePackages(pub RwSignal<VecSet<String>>);
+
+impl ActivePackages {
+    /// Restore the persisted set, defaulting to all built-in packages.
+    pub fn load() -> Self {
+        let initial = load_active_packages().unwrap_or_else(default_packages);
+        Self(RwSignal::new(initial))
+    }
 }
 
 /// Fold data fetched from a later package into an earlier accumulator;

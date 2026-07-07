@@ -12,6 +12,7 @@ use crate::{
         migrate::{self, deserialize_character_value},
         sync::{schedule_avatar_delete, schedule_avatar_push},
     },
+    vecset::VecSet,
 };
 
 /// Lightweight partial view over the avatar JSON blob. Reads only the
@@ -292,6 +293,16 @@ pub fn save_last_editor_tab(tab: &str) {
     let _ = LocalStorage::set(LAST_EDITOR_TAB_KEY, tab);
 }
 
+const PACKAGES_KEY: &str = "dnd_pc_packages";
+
+pub fn load_active_packages() -> Option<VecSet<String>> {
+    LocalStorage::get(PACKAGES_KEY).ok()
+}
+
+pub fn save_active_packages(packages: &VecSet<String>) {
+    let _ = LocalStorage::set(PACKAGES_KEY, packages);
+}
+
 const PERSONALITY_EXPANDED_KEY: &str = "dnd_pc_personality_expanded";
 
 pub fn load_personality_expanded() -> Option<bool> {
@@ -396,6 +407,21 @@ pub fn pick_character_from_file<F: Fn(Character) + 'static>(on_character: F) {
             log::error!("Failed to start reading file: {error:?}");
         }
     });
+}
+
+#[cfg(test)]
+mod packages_tests {
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::{load_active_packages, save_active_packages};
+    use crate::vecset::VecSet;
+
+    #[wasm_bindgen_test]
+    fn active_packages_round_trip() {
+        let packages: VecSet<String> = ["phb24", "efoa"].map(str::to_string).into_iter().collect();
+        save_active_packages(&packages);
+        assert_eq!(load_active_packages(), Some(packages));
+    }
 }
 
 #[cfg(test)]

@@ -75,7 +75,7 @@ use pages::{
         species::SpeciesReference, spell::SpellReference,
     },
 };
-use rules::RulesRegistry;
+use rules::{ActivePackages, RulesRegistry};
 
 #[derive(Params, Clone, Debug, PartialEq, Eq)]
 struct IdParam {
@@ -101,6 +101,9 @@ pub fn App() -> impl IntoView {
 
     let theme = use_theme();
     let i18n = expect_context::<leptos_fluent::I18n>();
+    let active_packages = ActivePackages::load();
+    provide_context(active_packages);
+    Effect::new(move || storage::save_active_packages(&active_packages.0.read()));
     provide_context(RulesRegistry::new(i18n));
     provide_context(ActiveCharacterId::default());
     let is_routing = IsRouting::default();
