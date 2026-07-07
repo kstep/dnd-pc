@@ -413,6 +413,20 @@ impl RulesRegistry {
         self
     }
 
+    /// Test-only: seed a spell list into the names cache directly.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn seed_spell_list_for_test(&self, path: &str, names: Vec<String>) {
+        self.spell_names_cache.update(|map| {
+            map.insert(path.into(), names);
+        });
+    }
+
+    /// Test-only: whether a spell list is currently cached.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn has_spell_list_for_test(&self, path: &str) -> bool {
+        self.spell_names_cache.read_untracked().contains_key(path)
+    }
+
     /// Test-only: replace the class defs index (data + locale) directly.
     #[cfg(any(test, feature = "testing"))]
     pub fn set_class_defs_for_test(
@@ -1705,6 +1719,35 @@ mod tests {
         assert!(
             registry.features().loading.get_untracked(),
             "package-set change must refetch the features index"
+        );
+        // Settle the refetches before the Owner drops (see synth test note).
+        registry.await_ready().await;
+    }
+
+    #[wasm_bindgen_test]
+    async fn package_switch_clears_spell_lists() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let (registry, packages) = owner.with(|| {
+            let locale = RwSignal::new("en".to_string());
+            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            (
+                RulesRegistry::new_with_locale(locale.into(), packages.into()),
+                packages,
+            )
+        });
+        // Let the invalidation Effect complete its first (prev=None) run
+        // before flipping — otherwise the flip is its first run and skipped.
+        registry.await_ready().await;
+        registry.seed_spell_list_for_test("spells/wizard.json", vec!["Fireball".into()]);
+        packages.update(|set| {
+            set.remove("lorwyn");
+        });
+        // The invalidation runs in an Effect on the executor — yield first.
+        leptos::task::tick().await;
+        assert!(
+            !registry.has_spell_list_for_test("spells/wizard.json"),
+            "package-set change must clear cached spell lists"
         );
         // Settle the refetches before the Owner drops (see synth test note).
         registry.await_ready().await;
