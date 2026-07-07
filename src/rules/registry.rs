@@ -184,10 +184,13 @@ impl RulesRegistry {
                 if def.package.is_empty() {
                     continue;
                 }
-                locked
-                    .entry(def.package.clone())
-                    .or_default()
-                    .push(feature.label().to_string());
+                let labels = locked.entry(def.package.clone()).or_default();
+                let label = feature.label().to_string();
+                // Stackable features (e.g. ASI taken twice) must not repeat
+                // their label in the popover.
+                if !labels.contains(&label) {
+                    labels.push(label);
+                }
             }
             locked
         })
@@ -195,13 +198,14 @@ impl RulesRegistry {
 
     /// Manifest display name for a package id; falls back to the raw id.
     pub fn package_display_name(&self, id: &str) -> String {
-        let guard = self.manifest.read();
-        guard
-            .as_ref()
-            .and_then(|result| result.as_ref().ok())
-            .and_then(|entries| entries.iter().find(|entry| entry.id == id))
-            .map(|entry| entry.name.clone())
-            .unwrap_or_else(|| id.to_string())
+        self.with_manifest(|entries| {
+            entries
+                .iter()
+                .find(|entry| entry.id == id)
+                .map(|entry| entry.name.clone())
+        })
+        .flatten()
+        .unwrap_or_else(|| id.to_string())
     }
 
     /// Tracked access to the merged class definitions map (empty until the
@@ -1874,5 +1878,45 @@ mod tests {
 
         let empty = registry.locked_packages(&Character::new());
         assert!(empty.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    async fn locked_packages_locks_synth_identity_row() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let registry = owner.with(|| {
+            let mut classes: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+            let mut artificer: ClassDefinition =
+                serde_json::from_str(r#"{"name": "Artificer"}"#).unwrap();
+            artificer.package = "efoa".into();
+            classes.insert(Box::from("Artificer"), artificer);
+            let registry = RulesRegistry::for_test(
+                FeaturesIndex::default(),
+                classes,
+                BTreeMap::new(),
+                BTreeMap::new(),
+            );
+            // for_test builds no reactive Owner-wired defs Effect (the synth
+            // Effect never runs), so seed the class's synth identity row
+            // directly via the test-only handle.
+            let synth = registry.synth_features_handle();
+            synth.update_value(|map| {
+                let mut feat = make_system_feature(Box::from("Artificer"), IdentitySlot::Class);
+                feat.package = "efoa".into();
+                map.insert(Box::from("Artificer"), feat);
+            });
+            registry
+        });
+        registry.await_ready().await;
+
+        let mut character = Character::new();
+        character.features.push(Feature {
+            name: "Artificer".into(),
+            ..Feature::default()
+        });
+
+        let locked = registry.locked_packages(&character);
+        assert_eq!(locked.len(), 1);
+        assert_eq!(locked["efoa"], vec!["Artificer".to_string()]);
     }
 }

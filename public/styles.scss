@@ -1846,6 +1846,7 @@ select.tool-ability {
   font-size: var(--font-size-0);
   opacity: 0.6;
   margin-inline-start: auto;
+  flex-shrink: 0;
 }
 
 .entry-actions {
@@ -3603,6 +3604,20 @@ dialog.modal.closing::backdrop {
     font-size: var(--font-size-1);
     color: var(--text-secondary);
     max-inline-size: none;
+  }
+}
+
+// Heading + package badge on one row, badge pinned to the right edge via
+// .package-badge's margin-inline-start: auto. Long names wrap within the
+// h3's shrunk flex box instead of pushing the badge off-row.
+.reference-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-2);
+
+  h3 {
+    flex: 1 1 auto;
+    min-inline-size: 0;
   }
 }
 

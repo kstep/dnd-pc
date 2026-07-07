@@ -243,10 +243,32 @@ fn SpellRowView(name: String) -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let anchor_id = format!("spell-{name}");
     let (label, description) = registry.spells().label_desc(&name, &name);
+    // Package is structural (locale-independent) — read separately from the
+    // locale-overlaid lookup below so it can sit next to the heading.
+    let package = Signal::derive({
+        let name = name.clone();
+        move || {
+            registry
+                .with_spells_index(|index| {
+                    index.get(name.as_str()).map(|def| def.package.to_string())
+                })
+                .unwrap_or_default()
+        }
+    });
 
     view! {
         <div class="reference-feature" id=anchor_id>
-            <h3>{move || label.get()}</h3>
+            <div class="reference-row-head">
+                <h3>{move || label.get()}</h3>
+                {move || {
+                    let package = package.get();
+                    (!package.is_empty())
+                        .then(|| {
+                            let label = registry.package_display_name(&package);
+                            view! { <span class="entry-badge package-badge">{label}</span> }
+                        })
+                }}
+            </div>
             {move || {
                 registry
                     .spells()
@@ -256,16 +278,8 @@ fn SpellRowView(name: String) -> impl IntoView {
                             let meta = loc.data.meta();
                             let components = loc.data.components.clone();
                             let effects = extract_spell_effects(loc.data);
-                            let package = loc.data.package.to_string();
                             view! {
                                 <SpellInfoBar meta=meta components=components />
-                                {(!package.is_empty())
-                                    .then(|| {
-                                        let label = registry.package_display_name(&package);
-                                        view! {
-                                            <span class="entry-badge package-badge">{label}</span>
-                                        }
-                                    })}
                                 <SpellEffectsView effects />
                             }
                         },

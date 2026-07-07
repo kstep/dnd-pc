@@ -711,12 +711,14 @@ fn FeatureRowView(key: FeatureKey, anchors: bool) -> impl IntoView {
 
     view! {
         <div class="reference-feature" id=id>
-            <h3>{move || label.get()}</h3>
-            {(!package.is_empty())
-                .then(|| {
-                    let label = registry.package_display_name(&package);
-                    view! { <span class="entry-badge package-badge">{label}</span> }
-                })}
+            <div class="reference-row-head">
+                <h3>{move || label.get()}</h3>
+                {(!package.is_empty())
+                    .then(|| {
+                        let label = registry.package_display_name(&package);
+                        view! { <span class="entry-badge package-badge">{label}</span> }
+                    })}
+            </div>
             <p class="feature-prerequisites">
                 {move || category_label.get()}
                 {has_prerequisites

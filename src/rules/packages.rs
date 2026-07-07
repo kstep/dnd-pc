@@ -79,30 +79,34 @@ impl PackageMerge for Vec<String> {
     }
 }
 
+/// Stamp every `overlay` entry with `package`, then merge overlay-wins into
+/// `target`. Shared body for every `PackageMerge` impl keyed by name.
+fn stamp_absorb<T: HasPackage>(
+    target: &mut BTreeMap<Box<str>, T>,
+    mut overlay: BTreeMap<Box<str>, T>,
+    package: &str,
+) {
+    for def in overlay.values_mut() {
+        def.set_package(package);
+    }
+    target.extend(overlay);
+}
+
 impl PackageMerge for FeaturesIndex {
-    fn absorb(&mut self, mut overlay: Self, package: &str) {
-        for def in overlay.0.values_mut() {
-            def.set_package(package);
-        }
-        self.0.extend(overlay.0);
+    fn absorb(&mut self, overlay: Self, package: &str) {
+        stamp_absorb(&mut self.0, overlay.0, package);
     }
 }
 
 impl PackageMerge for SpellsIndex {
-    fn absorb(&mut self, mut overlay: Self, package: &str) {
-        for def in overlay.0.values_mut() {
-            def.set_package(package);
-        }
-        self.0.extend(overlay.0);
+    fn absorb(&mut self, overlay: Self, package: &str) {
+        stamp_absorb(&mut self.0, overlay.0, package);
     }
 }
 
 impl PackageMerge for EffectsIndex {
-    fn absorb(&mut self, mut overlay: Self, package: &str) {
-        for def in overlay.0.values_mut() {
-            def.set_package(package);
-        }
-        self.0.extend(overlay.0);
+    fn absorb(&mut self, overlay: Self, package: &str) {
+        stamp_absorb(&mut self.0, overlay.0, package);
     }
 }
 
@@ -126,11 +130,8 @@ impl<'de, T: Named + Deserialize<'de>> Deserialize<'de> for DefsIndex<T> {
 }
 
 impl<T: HasPackage> PackageMerge for DefsIndex<T> {
-    fn absorb(&mut self, mut overlay: Self, package: &str) {
-        for def in overlay.0.values_mut() {
-            def.set_package(package);
-        }
-        self.0.extend(overlay.0);
+    fn absorb(&mut self, overlay: Self, package: &str) {
+        stamp_absorb(&mut self.0, overlay.0, package);
     }
 }
 
