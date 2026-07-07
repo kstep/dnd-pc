@@ -3543,11 +3543,14 @@ dialog.modal.closing::backdrop {
 
 .package-chip {
   cursor: pointer;
-  border: 1px solid var(--panel-border);
+  border: 1px dashed var(--panel-border);
   background: transparent;
+  border-radius: var(--radius-round);
+  padding: 0 var(--size-2);
 
   &.is-active {
-    background: var(--panel-border);
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    border: 1px solid var(--accent);
     color: var(--text-primary);
   }
 
