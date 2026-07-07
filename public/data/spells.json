@@ -42,7 +42,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Aganazzar's Scorcher",
@@ -73,7 +77,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny strip of white cloth"
+      }
+    }
   },
   {
     "name": "Air Bubble",
@@ -107,7 +119,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny bell and a piece of fine silver wire"
+      }
+    }
   },
   {
     "name": "Alter Self",
@@ -122,7 +142,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Alustriel's Mooncloak",
@@ -156,7 +180,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a morsel of food"
+      }
+    }
   },
   {
     "name": "Animal Messenger",
@@ -173,7 +205,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a morsel of food"
+      }
+    }
   },
   {
     "name": "Animal Shapes",
@@ -189,7 +229,11 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Animate Dead",
@@ -204,7 +248,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of blood, a piece of flesh, and a pinch of bone dust"
+      }
+    }
   },
   {
     "name": "Animate Objects",
@@ -221,7 +273,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Antagonize",
@@ -251,7 +307,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Antimagic Field",
@@ -268,7 +328,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of powdered iron or iron filings"
+      }
+    }
   },
   {
     "name": "Antipathy/Sympathy",
@@ -285,7 +353,15 @@
         }
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "either a lump of alum soaked in vinegar for the antipathy effect or a drop of honey for the sympathy effect"
+      }
+    }
   },
   {
     "name": "Arcane Eye",
@@ -302,7 +378,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of bat fur"
+      }
+    }
   },
   {
     "name": "Arcane Gate",
@@ -331,7 +415,15 @@
         "range": "Touch",
         "duration": "Forever"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "gold dust worth at least 25gp"
+      }
+    }
   },
   {
     "name": "Arcane Vigor",
@@ -424,7 +516,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "for each creature you affect with this spell, you must provide one jacinth worth at least 1,000gp and one ornately carved bar of silver worth at least 100gp, all of"
+      }
+    }
   },
   {
     "name": "Augury",
@@ -438,7 +538,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "specially marked sticks, bones, or similar tokens worth at least 25gp"
+      }
+    }
   },
   {
     "name": "Aura of Life",
@@ -503,7 +611,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 4800
+    "cast_time": 4800,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "an agate worth at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Backlash",
@@ -537,7 +653,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of blood"
+      }
+    }
   },
   {
     "name": "Banishing Smite",
@@ -571,7 +695,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an item distasteful to the target"
+      }
+    }
   },
   {
     "name": "Barkskin",
@@ -587,7 +719,15 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a handful of oak bark"
+      }
+    }
   },
   {
     "name": "Beacon of Hope",
@@ -605,7 +745,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Beast Bond",
@@ -667,7 +811,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Bigby's Hand",
@@ -713,7 +861,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Blade Ward",
@@ -766,7 +918,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sprinkling of holy water"
+      }
+    }
   },
   {
     "name": "Blight",
@@ -781,7 +941,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Blinding Smite",
@@ -813,7 +977,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Blink",
@@ -828,7 +996,11 @@
         },
         "expr": "1d6"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Blur",
@@ -843,7 +1015,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Bones of the Earth",
@@ -898,7 +1074,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Burning Hands",
@@ -913,7 +1093,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Cacophonic Shield",
@@ -949,7 +1133,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Calm Emotions",
@@ -966,7 +1154,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Catapult",
@@ -981,7 +1173,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small platinum lever and fulcrum worth 400 gp"
+      }
+    }
   },
   {
     "name": "Catnap",
@@ -1029,7 +1229,15 @@
         }
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": ""
+      }
+    }
   },
   {
     "name": "Chain Lightning",
@@ -1044,7 +1252,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fur; a piece of amber, glass, or a crystal rod; and three silver pins"
+      }
+    }
   },
   {
     "name": "Chaos Bolt",
@@ -1074,7 +1290,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Charm Person",
@@ -1090,7 +1310,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Chill Touch",
@@ -1103,7 +1327,11 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Chromatic Orb",
@@ -1133,7 +1361,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "the powder of a crushed black pearl worth at least 500 gp"
+      }
+    }
   },
   {
     "name": "Circle of Power",
@@ -1166,7 +1402,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a focus worth at least 100gp, either a jeweled horn for hearing or a glass eye for seeing"
+      }
+    }
   },
   {
     "name": "Clone",
@@ -1179,7 +1423,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a diamond worth at least 1,000 gp and at least 1 cubic inch of flesh of the creature that is to be cloned, and a vessel worth at least 2,000 gp that has a sealable lid and is large enough to hold a medium creature, such as a huge urn, coffin, mud-filled cyst in the ground, or crystal container filled with salt water"
+      }
+    }
   },
   {
     "name": "Cloud of Daggers",
@@ -1215,7 +1467,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Color Spray",
@@ -1229,7 +1485,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of powder or sand that is colored red, yellow, and blue"
+      }
+    }
   },
   {
     "name": "Command",
@@ -1243,7 +1507,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Commune",
@@ -1259,7 +1527,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "incense and a vial of holy or unholy water"
+      }
+    }
   },
   {
     "name": "Commune with Nature",
@@ -1273,7 +1549,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Compelled Duel",
@@ -1306,7 +1586,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of soot and salt"
+      }
+    }
   },
   {
     "name": "Compulsion",
@@ -1323,7 +1611,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Cone of Cold",
@@ -1338,7 +1630,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small crystal or glass cone"
+      }
+    }
   },
   {
     "name": "Confusion",
@@ -1356,7 +1656,15 @@
         "expr": "1d10"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "three walnut shells"
+      }
+    }
   },
   {
     "name": "Conjure Animals",
@@ -1374,7 +1682,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Conjure Barrage",
@@ -1407,7 +1719,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Conjure Constructs",
@@ -1443,7 +1759,15 @@
         "expr": "(SLOT.LEVEL + 3)d8"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "burning incense for air, soft clay for earth, sulfur and phosphorus for fire, or water and sand for water"
+      }
+    }
   },
   {
     "name": "Conjure Fey",
@@ -1461,7 +1785,11 @@
         "expr": "(SLOT.LEVEL + 2)d12"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Conjure Minor Elementals",
@@ -1479,7 +1807,11 @@
         "expr": "2d8"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Conjure Volley",
@@ -1512,7 +1844,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "one holly berry per creature summoned"
+      }
+    }
   },
   {
     "name": "Contact Other Plane",
@@ -1529,7 +1869,11 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Contagion",
@@ -1544,7 +1888,11 @@
           "Rounds": 100800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Contingency",
@@ -1559,7 +1907,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a statuette of yourself carved from ivory and decorated with gems worth at least 1,500 gp"
+      }
+    }
   },
   {
     "name": "Continual Flame",
@@ -1571,7 +1927,15 @@
         "range": "Touch",
         "duration": "Forever"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "ruby dust worth 50 gp"
+      }
+    }
   },
   {
     "name": "Control Flames",
@@ -1605,7 +1969,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of water and a pinch of dust"
+      }
+    }
   },
   {
     "name": "Control Weather",
@@ -1624,7 +1996,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "burning incense and bits of earth and wood mixed in water"
+      }
+    }
   },
   {
     "name": "Control Winds",
@@ -1671,7 +2051,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Create Bonfire",
@@ -1703,7 +2087,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Create Homunculus",
@@ -1757,7 +2145,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "one clay pot filled with grave dirt, one clay pot filled with brackish water, and one 150 gp black onyx stone for each corpse"
+      }
+    }
   },
   {
     "name": "Create or Destroy Water",
@@ -1771,7 +2167,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of water if creating water, or a few grains of sand if destroying it"
+      }
+    }
   },
   {
     "name": "Creation",
@@ -1785,7 +2189,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny piece of matter of the same type of the item you plan to create"
+      }
+    }
   },
   {
     "name": "Crown of Madness",
@@ -1847,7 +2259,11 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dancing Lights",
@@ -1864,7 +2280,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of phosphorus or wychwood, or a glowworm"
+      }
+    }
   },
   {
     "name": "Danse Macabre",
@@ -1910,7 +2334,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "bat fur and a drop of pitch or piece of coal"
+      }
+    }
   },
   {
     "name": "Darkvision",
@@ -1924,7 +2356,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "either a pinch of dried carrot or an agate"
+      }
+    }
   },
   {
     "name": "Dawn",
@@ -1952,7 +2392,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Death Armor",
@@ -1981,7 +2425,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Delayed Blast Fireball",
@@ -1999,7 +2447,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny ball of bat guano and sulfur"
+      }
+    }
   },
   {
     "name": "Demiplane",
@@ -2015,7 +2471,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Deryan's Helpful Homunculi",
@@ -2067,7 +2527,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Detect Magic",
@@ -2083,7 +2547,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Detect Poison and Disease",
@@ -2099,7 +2567,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a yew leaf"
+      }
+    }
   },
   {
     "name": "Detect Thoughts",
@@ -2114,7 +2590,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a copper coin"
+      }
+    }
   },
   {
     "name": "Dimension Door",
@@ -2129,7 +2613,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Dirge",
@@ -2161,7 +2649,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Disintegrate",
@@ -2176,7 +2668,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a lodestone and a pinch of dust"
+      }
+    }
   },
   {
     "name": "Dispel Evil and Good",
@@ -2191,7 +2691,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "holy water or powdered silver and iron"
+      }
+    }
   },
   {
     "name": "Dispel Magic",
@@ -2205,7 +2713,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dissonant Whispers",
@@ -2248,7 +2760,15 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "incense and a sacrificial offering appropriate to your religion, together worth at least 25gp"
+      }
+    }
   },
   {
     "name": "Divine Favor",
@@ -2264,7 +2784,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Divine Smite",
@@ -2293,7 +2817,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Dominate Beast",
@@ -2310,7 +2838,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dominate Monster",
@@ -2327,7 +2859,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dominate Person",
@@ -2344,7 +2880,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Doomtide",
@@ -2425,7 +2965,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a handful of sand, a dab of ink, and a writing quill plucked from a sleeping bird"
+      }
+    }
   },
   {
     "name": "Dream of the Blue Veil",
@@ -2471,7 +3019,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dust Devil",
@@ -2541,7 +3093,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of dirt, a piece of rock, and a lump of clay"
+      }
+    }
   },
   {
     "name": "Eldritch Blast",
@@ -2556,7 +3116,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Elemental Bane",
@@ -2692,7 +3256,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "fur or a feather from a beast"
+      }
+    }
   },
   {
     "name": "Enlarge/Reduce",
@@ -2710,7 +3282,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch iron powder"
+      }
+    }
   },
   {
     "name": "Ensnaring Strike",
@@ -2744,7 +3324,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Enthrall",
@@ -2761,7 +3345,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Erupting Earth",
@@ -2792,7 +3380,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Evard's Black Tentacles",
@@ -2826,7 +3418,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Eyebite",
@@ -2841,7 +3437,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Fabricate",
@@ -2856,7 +3456,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Faerie Fire",
@@ -2873,7 +3477,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "False Life",
@@ -2886,7 +3494,15 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small amount of alcohol or distilled spirits"
+      }
+    }
   },
   {
     "name": "Far Step",
@@ -2933,7 +3549,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a white feather or the heart of a hen"
+      }
+    }
   },
   {
     "name": "Feather Fall",
@@ -2950,7 +3574,15 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a small feather or a piece of down"
+      }
+    }
   },
   {
     "name": "Feign Death",
@@ -2982,7 +3614,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "10 gp worth of charcoal, incense, and herbs that must be consumed by fire in a brass brazier"
+      }
+    }
   },
   {
     "name": "Find Greater Steed",
@@ -3011,7 +3651,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Find Traps",
@@ -3025,7 +3669,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Find the Path",
@@ -3041,7 +3689,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a set of divinatory tools-such as bones, ivory sticks, cards, teeth, or carved runes-worth 100gp and an object from the location you wish to find"
+      }
+    }
   },
   {
     "name": "Finger of Death",
@@ -3056,7 +3712,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Fire Bolt",
@@ -3071,7 +3731,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Fire Shield",
@@ -3088,7 +3752,15 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a little phosphorus or a firefly"
+      }
+    }
   },
   {
     "name": "Fire Storm",
@@ -3103,7 +3775,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Fireball",
@@ -3118,7 +3794,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny ball of bat guano and sulfur"
+      }
+    }
   },
   {
     "name": "Fizban's Platinum Shield",
@@ -3168,7 +3852,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "leaf of sumac"
+      }
+    }
   },
   {
     "name": "Flame Strike",
@@ -3191,7 +3883,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "pinch of sulfur"
+      }
+    }
   },
   {
     "name": "Flaming Sphere",
@@ -3209,7 +3909,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of tallow, a pinch of brimstone, and a dusting of powdered iron"
+      }
+    }
   },
   {
     "name": "Flesh to Stone",
@@ -3226,7 +3934,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of lime, water, and earth"
+      }
+    }
   },
   {
     "name": "Flock of Familiars",
@@ -3257,7 +3973,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a wing feather from any bird"
+      }
+    }
   },
   {
     "name": "Fog Cloud",
@@ -3274,7 +3998,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Forbiddance",
@@ -3291,7 +4019,15 @@
         "expr": "5d10"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sprinkling of holy water, rare incense, and powdered ruby worth at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Forcecage",
@@ -3308,7 +4044,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "ruby dust worth 1,500 gp"
+      }
+    }
   },
   {
     "name": "Foresight",
@@ -3324,7 +4068,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a hummingbird feather"
+      }
+    }
   },
   {
     "name": "Fortune's Favor",
@@ -3373,7 +4125,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a leather strap, bound around the arm or a similar appendage"
+      }
+    }
   },
   {
     "name": "Friends",
@@ -3390,7 +4150,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Frost Fingers",
@@ -3415,7 +4179,15 @@
           "Feet": 60
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a strip of dried flesh that has been frozen at least once"
+      }
+    }
   },
   {
     "name": "Galder's Speedy Courier",
@@ -3463,7 +4235,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of gauze and a wisp of smoke"
+      }
+    }
   },
   {
     "name": "Gate",
@@ -3480,7 +4260,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a diamond worth at least 5,000gp"
+      }
+    }
   },
   {
     "name": "Gate Seal",
@@ -3509,7 +4297,11 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Gentle Repose",
@@ -3524,7 +4316,15 @@
           "Rounds": 144000
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of salt and one copper piece placed on each of the corpse's eyes, which must remain there for the duration"
+      }
+    }
   },
   {
     "name": "Giant Insect",
@@ -3542,7 +4342,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Gift of Gab",
@@ -3571,7 +4375,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Globe of Invulnerability",
@@ -3588,7 +4396,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a glass or crystal bead that shatters when the spell ends"
+      }
+    }
   },
   {
     "name": "Glyph of Warding",
@@ -3602,7 +4418,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "incense and powdered diamond worth at least 200 gp"
+      }
+    }
   },
   {
     "name": "Goodberry",
@@ -3617,7 +4441,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sprig of mistletoe"
+      }
+    }
   },
   {
     "name": "Grasping Vine",
@@ -3677,7 +4509,15 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of pork rind or butter"
+      }
+    }
   },
   {
     "name": "Greater Invisibility",
@@ -3692,7 +4532,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Greater Restoration",
@@ -3704,7 +4548,15 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "diamond dust worth at least 100gp"
+      }
+    }
   },
   {
     "name": "Green-Flame Blade",
@@ -3732,7 +4584,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Guardian of Nature",
@@ -3764,7 +4620,15 @@
         }
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "burning incense, a small measure of brimstone and oil, a knotted string, a small amount of umber hulk blood, and a small silver rod worth at least 10 gp"
+      }
+    }
   },
   {
     "name": "Guidance",
@@ -3780,7 +4644,11 @@
         "expr": "1d4"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Guiding Bolt",
@@ -3797,7 +4665,11 @@
           "Rounds": 1
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Gust",
@@ -3827,7 +4699,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a legume seed"
+      }
+    }
   },
   {
     "name": "Hail of Thorns",
@@ -3854,7 +4734,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 14400
+    "cast_time": 14400,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "herbs, oils, and incense worth at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Hallucinatory Terrain",
@@ -3871,7 +4759,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a stone, a twig, and a bit of green plant"
+      }
+    }
   },
   {
     "name": "Harm",
@@ -3886,7 +4782,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Haste",
@@ -3902,7 +4802,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a shaving of licorice root"
+      }
+    }
   },
   {
     "name": "Heal",
@@ -3917,7 +4825,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Healing Spirit",
@@ -3952,7 +4864,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Heat Metal",
@@ -3970,7 +4886,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of iron and a flame"
+      }
+    }
   },
   {
     "name": "Hellish Rebuke",
@@ -3986,7 +4910,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Heroes' Feast",
@@ -4004,7 +4932,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a gem-encrusted bowl worth at least 1,000gp"
+      }
+    }
   },
   {
     "name": "Heroism",
@@ -4020,7 +4956,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Hex",
@@ -4056,7 +4996,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small piece of iron"
+      }
+    }
   },
   {
     "name": "Hold Person",
@@ -4073,7 +5021,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small, straight piece of iron"
+      }
+    }
   },
   {
     "name": "Holy Aura",
@@ -4091,7 +5047,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny reliquary worth at least 1,000gp containing a sacred relic, such as a scrap of cloth from a saint's robe or a piece of parchment from a religious text"
+      }
+    }
   },
   {
     "name": "Holy Star of Mystra",
@@ -4195,7 +5159,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Hypnotic Pattern",
@@ -4212,7 +5180,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a glowing stick of incense or a crystal vial filled with phosphorescent material"
+      }
+    }
   },
   {
     "name": "Ice Knife",
@@ -4258,7 +5234,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of dust and a few drops of water"
+      }
+    }
   },
   {
     "name": "Icingdeath's Frost",
@@ -4286,7 +5270,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pearl worth at least 100gp and an owl feather"
+      }
+    }
   },
   {
     "name": "Illusory Dragon",
@@ -4319,7 +5311,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a lead-based ink worth at least 10gp, which this spell consumes"
+      }
+    }
   },
   {
     "name": "Immolation",
@@ -4363,7 +5363,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a vellum depiction or a carved statuette in the likeness of the target, and a special component that varies according to the version of the spell you choose, worth at least 500gp per hit die of the target"
+      }
+    }
   },
   {
     "name": "Incendiary Cloud",
@@ -4381,7 +5389,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Incite Greed",
@@ -4443,7 +5455,11 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Insect Plague",
@@ -4461,7 +5477,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a few grains of sugar, some kernels of grain, and a smear of fat"
+      }
+    }
   },
   {
     "name": "Intellect Fortress",
@@ -4563,7 +5587,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an eyelash encased in gum arabic"
+      }
+    }
   },
   {
     "name": "Invulnerability",
@@ -4638,7 +5670,15 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a grasshopper's hind leg"
+      }
+    }
   },
   {
     "name": "Kinetic Jaunt",
@@ -4669,7 +5709,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Laeral's Silver Lance",
@@ -4697,7 +5741,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "incense worth 250 inches that fate consumes and four sticks of ivory worth 50 gp each"
+      }
+    }
   },
   {
     "name": "Leomund's Secret Chest",
@@ -4740,7 +5792,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Levitate",
@@ -4757,7 +5813,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "either a small leather loop or a piece of golden wire bent into a cup shape with a long shank on one end"
+      }
+    }
   },
   {
     "name": "Life Transference",
@@ -4782,7 +5846,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a firefly or phosphorescent moss"
+      }
+    }
   },
   {
     "name": "Lightning Arrow",
@@ -4811,7 +5883,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fur and a rod of amber, crystal, or glass"
+      }
+    }
   },
   {
     "name": "Lightning Lure",
@@ -4854,7 +5934,15 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fur from a bloodhound"
+      }
+    }
   },
   {
     "name": "Locate Creature",
@@ -4869,7 +5957,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fur from a bloodhound"
+      }
+    }
   },
   {
     "name": "Locate Object",
@@ -4884,7 +5980,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a forked twig"
+      }
+    }
   },
   {
     "name": "Longstrider",
@@ -4899,7 +6003,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of dirt"
+      }
+    }
   },
   {
     "name": "Maddening Darkness",
@@ -4950,7 +6062,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of cured leather"
+      }
+    }
   },
   {
     "name": "Mage Hand",
@@ -4966,7 +6086,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Magic Circle",
@@ -4983,7 +6107,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "holy water or powdered silver and iron worth at least 100 gp"
+      }
+    }
   },
   {
     "name": "Magic Jar",
@@ -4998,7 +6130,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gem, crystal, reliquary, or some other ornamental container worth at least 500 gp"
+      }
+    }
   },
   {
     "name": "Magic Missile",
@@ -5013,7 +6153,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Magic Mouth",
@@ -5029,7 +6173,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a small bit of honeycomb and jade dust worth at least 10 gp"
+      }
+    }
   },
   {
     "name": "Magic Stone",
@@ -5061,7 +6213,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Magnify Gravity",
@@ -5089,7 +6245,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fleece"
+      }
+    }
   },
   {
     "name": "Mass Cure Wounds",
@@ -5104,7 +6268,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mass Heal",
@@ -5119,7 +6287,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mass Healing Word",
@@ -5135,7 +6307,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Mass Polymorph",
@@ -5168,7 +6344,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a snake's tongue and either a bit of honeycomb or a drop of sweet oil"
+      }
+    }
   },
   {
     "name": "Maximillian's Earthen Grasp",
@@ -5200,7 +6384,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Meld into Stone",
@@ -5216,7 +6404,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Melf's Acid Arrow",
@@ -5259,7 +6451,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "two lodestones"
+      }
+    }
   },
   {
     "name": "Mental Prison",
@@ -5290,7 +6490,15 @@
           "Rounds": 1
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a short piece of copper wire"
+      }
+    }
   },
   {
     "name": "Meteor Swarm",
@@ -5307,7 +6515,11 @@
         "expr": "20d6",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mighty Fortress",
@@ -5335,7 +6547,11 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mind Sliver",
@@ -5386,7 +6602,15 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fleece"
+      }
+    }
   },
   {
     "name": "Mirage Arcane",
@@ -5400,7 +6624,11 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mirror Image",
@@ -5414,7 +6642,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mislead",
@@ -5429,7 +6661,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Misty Step",
@@ -5442,7 +6678,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Modify Memory",
@@ -5459,7 +6699,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Mold Earth",
@@ -5493,7 +6737,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "several seeds of any moonseed plant and a piece of opalescent feldspar"
+      }
+    }
   },
   {
     "name": "Mordenkainen's Faithful Hound",
@@ -5597,7 +6849,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an iron blade and a small bag containing a mixture of soils-clay, loam, and sand"
+      }
+    }
   },
   {
     "name": "Nathair's Mischief",
@@ -5643,7 +6903,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a pinch of diamond dust worth 25 gp sprinkled over the target"
+      }
+    }
   },
   {
     "name": "Nystul's Magic Aura",
@@ -5724,7 +6992,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "ashes from a burned leaf of mistletoe and a sprig of spruce"
+      }
+    }
   },
   {
     "name": "Passwall",
@@ -5740,7 +7016,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of sesame seeds"
+      }
+    }
   },
   {
     "name": "Phantasmal Force",
@@ -5776,7 +7060,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Phantom Steed",
@@ -5794,7 +7082,11 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Planar Ally",
@@ -5809,7 +7101,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Planar Binding",
@@ -5826,7 +7122,15 @@
         }
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a jewel worth at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Plane Shift",
@@ -5838,7 +7142,15 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a forked, metal rod worth at least 250 gp, attuned to a particular plane of existence"
+      }
+    }
   },
   {
     "name": "Plant Growth",
@@ -5852,7 +7164,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Poison Spray",
@@ -5867,7 +7183,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Polymorph",
@@ -5884,7 +7204,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a caterpillar cocoon"
+      }
+    }
   },
   {
     "name": "Power Word Fortify",
@@ -5926,7 +7254,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Power Word Pain",
@@ -5939,7 +7271,15 @@
           "Feet": 60
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a quill jabbed into your own body"
+      }
+    }
   },
   {
     "name": "Power Word Stun",
@@ -5953,7 +7293,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Prayer of Healing",
@@ -5969,7 +7313,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Prestidigitation",
@@ -5985,7 +7333,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Primal Savagery",
@@ -6027,7 +7379,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Prismatic Wall",
@@ -6044,7 +7400,11 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Produce Flame",
@@ -6060,7 +7420,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Programmed Illusion",
@@ -6074,7 +7438,15 @@
         },
         "duration": "Forever"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fleece and jade dust worth at least 25 gp"
+      }
+    }
   },
   {
     "name": "Project Image",
@@ -6088,7 +7460,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small replica of you made from materials worth at least 5 gp"
+      }
+    }
   },
   {
     "name": "Protection from Energy",
@@ -6103,7 +7483,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Protection from Evil and Good",
@@ -6118,7 +7502,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "holy water or powdered silver and iron"
+      }
+    }
   },
   {
     "name": "Protection from Poison",
@@ -6132,7 +7524,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Psychic Scream",
@@ -6161,7 +7557,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Pyrotechnics",
@@ -6190,7 +7590,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a diamond worth at least 500gp"
+      }
+    }
   },
   {
     "name": "Rary's Telepathic Bond",
@@ -6250,7 +7658,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Ray of Frost",
@@ -6265,7 +7677,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Ray of Sickness",
@@ -6280,7 +7696,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Reality Break",
@@ -6313,7 +7733,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a prayer wheel and holy water"
+      }
+    }
   },
   {
     "name": "Reincarnate",
@@ -6327,7 +7755,15 @@
         "expr": "1d10"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "rare oils and unguents worth at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Remove Curse",
@@ -6339,7 +7775,11 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Resistance",
@@ -6355,7 +7795,15 @@
         "expr": "1d4"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature cloak"
+      }
+    }
   },
   {
     "name": "Resurrection",
@@ -6368,7 +7816,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a diamond worth at least 1,000gp"
+      }
+    }
   },
   {
     "name": "Reverse Gravity",
@@ -6385,7 +7841,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a lodestone and iron filings"
+      }
+    }
   },
   {
     "name": "Revivify",
@@ -6397,7 +7861,15 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "diamonds worth 300gp"
+      }
+    }
   },
   {
     "name": "Rime's Binding Ice",
@@ -6425,7 +7897,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "powdered corn extract and a twisted loop of parchment"
+      }
+    }
   },
   {
     "name": "Sacred Flame",
@@ -6440,7 +7920,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Sanctuary",
@@ -6457,7 +7941,15 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small silver mirror"
+      }
+    }
   },
   {
     "name": "Sapping Sting",
@@ -6496,7 +7988,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Scrying",
@@ -6512,7 +8008,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a focus worth at least 1,000 gp, such as a crystal ball, a silver mirror, or a font filled with holy water"
+      }
+    }
   },
   {
     "name": "Searing Smite",
@@ -6542,7 +8046,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a dash of talc and a small amount of silver powder"
+      }
+    }
   },
   {
     "name": "Seeming",
@@ -6558,7 +8070,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Sending",
@@ -6569,7 +8085,15 @@
         "name": "Sending",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a short piece of fine copper wire"
+      }
+    }
   },
   {
     "name": "Sequester",
@@ -6581,7 +8105,15 @@
         "range": "Touch",
         "duration": "Forever"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a powder composed of diamond, emerald, ruby, and sapphire dust worth at least 5,000 gp"
+      }
+    }
   },
   {
     "name": "Shadow Blade",
@@ -6644,7 +8176,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a jade circlet worth at least 1,500 gp, which you must place on your head before you cast the spell"
+      }
+    }
   },
   {
     "name": "Shatter",
@@ -6659,7 +8199,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a burst of mica"
+      }
+    }
   },
   {
     "name": "Shield",
@@ -6675,7 +8223,11 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Shield of Faith",
@@ -6694,7 +8246,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small parchment with a bit of holy text written on it"
+      }
+    }
   },
   {
     "name": "Shillelagh",
@@ -6710,7 +8270,15 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "mistletoe, a shamrock leaf, and a club or quarterstaff"
+      }
+    }
   },
   {
     "name": "Shining Smite",
@@ -6740,7 +8308,11 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Sickening Radiance",
@@ -6773,7 +8345,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Silent Image",
@@ -6790,7 +8366,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fleece"
+      }
+    }
   },
   {
     "name": "Silvery Barbs",
@@ -6831,7 +8415,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 7200
+    "cast_time": 7200,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "snow or ice in quantities sufficient to made a life-size copy of the duplicated creature; some hair, fingernail clippings, or other piece of that creature's body placed inside the snow or ice; and powdered ruby worth 1,500 gp, sprinkled over the duplicate and consumed by the spell"
+      }
+    }
   },
   {
     "name": "Skill Empowerment",
@@ -6878,7 +8470,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of fine sand, rose petals, or a cricket"
+      }
+    }
   },
   {
     "name": "Sleet Storm",
@@ -6895,7 +8495,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of dust and a few drops of water"
+      }
+    }
   },
   {
     "name": "Slow",
@@ -6913,7 +8521,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of molasses"
+      }
+    }
   },
   {
     "name": "Snare",
@@ -7004,7 +8620,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Speak with Animals",
@@ -7019,7 +8639,11 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Speak with Dead",
@@ -7036,7 +8660,15 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "burning incense"
+      }
+    }
   },
   {
     "name": "Speak with Plants",
@@ -7050,7 +8682,11 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Spellfire Flare",
@@ -7098,7 +8734,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of bitumen and a spider"
+      }
+    }
   },
   {
     "name": "Spike Growth",
@@ -7116,7 +8760,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "seven sharp spines or seven twigs cut peak"
+      }
+    }
   },
   {
     "name": "Spirit Guardians",
@@ -7134,7 +8786,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a holy symbol"
+      }
+    }
   },
   {
     "name": "Spirit Shroud",
@@ -7181,7 +8841,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Spray of Cards",
@@ -7256,7 +8920,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a rotten egg or several skunk cabbage leaves"
+      }
+    }
   },
   {
     "name": "Stone Shape",
@@ -7268,7 +8940,15 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "soft clay, to be crudely worked into the desired shape for the stone object"
+      }
+    }
   },
   {
     "name": "Stoneskin",
@@ -7284,7 +8964,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "diamond dust worth 100 gp"
+      }
+    }
   },
   {
     "name": "Storm Sphere",
@@ -7314,7 +9002,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Suggestion",
@@ -7331,7 +9023,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a snake's tongue and either a bit of honeycomb or a drop of sweet oil"
+      }
+    }
   },
   {
     "name": "Summon Aberration",
@@ -7556,7 +9256,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a magnifying glass"
+      }
+    }
   },
   {
     "name": "Sunburst",
@@ -7571,7 +9279,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "fire and a piece of sunstone"
+      }
+    }
   },
   {
     "name": "Swift Quiver",
@@ -7629,7 +9345,15 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "mercury, phosphorus, and powdered diamond and opal with a total value of at least 1,000 gp"
+      }
+    }
   },
   {
     "name": "Synaptic Static",
@@ -7743,7 +9467,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Telepathy",
@@ -7771,7 +9499,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Teleportation Circle",
@@ -7788,7 +9520,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": true,
+        "name": "rare chalks and inks infused with precious gems with 50 gp"
+      }
+    }
   },
   {
     "name": "Temple of the Gods",
@@ -7884,7 +9624,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Thorn Whip",
@@ -7928,7 +9672,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Thunderous Smite",
@@ -7957,7 +9705,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Tidal Wave",
@@ -7998,7 +9750,11 @@
         "duration": "Instant",
         "expr": "1d4 + 1"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Tiny Servant",
@@ -8041,7 +9797,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a small clay model of a ziggurat"
+      }
+    }
   },
   {
     "name": "Transmute Rock",
@@ -8070,7 +9834,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Tree Stride",
@@ -8085,7 +9853,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "True Polymorph",
@@ -8102,7 +9874,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of mercury, a dollop of gum arabic, and a wisp of smoke"
+      }
+    }
   },
   {
     "name": "True Resurrection",
@@ -8115,7 +9895,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a sprinkle of holy water and diamonds worth at least 25,000gp"
+      }
+    }
   },
   {
     "name": "True Seeing",
@@ -8129,7 +9917,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "an ointment for the eyes that costs 25gp; is made from mushroom powder, saffron, and fat; and is consumed by the spell"
+      }
+    }
   },
   {
     "name": "True Strike",
@@ -8142,7 +9938,11 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Tsunami",
@@ -8175,7 +9975,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of string and a bit of wood"
+      }
+    }
   },
   {
     "name": "Vampiric Touch",
@@ -8191,7 +9999,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Vicious Mockery",
@@ -8206,7 +10018,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Vitriolic Sphere",
@@ -8253,7 +10069,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small piece of phosphorus"
+      }
+    }
   },
   {
     "name": "Wall of Force",
@@ -8270,7 +10094,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of powder made by crushing a clear gemstone"
+      }
+    }
   },
   {
     "name": "Wall of Ice",
@@ -8288,7 +10120,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small piece of quartz"
+      }
+    }
   },
   {
     "name": "Wall of Light",
@@ -8337,7 +10177,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small block of granite"
+      }
+    }
   },
   {
     "name": "Wall of Thorns",
@@ -8355,7 +10203,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a handful of thorns"
+      }
+    }
   },
   {
     "name": "Wall of Water",
@@ -8402,7 +10258,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pair of platinum rings worth at least 50gp each, which you and the target must wear for the duration"
+      }
+    }
   },
   {
     "name": "Warding Wind",
@@ -8451,7 +10315,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a short piece of reed or straw"
+      }
+    }
   },
   {
     "name": "Water Walk",
@@ -8468,7 +10340,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": ""
+      }
+    }
   },
   {
     "name": "Watery Sphere",
@@ -8503,7 +10383,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of spiderweb"
+      }
+    }
   },
   {
     "name": "Weird",
@@ -8521,7 +10409,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Whirlwind",
@@ -8556,7 +10448,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "fire and holy water"
+      }
+    }
   },
   {
     "name": "Wind Wall",
@@ -8574,7 +10474,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny fan and a feather of exotic origin"
+      }
+    }
   },
   {
     "name": "Wish",
@@ -8587,7 +10495,11 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Witch Bolt",
@@ -8645,7 +10557,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Wrath of Nature",
@@ -8730,6 +10646,10 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   }
 ]
