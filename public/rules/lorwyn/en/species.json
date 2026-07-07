@@ -1,0 +1,14 @@
+{
+  "Boggart": {
+    "description": "Boggarts are small, squat goblinoids with bestial features, natural magic, and a knack for potions. Found in the realm of Lorwyn-Shadowmoor."
+  },
+  "Flamekin": {
+    "description": "Flamekin are elemental people made from fire and stone, with innate flame magic and fire resistance. They pursue the Path of Flame."
+  },
+  "Lorwyn Changeling": {
+    "description": "Lorwyn changelings are fey shapeshifters who can assume humanoid or beast forms, with superior darkvision and charming counterfeits."
+  },
+  "Rimekin": {
+    "description": "Rimekin are ice-touched kin of flamekin with cold magic, cold resistance, and darkvision. Their flames burn icy blue."
+  }
+}

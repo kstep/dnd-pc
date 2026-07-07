@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Background Abilities (Prisoner)",
+    "assign": [
+      {
+        "expr": "with(@ABIL(DEX, CON, CHA), guard(fold(and, @, in(@ARG, 0, 2) and @ + @ARG <= 20) and fold(+, @, @ARG) == 3, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SKILL.DECE.PROF = 1; SKILL.SLEI.PROF = 1; TOOL.`Thieves' Tools`.ABIL = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  }
+]

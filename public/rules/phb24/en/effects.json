@@ -1,0 +1,584 @@
+{
+  "Shield of Faith": {
+    "description": "+2 AC (concentration, 10 min)"
+  },
+  "Warding Bond": {
+    "description": "+1 AC, +1 to all saving throws, resistance to all damage (concentration, 1 hour)"
+  },
+  "Ceremony: Wedding": {
+    "description": "+2 AC for 7 days (two creatures)"
+  },
+  "Agile Parry": {
+    "description": "+2 AC while holding kensei weapon (until next turn)"
+  },
+  "Arcane Deflection": {
+    "description": "+2 AC (reaction, single attack) and +4 to all saves (reaction, single save)"
+  },
+  "Soul of the Forge": {
+    "description": "+1 AC while wearing heavy armor"
+  },
+  "Bladesong": {
+    "description": "+INT AC, +10 speed, advantage on Acrobatics (1 min)"
+  },
+  "Mage Armor": {
+    "description": "Base AC becomes 13 + DEX (8 hours, no armor)"
+  },
+  "Barkskin": {
+    "description": "AC can't be less than 17 (concentration, 1 hour)"
+  },
+  "Fighting Spirit": {
+    "description": "5 temp HP + advantage on attacks (bonus action, 3/long rest)"
+  },
+  "Guardian of Nature: Great Tree": {
+    "description": "10 temp HP, advantage on CON saves (concentration, 1 min)"
+  },
+  "Vitality of the Tree": {
+    "description": "Temp HP = your level (rage start)"
+  },
+  "Dark One's Blessing": {
+    "description": "Temp HP = CHA mod + warlock level (on reducing enemy to 0 HP)"
+  },
+  "Celestial Resilience": {
+    "description": "Temp HP = warlock level + CHA mod (short/long rest)"
+  },
+  "Touch of Death": {
+    "description": "Temp HP = WIS mod + monk level (on reducing enemy to 0 HP)"
+  },
+  "Adrenaline Rush": {
+    "description": "Temp HP = proficiency bonus (Dash as bonus action, Orc)"
+  },
+  "Armor of Agathys": {
+    "description": "5 temp HP (+5 per slot level above 1st), deals cold damage to melee attackers"
+  },
+  "False Life": {
+    "description": "1d4+4 temp HP (+5 per slot level above 1st)"
+  },
+  "Heroism": {
+    "description": "Temp HP = spellcasting ability mod at start of each turn (concentration). Set manually"
+  },
+  "Aid": {
+    "description": "+5 max HP and current HP (+5 per slot level above 2nd, 8 hours)"
+  },
+  "Longstrider": {
+    "description": "+10 ft speed (1 hour)"
+  },
+  "Blade Flourish": {
+    "description": "+10 ft speed (until end of turn)"
+  },
+  "Drunken Technique": {
+    "description": "+10 ft speed (Flurry of Blows, until end of turn)"
+  },
+  "Dread Ambusher": {
+    "description": "+10 ft speed (first turn of combat only)"
+  },
+  "Aura of Alacrity": {
+    "description": "+10 ft speed (aura, allies within 10 ft)"
+  },
+  "Guardian of Nature: Primal Beast": {
+    "description": "+10 ft speed, advantage on STR attacks, +1d6 force damage (concentration, 1 min)"
+  },
+  "Ashardalon's Stride": {
+    "description": "+20 ft speed, deals fire damage when moving (+5 per slot above 3rd, concentration)"
+  },
+  "Zephyr Strike": {
+    "description": "+30 ft speed on next turn, no opportunity attacks (concentration)"
+  },
+  "Large Form": {
+    "description": "+10 ft speed, become Large (bonus action, 10 min, Goliath)"
+  },
+  "Haste": {
+    "description": "Double speed, +2 AC, advantage on DEX saves, extra action (concentration, 1 min)"
+  },
+  "Steady Aim": {
+    "description": "Speed becomes 0, advantage on next attack (bonus action, Rogue)"
+  },
+  "Bless": {
+    "description": "+1d4 to attack rolls and saving throws (concentration, 1 min). Dice bonus — apply result manually"
+  },
+  "Pass without Trace": {
+    "description": "+10 to Stealth checks (concentration, 1 hour)"
+  },
+  "Bear Totem Spirit": {
+    "description": "Resistance to all damage except Psychic while raging"
+  },
+  "Stoneskin": {
+    "description": "Resistance to bludgeoning, piercing, and slashing damage (concentration, 1 hour)"
+  },
+  "Full of Stars": {
+    "description": "Resistance to bludgeoning, piercing, and slashing while in Starry Form"
+  },
+  "Stormborn": {
+    "description": "Resistance to cold, lightning, and thunder while Wrath of Sea is active"
+  },
+  "Superior Defense": {
+    "description": "Resistance to all damage except Force (1 min, 3 Focus Points)"
+  },
+  "Umbral Form": {
+    "description": "Resistance to all damage except Force and Radiant (6 Sorcery Points)"
+  },
+  "Fiendish Resilience: Acid": {
+    "description": "Resistance to Acid damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Bludgeoning": {
+    "description": "Resistance to Bludgeoning damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Cold": {
+    "description": "Resistance to Cold damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Fire": {
+    "description": "Resistance to Fire damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Force": {
+    "description": "Resistance to Force damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Lightning": {
+    "description": "Resistance to Lightning damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Necrotic": {
+    "description": "Resistance to Necrotic damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Piercing": {
+    "description": "Resistance to Piercing damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Poison": {
+    "description": "Resistance to Poison damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Psychic": {
+    "description": "Resistance to Psychic damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Radiant": {
+    "description": "Resistance to Radiant damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Slashing": {
+    "description": "Resistance to Slashing damage (until next short/long rest)"
+  },
+  "Fiendish Resilience: Thunder": {
+    "description": "Resistance to Thunder damage (until next short/long rest)"
+  },
+  "Steps of Night": {
+    "description": "Fly speed equal to walking speed (bonus action, 1 min, Twilight Domain)"
+  },
+  "Draconic Flight": {
+    "description": "Fly speed equal to walking speed (bonus action, 10 min, Dragonborn)"
+  },
+  "Celestial Revelation: Wings": {
+    "description": "Fly speed equal to walking speed (1 min, Aasimar)"
+  },
+  "Power of the Wilds: Falcon": {
+    "description": "Fly speed equal to walking speed while raging (Path of Wild Heart)"
+  },
+  "Writhing Tide": {
+    "description": "10 ft fly speed, hover (bonus action, 1 min, Swarmkeeper)"
+  },
+  "Rage Damage": {
+    "description": "+2 damage to STR melee attacks while raging (+3 at 9th, +4 at 16th)"
+  },
+  "Divine Favor": {
+    "description": "+1d4 radiant damage on weapon hits (concentration, 1 min)"
+  },
+  "Hunter's Mark": {
+    "description": "+1d6 force damage to marked target (concentration, 1 hour)"
+  },
+  "Magic Weapon": {
+    "description": "+1 to attack and damage (+2 at 4th-level slot, +3 at 6th, concentration, 1 hour)"
+  },
+  "Elemental Weapon": {
+    "description": "+1 to attack, +1d4 elemental damage (concentration, 1 hour)"
+  },
+  "Crusader's Mantle": {
+    "description": "+1d4 radiant damage for all allies in aura (concentration, 1 min)"
+  },
+  "Spirit Shroud": {
+    "description": "+1d8 damage within 10 ft (+1d8 per 2 slot levels above 3rd, concentration, 1 min)"
+  },
+  "Holy Weapon": {
+    "description": "+2d8 radiant damage on weapon hits (concentration, 1 hour)"
+  },
+  "Sneak Attack": {
+    "description": "+(level+1)/2 d6 damage once per turn (advantage or ally adjacent)"
+  },
+  "Divine Strike": {
+    "description": "+1d8 damage once per turn on weapon hit (+2d8 at 14th level)"
+  },
+  "Dreadful Strikes": {
+    "description": "+1d4 psychic damage once per turn on weapon hit (Fey Wanderer)"
+  },
+  "Mindless Rage": {
+    "description": "Immune to charmed and frightened while raging (Path of Berserker)"
+  },
+  "Form of Dread": {
+    "description": "Immune to frightened, temp HP = 1d10 + warlock level (bonus action, 1 min)"
+  },
+  "Enhance Ability: Bull's Strength": {
+    "description": "Advantage on Strength checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Cat's Grace": {
+    "description": "Advantage on Dexterity checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Bear's Endurance": {
+    "description": "Advantage on Constitution checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Fox's Cunning": {
+    "description": "Advantage on Intelligence checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Owl's Wisdom": {
+    "description": "Advantage on Wisdom checks (concentration, 1 hour)"
+  },
+  "Enhance Ability: Eagle's Splendor": {
+    "description": "Advantage on Charisma checks (concentration, 1 hour)"
+  },
+  "Guidance": {
+    "description": "+1d4 to one ability check (cantrip, concentration). Dice bonus — apply result manually"
+  },
+  "Shield": {
+    "description": "+5 AC (reaction, until start of next turn)"
+  },
+  "Fizban's Platinum Shield": {
+    "description": "+2 AC, resistance to acid/cold/fire/lightning/poison (concentration, 1 min)"
+  },
+  "Tasha's Otherworldly Guise": {
+    "description": "AC = 10 + DEX + CHA, fly 40 ft, +2d8 damage (concentration, 1 min)"
+  },
+  "Alustriel's Mooncloak": {
+    "description": "Half cover (+2 AC), resistance to cold/lightning/radiant (concentration, 10 min)"
+  },
+  "Tenser's Transformation": {
+    "description": "50 temp HP, advantage on weapon attacks, extra attack, +2d12 force damage (concentration, 10 min)"
+  },
+  "Syluné's Viper": {
+    "description": "15 temp HP, climb speed (concentration, 1 min)"
+  },
+  "Motivational Speech": {
+    "description": "5 temp HP, advantage on WIS saves (1 min, no concentration)"
+  },
+  "Power Word Fortify": {
+    "description": "120 temp HP divided among up to 6 creatures. Set amount manually"
+  },
+  "Kinetic Jaunt": {
+    "description": "+10 ft speed, no opportunity attacks (concentration, 1 min)"
+  },
+  "Slow": {
+    "description": "-2 AC, -2 DEX saves, half speed, no reactions (concentration, 1 min)"
+  },
+  "Blur": {
+    "description": "Disadvantage on attack rolls against you (concentration, 1 min)"
+  },
+  "Mirror Image": {
+    "description": "3 duplicates absorb attacks (d6 roll: 3+ hits duplicate instead of you)"
+  },
+  "Sanctuary": {
+    "description": "Attackers must make WIS save or choose new target; ends if warded creature attacks (1 min)"
+  },
+  "Warding Wind": {
+    "description": "Ranged weapon attacks in/out have disadvantage, deafened in 10 ft radius (concentration, 10 min)"
+  },
+  "Fly": {
+    "description": "Fly speed 60 ft (concentration, 10 min)"
+  },
+  "Dragon's Breath": {
+    "description": "Target can exhale 15-ft cone for 3d6 damage of chosen type (concentration, 1 min)"
+  },
+  "Protection from Evil and Good": {
+    "description": "Aberrations/Celestials/Elementals/Fey/Fiends/Undead have disadvantage on attacks; can't charm/frighten/possess (concentration, 10 min)"
+  },
+  "Protection from Energy: Acid": {
+    "description": "Resistance to Acid damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Cold": {
+    "description": "Resistance to Cold damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Fire": {
+    "description": "Resistance to Fire damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Lightning": {
+    "description": "Resistance to Lightning damage (concentration, 1 hour)"
+  },
+  "Protection from Energy: Thunder": {
+    "description": "Resistance to Thunder damage (concentration, 1 hour)"
+  },
+  "Beacon of Hope": {
+    "description": "Advantage on WIS saves and death saves, max healing from any spell (concentration, 1 min)"
+  },
+  "Intellect Fortress": {
+    "description": "Resistance to psychic damage, advantage on INT/WIS/CHA saves (concentration, 1 hour)"
+  },
+  "Fire Shield: Warm": {
+    "description": "Resistance to cold damage, 2d8 fire to melee attackers (10 min, no concentration)"
+  },
+  "Fire Shield: Chill": {
+    "description": "Resistance to fire damage, 2d8 cold to melee attackers (10 min, no concentration)"
+  },
+  "Death Ward": {
+    "description": "First time you drop to 0 HP, drop to 1 HP instead (8 hours, no concentration)"
+  },
+  "Freedom of Movement": {
+    "description": "Can't be paralyzed or restrained, ignore difficult terrain, speed can't be reduced (1 hour)"
+  },
+  "Enlarge": {
+    "description": "+1d4 to weapon damage, advantage on STR checks and saves (concentration, 1 min)"
+  },
+  "Reduce": {
+    "description": "-1d4 to weapon damage, disadvantage on STR checks and saves (concentration, 1 min)"
+  },
+  "Dispel Evil and Good": {
+    "description": "Celestials/Elementals/Fey/Fiends/Undead have disadvantage on attacks against you (concentration, 1 min)"
+  },
+  "Circle of Power": {
+    "description": "Advantage on saves vs. spells/magical effects, evasion vs. spell damage (concentration, 10 min)"
+  },
+  "Aura of Purity": {
+    "description": "Resistance to poison, advantage on saves vs. blinded/charmed/deafened/frightened/paralyzed/poisoned/stunned (concentration, 10 min)"
+  },
+  "Aura of Life": {
+    "description": "Resistance to necrotic damage, HP max can't be reduced, allies at 0 HP regain 1 HP (concentration, 10 min)"
+  },
+  "Investiture of Flame": {
+    "description": "Immunity to fire, resistance to cold (concentration, 10 min)"
+  },
+  "Investiture of Ice": {
+    "description": "Immunity to cold, resistance to fire (concentration, 10 min)"
+  },
+  "Investiture of Stone": {
+    "description": "Resistance to nonmagical bludgeoning/piercing/slashing (concentration, 10 min)"
+  },
+  "Investiture of Wind": {
+    "description": "Fly speed 60 ft, advantage on DEX saves, ranged attacks disadvantaged (concentration, 10 min)"
+  },
+  "Primordial Ward": {
+    "description": "Resistance to acid/cold/fire/lightning/thunder; reaction to gain immunity to one (concentration, 1 min)"
+  },
+  "Songal's Elemental Suffusion: Acid": {
+    "description": "Resistance to Acid damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Cold": {
+    "description": "Resistance to Cold damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Fire": {
+    "description": "Resistance to Fire damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Lightning": {
+    "description": "Resistance to Lightning damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Songal's Elemental Suffusion: Thunder": {
+    "description": "Resistance to Thunder damage, 4d6 pulse damage (concentration, 10 min)"
+  },
+  "Heroes' Feast": {
+    "description": "Immunity to frightened/poisoned, resistance to poison, advantage on WIS saves (24 hours)"
+  },
+  "Holy Aura": {
+    "description": "Advantage on all saves, disadvantage on attack rolls against you (concentration, 1 min)"
+  },
+  "Mind Blank": {
+    "description": "Immunity to psychic damage and charmed condition (24 hours)"
+  },
+  "Foresight": {
+    "description": "Advantage on all d20 tests, disadvantage on attacks against you (8 hours, no concentration)"
+  },
+  "Feign Death": {
+    "description": "Resistance to all damage except psychic, immunity to poisoned, speed 0, incapacitated (1 hour)"
+  },
+  "Shadow Blade": {
+    "description": "Conjured shadow sword: 2d8 psychic, finesse, light, thrown; advantage in dim light/darkness (concentration, 1 min)"
+  },
+  "Flame Blade": {
+    "description": "Conjured fire blade: 3d6 + ability mod fire damage as Magic action (concentration, 10 min)"
+  },
+  "Flame Arrows": {
+    "description": "+1d6 fire damage to ammunition (up to 12 pieces, concentration, 1 hour)"
+  },
+  "Swift Quiver": {
+    "description": "2 bonus action attacks with bow/crossbow each turn (concentration, 1 min)"
+  },
+  "Fount of Moonlight": {
+    "description": "Resistance to radiant, +2d6 radiant to melee attacks, reaction to blind attackers (concentration, 1 hour)"
+  },
+  "Darkvision": {
+    "description": "Darkvision 150 ft (8 hours)"
+  },
+  "Spider Climb": {
+    "description": "Climb speed equal to walking speed, walk on ceilings (concentration, 1 hour)"
+  },
+  "Invisibility": {
+    "description": "Invisible until attacking, dealing damage, or casting a spell (concentration, 1 hour)"
+  },
+  "Greater Invisibility": {
+    "description": "Invisible, does not break on attacking or casting (concentration, 1 min)"
+  },
+  "Protection from Poison": {
+    "description": "Advantage on saves vs. Poisoned, resistance to poison damage (1 hour)"
+  },
+  "Blink": {
+    "description": "50% chance to vanish to Ethereal Plane at end of each turn (1 min)"
+  },
+  "Polymorph": {
+    "description": "Transform into a Beast of CR ≤ your level (concentration, 1 hour)"
+  },
+  "Gaseous Form": {
+    "description": "Become a misty cloud, fly speed 10 ft, can pass through tiny gaps (concentration, 1 hour)"
+  },
+  "Alter Self": {
+    "description": "Aquatic adaptation (swim speed + gills), change appearance, or natural weapons 1d6 (concentration, 10 min)"
+  },
+  "Levitate": {
+    "description": "Rise 20 ft and hover, move only by pushing/pulling (concentration, 10 min)"
+  },
+  "Jump": {
+    "description": "Jump up to 30 ft by spending 10 ft of movement (1 min)"
+  },
+  "Feather Fall": {
+    "description": "Up to 5 creatures descend at 60 ft/round, no fall damage (1 min)"
+  },
+  "Water Breathing": {
+    "description": "Up to 10 creatures can breathe underwater (24 hours)"
+  },
+  "Water Walk": {
+    "description": "Up to 10 creatures can walk on liquid surfaces (1 hour)"
+  },
+  "Expeditious Retreat": {
+    "description": "Dash as bonus action each turn (concentration, 10 min)"
+  },
+  "Borrowed Knowledge": {
+    "description": "Gain proficiency in one skill you lack (1 hour)"
+  },
+  "Skill Empowerment": {
+    "description": "Gain Expertise (double proficiency) in one skill you're proficient in (concentration, 1 hour)"
+  },
+  "Fortune's Favor": {
+    "description": "One-time extra d20 on attack, check, or save — choose which to use"
+  },
+  "Nondetection": {
+    "description": "Can't be targeted by Divination spells or magical scrying (8 hours)"
+  },
+  "Grappled": {
+    "description": "Speed is 0, can't benefit from speed bonuses"
+  },
+  "Restrained": {
+    "description": "Speed is 0, disadvantage on attacks and DEX saves, attacks against have advantage"
+  },
+  "Paralyzed": {
+    "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage, melee hits are crits"
+  },
+  "Stunned": {
+    "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage"
+  },
+  "Petrified": {
+    "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, resistance to all damage"
+  },
+  "Unconscious": {
+    "description": "Incapacitated, speed 0, auto-fail STR/DEX saves, attacks have advantage, melee hits are crits"
+  },
+  "Prone": {
+    "description": "Disadvantage on attacks, melee attacks have advantage, ranged have disadvantage. Half movement to stand"
+  },
+  "Blinded": {
+    "description": "Can't see, auto-fail checks requiring sight, attacks have disadvantage, attacks against have advantage"
+  },
+  "Charmed": {
+    "description": "Can't attack the charmer, charmer has advantage on social checks"
+  },
+  "Deafened": {
+    "description": "Can't hear, auto-fail checks requiring hearing"
+  },
+  "Frightened": {
+    "description": "Disadvantage on ability checks and attacks while source of fear is in line of sight"
+  },
+  "Incapacitated": {
+    "description": "Can't take actions or reactions"
+  },
+  "Invisible": {
+    "description": "Attacks have advantage, attacks against have disadvantage"
+  },
+  "Poisoned": {
+    "description": "Disadvantage on attack rolls and ability checks"
+  },
+  "Exhaustion 1": {
+    "description": "Disadvantage on ability checks"
+  },
+  "Exhaustion 2": {
+    "description": "Disadvantage on ability checks, speed halved"
+  },
+  "Exhaustion 3": {
+    "description": "Disadvantage on ability checks, attacks, and saves, speed halved"
+  },
+  "Exhaustion 4": {
+    "description": "Disadvantage on ability checks, attacks, and saves, speed and max HP halved"
+  },
+  "Exhaustion 5": {
+    "description": "Disadvantage on ability checks, attacks, and saves, speed 0, max HP halved"
+  },
+  "Innate Sorcery": {
+    "description": "+1 spell save DC, Advantage on Sorcerer spell attack rolls for 1 minute"
+  },
+  "Rod of the Pact Keeper +1": {
+    "description": "+1 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Rod of the Pact Keeper +2": {
+    "description": "+2 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Rod of the Pact Keeper +3": {
+    "description": "+3 to warlock spell save DC and spell attack rolls (attunement, warlock)"
+  },
+  "Bloodwell Vial +1": {
+    "description": "+1 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Bloodwell Vial +2": {
+    "description": "+2 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Bloodwell Vial +3": {
+    "description": "+3 to sorcerer spell save DC and spell attack rolls (attunement, sorcerer)"
+  },
+  "Arcane Grimoire +1": {
+    "description": "+1 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Arcane Grimoire +2": {
+    "description": "+2 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Arcane Grimoire +3": {
+    "description": "+3 to wizard spell save DC and spell attack rolls (attunement, wizard)"
+  },
+  "Moon Sickle +1 (Druid)": {
+    "description": "+1 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +2 (Druid)": {
+    "description": "+2 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +3 (Druid)": {
+    "description": "+3 to druid spell save DC and spell attack rolls (attunement, druid)"
+  },
+  "Moon Sickle +1 (Ranger)": {
+    "description": "+1 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Moon Sickle +2 (Ranger)": {
+    "description": "+2 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Moon Sickle +3 (Ranger)": {
+    "description": "+3 to ranger spell save DC and spell attack rolls (attunement, ranger)"
+  },
+  "Amulet of the Devout +1 (Cleric)": {
+    "description": "+1 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +2 (Cleric)": {
+    "description": "+2 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +3 (Cleric)": {
+    "description": "+3 to cleric spell save DC and spell attack rolls (attunement, cleric)"
+  },
+  "Amulet of the Devout +1 (Paladin)": {
+    "description": "+1 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Amulet of the Devout +2 (Paladin)": {
+    "description": "+2 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Amulet of the Devout +3 (Paladin)": {
+    "description": "+3 to paladin spell save DC and spell attack rolls (attunement, paladin)"
+  },
+  "Wand of the War Mage +1": {
+    "description": "+1 to spell attack rolls (attunement, spellcaster)"
+  },
+  "Wand of the War Mage +2": {
+    "description": "+2 to spell attack rolls (attunement, spellcaster)"
+  },
+  "Wand of the War Mage +3": {
+    "description": "+3 to spell attack rolls (attunement, spellcaster)"
+  }
+}

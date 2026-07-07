@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Acolyte",
+    "features": [
+      "Background Abilities (Acolyte)",
+      "Magic Initiate (Cleric)"
+    ]
+  },
+  {
+    "name": "Artisan",
+    "features": [
+      "Background Abilities (Artisan)",
+      "Crafter"
+    ]
+  },
+  {
+    "name": "Charlatan",
+    "features": [
+      "Background Abilities (Charlatan)",
+      "Skilled"
+    ]
+  },
+  {
+    "name": "Criminal",
+    "features": [
+      "Background Abilities (Criminal)",
+      "Alert"
+    ]
+  },
+  {
+    "name": "Entertainer",
+    "features": [
+      "Background Abilities (Entertainer)",
+      "Musician"
+    ]
+  },
+  {
+    "name": "Farmer",
+    "features": [
+      "Background Abilities (Farmer)",
+      "Tough"
+    ]
+  },
+  {
+    "name": "Guard",
+    "features": [
+      "Background Abilities (Guard)",
+      "Alert"
+    ]
+  },
+  {
+    "name": "Guide",
+    "features": [
+      "Background Abilities (Guide)",
+      "Magic Initiate (Druid)"
+    ]
+  },
+  {
+    "name": "Hermit",
+    "features": [
+      "Background Abilities (Hermit)",
+      "Healer"
+    ]
+  },
+  {
+    "name": "Merchant",
+    "features": [
+      "Background Abilities (Merchant)",
+      "Lucky"
+    ]
+  },
+  {
+    "name": "Noble",
+    "features": [
+      "Background Abilities (Noble)",
+      "Skilled"
+    ]
+  },
+  {
+    "name": "Sage",
+    "features": [
+      "Background Abilities (Sage)",
+      "Magic Initiate (Wizard)"
+    ]
+  },
+  {
+    "name": "Sailor",
+    "features": [
+      "Background Abilities (Sailor)",
+      "Tavern Brawler"
+    ]
+  },
+  {
+    "name": "Scribe",
+    "features": [
+      "Background Abilities (Scribe)",
+      "Skilled"
+    ]
+  },
+  {
+    "name": "Soldier",
+    "features": [
+      "Background Abilities (Soldier)",
+      "Savage Attacker"
+    ]
+  },
+  {
+    "name": "Wayfarer",
+    "features": [
+      "Background Abilities (Wayfarer)",
+      "Lucky"
+    ]
+  }
+]

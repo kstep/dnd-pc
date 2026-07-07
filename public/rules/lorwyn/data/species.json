@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Boggart",
+    "features": [
+      "Darkvision",
+      "Fey Ancestry",
+      "Fury of the Small",
+      "Nimble Escape",
+      "Languages (Boggart)"
+    ]
+  },
+  {
+    "name": "Flamekin",
+    "features": [
+      "Darkvision",
+      "Fire Resistance",
+      "Reach to the Blaze",
+      "Languages (Flamekin)"
+    ]
+  },
+  {
+    "name": "Lorwyn Changeling",
+    "features": [
+      "Shape Self",
+      "Darkvision",
+      "Delightful Imitator",
+      "Unpredictable Movement",
+      "Languages (Lorwyn Changeling)"
+    ]
+  },
+  {
+    "name": "Rimekin",
+    "features": [
+      "Cold Fire Magic",
+      "Cold Resistance",
+      "Darkvision",
+      "Languages (Rimekin)"
+    ]
+  }
+]

@@ -1,0 +1,159 @@
+[
+  {
+    "name": "Aasimar",
+    "features": [
+      "Light Bearer",
+      "Celestial Revelation",
+      "Darkvision",
+      "Celestial Resistance",
+      "Healing Hands",
+      "Languages (Aasimar)"
+    ]
+  },
+  {
+    "name": "Dragonborn",
+    "features": [
+      "Breath Weapon",
+      "Draconic Flight",
+      "Darkvision",
+      "Draconic Ancestry",
+      "Damage Resistance",
+      "Languages (Dragonborn)"
+    ]
+  },
+  {
+    "name": "Drow",
+    "features": [
+      "Elven Lineage (Drow)",
+      "Superior Darkvision",
+      "Fey Ancestry",
+      "Keen Senses",
+      "Trance",
+      "Languages (Elf)"
+    ]
+  },
+  {
+    "name": "Dwarf",
+    "features": [
+      "Stonecunning",
+      "Darkvision",
+      "Dwarven Resilience",
+      "Dwarven Toughness",
+      "Languages (Dwarf)"
+    ]
+  },
+  {
+    "name": "Forest Gnome",
+    "features": [
+      "Gnomish Lineage",
+      "Darkvision",
+      "Gnomish Cunning",
+      "Languages (Gnome)"
+    ]
+  },
+  {
+    "name": "Goliath",
+    "features": [
+      "Giant Ancestry",
+      "Large Form",
+      "Speed",
+      "Powerful Build",
+      "Languages (Goliath)"
+    ]
+  },
+  {
+    "name": "Halfling",
+    "features": [
+      "Brave",
+      "Halfling Nimbleness",
+      "Luck",
+      "Naturally Stealthy",
+      "Languages (Halfling)"
+    ]
+  },
+  {
+    "name": "High Elf",
+    "features": [
+      "Elven Lineage (High Elf)",
+      "Darkvision",
+      "Fey Ancestry",
+      "Keen Senses",
+      "Trance",
+      "Languages (Elf)"
+    ]
+  },
+  {
+    "name": "Human",
+    "features": [
+      "Resourceful",
+      "Skillful",
+      "Versatile",
+      "Languages (Human)"
+    ]
+  },
+  {
+    "name": "Orc",
+    "features": [
+      "Adrenaline Rush",
+      "Relentless Endurance",
+      "Darkvision",
+      "Languages (Orc)"
+    ]
+  },
+  {
+    "name": "Rock Gnome",
+    "features": [
+      "Gnomish Lineage",
+      "Darkvision",
+      "Gnomish Cunning",
+      "Languages (Gnome)"
+    ]
+  },
+  {
+    "name": "Tiefling",
+    "features": [
+      "Darkvision",
+      "Otherworldly Presence",
+      "Languages (Tiefling)"
+    ]
+  },
+  {
+    "name": "Tiefling (Abyssal)",
+    "features": [
+      "Abyssal Legacy",
+      "Darkvision",
+      "Abyssal Resistance",
+      "Languages (Tiefling (Abyssal))"
+    ]
+  },
+  {
+    "name": "Tiefling (Chthonic)",
+    "features": [
+      "Chthonic Legacy",
+      "Darkvision",
+      "Chthonic Resistance",
+      "Languages (Tiefling (Chthonic))"
+    ]
+  },
+  {
+    "name": "Tiefling (Infernal)",
+    "features": [
+      "Infernal Legacy",
+      "Darkvision",
+      "Hellish Resistance",
+      "Languages (Tiefling)"
+    ]
+  },
+  {
+    "name": "Wood Elf",
+    "features": [
+      "Elven Lineage (Wood Elf)",
+      "Speed",
+      "Darkvision",
+      "Fey Ancestry",
+      "Keen Senses",
+      "Trance",
+      "Languages (Elf)"
+    ]
+  }
+]

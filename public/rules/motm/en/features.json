@@ -1,0 +1,23 @@
+{
+  "Fairy Magic": {
+    "description": "You know the Druidcraft cantrip. At 3rd level, you can cast Faerie Fire once per Long Rest. At 5th level, you can also cast Enlarge/Reduce once per Long Rest. You can also cast these using spell slots. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Languages (Faerie)": {
+    "description": "You can speak, read, and write Common and Sylvan."
+  },
+  "Spider Climb": {
+    "description": "You have a Climb Speed equal to your Speed. At character level 3, you can move up, down, and across vertical surfaces and along ceilings while leaving your hands free."
+  },
+  "Trace of Undeath": {
+    "description": "You have Resistance to Necrotic damage."
+  },
+  "Vampiric Bite": {
+    "description": "When you use your Unarmed Strike and deal damage, you can bite with your fangs for 1d4 + CON Piercing damage. When you deal this damage to a non-Construct, non-Undead creature, you can empower yourself: Drain (regain HP equal to damage) or Strengthen (bonus to next ability check or attack roll equal to damage). Usable a number of times equal to your Proficiency Bonus per Long Rest."
+  },
+  "Vampiric Bite.field.Drain": {
+    "label": "Drain"
+  },
+  "Vampiric Bite.field.Strengthen": {
+    "label": "Strengthen"
+  }
+}

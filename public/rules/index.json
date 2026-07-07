@@ -1,0 +1,27 @@
+[
+  {
+    "id": "phb24",
+    "kind": "base",
+    "name": "Player's Handbook (2024)"
+  },
+  {
+    "id": "efoa",
+    "kind": "addon",
+    "name": "Eberron: Forge of the Artificer"
+  },
+  {
+    "id": "motm",
+    "kind": "addon",
+    "name": "Monsters of the Multiverse"
+  },
+  {
+    "id": "lorwyn",
+    "kind": "addon",
+    "name": "Lorwyn (homebrew)"
+  },
+  {
+    "id": "grimhollow",
+    "kind": "addon",
+    "name": "Grim Hollow"
+  }
+]

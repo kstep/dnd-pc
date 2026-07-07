@@ -1,0 +1,229 @@
+[
+  {
+    "name": "Artificer",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Artificer)",
+          "Spellcasting (Artificer)",
+          "Tinker's Magic",
+          "Multiclass Proficiencies (Artificer)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Replicate Magic Item"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "6": {
+        "features": [
+          "Magic Item Tinker"
+        ]
+      },
+      "7": {
+        "features": [
+          "Flash of Genius"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "10": {
+        "features": [
+          "Magic Item Adept"
+        ]
+      },
+      "11": {
+        "features": [
+          "Spell-Storing Item"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "14": {
+        "features": [
+          "Advanced Artifice"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Magic Item Master"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Soul of Artifice"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Alchemist",
+        "levels": {
+          "3": {
+            "features": [
+              "Alchemist Spells",
+              "Experimental Elixir",
+              "Tools of the Trade"
+            ]
+          },
+          "5": {
+            "features": [
+              "Alchemical Savant"
+            ]
+          },
+          "9": {
+            "features": [
+              "Restorative Reagents"
+            ]
+          },
+          "15": {
+            "features": [
+              "Chemical Mastery"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Armorer",
+        "levels": {
+          "3": {
+            "features": [
+              "Arcane Armor",
+              "Armor Model",
+              "Armorer Spells",
+              "Dreadnaught",
+              "Guardian",
+              "Infiltrator",
+              "Tools of the Trade"
+            ]
+          },
+          "5": {
+            "features": [
+              "Extra Attack"
+            ]
+          },
+          "9": {
+            "features": [
+              "Improved Armorer"
+            ]
+          },
+          "15": {
+            "features": [
+              "Perfected Armor"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Artillerist",
+        "levels": {
+          "3": {
+            "features": [
+              "Artillerist Spells",
+              "Eldritch Cannon",
+              "Tools of the Trade"
+            ]
+          },
+          "5": {
+            "features": [
+              "Arcane Firearm"
+            ]
+          },
+          "9": {
+            "features": [
+              "Explosive Cannon"
+            ]
+          },
+          "15": {
+            "features": [
+              "Fortified Position"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Battle Smith",
+        "levels": {
+          "3": {
+            "features": [
+              "Battle Ready",
+              "Battle Smith Spells",
+              "Steel Defender",
+              "Tools of the Trade"
+            ]
+          },
+          "5": {
+            "features": [
+              "Extra Attack"
+            ]
+          },
+          "9": {
+            "features": [
+              "Arcane Jolt"
+            ]
+          },
+          "15": {
+            "features": [
+              "Improved Defender"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Cartographer",
+        "levels": {
+          "3": {
+            "features": [
+              "Adventurer's Atlas",
+              "Cartographer Spells",
+              "Mapping Magic",
+              "Tools of the Trade"
+            ]
+          },
+          "5": {
+            "features": [
+              "Guided Precision"
+            ]
+          },
+          "9": {
+            "features": [
+              "Ingenious Movement"
+            ]
+          },
+          "15": {
+            "features": [
+              "Superior Atlas"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "INT >= 13"
+  }
+]

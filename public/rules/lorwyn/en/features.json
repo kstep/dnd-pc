@@ -1,0 +1,35 @@
+{
+  "Cold Fire Magic": {
+    "description": "You know the Ray of Frost cantrip. At 3rd level, you learn Ice Knife. At 5th level, you learn Flame Blade (deals Cold damage instead of Fire). You always have these spells prepared and can cast each once without a spell slot per Long Rest. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Delightful Imitator": {
+    "description": "You have proficiency in the Performance skill."
+  },
+  "Fury of the Small": {
+    "description": "When you damage a creature larger than you with an attack or spell, you can deal extra damage equal to your Proficiency Bonus. Usable a number of times equal to your Proficiency Bonus per Long Rest, no more than once per turn."
+  },
+  "Languages (Boggart)": {
+    "description": "You can speak, read, and write Common and Sylvan."
+  },
+  "Languages (Flamekin)": {
+    "description": "You can speak, read, and write Common and Primordial."
+  },
+  "Languages (Lorwyn Changeling)": {
+    "description": "You can speak, read, and write Common and Sylvan."
+  },
+  "Languages (Rimekin)": {
+    "description": "You can speak, read, and write Common and Primordial."
+  },
+  "Nimble Escape": {
+    "description": "You can take the Disengage or Hide action as a Bonus Action on each of your turns."
+  },
+  "Reach to the Blaze": {
+    "description": "You know the Produce Flame cantrip. At 3rd level, you can cast Burning Hands once per Long Rest. At 5th level, you can also cast Flame Blade (no material component) once per Long Rest. You can also cast these using spell slots. Intelligence, Wisdom, or Charisma is your spellcasting ability."
+  },
+  "Shape Self": {
+    "description": "As an action, you can reshape your body to a two-legged Humanoid shape or to a four-legged Beast shape. While in Humanoid shape, you can wear clothing and armor made for a Humanoid of your size."
+  },
+  "Unpredictable Movement": {
+    "description": "When you roll Initiative and don't have Disadvantage on that roll, you can take the Dash action as a Reaction."
+  }
+}

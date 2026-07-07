@@ -1,0 +1,437 @@
+{
+  "Barbarian": {
+    "description": "A fierce warrior who can enter a battle rage."
+  },
+  "Barbarian.subclass.Path of the Berserker": {
+    "description": "Channel Rage into Violent Fury Barbarians who walk the Path of the Berserker direct their Rage primarily toward violence. Their path is one of untrammeled fury, and they thrill in the chaos of battle as they allow their Rage to seize and empower them."
+  },
+  "Barbarian.subclass.Path of the Battlerager": {
+    "description": "Known as Kuldjargh (literally \"axe idiot\") in Dwarvish, battleragers are dwarf followers of the gods of war and take the Path of the Battlerager. They specialize in wearing bulky, spiked armor and throwing themselves into combat, striking with their body itself and giving themselves over to the fury of battle."
+  },
+  "Barbarian.subclass.Path of the Ancestral Guardian": {
+    "description": "Some barbarians hail from cultures that revere their ancestors. These tribes teach that the warriors of the past linger in the world as mighty spirits, who can guide and protect the living."
+  },
+  "Barbarian.subclass.Path of the Storm Herald": {
+    "description": "When this effect is activated, all other creatures in your aura take 2 fire damage each. The damage increases when you reach certain levels in this class, increasing to 3 at 5th level, 4 at 10th level, 5 at 15th level, and 6 at 20th level."
+  },
+  "Barbarian.subclass.Path of the Zealot": {
+    "description": "Rage in Ecstatic Union with a God Barbarians who walk the Path of the Zealot receive boons from a god or pantheon. These Barbarians experience their Rage as an ecstatic episode of divine union that infuses them with power."
+  },
+  "Barbarian.subclass.Path of the Beast": {
+    "description": "Barbarians who walk the Path of the Beast draw their rage from a bestial spark burning within their souls. That beast bursts forth in the throes of rage, physically transforming the barbarian. Such a barbarian might be inhabited by a primal spirit or be descended from shape-shifters."
+  },
+  "Barbarian.subclass.Path of Wild Magic": {
+    "description": "Many places in the multiverse abound with beauty, intense emotion, and rampant magic; the Feywild, the Upper Planes, and other realms of supernatural power radiate with such forces and can profoundly influence people."
+  },
+  "Barbarian.subclass.Path of the Giant": {
+    "description": "When you choose this path, you learn to speak, read, and write Giant or one other language of your choice if you already know Giant. Additionally, you learn a cantrip of your choice: either druidcraft or thaumaturgy."
+  },
+  "Barbarian.subclass.Path of the Wild Heart": {
+    "description": "Walk in Community with the Animal World Barbarians who follow the Path of the Wild Heart view themselves as kin to animals. These Barbarians learn magical means to communicate with animals, and their Rage heightens their connection to animals as it fills them with supernatural might."
+  },
+  "Barbarian.subclass.Path of the World Tree": {
+    "description": "Trace the Roots and Branches of the Multiverse Barbarians who follow the Path of the World Tree connect with the cosmic tree Yggdrasil through their Rage. This tree grows among the Outer Planes, connecting them to each other and the Material Plane."
+  },
+  "Bard": {
+    "description": "An inspiring magician whose power echoes the music of creation."
+  },
+  "Bard.subclass.College of Lore": {
+    "description": "Plumb the Depths of Magical Knowledge Bards of the College of Lore collect spells and secrets from diverse sources, such as scholarly tomes, mystical rites, and peasant tales. The college's members gather in libraries and universities to share their lore with one another."
+  },
+  "Bard.subclass.College of Valor": {
+    "description": "Sing the Deeds of Ancient Heroes Bards of the College of Valor are daring storytellers whose tales preserve the memory of the great heroes of the past. These Bards sing the deeds of the mighty in vaulted halls or to crowds gathered around great bonfires."
+  },
+  "Bard.subclass.College of Glamour": {
+    "description": "Weave Beguiling Fey Magic The College of Glamour traces its origins to the beguiling magic of the Feywild. Bards who study this magic weave threads of beauty and terror into their songs and stories, and the mightiest among them can cloak themselves in otherworldly majesty."
+  },
+  "Bard.subclass.College of Swords": {
+    "description": "Bards of the College of Swords are called blades, and they entertain through daring feats of weapon prowess. Blades perform stunts such as sword swallowing, knife throwing and juggling, and mock combats."
+  },
+  "Bard.subclass.College of Whispers": {
+    "description": "Most folk are happy to welcome a bard into their midst. Bards of the College of Whispers use this to their advantage. They appear to be like other bards, sharing news, singing songs, and telling tales to the audiences they gather."
+  },
+  "Bard.subclass.College of Creation": {
+    "description": "Bards believe the cosmos is a work of art-the creation of the first dragons and gods. That creative work included harmonies that continue to resound through existence today, a power known as the Song of Creation."
+  },
+  "Bard.subclass.College of Eloquence": {
+    "description": "Adherents of the College of Eloquence master the art of oratory. Persuasion is regarded as a high art, and a well-reasoned, well-spoken argument often proves more persuasive than facts."
+  },
+  "Bard.subclass.College of Spirits": {
+    "description": "Bards of the College of Spirits seek tales with inherent power—be they legends, histories, or fictions—and bring their subjects to life. Using occult trappings, these bards conjure spiritual embodiments of powerful forces to change the world once more."
+  },
+  "Bard.subclass.College of Dance": {
+    "description": "Move in Harmony with the Cosmos Bards of the College of Dance know that the Words of Creation can't be contained within speech or song; the words are uttered by the movements of celestial bodies and flow through the motions of the smallest creatures."
+  },
+  "Bard.subclass.College of the Moon": {
+    "description": "Inspire Allies with Primal Tales The College of the Moon traces its origins to the ancient druidic circles of the Moonshae Isles, who entrusted the first Bards of this tradition with chronicling the stories of the islands and their people."
+  },
+  "Cleric": {
+    "description": "A priestly champion who wields divine magic in service of a higher power."
+  },
+  "Cleric.subclass.Knowledge Domain": {
+    "description": "The gods of knowledge—including Oghma, Boccob, Gilean, Aureon, and Thoth—value learning and understanding above all. Some teach that knowledge is to be gathered and shared in libraries and universities, or promote the practical knowledge of craft and invention."
+  },
+  "Cleric.subclass.Life Domain": {
+    "description": "Soothe the Hurts of the World The Life Domain focuses on the positive energy that helps sustain all life in the multiverse. Clerics who tap into this domain are masters of healing, using that life force to cure many hurts."
+  },
+  "Cleric.subclass.Light Domain": {
+    "description": "Bring Light to Banish Darkness The Light Domain emphasizes the divine power to bring about blazing fire and revelation. Clerics who wield this power are enlightened souls infused with radiance and the power of their deities' discerning vision, charged with chasing away lies and burning away darkness. The Light Domain is associated with gods of truth, vigilance, beauty, insight, and renewal."
+  },
+  "Cleric.subclass.Nature Domain": {
+    "description": "Gods of nature are as varied as the natural world itself, from inscrutable gods of the deep forests (such as Silvanus, Obad-Hai, Chislev, Balinor, and Pan) to friendly deities associated with particular springs and groves (such as Eldath)."
+  },
+  "Cleric.subclass.Tempest Domain": {
+    "description": "Gods whose portfolios include the Tempest domain—including Talos, Umberlee, Kord, Zeboim, the Devourer, Zeus, and Thor—govern storms, sea, and sky. They include gods of lightning and thunder, gods of earthquakes, some fire gods, and certain gods of violence, physical strength, and courage."
+  },
+  "Cleric.subclass.Trickery Domain": {
+    "description": "Make Mischief and Challenge Authority The Trickery Domain offers magic of deception, illusion, and stealth. Clerics who wield this magic are a disruptive force in the world, puncturing pride, mocking tyrants, freeing captives, and flouting hollow traditions."
+  },
+  "Cleric.subclass.War Domain": {
+    "description": "Inspire Valor and Smite Foes War has many manifestations. It can make heroes of ordinary people. It can be desperate and horrific, with acts of cruelty and cowardice eclipsing instances of excellence and courage."
+  },
+  "Cleric.subclass.Death Domain": {
+    "description": "The Death domain is concerned with the forces that cause death, as well as the negative energy that gives rise to undead creatures. Deities such as Chemosh, Myrkul, and Wee Jas are patrons of necromancers, death knights, liches, mummy lords, and vampires."
+  },
+  "Cleric.subclass.Arcana Domain": {
+    "description": "Magic is an energy that suffuses the multiverse and that fuels both destruction and creation. Gods of the Arcana domain know the secrets and potential of magic intimately."
+  },
+  "Cleric.subclass.Ambition Domain (PSA)": {
+    "description": "Bontu has fully embraced this dictum, and though she expends little effort in teaching it, she surely leads by example. Her viziers subtly plant the seeds that flower into the ambition the God-Pharaoh desires."
+  },
+  "Cleric.subclass.Knowledge Domain (PSA)": {
+    "description": "Kefnet's task is to pass on this teaching of the God-Pharaoh and elucidate its meaning. He teaches that the afterlife will be inhabited only by those who have proved by their wits that they are worthy of dwelling in the glorious presence of the God-Pharaoh."
+  },
+  "Cleric.subclass.Solidarity Domain (PSA)": {
+    "description": "Oketra is charged with expounding upon this teaching of the God-Pharaoh, instilling in every initiate the virtue of solidarity. She forges each group of children into a crop of acolytes with just one purpose: to be judged worthy of a glorious afterlife."
+  },
+  "Cleric.subclass.Strength Domain (PSA)": {
+    "description": "It falls to Rhonas to instill this teaching in those who would enter the afterlife—but to his mind, the words themselves don't matter. Strength can't be taught. It must be built through practice and training."
+  },
+  "Cleric.subclass.Zeal Domain (PSA)": {
+    "description": "The God-Pharaoh expects those he welcomes into the afterlife to desire it above all other pleasures and achievements, and for them to show their dedication, passion, and fervor through their actions."
+  },
+  "Cleric.subclass.Forge Domain": {
+    "description": "The gods of the forge are patrons of artisans who work with metal, from a humble blacksmith who keeps a village in horseshoes and plow blades to the mighty elf artisan whose diamond-tipped arrows of mithral have felled demon lords."
+  },
+  "Cleric.subclass.Grave Domain": {
+    "description": "Gods of the grave watch over the line between life and death. To these deities, death and the afterlife are a foundational part of the multiverse. To desecrate the peace of the dead is an abomination."
+  },
+  "Cleric.subclass.Order Domain": {
+    "description": "The Order Domain represents discipline, as well as devotion to a society or an institution and strict obedience to the laws governing it. On Ravnica, the domain is favored by clerics of the Azorius Senate, who use it to maintain and enforce the law, and of the Orzhov Syndicate, who exploit law and order for their personal gain."
+  },
+  "Cleric.subclass.Peace Domain": {
+    "description": "The balm of peace thrives at the heart of healthy communities, between friendly nations, and in the souls of the kindhearted. The gods of peace inspire people of all sorts to resolve conflict and to stand up against those forces that try to prevent peace from flourishing."
+  },
+  "Cleric.subclass.Twilight Domain": {
+    "description": "The twilit transition from light into darkness often brings calm and even joy, as the day's labors end and the hours of rest begin. The darkness can also bring terrors, but the gods of twilight guard against the horrors of the night."
+  },
+  "Druid": {
+    "description": "A priest of the Old Faith, wielding the powers of nature and adopting animal forms."
+  },
+  "Druid.subclass.Circle of the Land": {
+    "description": "Celebrate Connection to the Natural World The Circle of the Land comprises mystics and sages who safeguard ancient knowledge and rites. These Druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic."
+  },
+  "Druid.subclass.Circle of the Moon": {
+    "description": "You can channel lunar magic when you assume a Wild Shape form, granting you the benefits below. Challenge Rating: The maximum Challenge Rating for the form equals your Druid level divided by 3 (round down)."
+  },
+  "Druid.subclass.Circle of Dreams": {
+    "description": "Druids who are members of the Circle of Dreams hail from regions that have strong ties to the Feywild and its dreamlike realms. The druids' guardianship of the natural world makes for a natural alliance between them and good-aligned fey. These druids seek to fill the world with dreamy wonder."
+  },
+  "Druid.subclass.Circle of the Shepherd": {
+    "description": "Druids of the Circle of the Shepherd commune with the spirits of nature, especially the spirits of beasts and the fey, and call to those spirits for aid."
+  },
+  "Druid.subclass.Circle of Spores": {
+    "description": "Druids of the Circle of Spores find beauty in decay. They see within mold and other fungi the ability to transform lifeless material into abundant, albeit somewhat strange, life. These druids believe that life and death are parts of a grand cycle, with one leading to the other and then back again."
+  },
+  "Druid.subclass.Circle of Wildfire": {
+    "description": "Druids within the Circle of Wildfire understand that destruction is sometimes the precursor of creation, such as when a forest fire promotes later growth."
+  },
+  "Druid.subclass.Circle of the Sea": {
+    "description": "Become One with Tides and Storms Druids of the Circle of the Sea draw on the tempestuous forces of oceans and storms. Some view themselves as embodiments of nature's wrath, seeking vengeance against those who despoil nature."
+  },
+  "Druid.subclass.Circle of the Stars": {
+    "description": "Harness Secrets Hidden in Constellations The Circle of the Stars has tracked heavenly patterns since time immemorial, discovering secrets hidden amid the constellations. By understanding these secrets, the Druids of this circle seek to harness the powers of the cosmos."
+  },
+  "Fighter": {
+    "description": "A master of martial combat, skilled with a variety of weapons and armor."
+  },
+  "Fighter.subclass.Battle Master": {
+    "description": "Master Sophisticated Battle Maneuvers Battle Masters are students of the art of battle, learning martial techniques passed down through generations. The most accomplished Battle Masters are well-rounded figures who combine their carefully honed combat skills with academic study in the fields of history, theory, and the arts."
+  },
+  "Fighter.subclass.Champion": {
+    "description": "Pursue Physical Excellence in Combat A Champion focuses on the development of martial prowess in a relentless pursuit of victory. Champions combine rigorous training with physical excellence to deal devastating blows, withstand peril, and garner glory."
+  },
+  "Fighter.subclass.Eldritch Knight": {
+    "description": "Support Combat Skills with Arcane Magic Eldritch Knights combine the martial mastery common to all Fighters with a careful study of magic. Their spells both complement and extend their combat skills, providing additional protection to shore up their armor and also allowing them to engage many foes at once with explosive magic."
+  },
+  "Fighter.subclass.Purple Dragon Knight (Banneret)": {
+    "description": "Purple Dragon Knights are warriors who hail from the kingdom of Cormyr. Pledged to protect the crown, they take the fight against evil beyond the kingdom's borders."
+  },
+  "Fighter.subclass.Arcane Archer": {
+    "description": "An Arcane Archer studies a unique elven method of archery that weaves magic into attacks to produce supernatural effects. Arcane Archers are some of the most elite warriors among the elves."
+  },
+  "Fighter.subclass.Cavalier": {
+    "description": "The archetypal Cavalier excels at mounted combat. Usually born among the nobility and raised at court, a Cavalier is equally at home leading a cavalry charge or exchanging repartee at a state dinner."
+  },
+  "Fighter.subclass.Samurai": {
+    "description": "The Samurai is a fighter who draws on an implacable fighting spirit to overcome enemies. A Samurai's resolve is nearly unbreakable, and the enemies in a Samurai's path have two choices: yield or die fighting."
+  },
+  "Fighter.subclass.Echo Knight": {
+    "description": "A mysterious and feared frontline warrior of the Kryn Dynasty, the Echo Knight has mastered the art of using dunamis to summon the fading shades of unrealized timelines to aid them in battle."
+  },
+  "Fighter.subclass.Psi Warrior": {
+    "description": "Augment Physical Might with Psionic Power Psi Warriors awaken the power of their minds to augment their physical might. They harness this psionic power to infuse their weapon strikes, lash out with telekinetic energy, and create barriers of mental force."
+  },
+  "Fighter.subclass.Rune Knight": {
+    "description": "Rune Knights enhance their martial prowess using the supernatural power of runes, an ancient practice that originated with giants. Rune cutters can be found among any family of giants, and you likely learned your methods first or second hand from such a mystical artisan."
+  },
+  "Fighter.subclass.Banneret": {
+    "description": "Rally Fellow Heroes with Inspiring Leadership Bannerets are paragons of valor and leadership who protect the innocent and rally fellow adventurers to the causes of justice and freedom. Many are knights serving in Cormyr, the Silver Marches, Damara, Chessenta, or other lands across Faerûn."
+  },
+  "Monk": {
+    "description": "A master of martial arts, harnessing the power of the body in pursuit of physical and spiritual perfection."
+  },
+  "Monk.subclass.Way of the Long Death": {
+    "description": "Monks of the Way of the Long Death are obsessed with the meaning and mechanics of dying. They capture creatures and prepare elaborate experiments to capture, record, and understand the moments of their demise."
+  },
+  "Monk.subclass.Way of the Drunken Master": {
+    "description": "The Way of the Drunken Master teaches its students to move with the jerky, unpredictable movements of a drunkard. A drunken master sways, tottering on unsteady feet, to present what seems like an incompetent combatant who proves frustrating to engage."
+  },
+  "Monk.subclass.Way of the Kensei": {
+    "description": "If you make an unarmed strike as part of the Attack action on your turn and are holding a kensei weapon, you can use it to defend yourself if it is a melee weapon. You gain a +2 bonus to AC until the start of your next turn, while the weapon is in your hand and you aren't incapacitated."
+  },
+  "Monk.subclass.Way of the Sun Soul": {
+    "description": "Monks of the Way of the Sun Soul learn to channel their life energy into searing bolts of light. They teach that meditation can unlock the ability to unleash the indomitable light shed by the soul of every living creature."
+  },
+  "Monk.subclass.Way of the Astral Self": {
+    "description": "A monk who follows the Way of the Astral Self believes their body is an illusion. They see their ki as a representation of their true form, an astral self."
+  },
+  "Monk.subclass.Way of the Ascendant Dragon": {
+    "description": "The dragon god Bahamut is known to travel the Material Plane in the guise of a young monk, and legend says that he founded the first monastery of the Way of the Ascendant Dragon in this guise."
+  },
+  "Monk.subclass.Warrior of Mercy": {
+    "description": "Manipulate Forces of Life and Death Warriors of Mercy manipulate the life force of others. These Monks are wandering physicians, but they bring a swift end to their enemies. They often wear masks, presenting themselves as faceless bringers of life and death."
+  },
+  "Monk.subclass.Warrior of Shadow": {
+    "description": "You have learned to draw on the power of the Shadowfell, gaining the following benefits."
+  },
+  "Monk.subclass.Warrior of the Elements": {
+    "description": "At the start of your turn, you can expend 1 Focus Point to imbue yourself with elemental energy. The energy lasts for 10 minutes or until you have the Incapacitated condition. You gain the following benefits while this feature is active."
+  },
+  "Monk.subclass.Warrior of the Open Hand": {
+    "description": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target. Addle: The target can't make Opportunity Attack until the start of its next turn."
+  },
+  "Paladin": {
+    "description": "A holy warrior bound to a sacred oath."
+  },
+  "Paladin.subclass.Oath of Devotion": {
+    "description": "Uphold the Ideals of Justice and Order The Oath of Devotion binds Paladins to the ideals of justice and order. These Paladins meet the archetype of the knight in shining armor."
+  },
+  "Paladin.subclass.Oath of the Ancients": {
+    "description": "The Oath of the Ancients is as old as the first elves and the rituals of druids. Paladins who swear this oath cast their lot with the side of light in the cosmic struggle against darkness."
+  },
+  "Paladin.subclass.Oath of Vengeance": {
+    "description": "Punish Evildoers at Any Cost. The Oath of Vengeance is a solemn commitment to punish those who have committed grievously evil acts. When evil armies slaughter helpless villagers, when a tyrant defies the will of the gods, when a thieves' guild grows too violent, when a dragon rampages through the countryside—at times like these, paladins arise and swear an Oath of Vengeance to set right what has gone wrong. The tenets of the Oath of Vengeance are: Show the wicked no mercy. Fight injustice and its causes. Aid those harmed by injustice."
+  },
+  "Paladin.subclass.Oathbreaker": {
+    "description": "An Oathbreaker is a paladin who breaks his or her sacred oaths to pursue some dark ambition or serve an evil power. Whatever light burned in the paladin's heart has been extinguished. Only darkness remains. A paladin must be evil and at least 3rd level to become an Oathbreaker."
+  },
+  "Paladin.subclass.Oath of the Crown": {
+    "description": "The Oath of the Crown is sworn to the ideals of civilization, be it the spirit of a nation, fealty to a sovereign, or service to a deity of law and rulership. The paladins who swear this oath dedicate themselves to serving society and, in particular, the laws that hold society together."
+  },
+  "Paladin.subclass.Oath of Conquest": {
+    "description": "The Oath of Conquest calls to paladins who seek glory in battle and the subjugation of their enemies. It isn't enough for these paladins to establish order. They must crush the forces of chaos."
+  },
+  "Paladin.subclass.Oath of Redemption": {
+    "description": "The Oath of Redemption sets a paladin on a difficult path, one that requires a holy warrior to use violence only as a last resort. Paladins who dedicate themselves to this oath believe that any person can be redeemed and that the path of benevolence and justice is one that anyone can walk."
+  },
+  "Paladin.subclass.Oath of Glory": {
+    "description": "Paladins who take the Oath of Glory believe they and their companions are destined to achieve glory through deeds of heroism. They train diligently and encourage their companions so they're all ready when destiny calls."
+  },
+  "Paladin.subclass.Oath of the Watchers": {
+    "description": "The Oath of the Watchers binds paladins to protect mortal realms from the predations of extraplanar creatures, many of which can lay waste to mortal soldiers. Thus, the Watchers hone their minds, spirits, and bodies to be the ultimate weapons against such threats."
+  },
+  "Paladin.subclass.Oath of the Noble Genies": {
+    "description": "Earth rises up around the target of your Divine Smite. The target has the Grappled condition (escape DC equal to your spell save DC). While Grappled, the target has the Restrained condition."
+  },
+  "Ranger": {
+    "description": "A warrior who combats threats on the edges of civilization."
+  },
+  "Ranger.subclass.Beast Master": {
+    "description": "Bond with a Primal Beast A Beast Master forms a mystical bond with a special animal, drawing on primal magic and a deep connection to the natural world."
+  },
+  "Ranger.subclass.Hunter": {
+    "description": "Protect Nature and People from Destruction You stalk prey in the wilds and elsewhere, using your abilities as a Hunter to protect nature and people everywhere from forces that would destroy them."
+  },
+  "Ranger.subclass.Gloom Stalker": {
+    "description": "You have mastered the art of creating fearsome ambushes, granting you the following benefits. Ambusher's Leap: At the start of your first turn of each combat, your Speed increases by 10 feet until the end of that turn."
+  },
+  "Ranger.subclass.Horizon Walker": {
+    "description": "Horizon Walkers guard the world against threats that originate from other planes or that seek to ravage the mortal realm with otherworldly magic. They seek out planar portals and keep watch over them, venturing to the Inner Planes and the Outer Planes as needed to pursue their foes."
+  },
+  "Ranger.subclass.Monster Slayer": {
+    "description": "You have dedicated yourself to hunting down creatures of the night and wielders of grim magic. A Monster Slayer seeks out vampires, dragons, evil fey, fiends, and other magical threats."
+  },
+  "Ranger.subclass.Fey Wanderer": {
+    "description": "Wield Fey Mirth and Fury A fey mystique surrounds you, thanks to the boon of an archfey or a location in the Feywild that transformed you. However you gained fey magic, you are now a Fey Wanderer."
+  },
+  "Ranger.subclass.Swarmkeeper": {
+    "description": "Feeling a deep connection to the environment around them, some rangers reach out through their magical connection to the world and bond with a swarm of nature spirits. The swarm becomes a potent force in battle, as well as helpful company for the ranger."
+  },
+  "Ranger.subclass.Drakewarden": {
+    "description": "Your connection to the natural world takes the form of a draconic spirit, which can manifest in physical form as a drake. As your powers grow, your drake grows as well, blossoming from a small four-legged companion to a majestic winged creature large and strong enough for you to ride."
+  },
+  "Ranger.subclass.Winter Walker": {
+    "description": "You gain the following benefits. Biting Cold: Damage from your weapon attacks, Ranger spells, and Ranger features ignores Resistance to Cold damage. Frost Resistance: You have Resistance to Cold damage."
+  },
+  "Rogue": {
+    "description": "A scoundrel who uses stealth and trickery to overcome obstacles and enemies."
+  },
+  "Rogue.subclass.Arcane Trickster": {
+    "description": "Enhance Stealth with Arcane Spells Some Rogues enhance their fine-honed skills of stealth and agility with spells, learning magical tricks to aid them in their trade. Some Arcane Tricksters use their talents as pickpockets and burglars, while others are pranksters."
+  },
+  "Rogue.subclass.Assassin": {
+    "description": "Practice the Grim Art of Death An Assassin's training focuses on using stealth, poison, and disguise to eliminate foes with deadly efficiency. While some Rogues who follow this path are hired killers, spies, or bounty hunters, the capabilities of this subclass are equally useful for adventurers facing a variety of monstrous enemies."
+  },
+  "Rogue.subclass.Thief": {
+    "description": "As a Bonus Action, you can do one of the following. Sleight of Hand: Make a Dexterity (Sleight of Hand) check to pick a lock or disarm a trap with Thieves' Tools or to pick a pocket. Use an Object: Take the Utilize action, or take the Magic action to use a magic item that requires that action."
+  },
+  "Rogue.subclass.Inquisitive": {
+    "description": "As an archetypal Inquisitive, you excel at rooting out secrets and unraveling mysteries. You rely on your sharp eye for detail, but also on your finely honed ability to read the words and deeds of other creatures to determine their true intent."
+  },
+  "Rogue.subclass.Mastermind": {
+    "description": "Your focus is on people and on the influence and secrets they have. Many spies, courtiers, and schemers follow this archetype, leading lives of intrigue. Words are your weapons as often as knives or poison, and secrets and favors are some of your favorite treasures."
+  },
+  "Rogue.subclass.Scout": {
+    "description": "You are skilled in stealth and surviving far from the streets of a city, allowing you to scout ahead of your companions during expeditions. Rogues who embrace this archetype are at home in the wilderness and among barbarians and rangers, and many Scouts serve as the eyes and ears of war bands."
+  },
+  "Rogue.subclass.Swashbuckler": {
+    "description": "You focus your training on the art of the blade, relying on speed, elegance, and charm in equal parts. While some warriors are brutes clad in heavy armor, your method of fighting looks almost like a performance. Duelists and pirates typically belong to this archetype."
+  },
+  "Rogue.subclass.Phantom": {
+    "description": "Many rogues walk a fine line between life and death, risking their own lives and taking the lives of others. While adventuring on that line, some rogues discover a mystical connection to death itself."
+  },
+  "Rogue.subclass.Soulknife": {
+    "description": "Strike Foes with Psionic Blades A Soulknife strikes with the mind, cutting through barriers both physical and psychic. These Rogues discover psionic power within themselves and channel it to do their roguish work."
+  },
+  "Rogue.subclass.Scion of the Three": {
+    "description": "When an enemy you can see within 30 feet of yourself takes damage and is Bloodied after taking that damage but not killed outright, you can take a Reaction and Teleportation to an unoccupied space you can see within 5 feet of that enemy. You can then make one melee attack."
+  },
+  "Sorcerer": {
+    "description": "A spellcaster who draws on inherent magic from a gift or bloodline."
+  },
+  "Sorcerer.subclass.Pyromancer (PSK)": {
+    "description": "Your innate magic manifests in fire. You are your fire, and your fire is you."
+  },
+  "Sorcerer.subclass.Divine Soul": {
+    "description": "Sometimes the spark of magic that fuels a sorcerer comes from a divine source that glimmers within the soul. Having such a blessed soul is a sign that your innate magic might come from a distant but powerful familial connection to a divine being."
+  },
+  "Sorcerer.subclass.Shadow Magic": {
+    "description": "You are a creature of shadow, for your innate magic comes from the Shadowfell itself. You might trace your lineage to an entity from that place, or perhaps you were exposed to its fell energy and transformed by it. The power of shadow magic casts a strange pall over your physical presence."
+  },
+  "Sorcerer.subclass.Storm Sorcery": {
+    "description": "Your innate magic comes from the power of elemental air. Many with this power can trace their magic back to a near-death experience caused by the Great Rain, but perhaps you were born during a howling gale so powerful that folk still tell stories of it, or your lineage might include the influence of potent air creatures such as djinn."
+  },
+  "Sorcerer.subclass.Lunar Sorcery": {
+    "description": "On many worlds, the moon is a revered celestial body with magical properties. On Krynn, the gods of magic are associated with the world's three moons. On the world of Toril, the god Selûne uses the light of the moon to battle darkness."
+  },
+  "Sorcerer.subclass.Aberrant Sorcery": {
+    "description": "Wield Unnatural Psionic Power An alien influence has wrapped its tendrils around your mind, giving you psionic power. You can now touch other minds with that power and alter the world around you."
+  },
+  "Sorcerer.subclass.Clockwork Sorcery": {
+    "description": "Channel Cosmic Forces of Order The cosmic force of order has suffused you with magic. That power arises from Mechanus or a realm like it—a plane of existence shaped entirely by clockwork efficiency."
+  },
+  "Sorcerer.subclass.Draconic Sorcery": {
+    "description": "Breathe the Magic of Dragons Your innate magic comes from the gift of a dragon. Perhaps an ancient dragon facing death bequeathed some of its magical power to you or your ancestor. You might have absorbed magic from a site infused with dragons' power."
+  },
+  "Sorcerer.subclass.Wild Magic Sorcery": {
+    "description": "Unleash Chaotic Magic Your innate magic stems from the forces of chaos that underlie the order of creation. You or an ancestor might have endured exposure to raw magic, perhaps through a planar portal leading to Limbo or the Elemental Planes."
+  },
+  "Sorcerer.subclass.Spellfire Sorcery": {
+    "description": "You or one creature you can see within 30 feet of yourself gains Temporary Hit Points equal to 1d4 plus your Charisma modifier."
+  },
+  "Warlock": {
+    "description": "A wielder of magic derived from a bargain with an extraplanar entity."
+  },
+  "Warlock.subclass.The Undying": {
+    "description": "Death holds no sway over your patron, who has unlocked the secrets of everlasting life, although such a prize—like all power—comes at a price. Once mortal, the Undying has seen mortal lifetimes pass like the seasons, like the flicker of endless days and nights."
+  },
+  "Warlock.subclass.The Hexblade": {
+    "description": "You have made your pact with a mysterious entity from the Shadowfell—a force that manifests in sentient magic weapons carved from the stuff of shadow. The mighty sword Blackrazor is the most notable of these weapons, which have been spread across the multiverse over the ages."
+  },
+  "Warlock.subclass.The Fathomless": {
+    "description": "You have plunged into a pact with the deeps. An entity of the ocean, the Elemental Plane of Water, or another otherworldly sea now allows you to draw on its thalassic power."
+  },
+  "Warlock.subclass.The Genie": {
+    "description": "You have made a pact with one of the rarest kinds of genie, a noble genie. Such entities rule vast fiefs on the Elemental Planes and have great influence over lesser genies and elemental creatures. Noble genies are varied in their motivations, but most are arrogant and wield power that rivals that of lesser deities."
+  },
+  "Warlock.subclass.The Undead": {
+    "description": "You've made a pact with a deathless being, a creature that defies the cycle and life and death, forsaking its mortal shell so it might eternally pursue its unfathomable ambitions."
+  },
+  "Warlock.subclass.Archfey Patron": {
+    "description": "Bargain with Whimsical Fey Your pact draws on the power of the Feywild. When you choose this subclass, you might make a deal with an archfey, such as the Prince of Frost; the Queen of Air and Darkness, ruler of the Gloaming Court; Titania of the Summer Court; or an ancient hag."
+  },
+  "Warlock.subclass.Celestial Patron": {
+    "description": "Call on the Power of the Heavens Your pact draws on the Upper Planes, the realms of everlasting bliss. You might enter an agreement with an empyrean, a couatl, a sphinx, a unicorn, or another heavenly entity. Or you might call on numerous such beings as you pursue goals aligned with theirs."
+  },
+  "Warlock.subclass.Fiend Patron": {
+    "description": "Make a Deal with the Lower Planes Your pact draws on the Lower Planes, the realms of perdition. You might forge a bargain with a demon lord such as Demogorgon or Orcus; an archdevil such as Asmodeus; or a pit fiend, balor, yugoloth, or night hag that is especially mighty."
+  },
+  "Warlock.subclass.Great Old One Patron": {
+    "description": "Unearth Forbidden Lore of Ineffable Beings When you choose this subclass, you might bind yourself to an unspeakable being from the Far Realm or an elder god—a being such as Tharizdun, the Chained God; Zargon, the Returner; Hadar, the Dark Hunger; or Great Cthulhu."
+  },
+  "Warlock.subclass.The Genie (Dao)": {
+    "description": "You have made a pact with one of the rarest kinds of genie, a noble genie. Such entities rule vast fiefs on the Elemental Planes and have great influence over lesser genies and elemental creatures. Noble genies are varied in their motivations, but most are arrogant and wield power that rivals that of lesser deities."
+  },
+  "Warlock.subclass.The Genie (Djinni)": {
+    "description": "You have made a pact with one of the rarest kinds of genie, a noble genie. Such entities rule vast fiefs on the Elemental Planes and have great influence over lesser genies and elemental creatures. Noble genies are varied in their motivations, but most are arrogant and wield power that rivals that of lesser deities."
+  },
+  "Warlock.subclass.The Genie (Efreeti)": {
+    "description": "You have made a pact with one of the rarest kinds of genie, a noble genie. Such entities rule vast fiefs on the Elemental Planes and have great influence over lesser genies and elemental creatures. Noble genies are varied in their motivations, but most are arrogant and wield power that rivals that of lesser deities."
+  },
+  "Warlock.subclass.The Genie (Marid)": {
+    "description": "You have made a pact with one of the rarest kinds of genie, a noble genie. Such entities rule vast fiefs on the Elemental Planes and have great influence over lesser genies and elemental creatures. Noble genies are varied in their motivations, but most are arrogant and wield power that rivals that of lesser deities."
+  },
+  "Wizard": {
+    "description": "A scholarly magic-user capable of manipulating the structures of reality."
+  },
+  "Wizard.subclass.School of Conjuration": {
+    "description": "As a conjurer, you favor spells that produce objects and creatures out of thin air. You can conjure billowing clouds of killing fog or summon creatures from elsewhere to fight on your behalf."
+  },
+  "Wizard.subclass.School of Enchantment": {
+    "description": "As a member of the School of Enchantment, you have honed your ability to magically entrance and beguile other people and monsters. Some enchanters are peacemakers who bewitch the violent to lay down their arms and charm the cruel into showing mercy."
+  },
+  "Wizard.subclass.School of Necromancy": {
+    "description": "The School of Necromancy explores the cosmic forces of life, death, and undeath. As you focus your studies in this tradition, you learn to manipulate the energy that animates all living things."
+  },
+  "Wizard.subclass.School of Transmutation": {
+    "description": "You are a student of spells that modify energy and matter. To you, the world is not a fixed thing, but eminently mutable, and you delight in being an agent of change. You wield the raw stuff of creation and learn to alter both physical forms and mental qualities."
+  },
+  "Wizard.subclass.War Magic": {
+    "description": "A variety of arcane colleges specialize in training wizards for war. The tradition of War Magic blends principles of evocation and abjuration, rather than specializing in either of those schools."
+  },
+  "Wizard.subclass.Chronurgy Magic": {
+    "description": "Focusing on the manipulation of time, those who follow the Chronurgy tradition learn to alter the pace of reality to their liking. Using the ramping of anticipatory dunamis energy, these mages can bend the flow of time as adroitly as a skilled musician plays an instrument, lending themselves and their allies an advantage in the blink of an eye."
+  },
+  "Wizard.subclass.Graviturgy Magic": {
+    "description": "Understanding and mastering the forces that draw bodies of matter together or drive them apart, the students of the Graviturgy arcane tradition learn to further bend and manipulate the violent energy of gravity to their benefit, and the terrible detriment of their enemies."
+  },
+  "Wizard.subclass.Order of Scribes": {
+    "description": "Magic of the book-that's what many folk call wizardry. The name is apt, given how much time wizards spend poring over tomes and penning theories about the nature of magic."
+  },
+  "Wizard.subclass.Abjurer": {
+    "description": "Shield Companions and Banish Foes Your study of magic is focused on spells that block, banish, or protect—ending harmful effects, banishing evil influences, and protecting the weak."
+  },
+  "Wizard.subclass.Diviner": {
+    "description": "Learn the Secrets of the Multiverse The counsel of a Diviner is sought by those who want a clearer understanding of the past, present, and future. As a Diviner, you strive to part the veils of space, time, and consciousness."
+  },
+  "Wizard.subclass.Evoker": {
+    "description": "Create Explosive Elemental Effects Your studies focus on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some Evokers find employment in military forces, serving as artillery to blast armies from afar."
+  },
+  "Wizard.subclass.Illusionist": {
+    "description": "Weave Subtle Spells of Deception You specialize in magic that dazzles the senses and tricks the mind, and the illusions you craft make the impossible seem real."
+  },
+  "Wizard.subclass.Bladesinger": {
+    "description": "Wield Weapon and Wizardry in Elegant Tandem Bladesingers master a tradition of wizardry that incorporates swordplay and dance. In combat, a Bladesinger uses intricate, elegant maneuvers that fend off harm and allow the Bladesinger to channel magic into devastating attacks and a cunning defense."
+  }
+}

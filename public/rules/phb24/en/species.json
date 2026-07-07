@@ -1,0 +1,50 @@
+{
+  "Aasimar": {
+    "description": "Aasimar bear within their souls the light of the heavens, granting them celestial power and a touch of the divine."
+  },
+  "Dragonborn": {
+    "description": "Born of dragons, dragonborn walk proudly through a world that greets them with fearful incomprehension."
+  },
+  "Drow": {
+    "description": "Drow are elves of the Underdark, known for their innate magic and superior darkvision."
+  },
+  "Dwarf": {
+    "description": "Dwarves are solidly built, with broad shoulders and thick frames. They are known for their resilience, craftsmanship, and connection to stone."
+  },
+  "Forest Gnome": {
+    "description": "As a forest gnome, you have a natural knack for illusion and an inherent connection to small beasts."
+  },
+  "Goliath": {
+    "description": "Goliaths are towering, powerful people descended from giants, driven by competition and a desire to prove themselves."
+  },
+  "Halfling": {
+    "description": "Halflings are small, practical folk who enjoy the comforts of home but can rise to remarkable bravery when called upon."
+  },
+  "High Elf": {
+    "description": "As a high elf, you have a keen mind and a mastery of at least the basics of magic."
+  },
+  "Human": {
+    "description": "Humans are the most adaptable and ambitious people among the common races. Whatever drives them, humans are the innovators, the achievers, and the pioneers of the worlds."
+  },
+  "Orc": {
+    "description": "Orcs are hardy, powerful people who trace their creation to Gruumsh. They are known for their endurance and ferocity."
+  },
+  "Rock Gnome": {
+    "description": "As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes."
+  },
+  "Tiefling": {
+    "description": "Tieflings are derived from human bloodlines touched by the Lower Planes, bearing an infernal, abyssal, or chthonic legacy."
+  },
+  "Tiefling (Abyssal)": {
+    "description": "Your fiendish legacy connects you to the Abyss, granting poison resistance and toxic spellcasting."
+  },
+  "Tiefling (Chthonic)": {
+    "description": "Your fiendish legacy connects you to the Underdark's deepest reaches, granting necrotic resistance and deathly spellcasting."
+  },
+  "Tiefling (Infernal)": {
+    "description": "Your fiendish legacy connects you to the Nine Hells, granting fire resistance and infernal spellcasting."
+  },
+  "Wood Elf": {
+    "description": "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly and stealthily through your native forests."
+  }
+}

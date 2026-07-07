@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Languages (Boggart)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Languages (Flamekin)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Primordial = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Languages (Lorwyn Changeling)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Languages (Rimekin)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Primordial = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Fury of the Small",
+    "assign": [
+      {
+        "expr": "POINTS.`Fury of the Small`.MAX = PROF.BONUS",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Nimble Escape"
+  },
+  {
+    "name": "Reach to the Blaze"
+  },
+  {
+    "name": "Shape Self"
+  },
+  {
+    "name": "Delightful Imitator"
+  },
+  {
+    "name": "Unpredictable Movement"
+  },
+  {
+    "name": "Cold Fire Magic"
+  }
+]

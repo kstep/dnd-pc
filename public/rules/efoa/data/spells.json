@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Homunculus Servant",
+    "level": 2,
+    "category": "Summon",
+    "effects": [
+      {
+        "name": "Homunculus HP",
+        "expr": "5 + SLOT.LEVEL * 5",
+        "range": {
+          "Feet": 10
+        },
+        "duration": "Instant"
+      }
+    ],
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gem",
+        "price": 10000
+      }
+    }
+  }
+]

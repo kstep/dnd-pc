@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Languages (Faerie)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Fairy Magic"
+  },
+  {
+    "name": "Spider Climb"
+  },
+  {
+    "name": "Trace of Undeath",
+    "assign": [
+      {
+        "expr": "RESIST.NECRO = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Vampiric Bite",
+    "assign": [
+      {
+        "expr": "POINTS.`Drain`.MAX = PROF.BONUS",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "POINTS.`Strengthen`.MAX = PROF.BONUS",
+        "when": "OnCompute"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Empower",
+        "options": [
+          {
+            "name": "Drain",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Healing",
+                "expr": "1d4 + CON.MOD"
+              }
+            ]
+          },
+          {
+            "name": "Strengthen",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Bonus",
+                "expr": "1d4 + CON.MOD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

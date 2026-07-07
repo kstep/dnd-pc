@@ -1,0 +1,872 @@
+[
+  {
+    "name": "Spellcasting (Artificer)",
+    "spells": {
+      "list": {
+        "from": "spells/artificer.json"
+      }
+    },
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 2"
+      },
+      {
+        "when": "OnCompute",
+        "expr": "SPELL.CANTRIPS = tier(CLASS.LEVEL, 1:2, 10:3, 14:4); SLOT.1 = tier(CASTER.LEVEL.ARCANE, 1:2, 2:3, 3:4); SLOT.2 = tier(CASTER.LEVEL.ARCANE, 1:0, 3:2, 4:3); SLOT.3 = tier(CASTER.LEVEL.ARCANE, 1:0, 5:2, 6:3); SLOT.4 = tier(CASTER.LEVEL.ARCANE, 1:0, 7:1, 8:2, 9:3); SLOT.5 = tier(CASTER.LEVEL.ARCANE, 1:0, 9:1, 10:2, 18:3); SLOT.6 = tier(CASTER.LEVEL.ARCANE, 1:0, 11:1, 19:2); SLOT.7 = tier(CASTER.LEVEL.ARCANE, 1:0, 13:1, 20:2); SLOT.8 = tier(CASTER.LEVEL.ARCANE, 1:0, 15:1); SLOT.9 = tier(CASTER.LEVEL.ARCANE, 1:0, 17:1); SPELL.READY = tier(CLASS.LEVEL, 1:2, 2:3, 3:4, 4:5, 5:6, 7:7, 9:9, 11:10, 13:11, 15:12, 17:14, 19:15)"
+      }
+    ]
+  },
+  {
+    "name": "Tinker's Magic",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3; CASTER.COEF = 2"
+      },
+      {
+        "expr": "STICKY.`Mending` = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Replicate Magic Item",
+    "actions": [
+      {
+        "name": "Plans Known",
+        "options": [
+          {
+            "name": "Alchemy Jug",
+            "level": 2
+          },
+          {
+            "name": "Bag of Holding",
+            "level": 2
+          },
+          {
+            "name": "Cap of Water Breathing",
+            "level": 2
+          },
+          {
+            "name": "Goggles of Night",
+            "level": 2
+          },
+          {
+            "name": "Manifold Tool",
+            "level": 2
+          },
+          {
+            "name": "Repeating Shot",
+            "level": 2
+          },
+          {
+            "name": "Returning Weapon",
+            "level": 2
+          },
+          {
+            "name": "Rope of Climbing",
+            "level": 2
+          },
+          {
+            "name": "Sending Stones",
+            "level": 2
+          },
+          {
+            "name": "Shield +1",
+            "level": 2
+          },
+          {
+            "name": "Wand of Magic Detection",
+            "level": 2
+          },
+          {
+            "name": "Wand of Secrets",
+            "level": 2
+          },
+          {
+            "name": "Wand of the War Mage +1",
+            "level": 2
+          },
+          {
+            "name": "Weapon +1",
+            "level": 2
+          },
+          {
+            "name": "Wraps of Unarmed Power +1",
+            "level": 2
+          },
+          {
+            "name": "Armor +1",
+            "level": 6
+          },
+          {
+            "name": "Boots of Elvenkind",
+            "level": 6
+          },
+          {
+            "name": "Boots of the Winding Path",
+            "level": 6
+          },
+          {
+            "name": "Cloak of Elvenkind",
+            "level": 6
+          },
+          {
+            "name": "Cloak of the Manta Ray",
+            "level": 6
+          },
+          {
+            "name": "Dazzling Weapon",
+            "level": 6
+          },
+          {
+            "name": "Eyes of Charming",
+            "level": 6
+          },
+          {
+            "name": "Eyes of Minute Seeing",
+            "level": 6
+          },
+          {
+            "name": "Gloves of Thievery",
+            "level": 6
+          },
+          {
+            "name": "Helm of Awareness",
+            "level": 6
+          },
+          {
+            "name": "Lantern of Revealing",
+            "level": 6
+          },
+          {
+            "name": "Mind Sharpener",
+            "level": 6
+          },
+          {
+            "name": "Necklace of Adaptation",
+            "level": 6
+          },
+          {
+            "name": "Pipes of Haunting",
+            "level": 6
+          },
+          {
+            "name": "Repulsion Shield",
+            "level": 6
+          },
+          {
+            "name": "Ring of Swimming",
+            "level": 6
+          },
+          {
+            "name": "Ring of Water Walking",
+            "level": 6
+          },
+          {
+            "name": "Sentinel Shield",
+            "level": 6
+          },
+          {
+            "name": "Spell-Refueling Ring",
+            "level": 6
+          },
+          {
+            "name": "Wand of Magic Missiles",
+            "level": 6
+          },
+          {
+            "name": "Wand of Web",
+            "level": 6
+          },
+          {
+            "name": "Weapon of Warning",
+            "level": 6
+          },
+          {
+            "name": "Armor of Resistance",
+            "level": 10
+          },
+          {
+            "name": "Boots of Striding and Springing",
+            "level": 10
+          },
+          {
+            "name": "Boots of the Winterlands",
+            "level": 10
+          },
+          {
+            "name": "Bracers of Archery",
+            "level": 10
+          },
+          {
+            "name": "Brooch of Shielding",
+            "level": 10
+          },
+          {
+            "name": "Cloak of Protection",
+            "level": 10
+          },
+          {
+            "name": "Dagger of Venom",
+            "level": 10
+          },
+          {
+            "name": "Elven Chain",
+            "level": 10
+          },
+          {
+            "name": "Eyes of the Eagle",
+            "level": 10
+          },
+          {
+            "name": "Gauntlets of Ogre Power",
+            "level": 10
+          },
+          {
+            "name": "Gloves of Missile Snaring",
+            "level": 10
+          },
+          {
+            "name": "Gloves of Swimming and Climbing",
+            "level": 10
+          },
+          {
+            "name": "Hat of Disguise",
+            "level": 10
+          },
+          {
+            "name": "Headband of Intellect",
+            "level": 10
+          },
+          {
+            "name": "Helm of Telepathy",
+            "level": 10
+          },
+          {
+            "name": "Medallion of Thoughts",
+            "level": 10
+          },
+          {
+            "name": "Periapt of Wound Closure",
+            "level": 10
+          },
+          {
+            "name": "Pipes of the Sewers",
+            "level": 10
+          },
+          {
+            "name": "Quiver of Ehlonna",
+            "level": 10
+          },
+          {
+            "name": "Ring of Feather Falling",
+            "level": 10
+          },
+          {
+            "name": "Ring of Jumping",
+            "level": 10
+          },
+          {
+            "name": "Ring of Mind Shielding",
+            "level": 10
+          },
+          {
+            "name": "Shield +2",
+            "level": 10
+          },
+          {
+            "name": "Slippers of Spider Climbing",
+            "level": 10
+          },
+          {
+            "name": "Ventilating Lungs",
+            "level": 10
+          },
+          {
+            "name": "Wand of the War Mage +2",
+            "level": 10
+          },
+          {
+            "name": "Weapon +2",
+            "level": 10
+          },
+          {
+            "name": "Winged Boots",
+            "level": 10
+          },
+          {
+            "name": "Wraps of Unarmed Power +2",
+            "level": 10
+          },
+          {
+            "name": "Amulet of Health",
+            "level": 14
+          },
+          {
+            "name": "Arcane Propulsion Arm",
+            "level": 14
+          },
+          {
+            "name": "Armor +2",
+            "level": 14
+          },
+          {
+            "name": "Arrow-Catching Shield",
+            "level": 14
+          },
+          {
+            "name": "Belt of Hill Giant Strength",
+            "level": 14
+          },
+          {
+            "name": "Boots of Levitation",
+            "level": 14
+          },
+          {
+            "name": "Boots of Speed",
+            "level": 14
+          },
+          {
+            "name": "Bracers of Defense",
+            "level": 14
+          },
+          {
+            "name": "Cloak of the Bat",
+            "level": 14
+          },
+          {
+            "name": "Dimensional Shackles",
+            "level": 14
+          },
+          {
+            "name": "Flame Tongue",
+            "level": 14
+          },
+          {
+            "name": "Gem of Seeing",
+            "level": 14
+          },
+          {
+            "name": "Horn of Blasting",
+            "level": 14
+          },
+          {
+            "name": "Ring of Free Action",
+            "level": 14
+          },
+          {
+            "name": "Ring of Protection",
+            "level": 14
+          },
+          {
+            "name": "Ring of the Ram",
+            "level": 14
+          }
+        ]
+      },
+      {
+        "name": "Magic Items",
+        "options": {
+          "from": "Plans Known"
+        }
+      }
+    ],
+    "assign": [
+      {
+        "expr": "CHOICE.`Plans Known`.COUNT = tier(CLASS.LEVEL, 2:4, 6:5, 10:6, 14:7, 18:8)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "CHOICE.`Magic Items`.COUNT = tier(CLASS.LEVEL, 2:2, 6:3, 10:4, 14:5, 18:6)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Magic Item Tinker",
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Magic Item Tinker",
+            "action": "BonusAction"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Flash of Genius"
+  },
+  {
+    "name": "Magic Item Adept",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 4",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Spell-Storing Item"
+  },
+  {
+    "name": "Advanced Artifice",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 5",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Magic Item Master",
+    "assign": [
+      {
+        "expr": "ATTUNE.MAX = 6",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Soul of Artifice"
+  },
+  {
+    "name": "Alchemist Spells",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3"
+      },
+      {
+        "expr": "if(LEVEL >= 3, STICKY.`Healing Word` = 1; STICKY.`Ray of Sickness` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 5, STICKY.`Flaming Sphere` = 1; STICKY.`Melf's Acid Arrow` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 9, STICKY.`Gaseous Form` = 1; STICKY.`Mass Healing Word` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 13, STICKY.`Death Ward` = 1; STICKY.`Vitriolic Sphere` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 17, STICKY.`Cloudkill` = 1; STICKY.`Raise Dead` = 1)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Experimental Elixir",
+    "actions": [
+      {
+        "name": "Elixir Recipes",
+        "options": [
+          {
+            "name": "Healing"
+          },
+          {
+            "name": "Swiftness"
+          },
+          {
+            "name": "Resilience"
+          },
+          {
+            "name": "Boldness"
+          },
+          {
+            "name": "Flight"
+          }
+        ]
+      },
+      {
+        "name": "Elixirs",
+        "options": {
+          "from": "Elixir Recipes"
+        }
+      }
+    ],
+    "assign": [
+      {
+        "expr": "CHOICE.`Elixir Recipes`.COUNT = 5",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "CHOICE.`Elixirs`.COUNT = tier(CLASS.LEVEL, 3:2, 5:3, 9:4, 15:5)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Tools of the Trade"
+  },
+  {
+    "name": "Alchemical Savant"
+  },
+  {
+    "name": "Restorative Reagents"
+  },
+  {
+    "name": "Chemical Mastery",
+    "assign": [
+      {
+        "expr": "RESIST.ACID = 1; RESIST.POISON = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Arcane Armor"
+  },
+  {
+    "name": "Armor Model"
+  },
+  {
+    "name": "Armorer Spells",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3"
+      },
+      {
+        "expr": "if(LEVEL >= 3, STICKY.`Magic Missile` = 1; STICKY.`Thunderwave` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 5, STICKY.`Mirror Image` = 1; STICKY.`Shatter` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 9, STICKY.`Hypnotic Pattern` = 1; STICKY.`Lightning Bolt` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 13, STICKY.`Fire Shield` = 1; STICKY.`Greater Invisibility` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 17, STICKY.`Passwall` = 1; STICKY.`Wall of Force` = 1)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Dreadnaught"
+  },
+  {
+    "name": "Guardian"
+  },
+  {
+    "name": "Infiltrator"
+  },
+  {
+    "name": "Improved Armorer"
+  },
+  {
+    "name": "Perfected Armor"
+  },
+  {
+    "name": "Artillerist Spells",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3"
+      },
+      {
+        "expr": "if(LEVEL >= 3, STICKY.`Shield` = 1; STICKY.`Thunderwave` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 5, STICKY.`Scorching Ray` = 1; STICKY.`Shatter` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 9, STICKY.`Fireball` = 1; STICKY.`Wind Wall` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1; STICKY.`Wall of Fire` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 17, STICKY.`Cone of Cold` = 1; STICKY.`Wall of Force` = 1)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Eldritch Cannon"
+  },
+  {
+    "name": "Arcane Firearm"
+  },
+  {
+    "name": "Explosive Cannon"
+  },
+  {
+    "name": "Fortified Position"
+  },
+  {
+    "name": "Battle Ready",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "PROF.MARTIAL_WEAPONS = 1"
+      }
+    ]
+  },
+  {
+    "name": "Battle Smith Spells",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3"
+      },
+      {
+        "expr": "if(LEVEL >= 3, STICKY.`Heroism` = 1; STICKY.`Shield` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 5, STICKY.`Shining Smite` = 1; STICKY.`Warding Bond` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 9, STICKY.`Aura of Vitality` = 1; STICKY.`Conjure Barrage` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 13, STICKY.`Aura of Purity` = 1; STICKY.`Fire Shield` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 17, STICKY.`Banishing Smite` = 1; STICKY.`Mass Cure Wounds` = 1)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Steel Defender"
+  },
+  {
+    "name": "Arcane Jolt"
+  },
+  {
+    "name": "Improved Defender"
+  },
+  {
+    "name": "Adventurer's Atlas"
+  },
+  {
+    "name": "Cartographer Spells",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 3"
+      },
+      {
+        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Healing Word` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 5, STICKY.`Locate Object` = 1; STICKY.`Mind Spike` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 9, STICKY.`Call Lightning` = 1; STICKY.`Clairvoyance` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 13, STICKY.`Banishment` = 1; STICKY.`Locate Creature` = 1)",
+        "when": "OnCompute"
+      },
+      {
+        "expr": "if(LEVEL >= 17, STICKY.`Scrying` = 1; STICKY.`Teleportation Circle` = 1)",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Mapping Magic"
+  },
+  {
+    "name": "Guided Precision"
+  },
+  {
+    "name": "Ingenious Movement"
+  },
+  {
+    "name": "Superior Atlas"
+  },
+  {
+    "name": "Class Proficiencies (Artificer)",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; CON.SAVE.PROF = 1; INT.SAVE.PROF = 1; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; PROF.SIMPLE_WEAPONS = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "prerequisites": "CLASS.`Artificer`.LEVEL == LEVEL"
+  },
+  {
+    "name": "Multiclass Proficiencies (Artificer)",
+    "prerequisites": "CLASS.`Artificer`.LEVEL < LEVEL",
+    "assign": [
+      {
+        "expr": "HIT_DICE.SIDES = 8; PROF.LIGHT_ARMOR = 1; PROF.MEDIUM_ARMOR = 1; PROF.SHIELDS = 1; TOOL.`Tinker's Tools`.ABIL = 1",
+        "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "with(@SKILL(ARCA, HIST, INVE, MEDI, NATU, PERC, SLEI), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Languages (Changeling)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Sylvan = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Languages (Kalashtar)",
+    "assign": [
+      {
+        "expr": "LANG.Common = 1; LANG.Quori = 1",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Changeling Instincts",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "with(@SKILL(DECE, INSI, INTI, PERF, PERS), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 2, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
+      }
+    ]
+  },
+  {
+    "name": "Shape-Shifter"
+  },
+  {
+    "name": "Dual Mind"
+  },
+  {
+    "name": "Mental Discipline",
+    "assign": [
+      {
+        "expr": "RESIST.PSYCH = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Mind Link"
+  },
+  {
+    "name": "Severed from Dreams"
+  },
+  {
+    "name": "Fey Gift",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "CASTER.ABIL = 5"
+      },
+      {
+        "expr": "STICKY.`Friends` = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Lethargy Resilience"
+  },
+  {
+    "name": "Skill Versatility"
+  },
+  {
+    "name": "Bestial Instincts",
+    "assign": [
+      {
+        "expr": "with(@SKILL(ACRO, ATHL, INTI, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ]
+  },
+  {
+    "name": "Shifting",
+    "assign": [
+      {
+        "expr": "POINTS.`Shifting`.MAX = PROF.BONUS",
+        "when": "OnCompute"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Shifting Option",
+        "options": [
+          {
+            "name": "Beasthide"
+          },
+          {
+            "name": "Longtooth"
+          },
+          {
+            "name": "Swiftstride"
+          },
+          {
+            "name": "Wildhunt"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Construct Resilience",
+    "assign": [
+      {
+        "expr": "RESIST.POISON = 1",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Integrated Protection",
+    "assign": [
+      {
+        "when": "OnCompute",
+        "expr": "AC += 1"
+      }
+    ]
+  },
+  {
+    "name": "Sentry's Rest"
+  },
+  {
+    "name": "Specialized Design",
+    "assign": [
+      {
+        "when": "OnFeatureAdd",
+        "expr": "with(@SKILL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))); TOOL.COUNT += 1)"
+      }
+    ]
+  },
+  {
+    "name": "Constructed Endurance"
+  }
+]

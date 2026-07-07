@@ -1,0 +1,17 @@
+{
+  "Changeling": {
+    "description": "Changelings are fey shapeshifters who can alter their appearance at will, with innate social instincts and a connection to the fey realm."
+  },
+  "Kalashtar": {
+    "description": "Kalashtar are aberration-touched beings with dual minds, telepathy, psychic resilience, and a connection to the plane of dreams."
+  },
+  "Khoravar": {
+    "description": "Khoravar are half-elves with fey ancestry, darkvision, versatile magical gifts, and adaptable skill aptitude."
+  },
+  "Shifter": {
+    "description": "Shifters are humanoids with bestial instincts who can temporarily shift into a more feral form, gaining temporary hit points and special abilities."
+  },
+  "Warforged": {
+    "description": "Warforged are living constructs with integrated protection, poison resistance, and tireless endurance. They don't need to sleep or eat."
+  }
+}

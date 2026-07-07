@@ -1,0 +1,20 @@
+{
+  "Artificer": {
+    "description": "A master of invention who uses ingenuity and magic to unlock extraordinary capabilities in objects."
+  },
+  "Artificer.subclass.Alchemist": {
+    "description": "Craft Magic Elixirs and Potions An Alchemist is an expert at combining reagents to produce magical effects. Alchemists use their creations to give life and to leech it away."
+  },
+  "Artificer.subclass.Armorer": {
+    "description": "As a Magic action while you have Smith's Tools in hand, you can turn a suit of armor you are wearing into Arcane Armor. The armor continues to be Arcane Armor until you don another suit of armor or you die. You gain the following benefits while wearing your Arcane Armor."
+  },
+  "Artificer.subclass.Artillerist": {
+    "description": "Wield Destructive Power from Afar An Artillerist specializes in using magic to hurl energy, projectiles, and explosions on a battlefield."
+  },
+  "Artificer.subclass.Battle Smith": {
+    "description": "Your combat training and your experiments with magic have paid off in two ways. Arcane Empowerment: When you attack with a magic weapon, you can use your Intelligence modifier, instead of your Strength or Dexterity modifier, for the attack and damage rolls."
+  },
+  "Artificer.subclass.Cartographer": {
+    "description": "Whenever you finish a Long Rest while holding Cartographer's Tools, you can use that tool to create a set of magical maps by touching at least two creatures (one of whom can be yourself), up to a maximum number of creatures equal to 1 plus your Intelligence modifier (minimum of two creatures)."
+  }
+}

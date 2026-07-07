@@ -1,0 +1,4527 @@
+[
+  {
+    "name": "Barbarian",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Barbarian)",
+          "Unarmored Defense (Barbarian)",
+          "Weapon Mastery (Barbarian)",
+          "Rage",
+          "Multiclass Proficiencies (Barbarian)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Danger Sense",
+          "Reckless Attack"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass",
+          "Primal Knowledge"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Extra Attack",
+          "Fast Movement"
+        ]
+      },
+      "7": {
+        "features": [
+          "Feral Instinct",
+          "Instinctive Pounce"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Brutal Strike"
+        ]
+      },
+      "11": {
+        "features": [
+          "Relentless Rage"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "13": {
+        "features": [
+          "Improved Brutal Strike"
+        ]
+      },
+      "15": {
+        "features": [
+          "Persistent Rage"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "17": {
+        "features": [
+          "Improved Brutal Strike 2"
+        ]
+      },
+      "18": {
+        "features": [
+          "Indomitable Might"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Primal Champion"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Path of the Berserker",
+        "levels": {
+          "3": {
+            "features": [
+              "Frenzy"
+            ]
+          },
+          "6": {
+            "features": [
+              "Mindless Rage"
+            ]
+          },
+          "10": {
+            "features": [
+              "Retaliation"
+            ]
+          },
+          "14": {
+            "features": [
+              "Intimidating Presence"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Battlerager",
+        "levels": {
+          "3": {
+            "features": [
+              "Battlerager Armor",
+              "Restriction—Dwarves Only"
+            ]
+          },
+          "6": {
+            "features": [
+              "Reckless Abandon"
+            ]
+          },
+          "10": {
+            "features": [
+              "Battlerager Charge"
+            ]
+          },
+          "14": {
+            "features": [
+              "Spiked Retribution"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Ancestral Guardian",
+        "levels": {
+          "3": {
+            "features": [
+              "Ancestral Protectors"
+            ]
+          },
+          "6": {
+            "features": [
+              "Spirit Shield"
+            ]
+          },
+          "10": {
+            "features": [
+              "Consult the Spirits"
+            ]
+          },
+          "14": {
+            "features": [
+              "Vengeful Ancestors"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Storm Herald",
+        "levels": {
+          "3": {
+            "features": [
+              "Desert",
+              "Sea",
+              "Tundra",
+              "Storm Aura"
+            ]
+          },
+          "6": {
+            "features": [
+              "Desert",
+              "Sea",
+              "Tundra",
+              "Storm Soul"
+            ]
+          },
+          "10": {
+            "features": [
+              "Shielding Storm"
+            ]
+          },
+          "14": {
+            "features": [
+              "Desert",
+              "Sea",
+              "Tundra",
+              "Raging Storm"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Zealot",
+        "levels": {
+          "3": {
+            "features": [
+              "Divine Fury",
+              "Warrior of the Gods"
+            ]
+          },
+          "6": {
+            "features": [
+              "Fanatical Focus"
+            ]
+          },
+          "10": {
+            "features": [
+              "Zealous Presence"
+            ]
+          },
+          "14": {
+            "features": [
+              "Rage of the Gods"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Beast",
+        "levels": {
+          "3": {
+            "features": [
+              "Form of the Beast"
+            ]
+          },
+          "6": {
+            "features": [
+              "Bestial Soul"
+            ]
+          },
+          "10": {
+            "features": [
+              "Infectious Fury"
+            ]
+          },
+          "14": {
+            "features": [
+              "Call the Hunt"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of Wild Magic",
+        "levels": {
+          "3": {
+            "features": [
+              "Magic Awareness",
+              "Wild Surge"
+            ]
+          },
+          "6": {
+            "features": [
+              "Bolstering Magic"
+            ]
+          },
+          "10": {
+            "features": [
+              "Unstable Backlash"
+            ]
+          },
+          "14": {
+            "features": [
+              "Controlled Surge"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Giant",
+        "levels": {
+          "3": {
+            "features": [
+              "Giant Power",
+              "Giant's Havoc"
+            ]
+          },
+          "6": {
+            "features": [
+              "Elemental Cleaver"
+            ]
+          },
+          "10": {
+            "features": [
+              "Mighty Impel"
+            ]
+          },
+          "14": {
+            "features": [
+              "Demiurgic Colossus"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the Wild Heart",
+        "levels": {
+          "3": {
+            "features": [
+              "Animal Speaker",
+              "Rage of the Wilds"
+            ]
+          },
+          "6": {
+            "features": [
+              "Aspect of the Wilds"
+            ]
+          },
+          "10": {
+            "features": [
+              "Nature Speaker"
+            ]
+          },
+          "14": {
+            "features": [
+              "Power of the Wilds"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Path of the World Tree",
+        "levels": {
+          "3": {
+            "features": [
+              "Vitality of the Tree"
+            ]
+          },
+          "6": {
+            "features": [
+              "Branches of the Tree"
+            ]
+          },
+          "10": {
+            "features": [
+              "Battering Roots"
+            ]
+          },
+          "14": {
+            "features": [
+              "Travel Along the Tree"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "STR >= 13"
+  },
+  {
+    "name": "Bard",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Bard)",
+          "Spellcasting (Bard)",
+          "Bardic Inspiration",
+          "Multiclass Proficiencies (Bard)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Expertise",
+          "Jack of All Trades"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Font of Inspiration"
+        ]
+      },
+      "7": {
+        "features": [
+          "Countercharm"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Expertise"
+        ]
+      },
+      "10": {
+        "features": [
+          "Magical Secrets"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Superior Inspiration"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Words of Creation"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "College of Lore",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Cutting Words"
+            ]
+          },
+          "6": {
+            "features": [
+              "Magical Discoveries"
+            ]
+          },
+          "14": {
+            "features": [
+              "Peerless Skill"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Valor",
+        "levels": {
+          "3": {
+            "features": [
+              "Combat Inspiration",
+              "Martial Training"
+            ]
+          },
+          "6": {
+            "features": [
+              "Extra Attack"
+            ]
+          },
+          "14": {
+            "features": [
+              "Battle Magic"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Glamour",
+        "levels": {
+          "3": {
+            "features": [
+              "Beguiling Magic",
+              "Mantle of Inspiration"
+            ]
+          },
+          "6": {
+            "features": [
+              "Mantle of Majesty"
+            ]
+          },
+          "14": {
+            "features": [
+              "Unbreakable Majesty"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Swords",
+        "levels": {
+          "3": {
+            "features": [
+              "Defensive Flourish",
+              "Mobile Flourish",
+              "Slashing Flourish",
+              "Blade Flourish",
+              "Bonus Proficiencies",
+              "Fighting Style"
+            ]
+          },
+          "6": {
+            "features": [
+              "Extra Attack"
+            ]
+          },
+          "14": {
+            "features": [
+              "Master's Flourish"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Whispers",
+        "levels": {
+          "3": {
+            "features": [
+              "Psychic Blades",
+              "Words of Terror"
+            ]
+          },
+          "6": {
+            "features": [
+              "Mantle of Whispers"
+            ]
+          },
+          "14": {
+            "features": [
+              "Shadow Lore"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Creation",
+        "levels": {
+          "3": {
+            "features": [
+              "Mote of Potential",
+              "Performance of Creation"
+            ]
+          },
+          "6": {
+            "features": [
+              "Animating Performance"
+            ]
+          },
+          "14": {
+            "features": [
+              "Creative Crescendo"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Eloquence",
+        "levels": {
+          "3": {
+            "features": [
+              "Silver Tongue",
+              "Unsettling Words"
+            ]
+          },
+          "6": {
+            "features": [
+              "Unfailing Inspiration",
+              "Universal Speech"
+            ]
+          },
+          "14": {
+            "features": [
+              "Infectious Inspiration"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Spirits",
+        "levels": {
+          "3": {
+            "features": [
+              "Guiding Whispers",
+              "Spiritual Focus",
+              "Tales from Beyond"
+            ]
+          },
+          "6": {
+            "features": [
+              "Spirit Session"
+            ]
+          },
+          "14": {
+            "features": [
+              "Mystical Connection"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of Dance",
+        "levels": {
+          "3": {
+            "features": [
+              "Agile Strikes",
+              "Bardic Damage",
+              "Dance Virtuoso",
+              "Dazzling Footwork"
+            ]
+          },
+          "6": {
+            "features": [
+              "Inspiring Movement",
+              "Tandem Footwork"
+            ]
+          },
+          "14": {
+            "features": [
+              "Leading Evasion"
+            ]
+          }
+        }
+      },
+      {
+        "name": "College of the Moon",
+        "levels": {
+          "3": {
+            "features": [
+              "Moon's Inspiration",
+              "Primal Lore"
+            ]
+          },
+          "6": {
+            "features": [
+              "Blessing of Moonlight"
+            ]
+          },
+          "14": {
+            "features": [
+              "Eventide's Splendor"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "CHA >= 13"
+  },
+  {
+    "name": "Cleric",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Cleric)",
+          "Spellcasting (Cleric)",
+          "Divine Order",
+          "Multiclass Proficiencies (Cleric)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Channel Divinity (Cleric)"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Sear Undead"
+        ]
+      },
+      "7": {
+        "features": [
+          "Blessed Strikes"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "10": {
+        "features": [
+          "Divine Intervention"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "14": {
+        "features": [
+          "Improved Blessed Strikes"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Greater Divine Intervention"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Knowledge Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Blessings of Knowledge",
+              "Channel Divinity: Knowledge of the Ages"
+            ]
+          },
+          "6": {
+            "features": [
+              "Channel Divinity: Read Thoughts"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Potent Spellcasting"
+            ]
+          },
+          "17": {
+            "features": [
+              "Visions of the Past"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Life Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Disciple of Life",
+              "Life Domain Spells",
+              "Preserve Life"
+            ]
+          },
+          "6": {
+            "features": [
+              "Blessed Healer"
+            ]
+          },
+          "17": {
+            "features": [
+              "Supreme Healing"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Light Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Light Domain Spells",
+              "Radiance of the Dawn",
+              "Warding Flare (Light Domain)"
+            ]
+          },
+          "6": {
+            "features": [
+              "Improved Warding Flare"
+            ]
+          },
+          "17": {
+            "features": [
+              "Corona of Light"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Nature Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Acolyte of Nature",
+              "Bonus Proficiency",
+              "Channel Divinity: Charm Animals and Plants"
+            ]
+          },
+          "6": {
+            "features": [
+              "Dampen Elements"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Master of Nature"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Tempest Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Wrath of the Storm",
+              "Channel Divinity: Destructive Wrath"
+            ]
+          },
+          "6": {
+            "features": [
+              "Thunderbolt Strike"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Stormborn"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Trickery Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Blessing of the Trickster",
+              "Invoke Duplicity",
+              "Trickery Domain Spells"
+            ]
+          },
+          "6": {
+            "features": [
+              "Trickster's Transposition"
+            ]
+          },
+          "17": {
+            "features": [
+              "Improved Duplicity"
+            ]
+          }
+        }
+      },
+      {
+        "name": "War Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Guided Strike",
+              "War Domain Spells",
+              "War Priest"
+            ]
+          },
+          "6": {
+            "features": [
+              "War God's Blessing"
+            ]
+          },
+          "17": {
+            "features": [
+              "Avatar of Battle"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Death Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiency",
+              "Reaper",
+              "Channel Divinity: Touch of Death"
+            ]
+          },
+          "6": {
+            "features": [
+              "Inescapable Destruction"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Improved Reaper"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Arcana Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Arcane Initiate",
+              "Channel Divinity: Arcane Abjuration"
+            ]
+          },
+          "6": {
+            "features": [
+              "Spell Breaker"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Potent Spellcasting"
+            ]
+          },
+          "17": {
+            "features": [
+              "Arcane Mastery"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Ambition Domain (PSA)",
+        "levels": {
+          "3": {
+            "features": [
+              "Warding Flare (Ambition Domain)",
+              "Channel Divinity: Invoke Duplicity"
+            ]
+          },
+          "6": {
+            "features": [
+              "Channel Divinity: Cloak of Shadows"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Potent Spellcasting"
+            ]
+          },
+          "17": {
+            "features": [
+              "Improved Duplicity"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Knowledge Domain (PSA)",
+        "levels": {}
+      },
+      {
+        "name": "Solidarity Domain (PSA)",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiency",
+              "Solidarity's Action",
+              "Channel Divinity: Preserve Life"
+            ]
+          },
+          "6": {
+            "features": [
+              "Oketra's Blessing"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Supreme Healing"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Strength Domain (PSA)",
+        "levels": {
+          "3": {
+            "features": [
+              "Acolyte of Strength",
+              "Bonus Proficiency",
+              "Channel Divinity: Feat of Strength"
+            ]
+          },
+          "6": {
+            "features": [
+              "Rhonas's Blessing"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Avatar of Battle"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Zeal Domain (PSA)",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Priest of Zeal",
+              "Channel Divinity: Consuming Fervor"
+            ]
+          },
+          "6": {
+            "features": [
+              "Resounding Strike"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Blaze of Glory"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Forge Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Blessing of the Forge",
+              "Bonus Proficiency",
+              "Channel Divinity: Artisan's Blessing"
+            ]
+          },
+          "6": {
+            "features": [
+              "Soul of the Forge"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Saint of Forge and Fire"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Grave Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Circle of Mortality",
+              "Eyes of the Grave",
+              "Channel Divinity: Path to the Grave"
+            ]
+          },
+          "6": {
+            "features": [
+              "Sentinel at Death's Door"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Potent Spellcasting"
+            ]
+          },
+          "17": {
+            "features": [
+              "Keeper of Souls"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Order Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Voice of Authority",
+              "Channel Divinity: Order's Demand"
+            ]
+          },
+          "6": {
+            "features": [
+              "Embodiment of the Law"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Order's Wrath"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Peace Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Emboldening Bond",
+              "Implement of Peace",
+              "Channel Divinity: Balm of Peace"
+            ]
+          },
+          "6": {
+            "features": [
+              "Protective Bond"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Potent Spellcasting"
+            ]
+          },
+          "17": {
+            "features": [
+              "Expansive Bond"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Twilight Domain",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Eyes of Night",
+              "Vigilant Blessing",
+              "Channel Divinity: Twilight Sanctuary"
+            ]
+          },
+          "6": {
+            "features": [
+              "Steps of Night"
+            ]
+          },
+          "8": {
+            "features": [
+              "Blessed Strikes",
+              "Divine Strike"
+            ]
+          },
+          "17": {
+            "features": [
+              "Twilight Shroud"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "WIS >= 13"
+  },
+  {
+    "name": "Druid",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Druid)",
+          "Spellcasting (Druid)",
+          "Druidic",
+          "Primal Order",
+          "Multiclass Proficiencies (Druid)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Wild Companion",
+          "Wild Shape"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Wild Resurgence"
+        ]
+      },
+      "7": {
+        "features": [
+          "Elemental Fury"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "15": {
+        "features": [
+          "Improved Elemental Fury"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Beast Spells"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Archdruid"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Circle of the Land",
+        "levels": {
+          "3": {
+            "features": [
+              "Circle of the Land Spells",
+              "Land's Aid"
+            ]
+          },
+          "6": {
+            "features": [
+              "Natural Recovery"
+            ]
+          },
+          "10": {
+            "features": [
+              "Nature's Ward"
+            ]
+          },
+          "14": {
+            "features": [
+              "Nature's Sanctuary"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of the Moon",
+        "levels": {
+          "3": {
+            "features": [
+              "Circle Forms",
+              "Circle of the Moon Spells"
+            ]
+          },
+          "6": {
+            "features": [
+              "Improved Circle Forms"
+            ]
+          },
+          "10": {
+            "features": [
+              "Moonlight Step"
+            ]
+          },
+          "14": {
+            "features": [
+              "Lunar Form"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of Dreams",
+        "levels": {
+          "6": {
+            "features": [
+              "Hearth of Moonlight and Shadow"
+            ]
+          },
+          "10": {
+            "features": [
+              "Hidden Paths"
+            ]
+          },
+          "14": {
+            "features": [
+              "Walker in Dreams"
+            ]
+          },
+          "3": {
+            "features": [
+              "Balm of the Summer Court"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of the Shepherd",
+        "levels": {
+          "6": {
+            "features": [
+              "Mighty Summoner"
+            ]
+          },
+          "10": {
+            "features": [
+              "Guardian Spirit"
+            ]
+          },
+          "14": {
+            "features": [
+              "Faithful Summons"
+            ]
+          },
+          "3": {
+            "features": [
+              "Speech of the Woods",
+              "Spirit Totem"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of Spores",
+        "levels": {
+          "6": {
+            "features": [
+              "Fungal Infestation"
+            ]
+          },
+          "10": {
+            "features": [
+              "Spreading Spores"
+            ]
+          },
+          "14": {
+            "features": [
+              "Fungal Body"
+            ]
+          },
+          "3": {
+            "features": [
+              "Circle Spells",
+              "Halo of Spores",
+              "Symbiotic Entity"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of Wildfire",
+        "levels": {
+          "6": {
+            "features": [
+              "Enhanced Bond"
+            ]
+          },
+          "10": {
+            "features": [
+              "Cauterizing Flames"
+            ]
+          },
+          "14": {
+            "features": [
+              "Blazing Revival"
+            ]
+          },
+          "3": {
+            "features": [
+              "Circle Spells",
+              "Summon Wildfire Spirit"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of the Sea",
+        "levels": {
+          "3": {
+            "features": [
+              "Circle of the Sea Spells",
+              "Wrath of the Sea"
+            ]
+          },
+          "6": {
+            "features": [
+              "Aquatic Affinity"
+            ]
+          },
+          "10": {
+            "features": [
+              "Stormborn"
+            ]
+          },
+          "14": {
+            "features": [
+              "Oceanic Gift"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Circle of the Stars",
+        "levels": {
+          "3": {
+            "features": [
+              "Star Map",
+              "Starry Form",
+              "Archer",
+              "Chalice",
+              "Dragon"
+            ]
+          },
+          "6": {
+            "features": [
+              "Cosmic Omen"
+            ]
+          },
+          "10": {
+            "features": [
+              "Twinkling Constellations"
+            ]
+          },
+          "14": {
+            "features": [
+              "Full of Stars"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "WIS >= 13"
+  },
+  {
+    "name": "Fighter",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Fighter)",
+          "Weapon Mastery (Fighter)",
+          "Fighting Style",
+          "Second Wind",
+          "Multiclass Proficiencies (Fighter)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Action Surge",
+          "Tactical Mind"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Extra Attack",
+          "Tactical Shift"
+        ]
+      },
+      "6": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Indomitable",
+          "Tactical Master"
+        ]
+      },
+      "11": {
+        "features": [
+          "Two Extra Attacks"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "13": {
+        "features": [
+          "Studied Attacks"
+        ]
+      },
+      "14": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Three Extra Attacks"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Battle Master",
+        "levels": {
+          "3": {
+            "features": [
+              "Combat Superiority",
+              "Maneuver Options",
+              "Student of War"
+            ]
+          },
+          "7": {
+            "features": [
+              "Know Your Enemy"
+            ]
+          },
+          "10": {
+            "features": [
+              "Improved Combat Superiority"
+            ]
+          },
+          "15": {
+            "features": [
+              "Relentless"
+            ]
+          },
+          "18": {
+            "features": [
+              "Ultimate Combat Superiority"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Champion",
+        "levels": {
+          "3": {
+            "features": [
+              "Improved Critical",
+              "Remarkable Athlete"
+            ]
+          },
+          "7": {
+            "features": [
+              "Additional Fighting Style"
+            ]
+          },
+          "10": {
+            "features": [
+              "Heroic Warrior"
+            ]
+          },
+          "15": {
+            "features": [
+              "Superior Critical"
+            ]
+          },
+          "18": {
+            "features": [
+              "Survivor"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Eldritch Knight",
+        "levels": {
+          "3": {
+            "features": [
+              "Spellcasting (Eldritch Knight)",
+              "War Bond"
+            ]
+          },
+          "7": {
+            "features": [
+              "War Magic"
+            ]
+          },
+          "10": {
+            "features": [
+              "Eldritch Strike"
+            ]
+          },
+          "15": {
+            "features": [
+              "Arcane Charge"
+            ]
+          },
+          "18": {
+            "features": [
+              "Improved War Magic"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Purple Dragon Knight (Banneret)",
+        "levels": {
+          "3": {
+            "features": [
+              "Rallying Cry",
+              "Restriction: Knighthood"
+            ]
+          },
+          "7": {
+            "features": [
+              "Royal Envoy"
+            ]
+          },
+          "10": {
+            "features": [
+              "Inspiring Surge"
+            ]
+          },
+          "15": {
+            "features": [
+              "Bulwark"
+            ]
+          },
+          "18": {
+            "features": [
+              "Inspiring Surge"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Arcane Archer",
+        "levels": {
+          "3": {
+            "features": [
+              "Arcane Archer Lore",
+              "Arcane Shot"
+            ]
+          },
+          "7": {
+            "features": [
+              "Curving Shot",
+              "Magic Arrow"
+            ]
+          },
+          "15": {
+            "features": [
+              "Ever-Ready Shot"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Cavalier",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiency",
+              "Born to the Saddle",
+              "Unwavering Mark"
+            ]
+          },
+          "7": {
+            "features": [
+              "Warding Maneuver"
+            ]
+          },
+          "10": {
+            "features": [
+              "Hold the Line"
+            ]
+          },
+          "15": {
+            "features": [
+              "Ferocious Charger"
+            ]
+          },
+          "18": {
+            "features": [
+              "Vigilant Defender"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Samurai",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiency",
+              "Fighting Spirit"
+            ]
+          },
+          "7": {
+            "features": [
+              "Elegant Courtier"
+            ]
+          },
+          "10": {
+            "features": [
+              "Tireless Spirit"
+            ]
+          },
+          "15": {
+            "features": [
+              "Rapid Strike"
+            ]
+          },
+          "18": {
+            "features": [
+              "Strength before Death"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Echo Knight",
+        "levels": {
+          "3": {
+            "features": [
+              "Manifest Echo",
+              "Unleash Incarnation"
+            ]
+          },
+          "7": {
+            "features": [
+              "Echo Avatar"
+            ]
+          },
+          "10": {
+            "features": [
+              "Shadow Martyr"
+            ]
+          },
+          "15": {
+            "features": [
+              "Reclaim Potential"
+            ]
+          },
+          "18": {
+            "features": [
+              "Legion of One"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Psi Warrior",
+        "levels": {
+          "3": {
+            "features": [
+              "Psionic Power",
+              "Protective Field",
+              "Psionic Strike",
+              "Telekinetic Movement"
+            ]
+          },
+          "7": {
+            "features": [
+              "Psi-Powered Leap",
+              "Telekinetic Adept",
+              "Telekinetic Thrust"
+            ]
+          },
+          "10": {
+            "features": [
+              "Guarded Mind"
+            ]
+          },
+          "15": {
+            "features": [
+              "Bulwark of Force"
+            ]
+          },
+          "18": {
+            "features": [
+              "Telekinetic Master"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Rune Knight",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Giant's Might",
+              "Rune Carver"
+            ]
+          },
+          "7": {
+            "features": [
+              "Additional Rune Known",
+              "Runic Shield"
+            ]
+          },
+          "10": {
+            "features": [
+              "Additional Rune Known",
+              "Great Stature"
+            ]
+          },
+          "15": {
+            "features": [
+              "Additional Rune Known",
+              "Master of Runes"
+            ]
+          },
+          "18": {
+            "features": [
+              "Runic Juggernaut"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Banneret",
+        "levels": {
+          "3": {
+            "features": [
+              "Group Recovery",
+              "Knightly Envoy"
+            ]
+          },
+          "7": {
+            "features": [
+              "Team Tactics"
+            ]
+          },
+          "10": {
+            "features": [
+              "Rallying Surge"
+            ]
+          },
+          "15": {
+            "features": [
+              "Shared Resilience"
+            ]
+          },
+          "18": {
+            "features": [
+              "Inspiring Commander"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "STR >= 13 or DEX >= 13"
+  },
+  {
+    "name": "Monk",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Monk)",
+          "Unarmored Defense (Monk)",
+          "Martial Arts",
+          "Multiclass Proficiencies (Monk)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Monk's Focus",
+          "Unarmored Movement",
+          "Uncanny Metabolism"
+        ]
+      },
+      "3": {
+        "features": [
+          "Deflect Attacks",
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement",
+          "Slow Fall"
+        ]
+      },
+      "5": {
+        "features": [
+          "Extra Attack",
+          "Stunning Strike"
+        ]
+      },
+      "6": {
+        "features": [
+          "Empowered Strikes"
+        ]
+      },
+      "7": {
+        "features": [
+          "Evasion"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Acrobatic Movement"
+        ]
+      },
+      "10": {
+        "features": [
+          "Heightened Focus",
+          "Self-Restoration"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "13": {
+        "features": [
+          "Deflect Energy"
+        ]
+      },
+      "14": {
+        "features": [
+          "Disciplined Survivor"
+        ]
+      },
+      "15": {
+        "features": [
+          "Perfect Focus"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Superior Defense"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Body and Mind"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Way of the Long Death",
+        "levels": {
+          "3": {
+            "features": [
+              "Touch of Death"
+            ]
+          },
+          "6": {
+            "features": [
+              "Hour of Reaping"
+            ]
+          },
+          "11": {
+            "features": [
+              "Mastery of Death"
+            ]
+          },
+          "17": {
+            "features": [
+              "Touch of the Long Death"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Way of the Drunken Master",
+        "levels": {
+          "3": {
+            "features": [
+              "Bonus Proficiencies",
+              "Drunken Technique"
+            ]
+          },
+          "6": {
+            "features": [
+              "Leap to Your Feet",
+              "Redirect Attack",
+              "Tipsy Sway"
+            ]
+          },
+          "11": {
+            "features": [
+              "Drunkard's Luck"
+            ]
+          },
+          "17": {
+            "features": [
+              "Intoxicated Frenzy"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Way of the Kensei",
+        "levels": {
+          "3": {
+            "features": [
+              "Agile Parry",
+              "Kensei's Shot",
+              "Path of the Kensei"
+            ]
+          },
+          "6": {
+            "features": [
+              "One with the Blade"
+            ]
+          },
+          "11": {
+            "features": [
+              "Sharpen the Blade"
+            ]
+          },
+          "17": {
+            "features": [
+              "Unerring Accuracy"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Way of the Sun Soul",
+        "levels": {
+          "3": {
+            "features": [
+              "Radiant Sun Bolt"
+            ]
+          },
+          "6": {
+            "features": [
+              "Searing Arc Strike"
+            ]
+          },
+          "11": {
+            "features": [
+              "Searing Sunburst"
+            ]
+          },
+          "17": {
+            "features": [
+              "Sun Shield"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Way of the Astral Self",
+        "levels": {
+          "3": {
+            "features": [
+              "Arms of the Astral Self",
+              "Forms of Your Astral Self"
+            ]
+          },
+          "6": {
+            "features": [
+              "Visage of the Astral Self"
+            ]
+          },
+          "11": {
+            "features": [
+              "Body of the Astral Self"
+            ]
+          },
+          "17": {
+            "features": [
+              "Awakened Astral Self"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Way of the Ascendant Dragon",
+        "levels": {
+          "3": {
+            "features": [
+              "Breath of the Dragon",
+              "Draconic Disciple"
+            ]
+          },
+          "6": {
+            "features": [
+              "Wings Unfurled"
+            ]
+          },
+          "11": {
+            "features": [
+              "Aspect of the Wyrm"
+            ]
+          },
+          "17": {
+            "features": [
+              "Ascendant Aspect"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Warrior of Mercy",
+        "levels": {
+          "3": {
+            "features": [
+              "Hand of Harm",
+              "Hand of Healing",
+              "Implements of Mercy"
+            ]
+          },
+          "6": {
+            "features": [
+              "Physician's Touch"
+            ]
+          },
+          "11": {
+            "features": [
+              "Flurry of Healing and Harm"
+            ]
+          },
+          "17": {
+            "features": [
+              "Hand of Ultimate Mercy"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Warrior of Shadow",
+        "levels": {
+          "3": {
+            "features": [
+              "Shadow Arts",
+              "Darkness",
+              "Darkvision",
+              "Shadowy Figments"
+            ]
+          },
+          "6": {
+            "features": [
+              "Shadow Step"
+            ]
+          },
+          "11": {
+            "features": [
+              "Improved Shadow Step"
+            ]
+          },
+          "17": {
+            "features": [
+              "Cloak of Shadows"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Warrior of the Elements",
+        "levels": {
+          "3": {
+            "features": [
+              "Elemental Attunement",
+              "Manipulate Elements"
+            ]
+          },
+          "6": {
+            "features": [
+              "Elemental Burst"
+            ]
+          },
+          "11": {
+            "features": [
+              "Stride of the Elements"
+            ]
+          },
+          "17": {
+            "features": [
+              "Elemental Epitome"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Warrior of the Open Hand",
+        "levels": {
+          "3": {
+            "features": [
+              "Open Hand Technique"
+            ]
+          },
+          "6": {
+            "features": [
+              "Wholeness of Body"
+            ]
+          },
+          "11": {
+            "features": [
+              "Fleet Step"
+            ]
+          },
+          "17": {
+            "features": [
+              "Quivering Palm"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "DEX >= 13 and WIS >= 13"
+  },
+  {
+    "name": "Paladin",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Paladin)",
+          "Spellcasting (Paladin)",
+          "Weapon Mastery (Paladin)",
+          "Lay on Hands",
+          "Multiclass Proficiencies (Paladin)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Fighting Style",
+          "Paladin's Smite"
+        ]
+      },
+      "3": {
+        "features": [
+          "Channel Divinity (Paladin)",
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Extra Attack",
+          "Faithful Steed"
+        ]
+      },
+      "6": {
+        "features": [
+          "Aura of Protection"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Abjure Foes"
+        ]
+      },
+      "10": {
+        "features": [
+          "Aura of Courage"
+        ]
+      },
+      "11": {
+        "features": [
+          "Radiant Strikes"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "14": {
+        "features": [
+          "Restoring Touch"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Aura Expansion"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Oath of Devotion",
+        "levels": {
+          "3": {
+            "features": [
+              "Oath of Devotion Spells",
+              "Sacred Weapon"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Devotion"
+            ]
+          },
+          "15": {
+            "features": [
+              "Smite of Protection"
+            ]
+          },
+          "20": {
+            "features": [
+              "Holy Nimbus"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of the Ancients",
+        "levels": {
+          "3": {
+            "features": [
+              "Nature's Wrath",
+              "Oath of the Ancients Spells"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Warding"
+            ]
+          },
+          "15": {
+            "features": [
+              "Undying Sentinel"
+            ]
+          },
+          "20": {
+            "features": [
+              "Elder Champion"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of Vengeance",
+        "levels": {
+          "3": {
+            "features": [
+              "Oath of Vengeance Spells",
+              "Vow of Enmity"
+            ]
+          },
+          "7": {
+            "features": [
+              "Relentless Avenger"
+            ]
+          },
+          "15": {
+            "features": [
+              "Soul of Vengeance"
+            ]
+          },
+          "20": {
+            "features": [
+              "Avenging Angel"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oathbreaker",
+        "levels": {
+          "3": {
+            "features": [
+              "Control Undead",
+              "Dreadful Aspect",
+              "Oathbreaker Spells"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Hate"
+            ]
+          },
+          "15": {
+            "features": [
+              "Supernatural Resistance"
+            ]
+          },
+          "20": {
+            "features": [
+              "Dread Lord"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of the Crown",
+        "levels": {
+          "3": {
+            "features": [
+              "Champion Challenge",
+              "Oath Spells",
+              "Tenets of the Crown",
+              "Turn the Tide"
+            ]
+          },
+          "7": {
+            "features": [
+              "Divine Allegiance"
+            ]
+          },
+          "15": {
+            "features": [
+              "Unyielding Spirit"
+            ]
+          },
+          "20": {
+            "features": [
+              "Exalted Champion"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of Conquest",
+        "levels": {
+          "3": {
+            "features": [
+              "Conquering Presence",
+              "Guided Strike",
+              "Oath Spells",
+              "Tenets of Conquest"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Conquest"
+            ]
+          },
+          "15": {
+            "features": [
+              "Scornful Rebuke"
+            ]
+          },
+          "20": {
+            "features": [
+              "Invincible Conqueror"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of Redemption",
+        "levels": {
+          "3": {
+            "features": [
+              "Emissary of Peace",
+              "Oath Spells",
+              "Rebuke the Violent",
+              "Tenets of Redemption"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of the Guardian"
+            ]
+          },
+          "15": {
+            "features": [
+              "Protective Spirit"
+            ]
+          },
+          "20": {
+            "features": [
+              "Emissary of Redemption"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of Glory",
+        "levels": {
+          "3": {
+            "features": [
+              "Inspiring Smite",
+              "Oath of Glory Spells",
+              "Peerless Athlete"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Alacrity"
+            ]
+          },
+          "15": {
+            "features": [
+              "Glorious Defense"
+            ]
+          },
+          "20": {
+            "features": [
+              "Living Legend"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of the Watchers",
+        "levels": {
+          "3": {
+            "features": [
+              "Oath Spells",
+              "Tenets of the Watchers",
+              "Abjure the Extraplanar",
+              "Watcher's Will"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of the Sentinel"
+            ]
+          },
+          "15": {
+            "features": [
+              "Vigilant Rebuke"
+            ]
+          },
+          "20": {
+            "features": [
+              "Mortal Bulwark"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Oath of the Noble Genies",
+        "levels": {
+          "3": {
+            "features": [
+              "Dao's Crush",
+              "Djinni's Escape",
+              "Efreeti's Fury",
+              "Elemental Smite",
+              "Genie Spells",
+              "Genie's Splendor",
+              "Marid's Surge"
+            ]
+          },
+          "7": {
+            "features": [
+              "Aura of Elemental Shielding"
+            ]
+          },
+          "15": {
+            "features": [
+              "Elemental Rebuke"
+            ]
+          },
+          "20": {
+            "features": [
+              "Noble Scion"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "STR >= 13 and CHA >= 13"
+  },
+  {
+    "name": "Ranger",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Ranger)",
+          "Spellcasting (Ranger)",
+          "Weapon Mastery (Ranger)",
+          "Favored Enemy",
+          "Multiclass Proficiencies (Ranger)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Deft Explorer",
+          "Fighting Style"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Extra Attack"
+        ]
+      },
+      "6": {
+        "features": [
+          "Roving"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Expertise"
+        ]
+      },
+      "10": {
+        "features": [
+          "Tireless"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "13": {
+        "features": [
+          "Relentless Hunter"
+        ]
+      },
+      "14": {
+        "features": [
+          "Nature's Veil"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "17": {
+        "features": [
+          "Precise Hunter"
+        ]
+      },
+      "18": {
+        "features": [
+          "Feral Senses"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Foe Slayer"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Beast Master",
+        "levels": {
+          "3": {
+            "features": [
+              "Primal Companion"
+            ]
+          },
+          "7": {
+            "features": [
+              "Exceptional Training"
+            ]
+          },
+          "11": {
+            "features": [
+              "Bestial Fury"
+            ]
+          },
+          "15": {
+            "features": [
+              "Share Spells"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Hunter",
+        "levels": {
+          "3": {
+            "features": [
+              "Hunter's Lore",
+              "Hunter's Prey"
+            ]
+          },
+          "7": {
+            "features": [
+              "Defensive Tactics"
+            ]
+          },
+          "11": {
+            "features": [
+              "Superior Hunter's Prey"
+            ]
+          },
+          "15": {
+            "features": [
+              "Superior Hunter's Defense"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Gloom Stalker",
+        "levels": {
+          "3": {
+            "features": [
+              "Dread Ambusher",
+              "Gloom Stalker Spells",
+              "Umbral Sight"
+            ]
+          },
+          "7": {
+            "features": [
+              "Iron Mind"
+            ]
+          },
+          "11": {
+            "features": [
+              "Stalker's Flurry"
+            ]
+          },
+          "15": {
+            "features": [
+              "Shadowy Dodge"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Horizon Walker",
+        "levels": {
+          "3": {
+            "features": [
+              "Detect Portal",
+              "Horizon Walker Magic",
+              "Planar Warrior"
+            ]
+          },
+          "7": {
+            "features": [
+              "Ethereal Step"
+            ]
+          },
+          "11": {
+            "features": [
+              "Distant Strike"
+            ]
+          },
+          "15": {
+            "features": [
+              "Spectral Defense"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Monster Slayer",
+        "levels": {
+          "3": {
+            "features": [
+              "Hunter's Sense",
+              "Monster Slayer Magic",
+              "Slayer's Prey"
+            ]
+          },
+          "7": {
+            "features": [
+              "Supernatural Defense"
+            ]
+          },
+          "11": {
+            "features": [
+              "Magic-User's Nemesis"
+            ]
+          },
+          "15": {
+            "features": [
+              "Slayer's Counter"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Fey Wanderer",
+        "levels": {
+          "3": {
+            "features": [
+              "Dreadful Strikes",
+              "Fey Wanderer Spells",
+              "Otherworldly Glamour"
+            ]
+          },
+          "7": {
+            "features": [
+              "Beguiling Twist"
+            ]
+          },
+          "11": {
+            "features": [
+              "Fey Reinforcements"
+            ]
+          },
+          "15": {
+            "features": [
+              "Misty Wanderer"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Swarmkeeper",
+        "levels": {
+          "3": {
+            "features": [
+              "Gathered Swarm",
+              "Swarmkeeper Magic"
+            ]
+          },
+          "7": {
+            "features": [
+              "Writhing Tide"
+            ]
+          },
+          "11": {
+            "features": [
+              "Mighty Swarm"
+            ]
+          },
+          "15": {
+            "features": [
+              "Swarming Dispersal"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Drakewarden",
+        "levels": {
+          "3": {
+            "features": [
+              "Draconic Gift",
+              "Drake Companion"
+            ]
+          },
+          "7": {
+            "features": [
+              "Bond of Fang and Scale"
+            ]
+          },
+          "11": {
+            "features": [
+              "Drake's Breath"
+            ]
+          },
+          "15": {
+            "features": [
+              "Perfected Bond"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Winter Walker",
+        "levels": {
+          "3": {
+            "features": [
+              "Frigid Explorer",
+              "Hunter's Rime",
+              "Winter Walker Spells"
+            ]
+          },
+          "7": {
+            "features": [
+              "Fortifying Soul"
+            ]
+          },
+          "11": {
+            "features": [
+              "Chilling Retribution"
+            ]
+          },
+          "15": {
+            "features": [
+              "Frozen Haunt"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "DEX >= 13 and WIS >= 13"
+  },
+  {
+    "name": "Rogue",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Rogue)",
+          "Weapon Mastery (Rogue)",
+          "Expertise",
+          "Sneak Attack",
+          "Thieves' Cant",
+          "Multiclass Proficiencies (Rogue)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Cunning Action"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass",
+          "Steady Aim"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Cunning Strike",
+          "Uncanny Dodge"
+        ]
+      },
+      "6": {
+        "features": [
+          "Expertise"
+        ]
+      },
+      "7": {
+        "features": [
+          "Evasion",
+          "Reliable Talent"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "10": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "11": {
+        "features": [
+          "Improved Cunning Strike"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "14": {
+        "features": [
+          "Devious Strikes"
+        ]
+      },
+      "15": {
+        "features": [
+          "Slippery Mind"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Elusive"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Stroke of Luck"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Arcane Trickster",
+        "levels": {
+          "3": {
+            "features": [
+              "Mage Hand Legerdemain",
+              "Spellcasting (Arcane Trickster)"
+            ]
+          },
+          "9": {
+            "features": [
+              "Magical Ambush"
+            ]
+          },
+          "13": {
+            "features": [
+              "Versatile Trickster"
+            ]
+          },
+          "17": {
+            "features": [
+              "Spell Thief"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Assassin",
+        "levels": {
+          "3": {
+            "features": [
+              "Assassin's Tools",
+              "Assassinate"
+            ]
+          },
+          "9": {
+            "features": [
+              "Infiltration Expertise"
+            ]
+          },
+          "13": {
+            "features": [
+              "Envenom Weapons"
+            ]
+          },
+          "17": {
+            "features": [
+              "Death Strike"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Thief",
+        "levels": {
+          "3": {
+            "features": [
+              "Fast Hands",
+              "Second-Story Work"
+            ]
+          },
+          "9": {
+            "features": [
+              "Supreme Sneak"
+            ]
+          },
+          "13": {
+            "features": [
+              "Use Magic Device"
+            ]
+          },
+          "17": {
+            "features": [
+              "Thief's Reflexes"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Inquisitive",
+        "levels": {
+          "3": {
+            "features": [
+              "Ear for Deceit",
+              "Eye for Detail",
+              "Insightful Fighting"
+            ]
+          },
+          "9": {
+            "features": [
+              "Steady Eye"
+            ]
+          },
+          "13": {
+            "features": [
+              "Unerring Eye"
+            ]
+          },
+          "17": {
+            "features": [
+              "Eye for Weakness"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Mastermind",
+        "levels": {
+          "3": {
+            "features": [
+              "Master of Intrigue",
+              "Master of Tactics"
+            ]
+          },
+          "9": {
+            "features": [
+              "Insightful Manipulator"
+            ]
+          },
+          "13": {
+            "features": [
+              "Misdirection"
+            ]
+          },
+          "17": {
+            "features": [
+              "Soul of Deceit"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Scout",
+        "levels": {
+          "3": {
+            "features": [
+              "Skirmisher",
+              "Survivalist"
+            ]
+          },
+          "9": {
+            "features": [
+              "Superior Mobility"
+            ]
+          },
+          "13": {
+            "features": [
+              "Ambush Master"
+            ]
+          },
+          "17": {
+            "features": [
+              "Sudden Strike"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Swashbuckler",
+        "levels": {
+          "3": {
+            "features": [
+              "Fancy Footwork",
+              "Rakish Audacity"
+            ]
+          },
+          "9": {
+            "features": [
+              "Panache"
+            ]
+          },
+          "13": {
+            "features": [
+              "Elegant Maneuver"
+            ]
+          },
+          "17": {
+            "features": [
+              "Master Duelist"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Phantom",
+        "levels": {
+          "3": {
+            "features": [
+              "Wails from the Grave",
+              "Whispers of the Dead"
+            ]
+          },
+          "9": {
+            "features": [
+              "Tokens of the Departed"
+            ]
+          },
+          "13": {
+            "features": [
+              "Ghost Walk"
+            ]
+          },
+          "17": {
+            "features": [
+              "Death's Friend"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Soulknife",
+        "levels": {
+          "3": {
+            "features": [
+              "Psionic Power",
+              "Psychic Blades",
+              "Psi-Bolstered Knack",
+              "Psychic Whispers"
+            ]
+          },
+          "9": {
+            "features": [
+              "Homing Strikes",
+              "Psychic Teleportation",
+              "Soul Blades"
+            ]
+          },
+          "13": {
+            "features": [
+              "Psychic Veil"
+            ]
+          },
+          "17": {
+            "features": [
+              "Rend Mind"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Scion of the Three",
+        "levels": {
+          "3": {
+            "features": [
+              "Bloodthirst",
+              "Dread Allegiance"
+            ]
+          },
+          "9": {
+            "features": [
+              "Strike Fear"
+            ]
+          },
+          "13": {
+            "features": [
+              "Aura of Malevolence"
+            ]
+          },
+          "17": {
+            "features": [
+              "Dread Incarnate"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "DEX >= 13"
+  },
+  {
+    "name": "Sorcerer",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Sorcerer)",
+          "Spellcasting (Sorcerer)",
+          "Innate Sorcery",
+          "Multiclass Proficiencies (Sorcerer)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Font of Magic",
+          "Metamagic"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Sorcerous Restoration"
+        ]
+      },
+      "7": {
+        "features": [
+          "Sorcery Incarnate"
+        ],
+        "sorcery_points": 7
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Arcane Apotheosis"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "Pyromancer (PSK)",
+        "levels": {
+          "6": {
+            "features": [
+              "Fire in the Veins"
+            ]
+          },
+          "14": {
+            "features": [
+              "Pyromancer's Fury"
+            ]
+          },
+          "18": {
+            "features": [
+              "Fiery Soul"
+            ]
+          },
+          "3": {
+            "features": [
+              "Heart of Fire"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Divine Soul",
+        "levels": {
+          "6": {
+            "features": [
+              "Empowered Healing"
+            ]
+          },
+          "14": {
+            "features": [
+              "Otherworldly Wings"
+            ]
+          },
+          "18": {
+            "features": [
+              "Unearthly Recovery"
+            ]
+          },
+          "3": {
+            "features": [
+              "Divine Magic",
+              "Favored by the Gods"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Shadow Magic",
+        "levels": {
+          "6": {
+            "features": [
+              "Hound of Ill Omen"
+            ]
+          },
+          "14": {
+            "features": [
+              "Shadow Walk"
+            ]
+          },
+          "18": {
+            "features": [
+              "Umbral Form"
+            ]
+          },
+          "3": {
+            "features": [
+              "Eyes of the Dark",
+              "Strength of the Grave"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Storm Sorcery",
+        "levels": {
+          "6": {
+            "features": [
+              "Heart of the Storm",
+              "Storm Guide"
+            ]
+          },
+          "14": {
+            "features": [
+              "Storm's Fury"
+            ]
+          },
+          "18": {
+            "features": [
+              "Wind Soul"
+            ]
+          },
+          "3": {
+            "features": [
+              "Tempestuous Magic",
+              "Wind Speaker"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Lunar Sorcery",
+        "levels": {
+          "6": {
+            "features": [
+              "Lunar Boons",
+              "Waxing and Waning"
+            ]
+          },
+          "14": {
+            "features": [
+              "Lunar Empowerment"
+            ]
+          },
+          "18": {
+            "features": [
+              "Lunar Phenomenon"
+            ]
+          },
+          "3": {
+            "features": [
+              "Lunar Embodiment",
+              "Moon Fire"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Aberrant Sorcery",
+        "levels": {
+          "3": {
+            "features": [
+              "Psionic Spells",
+              "Telepathic Speech"
+            ]
+          },
+          "6": {
+            "features": [
+              "Psionic Sorcery",
+              "Psychic Defenses"
+            ]
+          },
+          "14": {
+            "features": [
+              "Revelation in Flesh"
+            ]
+          },
+          "18": {
+            "features": [
+              "Warping Implosion"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Clockwork Sorcery",
+        "levels": {
+          "3": {
+            "features": [
+              "Clockwork Spells",
+              "Restore Balance"
+            ]
+          },
+          "6": {
+            "features": [
+              "Bastion of Law"
+            ]
+          },
+          "14": {
+            "features": [
+              "Trance of Order"
+            ]
+          },
+          "18": {
+            "features": [
+              "Clockwork Cavalcade"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Draconic Sorcery",
+        "levels": {
+          "3": {
+            "features": [
+              "Draconic Spells",
+              "Draconic Resilience"
+            ]
+          },
+          "6": {
+            "features": [
+              "Elemental Affinity"
+            ]
+          },
+          "14": {
+            "features": [
+              "Dragon Wings"
+            ]
+          },
+          "18": {
+            "features": [
+              "Dragon Companion"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Wild Magic Sorcery",
+        "levels": {
+          "3": {
+            "features": [
+              "Tides of Chaos",
+              "Wild Magic Surge"
+            ]
+          },
+          "6": {
+            "features": [
+              "Bend Luck"
+            ]
+          },
+          "14": {
+            "features": [
+              "Controlled Chaos"
+            ]
+          },
+          "18": {
+            "features": [
+              "Tamed Surge"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Spellfire Sorcery",
+        "levels": {
+          "3": {
+            "features": [
+              "Bolstering Flames",
+              "Radiant Fire",
+              "Spellfire Burst",
+              "Spellfire Spells"
+            ]
+          },
+          "6": {
+            "features": [
+              "Absorb Spells"
+            ]
+          },
+          "14": {
+            "features": [
+              "Honed Spellfire"
+            ]
+          },
+          "18": {
+            "features": [
+              "Crown of Spellfire"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "CHA >= 13"
+  },
+  {
+    "name": "Warlock",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Warlock)",
+          "Pact Magic",
+          "Eldritch Invocations",
+          "Multiclass Proficiencies (Warlock)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Magical Cunning"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "9": {
+        "features": [
+          "Contact Patron"
+        ]
+      },
+      "11": {
+        "features": [
+          "Mystic Arcanum (6th)"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "13": {
+        "features": [
+          "Mystic Arcanum (7th)"
+        ]
+      },
+      "15": {
+        "features": [
+          "Mystic Arcanum (8th)"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "17": {
+        "features": [
+          "Mystic Arcanum (9th)"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Eldritch Master"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "The Undying",
+        "levels": {
+          "6": {
+            "features": [
+              "Defy Death"
+            ]
+          },
+          "10": {
+            "features": [
+              "Undying Nature"
+            ]
+          },
+          "14": {
+            "features": [
+              "Indestructible Life"
+            ]
+          },
+          "3": {
+            "features": [
+              "Among the Dead"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Hexblade",
+        "levels": {
+          "6": {
+            "features": [
+              "Accursed Specter"
+            ]
+          },
+          "10": {
+            "features": [
+              "Armor of Hexes"
+            ]
+          },
+          "14": {
+            "features": [
+              "Master of Hexes"
+            ]
+          },
+          "3": {
+            "features": [
+              "Hex Warrior",
+              "Hexblade's Curse",
+              "Expanded Spell List (Hexblade)"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Fathomless",
+        "levels": {
+          "6": {
+            "features": [
+              "Guardian Coil",
+              "Oceanic Soul"
+            ]
+          },
+          "10": {
+            "features": [
+              "Grasping Tentacles"
+            ]
+          },
+          "14": {
+            "features": [
+              "Fathomless Plunge"
+            ]
+          },
+          "3": {
+            "features": [
+              "Gift of the Sea",
+              "Tentacle of the Deeps"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Genie (Dao)",
+        "levels": {
+          "6": {
+            "features": [
+              "Elemental Gift"
+            ]
+          },
+          "10": {
+            "features": [
+              "Sanctuary Vessel"
+            ]
+          },
+          "14": {
+            "features": [
+              "Limited Wish"
+            ]
+          },
+          "3": {
+            "features": [
+              "Bottled Respite",
+              "Genie's Wrath",
+              "Genie's Vessel",
+              "Expanded Spell List (Genie)",
+              "Expanded Spell List (Dao)"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Genie (Djinni)",
+        "levels": {
+          "6": {
+            "features": [
+              "Elemental Gift"
+            ]
+          },
+          "10": {
+            "features": [
+              "Sanctuary Vessel"
+            ]
+          },
+          "14": {
+            "features": [
+              "Limited Wish"
+            ]
+          },
+          "3": {
+            "features": [
+              "Bottled Respite",
+              "Genie's Wrath",
+              "Genie's Vessel",
+              "Expanded Spell List (Genie)",
+              "Expanded Spell List (Djinni)"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Genie (Efreeti)",
+        "levels": {
+          "6": {
+            "features": [
+              "Elemental Gift"
+            ]
+          },
+          "10": {
+            "features": [
+              "Sanctuary Vessel"
+            ]
+          },
+          "14": {
+            "features": [
+              "Limited Wish"
+            ]
+          },
+          "3": {
+            "features": [
+              "Bottled Respite",
+              "Genie's Wrath",
+              "Genie's Vessel",
+              "Expanded Spell List (Genie)",
+              "Expanded Spell List (Efreeti)"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Genie (Marid)",
+        "levels": {
+          "6": {
+            "features": [
+              "Elemental Gift"
+            ]
+          },
+          "10": {
+            "features": [
+              "Sanctuary Vessel"
+            ]
+          },
+          "14": {
+            "features": [
+              "Limited Wish"
+            ]
+          },
+          "3": {
+            "features": [
+              "Bottled Respite",
+              "Genie's Wrath",
+              "Genie's Vessel",
+              "Expanded Spell List (Genie)",
+              "Expanded Spell List (Marid)"
+            ]
+          }
+        }
+      },
+      {
+        "name": "The Undead",
+        "levels": {
+          "6": {
+            "features": [
+              "Grave Touched"
+            ]
+          },
+          "10": {
+            "features": [
+              "Necrotic Husk"
+            ]
+          },
+          "14": {
+            "features": [
+              "Spirit Projection"
+            ]
+          },
+          "3": {
+            "features": [
+              "Form of Dread"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Archfey Patron",
+        "levels": {
+          "3": {
+            "features": [
+              "Archfey Spells",
+              "Steps of the Fey"
+            ]
+          },
+          "6": {
+            "features": [
+              "Misty Escape"
+            ]
+          },
+          "10": {
+            "features": [
+              "Beguiling Defenses"
+            ]
+          },
+          "14": {
+            "features": [
+              "Bewitching Magic"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Celestial Patron",
+        "levels": {
+          "3": {
+            "features": [
+              "Celestial Spells",
+              "Healing Light"
+            ]
+          },
+          "6": {
+            "features": [
+              "Radiant Soul"
+            ]
+          },
+          "10": {
+            "features": [
+              "Celestial Resilience"
+            ]
+          },
+          "14": {
+            "features": [
+              "Searing Vengeance"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Fiend Patron",
+        "levels": {
+          "3": {
+            "features": [
+              "Dark One's Blessing",
+              "Fiend Spells"
+            ]
+          },
+          "6": {
+            "features": [
+              "Dark One's Own Luck"
+            ]
+          },
+          "10": {
+            "features": [
+              "Fiendish Resilience"
+            ]
+          },
+          "14": {
+            "features": [
+              "Hurl Through Hell"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Great Old One Patron",
+        "levels": {
+          "3": {
+            "features": [
+              "Awakened Mind",
+              "Great Old One Spells",
+              "Psychic Spells"
+            ]
+          },
+          "6": {
+            "features": [
+              "Clairvoyant Combatant"
+            ]
+          },
+          "10": {
+            "features": [
+              "Eldritch Hex",
+              "Thought Shield"
+            ]
+          },
+          "14": {
+            "features": [
+              "Create Thrall"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "CHA >= 13"
+  },
+  {
+    "name": "Wizard",
+    "levels": {
+      "1": {
+        "features": [
+          "Class Proficiencies (Wizard)",
+          "Spellcasting (Wizard)",
+          "Arcane Recovery",
+          "Ritual Adept",
+          "Multiclass Proficiencies (Wizard)"
+        ]
+      },
+      "2": {
+        "features": [
+          "Scholar"
+        ]
+      },
+      "3": {
+        "features": [
+          "Subclass"
+        ]
+      },
+      "4": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "5": {
+        "features": [
+          "Memorize Spell"
+        ]
+      },
+      "8": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "12": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "16": {
+        "features": [
+          "Ability Score Improvement"
+        ]
+      },
+      "18": {
+        "features": [
+          "Spell Mastery"
+        ]
+      },
+      "19": {
+        "features": [
+          "Epic Boon"
+        ]
+      },
+      "20": {
+        "features": [
+          "Signature Spells"
+        ]
+      }
+    },
+    "subclasses": [
+      {
+        "name": "School of Conjuration",
+        "levels": {
+          "6": {
+            "features": [
+              "Benign Transposition"
+            ]
+          },
+          "10": {
+            "features": [
+              "Focused Conjuration"
+            ]
+          },
+          "14": {
+            "features": [
+              "Durable Summons"
+            ]
+          },
+          "3": {
+            "features": [
+              "Conjuration Savant",
+              "Minor Conjuration"
+            ]
+          }
+        }
+      },
+      {
+        "name": "School of Enchantment",
+        "levels": {
+          "6": {
+            "features": [
+              "Instinctive Charm"
+            ]
+          },
+          "10": {
+            "features": [
+              "Split Enchantment"
+            ]
+          },
+          "14": {
+            "features": [
+              "Alter Memories"
+            ]
+          },
+          "3": {
+            "features": [
+              "Enchantment Savant",
+              "Hypnotic Gaze"
+            ]
+          }
+        }
+      },
+      {
+        "name": "School of Necromancy",
+        "levels": {
+          "6": {
+            "features": [
+              "Undead Thralls"
+            ]
+          },
+          "10": {
+            "features": [
+              "Inured to Undeath"
+            ]
+          },
+          "14": {
+            "features": [
+              "Command Undead"
+            ]
+          },
+          "3": {
+            "features": [
+              "Grim Harvest",
+              "Necromancy Savant"
+            ]
+          }
+        }
+      },
+      {
+        "name": "School of Transmutation",
+        "levels": {
+          "6": {
+            "features": [
+              "Transmuter's Stone"
+            ]
+          },
+          "10": {
+            "features": [
+              "Shapechanger"
+            ]
+          },
+          "14": {
+            "features": [
+              "Master Transmuter"
+            ]
+          },
+          "3": {
+            "features": [
+              "Minor Alchemy",
+              "Transmutation Savant"
+            ]
+          }
+        }
+      },
+      {
+        "name": "War Magic",
+        "levels": {
+          "6": {
+            "features": [
+              "Power Surge"
+            ]
+          },
+          "10": {
+            "features": [
+              "Durable Magic"
+            ]
+          },
+          "14": {
+            "features": [
+              "Deflecting Shroud"
+            ]
+          },
+          "3": {
+            "features": [
+              "Arcane Deflection",
+              "Tactical Wit"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Chronurgy Magic",
+        "levels": {
+          "6": {
+            "features": [
+              "Momentary Stasis"
+            ]
+          },
+          "10": {
+            "features": [
+              "Arcane Abeyance"
+            ]
+          },
+          "14": {
+            "features": [
+              "Convergent Future"
+            ]
+          },
+          "3": {
+            "features": [
+              "Chronal Shift",
+              "Temporal Awareness"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Graviturgy Magic",
+        "levels": {
+          "6": {
+            "features": [
+              "Gravity Well"
+            ]
+          },
+          "10": {
+            "features": [
+              "Violent Attraction"
+            ]
+          },
+          "14": {
+            "features": [
+              "Event Horizon"
+            ]
+          },
+          "3": {
+            "features": [
+              "Adjust Density"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Order of Scribes",
+        "levels": {
+          "6": {
+            "features": [
+              "Manifest Mind"
+            ]
+          },
+          "10": {
+            "features": [
+              "Master Scrivener"
+            ]
+          },
+          "14": {
+            "features": [
+              "One with the Word"
+            ]
+          },
+          "3": {
+            "features": [
+              "Awakened Spellbook",
+              "Wizardly Quill"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Abjurer",
+        "levels": {
+          "3": {
+            "features": [
+              "Abjuration Savant",
+              "Arcane Ward"
+            ]
+          },
+          "6": {
+            "features": [
+              "Projected Ward"
+            ]
+          },
+          "10": {
+            "features": [
+              "Spell Breaker"
+            ]
+          },
+          "14": {
+            "features": [
+              "Spell Resistance"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Diviner",
+        "levels": {
+          "3": {
+            "features": [
+              "Divination Savant",
+              "Portent"
+            ]
+          },
+          "6": {
+            "features": [
+              "Expert Divination"
+            ]
+          },
+          "10": {
+            "features": [
+              "The Third Eye"
+            ]
+          },
+          "14": {
+            "features": [
+              "Greater Portent"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Evoker",
+        "levels": {
+          "3": {
+            "features": [
+              "Evocation Savant",
+              "Potent Cantrip"
+            ]
+          },
+          "6": {
+            "features": [
+              "Sculpt Spells"
+            ]
+          },
+          "10": {
+            "features": [
+              "Empowered Evocation"
+            ]
+          },
+          "14": {
+            "features": [
+              "Overchannel"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Illusionist",
+        "levels": {
+          "3": {
+            "features": [
+              "Illusion Savant",
+              "Improved Illusions"
+            ]
+          },
+          "6": {
+            "features": [
+              "Phantasmal Creatures"
+            ]
+          },
+          "10": {
+            "features": [
+              "Illusory Self"
+            ]
+          },
+          "14": {
+            "features": [
+              "Illusory Reality"
+            ]
+          }
+        }
+      },
+      {
+        "name": "Bladesinger",
+        "levels": {
+          "3": {
+            "features": [
+              "Bladesong",
+              "Training in War and Song"
+            ]
+          },
+          "6": {
+            "features": [
+              "Extra Attack"
+            ]
+          },
+          "10": {
+            "features": [
+              "Song of Defense"
+            ]
+          },
+          "14": {
+            "features": [
+              "Song of Victory"
+            ]
+          }
+        }
+      }
+    ],
+    "prerequisites": "INT >= 13"
+  }
+]

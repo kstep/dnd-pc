@@ -1,0 +1,50 @@
+{
+  "Acolyte": {
+    "description": "You devoted yourself to service in a temple, learning sacred rites and providing sacrifices to the god or gods you worship. Serving the gods and discovering their sacred works will guide you to greatness."
+  },
+  "Artisan": {
+    "description": "You began mopping floors and scrubbing counters in an artisan's workshop for a few coppers per day as soon as you were strong enough to carry a bucket. Eventually you learned your trade and became a googled artisan in your own right."
+  },
+  "Charlatan": {
+    "description": "Once combative and headstrong, you have since tempered your behavior with cunning, learning that deceiving others is far more effective than strong-arming them. You employ trickery, misdirection, and forgery to get what you want."
+  },
+  "Criminal": {
+    "description": "You eked out a living in dark alleyways, cutting purses or burgling shops. Perhaps you were part of a small gang of like-minded criminals who looked out for each other, or maybe you were a lone wolf."
+  },
+  "Entertainer": {
+    "description": "You spent much of your youth following minstrels, actors, and other entertainers around, eventually learning their craft. You thrive in front of an audience, knowing how to captivate, inspire, and even shock them."
+  },
+  "Farmer": {
+    "description": "You grew up close to the land, tending crops and caring for livestock. The rhythms of nature and the hard work of the harvest shaped your strong constitution and practical outlook on life."
+  },
+  "Guard": {
+    "description": "You served as a guard, standing watch over the walls and gates of a settlement, keeping a keen eye out for threats. Your experience taught you vigilance and the value of physical strength in maintaining order."
+  },
+  "Guide": {
+    "description": "You came of age outdoors, far from civilization, and learned to sustain yourself in the wild. You are skilled at navigating trackless terrain and can find food and fresh water for yourself and others."
+  },
+  "Hermit": {
+    "description": "You lived for a time in seclusion, either in a sheltered community or entirely alone, devoted to contemplation and self-discovery. During your isolation you gained insight into healing and the natural world."
+  },
+  "Merchant": {
+    "description": "You earned a living by buying and selling goods, traversing trade routes and navigating bustling marketplaces. Your keen business sense and social savvy have served you well in negotiations both mercantile and otherwise."
+  },
+  "Noble": {
+    "description": "You were raised in a family among the social elite, accustomed to power and privilege. Your noble birth grants you a measure of respect and influence, along with an education in history and courtly manners."
+  },
+  "Sage": {
+    "description": "You spent your formative years studying lore in a library or under a mentor, amassing knowledge of the arcane and the historical. Your hunger for knowledge drives you to seek answers to the world's deepest mysteries."
+  },
+  "Sailor": {
+    "description": "You spent years aboard a ship, working as a deckhand, navigator, or even first mate. The open sea taught you agility, sharp awareness, and how to handle yourself in a rough-and-tumble brawl."
+  },
+  "Scribe": {
+    "description": "You spent years copying documents and cataloguing texts in a scriptorium or government office. Your meticulous attention to detail and keen powers of observation served you well in your scholarly duties."
+  },
+  "Soldier": {
+    "description": "You began training for war as a youth, drilling with weapons and performing forced marches in heavy armor. The horrors of battle have steeled your resolve and given you a ruthless edge in combat."
+  },
+  "Wayfarer": {
+    "description": "You grew up on the road, traveling with a band of wanderers or drifting from place to place on your own. Life on the move taught you how to read people, stay out of sight, and rely on your wits to survive."
+  }
+}
