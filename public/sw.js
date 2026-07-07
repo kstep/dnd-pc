@@ -21,7 +21,7 @@ const PKG_FILES = ['classes.json', 'species.json', 'backgrounds.json',
 async function buildPrecacheList() {
   const urls = [
     ...FIREBASE_URLS,
-    new URL('names.json', BASE).href,
+    new URL('rules/names.json', BASE).href,
     new URL('rules/index.json', BASE).href,
   ];
   try {

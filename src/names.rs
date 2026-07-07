@@ -24,5 +24,7 @@ fn random_pick(items: &[Box<str>]) -> &str {
 }
 
 pub async fn fetch_names() -> Option<NamesData> {
-    fetch_json(&format!("{BASE_URL}/names.json")).await.ok()
+    fetch_json(&format!("{BASE_URL}/rules/names.json"))
+        .await
+        .ok()
 }

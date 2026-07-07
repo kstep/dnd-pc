@@ -14,8 +14,8 @@ use crate::{
         ref_link::Ref,
     },
     model::{
-        Character, CharacterCore, CharacterCoreStoreFields, CharacterIdentityStoreFields,
-        CharacterStoreFields, FeatureCategory, FeatureSource, PersonalityStoreFields,
+        Character, CharacterCore, CharacterStoreFields, FeatureCategory, FeatureSource,
+        PersonalityStoreFields,
     },
     names::{self, NamesData},
     rules::{

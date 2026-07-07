@@ -125,12 +125,21 @@ pub async fn fetch_json<T: for<'de> Deserialize<'de>>(url: &str) -> Result<T, St
 }
 
 /// Fetch JSON treating HTTP 404 as "package doesn't ship this file".
+/// A non-JSON content type counts as absent too: SPA fallbacks serve
+/// index.html for unknown paths (trunk serve with 200, GH Pages 404.html).
 pub async fn fetch_json_opt<T: for<'de> Deserialize<'de>>(url: &str) -> Result<Option<T>, String> {
     let resp = gloo_net::http::Request::get(url)
         .send()
         .await
         .map_err(|error| format!("fetch error: {error}"))?;
     if resp.status() == 404 {
+        return Ok(None);
+    }
+    let is_json = resp
+        .headers()
+        .get("content-type")
+        .is_some_and(|content_type| content_type.starts_with("application/json"));
+    if !is_json {
         return Ok(None);
     }
     let result = if resp.ok() {

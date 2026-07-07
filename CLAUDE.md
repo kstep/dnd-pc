@@ -153,9 +153,9 @@ Half-migrated characters (`feature.inputs == []` but target state reflects prior
 
 ### Public data (`public/`)
 - **Rule packages** (`public/rules/{pkg}/`): per package — `data/{classes,species,backgrounds,features,spells,effects}.json` (arrays of full definitions; every file optional) + `data/spells/{class}.json` name lists; `{en,ru}/` mirror the data files with flat name-keyed `LocaleMap`s (`"Wizard"`, `"Wizard.subclass.Evoker"`, `"Feat.field.X"`). Manifest `public/rules/index.json` lists packages (HTTP can't list dirs).
-- **App-level**: `public/names.json` — flat `{first, last}` name-generator pools (not rules data).
+- **App-level**: `public/rules/names.json` — flat `{first, last}` name-generator pools (next to the manifest, not per-package).
 
-`public/rules` needs `<link data-trunk rel="copy-dir" .../>`, `names.json` a `copy-file` in `index.html`. `public/sw.js` precaches rules data from the manifest (fixed per-package file names + spell-list paths regexed from features.json).
+`public/rules` needs `<link data-trunk rel="copy-dir" .../>` in `index.html`. `public/sw.js` precaches rules data from the manifest (fixed per-package file names + spell-list paths regexed from features.json).
 
 ## Model (`src/model/`)
 
