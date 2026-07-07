@@ -1,18 +1,9 @@
-use std::collections::BTreeMap;
-
-use serde::Deserialize;
 use strum::Display;
 
-use crate::{
-    demap::{self, Named},
-    expr::Eval as _,
-    model::{CharacterCore, Expr},
-};
-
-/// Borrowed reference into one of the four entry types on the shared
-/// `Index` (class / species / background / spell). The `Display` impl
-/// produces the locale-overlay key (`"class.wizard"`, `"species.elf"`,
-/// …) used by `LocalizedIndex<Index, IndexLocaleMap>::entry_label_desc`.
+/// Borrowed reference to one of the four reference-browser entry kinds
+/// (class / species / background / spell list). Routing helper: `prefix()` +
+/// `name()` build `/r/<prefix>/<name>` hrefs; `RulesRegistry::entry_label_desc`
+/// dispatches on it for locale-aware labels.
 #[derive(Copy, Clone, Display)]
 pub enum IndexEntry<'a> {
     #[strum(to_string = "class.{0}")]
@@ -41,75 +32,5 @@ impl<'a> IndexEntry<'a> {
             Self::Background(_) => "background",
             Self::Spell(_) => "spell",
         }
-    }
-}
-
-#[derive(Debug, Clone, Default, Deserialize)]
-pub struct Index {
-    #[serde(deserialize_with = "demap::named_map")]
-    pub classes: BTreeMap<Box<str>, ClassIndexEntry>,
-    #[serde(default, alias = "races", deserialize_with = "demap::named_map")]
-    pub species: BTreeMap<Box<str>, SpeciesIndexEntry>,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub backgrounds: BTreeMap<Box<str>, BackgroundIndexEntry>,
-    #[serde(default, deserialize_with = "demap::named_map")]
-    pub spells: BTreeMap<Box<str>, SpellIndexEntry>,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct ClassIndexEntry {
-    pub name: Box<str>,
-    pub url: Box<str>,
-    #[serde(default)]
-    pub prerequisites: Option<Expr>,
-}
-
-impl Named for ClassIndexEntry {
-    fn name(&self) -> &str {
-        &self.name
-    }
-}
-
-impl ClassIndexEntry {
-    pub fn meets_prerequisites(&self, character: &CharacterCore) -> bool {
-        self.prerequisites
-            .as_ref()
-            .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct SpeciesIndexEntry {
-    pub name: Box<str>,
-    pub url: Box<str>,
-}
-
-impl Named for SpeciesIndexEntry {
-    fn name(&self) -> &str {
-        &self.name
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct BackgroundIndexEntry {
-    pub name: Box<str>,
-    pub url: Box<str>,
-}
-
-impl Named for BackgroundIndexEntry {
-    fn name(&self) -> &str {
-        &self.name
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct SpellIndexEntry {
-    pub name: Box<str>,
-    pub url: Box<str>,
-}
-
-impl Named for SpellIndexEntry {
-    fn name(&self) -> &str {
-        &self.name
     }
 }

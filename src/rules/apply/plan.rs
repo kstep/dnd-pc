@@ -6,7 +6,7 @@ use crate::{
         Features, IdentitySlot,
     },
     rules::{
-        ClassIndexEntry, FeaturesView, RulesRegistry,
+        FeaturesView, RulesRegistry,
         apply::{
             DefinitionCaches,
             pending::{
@@ -16,6 +16,7 @@ use crate::{
             primitives::cascade,
             rebuild::{DefinitionKind, RebuildError, make_inputs_for, make_replacement_for},
         },
+        class::ClassDefinition,
     },
 };
 
@@ -202,9 +203,7 @@ pub fn plan_from_interleaving(
 ) -> Result<Vec<PendingFeature>, RebuildError> {
     registry.with_definitions(|caches| {
         registry.with_features_index_untracked(|feat_index| {
-            registry.with_class_entries(|class_entries| {
-                plan_from_interleaving_with_caches(original, feat_index, caches, class_entries)
-            })
+            plan_from_interleaving_with_caches(original, feat_index, caches)
         })
     })
 }
@@ -216,7 +215,6 @@ pub fn plan_from_interleaving_with_caches(
     original: &CharacterCore,
     feat_index: FeaturesView<'_>,
     caches: DefinitionCaches,
-    class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
 ) -> Result<Vec<PendingFeature>, RebuildError> {
     let identity = &original.identity;
     let features = &original.features;
@@ -326,7 +324,6 @@ pub fn plan_from_interleaving_with_caches(
         features,
         feat_index,
         caches,
-        class_entries,
         &inputs_for,
         &replacement_for,
         &mut probe,
@@ -346,7 +343,6 @@ fn apply_classes_interleaved(
     features: &Features,
     feat_index: FeaturesView<'_>,
     caches: DefinitionCaches,
-    class_entries: &BTreeMap<Box<str>, ClassIndexEntry>,
     inputs_for: &InputsForFn<'_>,
     replacement_for: &ReplacementForFn<'_>,
     probe: &mut CharacterCore,
@@ -394,7 +390,7 @@ fn apply_classes_interleaved(
         );
     }
 
-    while let Some(idx) = pick_next_class(probe, &targets, &applied, class_entries) {
+    while let Some(idx) = pick_next_class(probe, &targets, &applied, caches.classes) {
         let next_class_lvl = applied[idx] + 1;
         emit_class_level(
             identity,
@@ -442,12 +438,12 @@ fn pick_next_class(
     probe: &CharacterCore,
     targets: &[u32],
     applied: &[u32],
-    entries: &BTreeMap<Box<str>, ClassIndexEntry>,
+    classes: &BTreeMap<Box<str>, ClassDefinition>,
 ) -> Option<usize> {
     let meets_prereq = |class_name: &str| {
-        entries
+        classes
             .get(class_name)
-            .is_none_or(|entry| entry.meets_prerequisites(probe))
+            .is_none_or(|class_def| class_def.meets_prerequisites(probe))
     };
 
     let idx = if meets_prereq(probe.identity.classes[0].class.as_ref()) {
@@ -1047,7 +1043,7 @@ mod tests {
         use crate::{
             model::{AssignInputs, Expr},
             rules::{
-                ClassIndexEntry, ReplaceWith, WhenCondition,
+                ReplaceWith, WhenCondition,
                 background::BackgroundDefinition,
                 class::ClassDefinition,
                 feature::{Assignment, FeatureDefinition},
@@ -1133,6 +1129,7 @@ mod tests {
         .unwrap();
         let bard_def: ClassDefinition = serde_json::from_value(serde_json::json!({
             "name": "Bard",
+            "prerequisites": "CHA >= 13",
             "levels": { "1": { "features": [] } }
         }))
         .unwrap();
@@ -1155,27 +1152,6 @@ mod tests {
             species: &species_defs,
             backgrounds: &bg_defs,
         };
-
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = [
-            (
-                Box::<str>::from("Monk"),
-                ClassIndexEntry {
-                    name: Box::from("Monk"),
-                    url: Box::from(""),
-                    prerequisites: None,
-                },
-            ),
-            (
-                Box::<str>::from("Bard"),
-                ClassIndexEntry {
-                    name: Box::from("Bard"),
-                    url: Box::from(""),
-                    prerequisites: Some("CHA >= 13".parse::<Expr>().unwrap()),
-                },
-            ),
-        ]
-        .into_iter()
-        .collect();
 
         let mut feat_index_map: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
         for name in ["Monk", "Bard"] {
@@ -1244,9 +1220,8 @@ mod tests {
         );
         let feat_index = FeaturesView::from_natural(&feat_index_map);
 
-        let plan =
-            plan_from_interleaving_with_caches(&original.core, feat_index, caches, &class_entries)
-                .expect("rebuild must succeed when stored Generation + ASI bring CHA to 13");
+        let plan = plan_from_interleaving_with_caches(&original.core, feat_index, caches)
+            .expect("rebuild must succeed when stored Generation + ASI bring CHA to 13");
 
         let class_names: Vec<&str> = plan
             .iter()

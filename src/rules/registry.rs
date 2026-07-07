@@ -16,24 +16,21 @@ use crate::{
         WhenCondition,
         apply::DefinitionCaches,
         background::BackgroundDefinition,
-        cache::{DefinitionStore, FetchCache, LocalizedCache},
+        cache::{DefinitionStore, FetchCache},
         class::ClassDefinition,
         feature::{
             Assignment, ChoiceOption, EMPTY_FEATURES_INDEX, FeatureDefinition, FeaturesIndex,
             ReplaceWith,
         },
-        index::{
-            BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry,
-            SpellIndexEntry,
-        },
-        locale::{
-            EffectsLocaleMap, IndexLocaleMap, LocaleMap, LocaleText, LocalizedText, SpellsLocaleMap,
-        },
+        index::IndexEntry,
+        locale::{EffectsLocaleMap, LocaleMap, LocaleText, LocalizedText, SpellsLocaleMap},
+        packages::{DefsIndex, PackageMerge},
         resolve,
         species::SpeciesDefinition,
         spells::{EMPTY_SPELL_INDEX, SpellDefinition, SpellsIndex, SpellsList},
-        utils::fetch_json,
+        utils::fetch_merged_json,
     },
+    vecset::VecSet,
 };
 
 // ---- DefinitionStore newtype wrappers ----
@@ -43,88 +40,20 @@ pub struct SpeciesDefs(RulesRegistry);
 pub struct BackgroundDefs(RulesRegistry);
 
 macro_rules! impl_definition_store {
-    ($wrapper:ty, $def:ty, $cache:ident, $index_field:ident, $label:expr) => {
+    ($wrapper:ty, $def:ty, $defs_field:ident) => {
         impl DefinitionStore for $wrapper {
             type Definition = $def;
 
-            fn cache(&self) -> LocalizedCache<$def> {
-                self.0.$cache
-            }
-
-            fn data_url(&self, name: &str) -> Option<String> {
-                self.0
-                    .resolve_url(name, |idx| &idx.$index_field, true, RulesRegistry::data_url)
-            }
-
-            fn locale_url(&self, name: &str) -> Option<String> {
-                self.0.resolve_url(
-                    name,
-                    |idx| &idx.$index_field,
-                    true,
-                    |p| self.0.localized_url(p),
-                )
-            }
-
-            fn data_url_untracked(&self, name: &str) -> Option<String> {
-                self.0.resolve_url(
-                    name,
-                    |idx| &idx.$index_field,
-                    false,
-                    RulesRegistry::data_url,
-                )
-            }
-
-            fn locale_url_untracked(&self, name: &str) -> Option<String> {
-                self.0.resolve_url(
-                    name,
-                    |idx| &idx.$index_field,
-                    false,
-                    |p| self.0.localized_url(p),
-                )
-            }
-
-            fn type_label() -> &'static str {
-                $label
+            fn index(&self) -> LocalizedIndex<DefsIndex<$def>, LocaleMap> {
+                self.0.$defs_field
             }
         }
     };
 }
 
-impl_definition_store!(
-    ClassDefs,
-    ClassDefinition,
-    class_cache,
-    classes,
-    "class definition"
-);
-impl_definition_store!(
-    SpeciesDefs,
-    SpeciesDefinition,
-    species_cache,
-    species,
-    "species definition"
-);
-impl_definition_store!(
-    BackgroundDefs,
-    BackgroundDefinition,
-    background_cache,
-    backgrounds,
-    "background definition"
-);
-
-macro_rules! index_accessors {
-    ($($method:ident, $field:ident, $entry:ty);+ $(;)?) => {
-        $(
-            pub fn $method<R>(
-                &self,
-                f: impl FnOnce(&BTreeMap<Box<str>, $entry>) -> R,
-            ) -> R {
-                static EMPTY: BTreeMap<Box<str>, $entry> = BTreeMap::new();
-                self.with_index_field(|idx| &idx.$field, &EMPTY, f)
-            }
-        )+
-    };
-}
+impl_definition_store!(ClassDefs, ClassDefinition, class_defs);
+impl_definition_store!(SpeciesDefs, SpeciesDefinition, species_defs);
+impl_definition_store!(BackgroundDefs, BackgroundDefinition, background_defs);
 
 // ---- FeaturesView ----
 
@@ -181,15 +110,17 @@ impl<'a> FeaturesView<'a> {
 
 #[derive(Clone, Copy)]
 pub struct RulesRegistry {
-    locale: Signal<String>,
-    class_index: LocalizedIndex<Index, IndexLocaleMap>,
-    pub(super) class_cache: LocalizedCache<ClassDefinition>,
-    pub(super) species_cache: LocalizedCache<SpeciesDefinition>,
-    pub(super) background_cache: LocalizedCache<BackgroundDefinition>,
-    /// Per-class curated name lists from `public/data/spells/*.json` —
-    /// each value is a flat `Vec<String>`, fetched on demand and locale-less.
+    /// Active package set; every index fetches one file per package.
+    packages: Signal<VecSet<String>>,
+    /// Eager merged definitions — one whole-file index per kind.
+    pub(super) class_defs: LocalizedIndex<DefsIndex<ClassDefinition>, LocaleMap>,
+    species_defs: LocalizedIndex<DefsIndex<SpeciesDefinition>, LocaleMap>,
+    background_defs: LocalizedIndex<DefsIndex<BackgroundDefinition>, LocaleMap>,
+    /// Per-class curated name lists from `rules/{pkg}/data/spells/*.json` —
+    /// each value is a flat `Vec<String>`, fetched on demand (unioned across
+    /// packages) and locale-less.
     spell_names_cache: FetchCache<Vec<String>>,
-    /// Global spells index loaded once from `public/data/spells.json`.
+    /// Global spells index merged across packages.
     /// Locale overlay re-fetched on language change.
     pub(super) spells_index: LocalizedIndex<SpellsIndex, SpellsLocaleMap>,
     effects_index: LocalizedIndex<EffectsIndex, EffectsLocaleMap>,
@@ -203,25 +134,105 @@ pub struct RulesRegistry {
 }
 
 impl RulesRegistry {
-    // ---- Index-based methods (stay on RulesRegistry) ----
+    /// Tracked access to the merged class definitions map (empty until the
+    /// defs index resolves).
+    pub fn with_class_defs<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, ClassDefinition>) -> R,
+    ) -> R {
+        self.class_defs
+            .with_data(|defs| f(defs.map_or(&EMPTY_CLASS_DEFS, |index| &index.0)))
+    }
 
-    index_accessors! {
-        with_class_entries,      classes,      ClassIndexEntry;
-        with_species_entries,    species,      SpeciesIndexEntry;
-        with_background_entries, backgrounds,  BackgroundIndexEntry;
-        with_spell_entries,      spells,       SpellIndexEntry;
+    /// Tracked access to the merged species definitions map.
+    pub fn with_species_defs<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, SpeciesDefinition>) -> R,
+    ) -> R {
+        self.species_defs
+            .with_data(|defs| f(defs.map_or(&EMPTY_SPECIES_DEFS, |index| &index.0)))
+    }
+
+    /// Tracked access to the merged background definitions map.
+    pub fn with_background_defs<R>(
+        &self,
+        f: impl FnOnce(&BTreeMap<Box<str>, BackgroundDefinition>) -> R,
+    ) -> R {
+        self.background_defs
+            .with_data(|defs| f(defs.map_or(&EMPTY_BACKGROUND_DEFS, |index| &index.0)))
+    }
+
+    /// Reactive `(label, description)` for a reference entry, dispatched to
+    /// the owning defs index. Spell lists are class-derived — the label is
+    /// the owning class's label.
+    pub fn entry_label_desc(
+        &self,
+        entry: IndexEntry<'_>,
+    ) -> (ArcSignal<String>, ArcSignal<String>) {
+        match entry {
+            IndexEntry::Class(name) => self.class_defs.label_desc(name, name),
+            IndexEntry::Species(name) => self.species_defs.label_desc(name, name),
+            IndexEntry::Background(name) => self.background_defs.label_desc(name, name),
+            IndexEntry::Spell(list) => {
+                let class_name = self.with_class_defs(|defs| {
+                    defs.keys()
+                        .find(|name| name.eq_ignore_ascii_case(list))
+                        .cloned()
+                });
+                match class_name {
+                    Some(name) => self
+                        .class_defs
+                        .label_desc(name.to_string(), name.to_string()),
+                    None => self.class_defs.label_desc(list, list),
+                }
+            }
+        }
+    }
+
+    /// Short names of every class-derived spell list, two-hop: class level
+    /// features → features index → `SpellsList::Ref { from }`. Tracked.
+    pub fn spell_list_names(&self) -> Vec<String> {
+        self.with_class_defs(|classes| {
+            self.with_features_index(|features| {
+                let mut names: Vec<String> = Vec::new();
+                for class_def in classes.values() {
+                    let scopes: Vec<Option<&str>> = std::iter::once(None)
+                        .chain(class_def.subclasses.keys().map(|sub| Some(&**sub)))
+                        .collect();
+                    for scope in scopes {
+                        for feat_name in class_def.feature_names(scope) {
+                            let Some(list) = features
+                                .get(feat_name)
+                                .and_then(|feat| feat.spells.as_ref())
+                                .and_then(|spells_def| spells_def.list.ref_name())
+                            else {
+                                continue;
+                            };
+                            if !names.iter().any(|existing| existing == list) {
+                                names.push(list.to_string());
+                            }
+                        }
+                    }
+                }
+                names.sort();
+                names
+            })
+        })
     }
 
     pub fn canonical_class_name(&self, query: &str) -> Option<String> {
-        self.with_class_entries(|entries| canonical_name(entries, query))
+        self.class_defs
+            .with_data(|defs| defs.and_then(|index| canonical_name(&index.0, query)))
     }
 
     pub fn canonical_species_name(&self, query: &str) -> Option<String> {
-        self.with_species_entries(|entries| canonical_name(entries, query))
+        self.species_defs
+            .with_data(|defs| defs.and_then(|index| canonical_name(&index.0, query)))
     }
 
     pub fn canonical_background_name(&self, query: &str) -> Option<String> {
-        self.with_background_entries(|entries| canonical_name(entries, query))
+        self.background_defs
+            .with_data(|defs| defs.and_then(|index| canonical_name(&index.0, query)))
     }
 
     /// Resolve a subclass name within a class. Requires the class definition
@@ -272,26 +283,25 @@ impl RulesRegistry {
     /// prerequisites.
     /// Every class currently in `identity.classes` satisfies its multiclass
     /// prerequisites against `character`. Empty class entries and classes
-    /// missing from the index pass vacuously. Used by the picker for
+    /// missing from the defs index pass vacuously. Used by the picker for
     /// `Category(System(Class))` placeholders to gate level-up / multiclass
     /// candidates against the existing-classes side of the PHB rules.
     pub fn meets_class_prerequisites(&self, character: &CharacterCore) -> bool {
-        self.with_class_entries(|entries| {
+        self.class_defs.with_data(|defs| {
             character.identity.classes.iter().all(|cl| {
                 cl.class.is_empty()
-                    || entries
-                        .get(cl.class.as_ref())
-                        .is_none_or(|entry| entry.meets_prerequisites(character))
+                    || defs
+                        .and_then(|index| index.0.get(cl.class.as_ref()))
+                        .is_none_or(|def| def.meets_prerequisites(character))
             })
         })
     }
 
     pub fn can_multiclass(&self, character: &CharacterCore, class_name: &str) -> bool {
         self.meets_class_prerequisites(character)
-            && self.with_class_entries(|entries| {
-                entries
-                    .get(class_name)
-                    .is_none_or(|entry| entry.meets_prerequisites(character))
+            && self.class_defs.with_data(|defs| {
+                defs.and_then(|index| index.0.get(class_name))
+                    .is_none_or(|def| def.meets_prerequisites(character))
             })
     }
 
@@ -350,34 +360,32 @@ impl RulesRegistry {
     }
 
     pub fn is_loading(&self) -> bool {
-        self.class_cache.is_pending()
-            || self.species_cache.is_pending()
-            || self.background_cache.is_pending()
+        self.class_defs.is_pending()
+            || self.species_defs.is_pending()
+            || self.background_defs.is_pending()
             || self.spell_names_cache.is_pending()
-            || self.class_index.is_pending()
             || self.features_index.is_pending()
             || self.spells_index.is_pending()
             || self.effects_index.is_pending()
     }
 
-    pub fn new(i18n: leptos_fluent::I18n) -> Self {
+    pub fn new(i18n: leptos_fluent::I18n, packages: Signal<VecSet<String>>) -> Self {
         let locale = Signal::derive(move || i18n.language.get().id.to_string());
-        Self::build(locale)
+        Self::build(locale, packages)
     }
 
-    /// Construct the registry from a locale signal directly, bypassing the
-    /// `leptos_fluent::I18n` dependency. Used by wasm tests that exercise
-    /// locale-switch behavior without standing up a full i18n context.
+    /// Construct the registry from locale/packages signals directly,
+    /// bypassing the `leptos_fluent::I18n` dependency. Used by wasm tests
+    /// that exercise locale/package-switch behavior without a full i18n
+    /// context.
     #[cfg(test)]
-    pub fn new_with_locale(locale: Signal<String>) -> Self {
-        Self::build(locale)
+    pub fn new_with_locale(locale: Signal<String>, packages: Signal<VecSet<String>>) -> Self {
+        Self::build(locale, packages)
     }
 
     /// Test-only: build a registry from in-memory definitions, no fetches.
-    /// Class/species/background caches are pre-populated; indexes resolve
-    /// to provided values via `LocalizedIndex::for_test`. Caller must
-    /// `await registry.await_ready()` before any untracked read of the
-    /// indexes; cache reads are immediate.
+    /// All indexes resolve to provided values via `LocalizedIndex::for_test`.
+    /// Caller must `await registry.await_ready()` before any untracked read.
     #[cfg(any(test, feature = "testing"))]
     pub fn for_test(
         features: FeaturesIndex,
@@ -385,20 +393,11 @@ impl RulesRegistry {
         species: BTreeMap<Box<str>, SpeciesDefinition>,
         backgrounds: BTreeMap<Box<str>, BackgroundDefinition>,
     ) -> Self {
-        let (locale_signal, _) = signal::<String>("en".into());
-        let locale: Signal<String> = locale_signal.into();
-        let class_cache: LocalizedCache<ClassDefinition> = LocalizedCache::new();
-        let species_cache: LocalizedCache<SpeciesDefinition> = LocalizedCache::new();
-        let background_cache: LocalizedCache<BackgroundDefinition> = LocalizedCache::new();
-        class_cache.data.set(classes);
-        species_cache.data.set(species);
-        background_cache.data.set(backgrounds);
         Self {
-            locale,
-            class_index: LocalizedIndex::for_test(Index::default(), None),
-            class_cache,
-            species_cache,
-            background_cache,
+            packages: Signal::stored(crate::rules::packages::default_packages()),
+            class_defs: LocalizedIndex::for_test(DefsIndex(classes), None),
+            species_defs: LocalizedIndex::for_test(DefsIndex(species), None),
+            background_defs: LocalizedIndex::for_test(DefsIndex(backgrounds), None),
             spell_names_cache: FetchCache::new(),
             spells_index: LocalizedIndex::for_test(SpellsIndex::default(), None),
             effects_index: LocalizedIndex::for_test(EffectsIndex::default(), None),
@@ -414,116 +413,126 @@ impl RulesRegistry {
         self
     }
 
+    /// Test-only: replace the class defs index (data + locale) directly.
+    #[cfg(any(test, feature = "testing"))]
+    pub fn set_class_defs_for_test(
+        &mut self,
+        classes: BTreeMap<Box<str>, ClassDefinition>,
+        locale: Option<LocaleMap>,
+    ) {
+        self.class_defs = LocalizedIndex::for_test(DefsIndex(classes), locale);
+    }
+
     /// Test-only: drive the LocalResource futures so untracked reads
     /// return ready data.
     #[cfg(any(test, feature = "testing"))]
     pub async fn await_ready(&self) {
-        self.class_index.await_ready().await;
+        self.class_defs.await_ready().await;
+        self.species_defs.await_ready().await;
+        self.background_defs.await_ready().await;
         self.spells_index.await_ready().await;
         self.effects_index.await_ready().await;
         self.features_index.await_ready().await;
     }
 
-    fn build(locale: Signal<String>) -> Self {
-        let class_index = LocalizedIndex::<Index, IndexLocaleMap>::new(locale, "index.json");
+    fn build(locale: Signal<String>, packages: Signal<VecSet<String>>) -> Self {
+        let class_defs = LocalizedIndex::<DefsIndex<ClassDefinition>, LocaleMap>::new(
+            locale,
+            packages,
+            "classes.json",
+        );
+        let species_defs = LocalizedIndex::<DefsIndex<SpeciesDefinition>, LocaleMap>::new(
+            locale,
+            packages,
+            "species.json",
+        );
+        let background_defs = LocalizedIndex::<DefsIndex<BackgroundDefinition>, LocaleMap>::new(
+            locale,
+            packages,
+            "backgrounds.json",
+        );
         let effects_index =
-            LocalizedIndex::<EffectsIndex, EffectsLocaleMap>::new(locale, "effects.json");
+            LocalizedIndex::<EffectsIndex, EffectsLocaleMap>::new(locale, packages, "effects.json");
         let features_index =
-            LocalizedIndex::<FeaturesIndex, LocaleMap>::new(locale, "features.json");
+            LocalizedIndex::<FeaturesIndex, LocaleMap>::new(locale, packages, "features.json");
         let spells_index =
-            LocalizedIndex::<SpellsIndex, SpellsLocaleMap>::new(locale, "spells.json");
+            LocalizedIndex::<SpellsIndex, SpellsLocaleMap>::new(locale, packages, "spells.json");
 
-        let class_cache: LocalizedCache<ClassDefinition> = LocalizedCache::new();
-        let species_cache: LocalizedCache<SpeciesDefinition> = LocalizedCache::new();
-        let background_cache: LocalizedCache<BackgroundDefinition> = LocalizedCache::new();
         let spell_names_cache = FetchCache::new();
 
-        // On locale change, drop locale overlays so subsequent lookups (driven
-        // by ensure_definitions_fetched re-running) refetch fresh overlays.
-        // Data caches are locale-independent and survive.
-        Effect::new(move || {
-            locale.track();
-            class_cache.clear_locale();
-            species_cache.clear_locale();
-            background_cache.clear_locale();
+        // Package-set change invalidates the unioned spell lists; the
+        // LocalizedIndexes refetch themselves.
+        Effect::new(move |prev: Option<()>| {
+            packages.track();
+            if prev.is_some() {
+                spell_names_cache.clear();
+            }
         });
 
         let synth_features: StoredValue<BTreeMap<Box<str>, FeatureDefinition>> =
             StoredValue::new(BTreeMap::new());
 
-        // Synthesize Species/Background System features whenever the global
-        // index resolves. Subclass synth is left for a later phase — class
-        // definitions load lazily and observing each one needs more wiring.
+        // Synthesize System features whenever a defs index resolves. All
+        // definitions arrive eagerly (whole-file per package), so classes,
+        // species, backgrounds AND subclasses are covered by one Effect.
         Effect::new(move || {
-            class_index.with_data(|maybe_index| {
-                let Some(index) = maybe_index else { return };
+            species_defs.with_data(|maybe_defs| {
+                let Some(defs) = maybe_defs else { return };
                 synth_features.update_value(|map| {
-                    for entry in index.species.values() {
-                        let name = entry.name.clone();
-                        map.entry(name.clone())
-                            .or_insert_with(|| make_system_feature(name, IdentitySlot::Species));
-                    }
-                    for entry in index.backgrounds.values() {
-                        let name = entry.name.clone();
-                        map.entry(name.clone())
-                            .or_insert_with(|| make_system_feature(name, IdentitySlot::Background));
-                    }
-                    for entry in index.classes.values() {
-                        let name = entry.name.clone();
-                        let prerequisites = entry.prerequisites.clone();
+                    for name in defs.0.keys() {
                         map.entry(name.clone()).or_insert_with(|| {
-                            let prereq = compose_class_prereq(&name, prerequisites);
-                            let mut feat = make_system_feature(name, IdentitySlot::Class);
+                            make_system_feature(name.clone(), IdentitySlot::Species)
+                        });
+                    }
+                });
+            });
+            background_defs.with_data(|maybe_defs| {
+                let Some(defs) = maybe_defs else { return };
+                synth_features.update_value(|map| {
+                    for name in defs.0.keys() {
+                        map.entry(name.clone()).or_insert_with(|| {
+                            make_system_feature(name.clone(), IdentitySlot::Background)
+                        });
+                    }
+                });
+            });
+            class_defs.with_data(|maybe_defs| {
+                let Some(defs) = maybe_defs else { return };
+                synth_features.update_value(|map| {
+                    for (name, class_def) in &defs.0 {
+                        let prerequisites = class_def.prerequisites.clone();
+                        map.entry(name.clone()).or_insert_with(|| {
+                            let prereq = compose_class_prereq(name, prerequisites);
+                            let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
                             feat.prerequisites = prereq;
                             feat
                         });
+                        // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1`
+                        // prereq so the picker only shows subclasses for
+                        // classes the character actually has.
+                        for subclass_name in class_def.subclasses.keys() {
+                            map.entry(subclass_name.clone()).or_insert_with(|| {
+                                let mut feat = make_system_feature(
+                                    subclass_name.clone(),
+                                    IdentitySlot::Subclass,
+                                );
+                                feat.prerequisites = Some(parent_class_prereq(name));
+                                feat
+                            });
+                        }
                     }
                 });
             });
         });
 
-        // Subclass synth: subclasses live inside `ClassDefinition.subclasses`,
-        // lazy-loaded per class. Tracked-read of `class_cache.data` re-fires
-        // this Effect whenever any class definition resolves, adding its
-        // subclasses' System(Subclass) features to synth_features. Each
-        // synthesized feature carries a `CLASS.\`<parent>\`.LEVEL >= 1`
-        // prereq so the picker only shows subclasses for classes the
-        // character actually has.
-        Effect::new(move || {
-            let class_data_guard = class_cache.data.read();
-            let pairs: Vec<(Box<str>, Box<str>)> = class_data_guard
-                .iter()
-                .flat_map(|(class_name, class_def)| {
-                    let class_name = class_name.clone();
-                    class_def
-                        .subclasses
-                        .keys()
-                        .map(move |subclass_name| (subclass_name.clone(), class_name.clone()))
-                })
-                .collect();
-            if pairs.is_empty() {
-                return;
-            }
-            synth_features.update_value(|map| {
-                for (subclass_name, parent_class) in pairs {
-                    map.entry(subclass_name.clone()).or_insert_with(|| {
-                        let mut feat = make_system_feature(subclass_name, IdentitySlot::Subclass);
-                        feat.prerequisites = Some(parent_class_prereq(&parent_class));
-                        feat
-                    });
-                }
-            });
-        });
-
         Self {
-            locale,
-            class_index,
+            packages,
+            class_defs,
+            species_defs,
+            background_defs,
             effects_index,
             features_index,
             spells_index,
-            class_cache,
-            species_cache,
-            background_cache,
             spell_names_cache,
             synth_features,
         }
@@ -593,65 +602,30 @@ impl RulesRegistry {
         BackgroundDefs(*self)
     }
 
-    /// Borrow the loaded class/species/background definition caches as a
+    /// Borrow the loaded class/species/background definition indexes as a
     /// single bundle for the apply pipeline. Mirror of
-    /// [`Self::with_features_index_untracked`] for definition caches.
+    /// [`Self::with_features_index_untracked`] for definition indexes.
     pub fn with_definitions<R>(&self, f: impl FnOnce(DefinitionCaches<'_>) -> R) -> R {
-        let class_guard = self.class_cache.data.read_untracked();
-        let species_guard = self.species_cache.data.read_untracked();
-        let bg_guard = self.background_cache.data.read_untracked();
+        let class_guard = self.class_defs.data.read_untracked();
+        let species_guard = self.species_defs.data.read_untracked();
+        let bg_guard = self.background_defs.data.read_untracked();
         let caches = DefinitionCaches {
-            classes: &class_guard,
-            species: &species_guard,
-            backgrounds: &bg_guard,
+            classes: defs_or_empty(&class_guard, &EMPTY_CLASS_DEFS),
+            species: defs_or_empty(&species_guard, &EMPTY_SPECIES_DEFS),
+            backgrounds: defs_or_empty(&bg_guard, &EMPTY_BACKGROUND_DEFS),
         };
         f(caches)
     }
 
     // ---- Internal helpers ----
 
-    fn data_url(path: &str) -> String {
-        format!("{BASE_URL}/data/{path}")
-    }
-
-    pub(super) fn localized_url(&self, path: &str) -> String {
-        let locale = self.locale.get_untracked();
-        format!("{BASE_URL}/{locale}/{path}")
-    }
-
-    /// Look up a name in the index and apply `make_url` to the entry's path.
-    fn resolve_url<T>(
-        &self,
-        name: &str,
-        extractor: impl FnOnce(&Index) -> &BTreeMap<Box<str>, T>,
-        tracked: bool,
-        make_url: impl FnOnce(&str) -> String,
-    ) -> Option<String>
-    where
-        T: HasUrl,
-    {
-        let resolver = |index: Option<&Index>| -> Option<String> {
-            let entry = extractor(index?).get(name)?;
-            Some(make_url(entry.url()))
-        };
-        if tracked {
-            self.class_index.with_data(resolver)
-        } else {
-            self.class_index.with_data_untracked(resolver)
-        }
-    }
-
-    /// Access a specific index field, calling `f` with the entries map.
-    fn with_index_field<T, R>(
-        &self,
-        extractor: impl FnOnce(&Index) -> &BTreeMap<Box<str>, T>,
-        empty: &BTreeMap<Box<str>, T>,
-        f: impl FnOnce(&BTreeMap<Box<str>, T>) -> R,
-    ) -> R {
-        self.class_index.with_data(|index| {
-            let entries = index.map(extractor);
-            f(entries.unwrap_or(empty))
-        })
+    /// One URL per active package for a package-relative data path.
+    fn package_data_urls(&self, path: &str) -> Vec<String> {
+        self.packages
+            .read_untracked()
+            .iter()
+            .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{path}"))
+            .collect()
     }
 
     pub fn track_spell_cache(&self) {
@@ -671,7 +645,7 @@ impl RulesRegistry {
 
     /// Resolve `(label, description)` for a feature, routing synthesized
     /// `System(_)` entries to their identity-source locale (species /
-    /// background / class index overlay). Hand-written features fall through
+    /// background / class defs overlay). Hand-written features fall through
     /// to the regular `features().label_desc(name, name)` path.
     pub fn feature_label_desc(&self, name: &str) -> (ArcSignal<String>, ArcSignal<String>) {
         let synth_slot = self.synth_features.with_value(|map| {
@@ -681,11 +655,9 @@ impl RulesRegistry {
             })
         });
         match synth_slot {
-            Some(IdentitySlot::Species) => self.index().entry_label_desc(IndexEntry::Species(name)),
-            Some(IdentitySlot::Background) => {
-                self.index().entry_label_desc(IndexEntry::Background(name))
-            }
-            Some(IdentitySlot::Class) => self.index().entry_label_desc(IndexEntry::Class(name)),
+            Some(IdentitySlot::Species) => self.species_defs.label_desc(name, name),
+            Some(IdentitySlot::Background) => self.background_defs.label_desc(name, name),
+            Some(IdentitySlot::Class) => self.class_defs.label_desc(name, name),
             Some(IdentitySlot::Subclass) => self
                 .find_subclass_parent(name)
                 .map(|parent_class| self.subclass_label_desc(parent_class, name.to_string()))
@@ -695,14 +667,15 @@ impl RulesRegistry {
     }
 
     /// Locate the parent class of a subclass by scanning loaded class
-    /// definitions. Returns `None` when no class is currently cached.
+    /// definitions. Returns `None` when the defs index hasn't resolved yet.
     fn find_subclass_parent(&self, subclass_name: &str) -> Option<String> {
-        let class_data = self.class_cache.data.read_untracked();
-        class_data.iter().find_map(|(class_name, class_def)| {
-            class_def
-                .subclasses
-                .contains_key(subclass_name)
-                .then(|| class_name.to_string())
+        self.class_defs.with_data_untracked(|defs| {
+            defs?.0.iter().find_map(|(class_name, class_def)| {
+                class_def
+                    .subclasses
+                    .contains_key(subclass_name)
+                    .then(|| class_name.to_string())
+            })
         })
     }
 
@@ -754,23 +727,21 @@ impl RulesRegistry {
                 _ => None,
             })
         });
-        let entry = match synth_slot {
-            Some(IdentitySlot::Species) => Some(IndexEntry::Species(name)),
-            Some(IdentitySlot::Background) => Some(IndexEntry::Background(name)),
-            Some(IdentitySlot::Class) => Some(IndexEntry::Class(name)),
+        let defs_locale = match synth_slot {
+            Some(IdentitySlot::Species) => Some(self.species_defs.locale),
+            Some(IdentitySlot::Background) => Some(self.background_defs.locale),
+            Some(IdentitySlot::Class) => Some(self.class_defs.locale),
             _ => None,
         };
-        if let Some(entry) = entry {
-            let key = entry.to_string();
-            let fallback = entry.name().to_string();
-            let locale_guard = self.class_index.locale.read_untracked();
+        if let Some(locale_resource) = defs_locale {
+            let locale_guard = locale_resource.read_untracked();
             let text = locale_guard
                 .as_ref()
                 .and_then(|resource| resource.as_ref())
-                .and_then(|map| map.get(key.as_str()));
+                .and_then(|map| map.get(name));
             let label = text
                 .and_then(|entry| entry.label.clone())
-                .unwrap_or(fallback);
+                .unwrap_or_else(|| name.to_string());
             let description = text
                 .and_then(|entry| entry.description.clone())
                 .unwrap_or_default();
@@ -797,12 +768,6 @@ impl RulesRegistry {
                 (loc.label().to_string(), loc.description().to_string())
             })
             .unwrap_or_else(|| (name.to_string(), String::new()))
-    }
-
-    /// Access the shared index wrapper (class/species/background/spell
-    /// entries + their locale overlay) directly.
-    pub fn index(&self) -> LocalizedIndex<Index, IndexLocaleMap> {
-        self.class_index
     }
 
     // ---- Effects ----
@@ -867,26 +832,17 @@ impl RulesRegistry {
     }
 
     /// Fetch the per-class name list (e.g. `"spells/wizard.json"`) into the
-    /// names cache. The list is locale-less — just `["Acid Splash", ...]`.
+    /// names cache, unioned across the active packages. The list is
+    /// locale-less — just `["Acid Splash", ...]`.
     pub fn fetch_spell_list_untracked(&self, path: &str) {
         self.spell_names_cache
-            .fetch(path, Self::data_url(path), "spell list");
+            .fetch_merged(path, self.package_data_urls(path), "spell list");
     }
 
-    /// Tracked variant — re-runs the calling Effect when the per-class file
-    /// arrives. Resolves `path` through the index when it matches a list name
-    /// rather than a direct file path.
+    /// Same as `fetch_spell_list_untracked` — `Ref { from }` values are
+    /// direct package-relative paths; no index resolution step remains.
     pub fn fetch_spell_list(&self, path: &str) {
-        let resolved_path = self.class_index.with_data(|index| {
-            index?
-                .spells
-                .values()
-                .find(|entry| &*entry.url == path || &*entry.name == path)
-                .map(|entry| entry.url.to_string())
-        });
-        let resolved_path = resolved_path.unwrap_or_else(|| path.to_string());
-        self.spell_names_cache
-            .fetch(&resolved_path, Self::data_url(&resolved_path), "spell list");
+        self.fetch_spell_list_untracked(path);
     }
 
     /// Iterate (name, definition) pairs implied by a feature's `SpellsList`.
@@ -973,8 +929,9 @@ impl RulesRegistry {
         identity: &CharacterIdentity,
         feature_name: &str,
     ) -> Option<u32> {
-        let class_cache = self.class_cache.read_untracked();
-        resolve::feature_class_level(identity, feature_name, &class_cache)
+        let guard = self.class_defs.data.read_untracked();
+        let classes = defs_or_empty(&guard, &EMPTY_CLASS_DEFS);
+        resolve::feature_class_level(identity, feature_name, classes)
     }
 
     // ---- Choice / Points helpers ----
@@ -1007,31 +964,20 @@ impl RulesRegistry {
     }
 
     fn feature_class_level_for(&self, classes: &[ClassLevel], feature_name: &str) -> u32 {
-        let class_cache = self.class_cache.read_untracked();
-        resolve::feature_class_level_from_classes(classes, feature_name, &class_cache).unwrap_or(0)
+        let guard = self.class_defs.data.read_untracked();
+        let class_defs = defs_or_empty(&guard, &EMPTY_CLASS_DEFS);
+        resolve::feature_class_level_from_classes(classes, feature_name, class_defs).unwrap_or(0)
     }
 
     // ---- Fill / Clear ----
 
-    /// Trigger fetches for any missing definitions. Reads the index with a
-    /// tracked read so the calling Effect re-runs when the index arrives.
-    /// Does NOT read caches or update the store — cheap to re-run.
+    /// Trigger fetches for the character's lazy resources. Definitions are
+    /// eager now — only the per-class spell name lists remain on demand.
     #[cfg_attr(
         feature = "perf-marks",
         tracing::instrument(name = "registry.ensure_definitions_fetched", skip_all)
     )]
     pub fn ensure_definitions_fetched(&self, character: &CharacterCore) {
-        for class_level in &character.identity.classes {
-            if !class_level.class.is_empty() {
-                self.classes().fetch(&class_level.class);
-            }
-        }
-        if !character.identity.species.is_empty() {
-            self.species().fetch(&character.identity.species);
-        }
-        if !character.identity.background.is_empty() {
-            self.backgrounds().fetch(&character.identity.background);
-        }
         self.trigger_spell_list_fetches(character);
     }
 
@@ -1047,7 +993,7 @@ impl RulesRegistry {
         // or arrival of any resource.
         self.features_index.track();
         self.spells_index.track();
-        self.class_cache.locale.track();
+        self.class_defs.track();
 
         self.sync_labels(
             character,
@@ -1217,27 +1163,6 @@ pub fn make_system_feature(name: Box<str>, slot: IdentitySlot) -> FeatureDefinit
     }
 }
 
-// ---- Trait helpers for index entries ----
-
-trait HasUrl {
-    fn url(&self) -> &str;
-}
-
-macro_rules! impl_index_entry_traits {
-    ($ty:ty) => {
-        impl HasUrl for $ty {
-            fn url(&self) -> &str {
-                &self.url
-            }
-        }
-    };
-}
-
-impl_index_entry_traits!(ClassIndexEntry);
-impl_index_entry_traits!(SpeciesIndexEntry);
-impl_index_entry_traits!(BackgroundIndexEntry);
-impl_index_entry_traits!(SpellIndexEntry);
-
 /// Pairs a structural data resource with its current-locale overlay
 /// resource. Replaces `make_localized_index`'s mutate-in-place strategy
 /// with two independent `LocalResource`s — zero deep clones on locale
@@ -1327,20 +1252,36 @@ where
         let _ = self.locale.into_future().await;
     }
 
-    pub fn new(locale: Signal<String>, file_name: &'static str) -> Self {
+    pub fn new(
+        locale: Signal<String>,
+        packages: Signal<VecSet<String>>,
+        file_name: &'static str,
+    ) -> Self
+    where
+        T: PackageMerge + Default,
+        L: PackageMerge + Default,
+    {
         let in_flight = RwSignal::new(0u32);
 
-        // Both resources read locale UNTRACKED — refetch is driven explicitly
-        // by the Effect below so we have a single point that toggles the
-        // in-flight counter via `refetch()`.
+        // Both resources read locale/packages UNTRACKED — refetch is driven
+        // explicitly by the Effects below so we have a single point that
+        // toggles the in-flight counter.
         let data = LocalResource::new(move || {
-            let url = format!("{BASE_URL}/data/{file_name}");
-            async move { fetch_json::<T>(&url).await }
+            let urls: Vec<String> = packages
+                .read_untracked()
+                .iter()
+                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{file_name}"))
+                .collect();
+            async move { fetch_merged_json::<T>(&urls).await }
         });
         let locale_resource = LocalResource::new(move || {
             let lang = locale.get_untracked();
-            let url = format!("{BASE_URL}/{lang}/{file_name}");
-            async move { fetch_json::<L>(&url).await.ok() }
+            let urls: Vec<String> = packages
+                .read_untracked()
+                .iter()
+                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/{lang}/{file_name}"))
+                .collect();
+            async move { fetch_merged_json::<L>(&urls).await.ok() }
         });
 
         let loading = Signal::derive(move || in_flight.get() > 0);
@@ -1355,11 +1296,18 @@ where
         // Count the initial loads so `loading` is true until first fetch lands.
         this.observe_initial();
 
-        // Auto-refetch on locale switch.
+        // Locale switch re-fetches only the overlay.
         Effect::new(move |prev: Option<()>| {
             locale.track();
             if prev.is_some() {
-                this.refetch();
+                this.refetch_locale();
+            }
+        });
+        // Package-set switch re-fetches data AND overlay.
+        Effect::new(move |prev: Option<()>| {
+            packages.track();
+            if prev.is_some() {
+                this.refetch_all();
             }
         });
 
@@ -1387,13 +1335,35 @@ where
     /// Bumps `loading` for the duration of the fetch.
     #[cfg_attr(
         feature = "perf-marks",
-        tracing::instrument(name = "localized_index.refetch", skip_all)
+        tracing::instrument(name = "localized_index.refetch_locale", skip_all)
     )]
-    pub fn refetch(&self) {
+    pub fn refetch_locale(&self) {
         let in_flight = self.in_flight;
         let locale_res = self.locale;
         in_flight.update(|count| *count += 1);
         locale_res.refetch();
+        leptos::task::spawn_local(async move {
+            let _ = locale_res.into_future().await;
+            in_flight.update(|count| *count = count.saturating_sub(1));
+        });
+    }
+
+    /// Re-fetch data and locale (package-set change). Bumps `loading`.
+    #[cfg_attr(
+        feature = "perf-marks",
+        tracing::instrument(name = "localized_index.refetch_all", skip_all)
+    )]
+    pub fn refetch_all(&self) {
+        let in_flight = self.in_flight;
+        let data_res = self.data;
+        let locale_res = self.locale;
+        in_flight.update(|count| *count += 2);
+        data_res.refetch();
+        locale_res.refetch();
+        leptos::task::spawn_local(async move {
+            let _ = data_res.into_future().await;
+            in_flight.update(|count| *count = count.saturating_sub(1));
+        });
         leptos::task::spawn_local(async move {
             let _ = locale_res.into_future().await;
             in_flight.update(|count| *count = count.saturating_sub(1));
@@ -1451,20 +1421,6 @@ where
         let guard = self.locale.read();
         let value = guard.as_ref().and_then(|opt| opt.as_ref());
         f(value)
-    }
-}
-
-/// Reactive label/description signals for the shared `Index` resource
-/// (class/species/background/spell entries under prefixed keys).
-impl LocalizedIndex<Index, IndexLocaleMap> {
-    /// Reactive (label, description) for an entry. Composes the locale
-    /// key from `entry`'s `Display` impl (`"class.wizard"`, …); falls
-    /// back to the bare name when no locale entry is present.
-    pub fn entry_label_desc(
-        &self,
-        entry: IndexEntry<'_>,
-    ) -> (ArcSignal<String>, ArcSignal<String>) {
-        self.label_desc(entry.to_string(), entry.name())
     }
 }
 
@@ -1596,6 +1552,21 @@ impl LocalizedIndex<FeaturesIndex, LocaleMap> {
     }
 }
 
+static EMPTY_CLASS_DEFS: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+static EMPTY_SPECIES_DEFS: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+static EMPTY_BACKGROUND_DEFS: BTreeMap<Box<str>, BackgroundDefinition> = BTreeMap::new();
+
+/// Unwrap a defs-index resource state to its map, falling back to empty.
+fn defs_or_empty<'a, T>(
+    state: &'a Option<Result<DefsIndex<T>, String>>,
+    empty: &'a BTreeMap<Box<str>, T>,
+) -> &'a BTreeMap<Box<str>, T> {
+    state
+        .as_ref()
+        .and_then(|result| result.as_ref().ok())
+        .map_or(empty, |index| &index.0)
+}
+
 /// Resolve a free-form query (canonical English name or localized label, any
 /// case) to the canonical English `name` of an index entry. Used to harden AI
 /// responses that occasionally translate names back to the prompt language.
@@ -1623,17 +1594,18 @@ mod tests {
     wasm_bindgen_test_configure!(run_in_browser);
 
     #[wasm_bindgen_test]
-    fn synth_features_survive_locale_switch() {
+    async fn synth_features_survive_locale_switch() {
         // LocalizedIndex::new spawns LocalResource futures via spawn_local;
         // wasm-bindgen-test runs without leptos' default global executor.
         let _ = any_spawner::Executor::init_wasm_bindgen();
 
         let owner = Owner::new();
-        owner.with(|| {
+        let registry = owner.with(|| {
             let locale = RwSignal::new("en".to_string());
-            let registry = RulesRegistry::new_with_locale(locale.into());
+            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let registry = RulesRegistry::new_with_locale(locale.into(), packages.into());
 
-            // Seed synth_features directly — bypasses the class_index Effect
+            // Seed synth_features directly — bypasses the defs Effect
             // (which would require live HTTP fetches). The invariant under
             // test is whether the StoredValue survives a locale flip, not how
             // it gets populated.
@@ -1669,6 +1641,72 @@ mod tests {
                 after_visible,
                 "synth_features must survive locale switch (visible via with_features_index_untracked)"
             );
+            registry
         });
+        // Settle in-flight fetches before the Owner drops — leaked futures
+        // polled after disposal panic inside a later test.
+        registry.await_ready().await;
+    }
+
+    #[wasm_bindgen_test]
+    async fn merged_defs_lookup_and_locale_keys() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let registry = owner.with(|| {
+            let locale = RwSignal::new("ru".to_string());
+            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let mut registry = RulesRegistry::new_with_locale(locale.into(), packages.into());
+            // Inject merged defs + locale directly (no HTTP in tests).
+            let mut classes = BTreeMap::new();
+            classes.insert(
+                Box::from("Wizard"),
+                serde_json::from_str::<ClassDefinition>(
+                    r#"{"name": "Wizard", "prerequisites": "INT >= 13"}"#,
+                )
+                .unwrap(),
+            );
+            // LocaleKey's inner field is private — build the map via serde.
+            let locale_map: LocaleMap =
+                serde_json::from_str(r#"{"Wizard": {"label": "Волшебник"}}"#).unwrap();
+            registry.set_class_defs_for_test(classes, Some(locale_map));
+            registry
+        });
+        registry.await_ready().await;
+
+        let label = registry
+            .classes()
+            .lookup_untracked("Wizard", |localized| localized.label().to_string());
+        assert_eq!(label.as_deref(), Some("Волшебник"));
+    }
+
+    #[wasm_bindgen_test]
+    async fn package_switch_triggers_index_refetch() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let (registry, packages) = owner.with(|| {
+            let locale = RwSignal::new("en".to_string());
+            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            (
+                RulesRegistry::new_with_locale(locale.into(), packages.into()),
+                packages,
+            )
+        });
+        // Settle initial fetches first — `loading` is true from construction,
+        // so asserting it right after a flip would be vacuous.
+        registry.features().await_ready().await;
+        assert!(!registry.features().loading.get_untracked());
+
+        packages.update(|set| {
+            set.remove("lorwyn");
+        });
+        // Effects run on the executor, never synchronously after a signal
+        // write — yield before asserting.
+        leptos::task::tick().await;
+        assert!(
+            registry.features().loading.get_untracked(),
+            "package-set change must refetch the features index"
+        );
+        // Settle the refetches before the Owner drops (see synth test note).
+        registry.await_ready().await;
     }
 }

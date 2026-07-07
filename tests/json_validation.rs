@@ -1,13 +1,32 @@
-use std::{fs, path::Path};
+use std::{
+    collections::BTreeMap,
+    fs,
+    path::{Path, PathBuf},
+};
 
 use dnd_pc::rules::{
-    BackgroundDefinition, ClassDefinition, FeaturesIndex, Index, SpeciesDefinition, SpellsIndex,
-    locale::{IndexLocaleMap, LocaleMap, SpellsLocaleMap},
+    BackgroundDefinition, ClassDefinition, DefsIndex, FeaturesIndex, PackageMerge,
+    SpeciesDefinition, SpellsIndex,
+    locale::{LocaleMap, SpellsLocaleMap},
 };
 use serde::de::DeserializeOwned;
 
-fn public_dir() -> &'static Path {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("public").leak()
+fn rules_dir() -> &'static Path {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("public/rules")
+        .leak()
+}
+
+/// Package data dirs (every subdirectory of public/rules).
+fn package_dirs() -> Vec<PathBuf> {
+    let mut dirs: Vec<PathBuf> = fs::read_dir(rules_dir())
+        .expect("read public/rules")
+        .filter_map(|entry| entry.ok().map(|dir_entry| dir_entry.path()))
+        .filter(|path| path.is_dir())
+        .collect();
+    dirs.sort();
+    assert!(!dirs.is_empty(), "no packages under public/rules");
+    dirs
 }
 
 fn parse_json<T: DeserializeOwned>(path: &Path) -> T {
@@ -17,279 +36,211 @@ fn parse_json<T: DeserializeOwned>(path: &Path) -> T {
         .unwrap_or_else(|error| panic!("failed to parse {}: {error}", path.display()))
 }
 
+fn parse_if_exists<T: DeserializeOwned>(path: &Path) -> Option<T> {
+    path.is_file().then(|| parse_json(path))
+}
+
 const LOCALES: &[&str] = &["en", "ru"];
 
-// --- Structural data (public/data/) ---
+// --- Manifest ---
 
 #[test]
-fn data_index_valid() {
-    let _: Index = parse_json(&public_dir().join("data/index.json"));
+fn manifest_matches_package_dirs() {
+    let manifest: Vec<serde_json::Value> = parse_json(&rules_dir().join("index.json"));
+    for entry in &manifest {
+        let id = entry["id"].as_str().expect("manifest id");
+        assert!(
+            rules_dir().join(id).is_dir(),
+            "manifest package {id} has no dir"
+        );
+        assert!(
+            entry["kind"] == "base" || entry["kind"] == "addon",
+            "package {id} has invalid kind"
+        );
+        assert!(entry["name"].is_string(), "package {id} has no name");
+    }
+    assert_eq!(
+        manifest
+            .iter()
+            .filter(|entry| entry["kind"] == "base")
+            .count(),
+        1,
+        "exactly one base package"
+    );
+    assert_eq!(
+        manifest.len(),
+        package_dirs().len(),
+        "every package dir must be listed in the manifest"
+    );
+}
+
+// --- Structural data (per package) ---
+
+fn validate_defs<T: DeserializeOwned + dnd_pc::demap::Named>(file: &str) {
+    for pkg in package_dirs() {
+        let Some(index) = parse_if_exists::<DefsIndex<T>>(&pkg.join("data").join(file)) else {
+            continue;
+        };
+        for (name, def) in &index.0 {
+            assert_eq!(
+                def.name(),
+                &**name,
+                "name mismatch in {}/{file}",
+                pkg.display()
+            );
+        }
+    }
 }
 
 #[test]
 fn data_classes_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for (name, entry) in &index.classes {
-        let path = public.join(format!("data/{}", entry.url));
-        let def: ClassDefinition = parse_json(&path);
-        assert_eq!(&*def.name, &**name, "class name mismatch in {}", entry.url);
-    }
+    validate_defs::<ClassDefinition>("classes.json");
 }
 
 #[test]
 fn data_species_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for (name, entry) in &index.species {
-        let path = public.join(format!("data/{}", entry.url));
-        let def: SpeciesDefinition = parse_json(&path);
-        assert_eq!(
-            &*def.name, &**name,
-            "species name mismatch in {}",
-            entry.url
-        );
-    }
+    validate_defs::<SpeciesDefinition>("species.json");
 }
 
 #[test]
 fn data_backgrounds_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for (name, entry) in &index.backgrounds {
-        let path = public.join(format!("data/{}", entry.url));
-        let def: BackgroundDefinition = parse_json(&path);
-        assert_eq!(
-            &*def.name, &**name,
-            "background name mismatch in {}",
-            entry.url
-        );
+    validate_defs::<BackgroundDefinition>("backgrounds.json");
+}
+
+#[test]
+fn data_features_valid() {
+    for pkg in package_dirs() {
+        let _: Option<FeaturesIndex> = parse_if_exists(&pkg.join("data/features.json"));
     }
 }
 
 #[test]
 fn data_spells_index_valid() {
-    let _: SpellsIndex = parse_json(&public_dir().join("data/spells.json"));
+    for pkg in package_dirs() {
+        let _: Option<SpellsIndex> = parse_if_exists(&pkg.join("data/spells.json"));
+    }
 }
 
 #[test]
-fn data_spell_lists_valid() {
-    let public = public_dir();
-    let index: SpellsIndex = parse_json(&public.join("data/spells.json"));
-    let lists_dir = public.join("data/spells");
-    let classes = [
-        "artificer",
-        "bard",
-        "cleric",
-        "druid",
-        "paladin",
-        "ranger",
-        "sorcerer",
-        "warlock",
-        "wizard",
-    ];
-    for cls in classes {
-        let path = lists_dir.join(format!("{cls}.json"));
-        let names: Vec<String> = parse_json(&path);
-        assert!(!names.is_empty(), "{cls}.json should list spell names");
-        for spell_name in &names {
-            assert!(
-                index.0.contains_key(spell_name.as_str()),
-                "{cls}.json references unknown spell {spell_name:?}"
-            );
+fn data_effects_valid() {
+    for pkg in package_dirs() {
+        let _: Option<Vec<serde_json::Value>> = parse_if_exists(&pkg.join("data/effects.json"));
+    }
+}
+
+#[test]
+fn no_cross_package_name_collisions() {
+    // The initial split must be disjoint; overrides come later with dnd2014.
+    for file in [
+        "classes.json",
+        "species.json",
+        "backgrounds.json",
+        "features.json",
+        "spells.json",
+    ] {
+        let mut seen: BTreeMap<String, String> = BTreeMap::new();
+        for pkg in package_dirs() {
+            let Some(items) =
+                parse_if_exists::<Vec<serde_json::Value>>(&pkg.join("data").join(file))
+            else {
+                continue;
+            };
+            let pkg_name = pkg.file_name().unwrap().to_string_lossy().to_string();
+            for item in items {
+                let name = item["name"].as_str().expect("name").to_string();
+                if let Some(other) = seen.insert(name.clone(), pkg_name.clone()) {
+                    panic!("{file}: {name:?} defined in both {other} and {pkg_name}");
+                }
+            }
         }
     }
 }
 
 #[test]
-fn data_features_valid() {
-    let _: FeaturesIndex = parse_json(&public_dir().join("data/features.json"));
-}
-
-#[test]
-fn data_effects_valid() {
-    let _: Vec<serde_json::Value> = parse_json(&public_dir().join("data/effects.json"));
+fn spell_lists_resolve_into_merged_index() {
+    let mut merged = SpellsIndex::default();
+    for pkg in package_dirs() {
+        if let Some(part) = parse_if_exists::<SpellsIndex>(&pkg.join("data/spells.json")) {
+            merged.absorb(part);
+        }
+    }
+    let mut lists_seen = 0;
+    for pkg in package_dirs() {
+        let Ok(entries) = fs::read_dir(pkg.join("data/spells")) else {
+            continue;
+        };
+        for entry in entries {
+            let path = entry.expect("dir entry").path();
+            let names: Vec<String> = parse_json(&path);
+            assert!(!names.is_empty(), "{} is empty", path.display());
+            lists_seen += 1;
+            for spell_name in &names {
+                assert!(
+                    merged.0.contains_key(spell_name.as_str()),
+                    "{} references unknown spell {spell_name:?}",
+                    path.display()
+                );
+            }
+        }
+    }
+    assert!(lists_seen >= 9, "expected at least the 9 caster lists");
 }
 
 // --- Locale overlays: deserialization ---
 
 #[test]
-fn locale_index_valid() {
-    let public = public_dir();
-    for locale in LOCALES {
-        let path = public.join(format!("{locale}/index.json"));
-        let map: IndexLocaleMap = parse_json(&path);
-        assert!(!map.is_empty(), "[{locale}] index overlay is empty");
-    }
-}
-
-#[test]
-fn locale_classes_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for locale in LOCALES {
-        for entry in index.classes.values() {
-            let path = public.join(format!("{locale}/{}", entry.url));
-            let _: LocaleMap = parse_json(&path);
+fn locale_overlays_valid() {
+    for pkg in package_dirs() {
+        for locale in LOCALES {
+            for file in [
+                "classes.json",
+                "species.json",
+                "backgrounds.json",
+                "features.json",
+            ] {
+                let _: Option<LocaleMap> = parse_if_exists(&pkg.join(locale).join(file));
+            }
+            let _: Option<SpellsLocaleMap> = parse_if_exists(&pkg.join(locale).join("spells.json"));
+            let _: Option<LocaleMap> = parse_if_exists(&pkg.join(locale).join("effects.json"));
         }
-    }
-}
-
-#[test]
-fn locale_species_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for locale in LOCALES {
-        for entry in index.species.values() {
-            let path = public.join(format!("{locale}/{}", entry.url));
-            let _: LocaleMap = parse_json(&path);
-        }
-    }
-}
-
-#[test]
-fn locale_backgrounds_valid() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-    for locale in LOCALES {
-        for entry in index.backgrounds.values() {
-            let path = public.join(format!("{locale}/{}", entry.url));
-            let _: LocaleMap = parse_json(&path);
-        }
-    }
-}
-
-#[test]
-fn locale_spells_overlay_valid() {
-    let public = public_dir();
-    for locale in LOCALES {
-        let path = public.join(format!("{locale}/spells.json"));
-        let _: SpellsLocaleMap = parse_json(&path);
-    }
-}
-
-#[test]
-fn locale_features_valid() {
-    let public = public_dir();
-    for locale in LOCALES {
-        let path = public.join(format!("{locale}/features.json"));
-        let _: LocaleMap = parse_json(&path);
-    }
-}
-
-#[test]
-fn locale_effects_valid() {
-    let public = public_dir();
-    for locale in LOCALES {
-        let path = public.join(format!("{locale}/effects.json"));
-        let _: IndexLocaleMap = parse_json(&path);
     }
 }
 
 // --- Locale completeness: all translations present and non-empty ---
 
-#[test]
-fn locale_index_complete() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-
-    for locale in LOCALES {
-        let map: IndexLocaleMap = parse_json(&public.join(format!("{locale}/index.json")));
-
-        let check_label = locale != &"en";
-
-        for name in index.classes.keys() {
-            let key = format!("class.{name}");
-            let entry = map
-                .get(key.as_str())
-                .unwrap_or_else(|| panic!("[{locale}] missing index entry for {key}"));
-            assert!(
-                entry.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] class '{name}' has no description in index"
-            );
-            if check_label {
-                assert!(
-                    entry.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] class '{name}' has no label in index"
-                );
-            }
-        }
-
-        for name in index.species.keys() {
-            let key = format!("species.{name}");
-            let entry = map
-                .get(key.as_str())
-                .unwrap_or_else(|| panic!("[{locale}] missing index entry for {key}"));
-            assert!(
-                entry.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] species '{name}' has no description in index"
-            );
-            if check_label {
-                assert!(
-                    entry.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] species '{name}' has no label in index"
-                );
-            }
-        }
-
-        for name in index.backgrounds.keys() {
-            let key = format!("background.{name}");
-            let entry = map
-                .get(key.as_str())
-                .unwrap_or_else(|| panic!("[{locale}] missing index entry for {key}"));
-            assert!(
-                entry.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] background '{name}' has no description in index"
-            );
-            if check_label {
-                assert!(
-                    entry.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] background '{name}' has no label in index"
-                );
-            }
-        }
-    }
-}
-
-#[test]
-fn locale_classes_complete() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-
-    for locale in LOCALES {
-        let check_label = locale != &"en";
-
-        for (class_name, entry) in &index.classes {
-            let data_def: ClassDefinition = parse_json(&public.join(format!("data/{}", entry.url)));
-            let locale_map: LocaleMap = parse_json(&public.join(format!("{locale}/{}", entry.url)));
-
-            let root = locale_map
-                .get("")
-                .unwrap_or_else(|| panic!("[{locale}] class '{class_name}' missing root entry"));
-            assert!(
-                root.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] class '{class_name}' missing root description"
-            );
-            if check_label {
-                assert!(
-                    root.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] class '{class_name}' missing root label"
-                );
-            }
-
-            for subclass_name in data_def.subclasses.keys() {
-                let key = format!("subclass.{subclass_name}");
-                let sub = locale_map.get(key.as_str()).unwrap_or_else(|| {
-                    panic!("[{locale}] class '{class_name}' missing entry for '{key}'")
+/// Every entity in a package's data file must have a same-package locale
+/// entry keyed by its name, with a description (and a label outside `en`,
+/// where the bare name is the natural fallback).
+fn check_locale_complete(file: &str) {
+    for pkg in package_dirs() {
+        let Some(items) = parse_if_exists::<Vec<serde_json::Value>>(&pkg.join("data").join(file))
+        else {
+            continue;
+        };
+        let names: Vec<String> = items
+            .iter()
+            .map(|item| item["name"].as_str().expect("name").to_string())
+            .collect();
+        for locale in LOCALES {
+            let check_label = locale != &"en";
+            let map: LocaleMap = parse_json(&pkg.join(locale).join(file));
+            for name in &names {
+                let entry = map.get(name.as_str()).unwrap_or_else(|| {
+                    panic!(
+                        "[{locale}] {}/{file}: missing entry for {name}",
+                        pkg.display()
+                    )
                 });
                 assert!(
-                    sub.description.as_ref().is_some_and(|d| !d.is_empty()),
-                    "[{locale}] class '{class_name}' subclass '{subclass_name}' missing description"
+                    entry.description.as_ref().is_some_and(|d| !d.is_empty()),
+                    "[{locale}] {}/{file}: '{name}' has no description",
+                    pkg.display()
                 );
                 if check_label {
                     assert!(
-                        sub.label.as_ref().is_some_and(|l| !l.is_empty()),
-                        "[{locale}] class '{class_name}' subclass '{subclass_name}' missing label"
+                        entry.label.as_ref().is_some_and(|l| !l.is_empty()),
+                        "[{locale}] {}/{file}: '{name}' has no label",
+                        pkg.display()
                     );
                 }
             }
@@ -298,139 +249,44 @@ fn locale_classes_complete() {
 }
 
 #[test]
-fn locale_species_complete() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
+fn locale_classes_complete() {
+    check_locale_complete("classes.json");
 
-    for locale in LOCALES {
-        let check_label = locale != &"en";
-
-        for (species_name, entry) in &index.species {
-            let locale_map: LocaleMap = parse_json(&public.join(format!("{locale}/{}", entry.url)));
-            let root = locale_map.get("").unwrap_or_else(|| {
-                panic!("[{locale}] species '{species_name}' missing root entry")
-            });
-            assert!(
-                root.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] species '{species_name}' missing root description"
-            );
-            if check_label {
-                assert!(
-                    root.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] species '{species_name}' missing root label"
-                );
+    // Subclasses: "{Class}.subclass.{Sub}" keys in the same file.
+    for pkg in package_dirs() {
+        let Some(index) =
+            parse_if_exists::<DefsIndex<ClassDefinition>>(&pkg.join("data/classes.json"))
+        else {
+            continue;
+        };
+        for locale in LOCALES {
+            let check_label = locale != &"en";
+            let map: LocaleMap = parse_json(&pkg.join(locale).join("classes.json"));
+            for (class_name, class_def) in &index.0 {
+                for subclass_name in class_def.subclasses.keys() {
+                    let key = format!("{class_name}.subclass.{subclass_name}");
+                    let entry = map.get(key.as_str()).unwrap_or_else(|| {
+                        panic!("[{locale}] {}: missing entry for {key}", pkg.display())
+                    });
+                    if check_label {
+                        assert!(
+                            entry.label.as_ref().is_some_and(|l| !l.is_empty()),
+                            "[{locale}] {}: '{key}' has no label",
+                            pkg.display()
+                        );
+                    }
+                }
             }
         }
     }
+}
+
+#[test]
+fn locale_species_complete() {
+    check_locale_complete("species.json");
 }
 
 #[test]
 fn locale_backgrounds_complete() {
-    let public = public_dir();
-    let index: Index = parse_json(&public.join("data/index.json"));
-
-    for locale in LOCALES {
-        let check_label = locale != &"en";
-
-        for (bg_name, entry) in &index.backgrounds {
-            let locale_map: LocaleMap = parse_json(&public.join(format!("{locale}/{}", entry.url)));
-            let root = locale_map
-                .get("")
-                .unwrap_or_else(|| panic!("[{locale}] background '{bg_name}' missing root entry"));
-            assert!(
-                root.description.as_ref().is_some_and(|d| !d.is_empty()),
-                "[{locale}] background '{bg_name}' missing root description"
-            );
-            if check_label {
-                assert!(
-                    root.label.as_ref().is_some_and(|l| !l.is_empty()),
-                    "[{locale}] background '{bg_name}' missing root label"
-                );
-            }
-        }
-    }
-}
-
-#[test]
-fn locale_features_complete() {
-    let public = public_dir();
-    let features: FeaturesIndex = parse_json(&public.join("data/features.json"));
-
-    for locale in LOCALES {
-        let check_label = locale != &"en";
-        let locale_map: LocaleMap = parse_json(&public.join(format!("{locale}/features.json")));
-
-        let mut missing = Vec::new();
-        let mut missing_labels = Vec::new();
-        for name in features.0.keys() {
-            match locale_map.get(name.as_ref()) {
-                None => missing.push(name.as_ref()),
-                Some(entry) if check_label && entry.label.as_ref().is_none_or(|l| l.is_empty()) => {
-                    missing_labels.push(name.as_ref());
-                }
-                _ => {}
-            }
-        }
-        assert!(
-            missing.is_empty(),
-            "[{locale}] features.json missing {} translations: {}",
-            missing.len(),
-            missing.join(", ")
-        );
-        assert!(
-            missing_labels.is_empty(),
-            "[{locale}] features.json missing {} labels: {}",
-            missing_labels.len(),
-            missing_labels.join(", ")
-        );
-    }
-}
-
-#[test]
-fn locale_spells_complete() {
-    let public = public_dir();
-    let index: SpellsIndex = parse_json(&public.join("data/spells.json"));
-
-    for locale in LOCALES {
-        let locale_map: SpellsLocaleMap = parse_json(&public.join(format!("{locale}/spells.json")));
-        let mut missing = Vec::new();
-        for name in index.0.keys() {
-            if !locale_map.contains_key(name) {
-                missing.push(name.as_ref());
-            }
-        }
-        assert!(
-            missing.is_empty(),
-            "[{locale}] spells.json missing {} translations: {}",
-            missing.len(),
-            missing.join(", ")
-        );
-    }
-}
-
-#[test]
-fn locale_effects_complete() {
-    let public = public_dir();
-    let data: Vec<serde_json::Value> = parse_json(&public.join("data/effects.json"));
-    let effect_names: Vec<&str> = data
-        .iter()
-        .filter_map(|v| v.get("name")?.as_str())
-        .collect();
-
-    for locale in LOCALES {
-        let locale_map: IndexLocaleMap = parse_json(&public.join(format!("{locale}/effects.json")));
-
-        let mut missing = Vec::new();
-        for name in &effect_names {
-            if !locale_map.contains_key(*name) {
-                missing.push(*name);
-            }
-        }
-        assert!(
-            missing.is_empty(),
-            "[{locale}] effects.json missing {} translations: {}",
-            missing.len(),
-            missing.join(", ")
-        );
-    }
+    check_locale_complete("backgrounds.json");
 }

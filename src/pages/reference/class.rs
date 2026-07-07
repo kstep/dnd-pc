@@ -31,16 +31,8 @@ pub fn ClassReference() -> impl IntoView {
     let class_name = move || params.get().ok().and_then(|p| p.name).unwrap_or_default();
     let subclass_name = move || params.get().ok().and_then(|p| p.subname);
 
-    Effect::new(move || {
-        let name = class_name();
-        if !name.is_empty() {
-            registry.classes().fetch(&name);
-        }
-    });
-
     let current_label = Signal::derive(move || {
         registry
-            .index()
             .entry_label_desc(IndexEntry::Class(&class_name()))
             .0
             .get()
@@ -64,10 +56,9 @@ pub fn ClassReference() -> impl IntoView {
         // (nested LocalResource reads inside with don't reliably track)
         registry.with_features_index(|_| {});
 
-        let prerequisites = registry.with_class_entries(|entries| {
-            entries
-                .get(name.as_str())
-                .and_then(|e| e.prerequisites.as_ref().map(|expr| expr.to_string()))
+        let prerequisites = registry.with_class_defs(|defs| {
+            defs.get(name.as_str())
+                .and_then(|def| def.prerequisites.as_ref().map(|expr| expr.to_string()))
                 .unwrap_or_default()
         });
 
@@ -397,9 +388,11 @@ pub fn ClassReference() -> impl IntoView {
             .unwrap_or_else(|| ().into_any())
     };
 
+    // Defs are eager: spin only while the index itself loads; a name absent
+    // from the active package set renders as empty, not an infinite spinner.
     let loading = Signal::derive(move || {
         let name = class_name();
-        !name.is_empty() && registry.classes().with(&name, |_| ()).is_none()
+        !name.is_empty() && registry.classes().index().is_pending()
     });
 
     view! {
@@ -409,8 +402,8 @@ pub fn ClassReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     <RefSidebarEntries
-                        names=Signal::derive(move || registry.with_class_entries(|entries| {
-                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        names=Signal::derive(move || registry.with_class_defs(|defs| {
+                            defs.keys().map(|name| name.to_string()).collect()
                         }))
                         kind=|n| IndexEntry::Class(n)
                     />

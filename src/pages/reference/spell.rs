@@ -80,7 +80,6 @@ pub fn SpellReference() -> impl IntoView {
 
     let current_label = Signal::derive(move || {
         registry
-            .index()
             .entry_label_desc(IndexEntry::Spell(&list_name()))
             .0
             .get()
@@ -199,9 +198,7 @@ pub fn SpellReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     <RefSidebarEntries
-                        names=Signal::derive(move || registry.with_spell_entries(|entries| {
-                            entries.values().map(|entry| entry.name.to_string()).collect()
-                        }))
+                        names=Signal::derive(move || registry.spell_list_names())
                         kind=|n| IndexEntry::Spell(n)
                     />
                 </ReferenceSidebar>

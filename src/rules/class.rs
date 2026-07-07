@@ -4,6 +4,8 @@ use serde::Deserialize;
 
 use crate::{
     demap::{self, Named},
+    expr::Eval as _,
+    model::{CharacterCore, Expr},
     rules::utils::LevelRules,
     vecset::VecSet,
 };
@@ -11,6 +13,9 @@ use crate::{
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassDefinition {
     pub name: Box<str>,
+    /// Multiclass prerequisite expression (moved from the old index entry).
+    #[serde(default)]
+    pub prerequisites: Option<Expr>,
     #[serde(default)]
     pub levels: LevelRules<ClassLevelRules>,
     #[serde(default, deserialize_with = "demap::named_map")]
@@ -24,9 +29,16 @@ impl Named for ClassDefinition {
 }
 
 impl ClassDefinition {
+    /// Multiclass gate from the PHB table; absent expr = no requirement.
+    pub fn meets_prerequisites(&self, character: &CharacterCore) -> bool {
+        self.prerequisites
+            .as_ref()
+            .is_none_or(|expr| expr.eval(character).unwrap_or(0) != 0)
+    }
+
     /// Maximum class level declared in the progression table. Falls back to
-    /// the D&D 5e standard cap of 20 for classes that haven't been fetched
-    /// yet or provide no explicit level rules.
+    /// the D&D 5e standard cap of 20 for classes providing no explicit
+    /// level rules.
     pub fn max_level(&self) -> u32 {
         self.levels.keys().next_back().copied().unwrap_or(20)
     }

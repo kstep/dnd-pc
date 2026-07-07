@@ -1,11 +1,9 @@
 use std::collections::BTreeSet;
 
-use leptos::prelude::*;
-
 use crate::{
     model::{CharacterCore, ClassLevel, FeatureSource},
     rules::{
-        DefinitionStore, FeaturesView, RulesRegistry,
+        FeaturesView, RulesRegistry,
         apply::{
             pending::{FeatureKey, PendingFeature},
             primitives::detect_replacement,
@@ -164,43 +162,45 @@ pub fn collect_pending_features(
     registry: &RulesRegistry,
     features_index: FeaturesView<'_>,
 ) -> Vec<PendingFeature> {
-    let species_cache = registry.species().cache().read_untracked();
-    let bg_cache = registry.backgrounds().cache().read_untracked();
-    let class_cache = registry.classes().cache().read_untracked();
-
-    let species_iter = species_cache
-        .get(character.identity.species.as_str())
-        .filter(|_| !character.identity.species.is_empty() && !character.applied.species)
-        .into_iter()
-        .flat_map(|species_def| collect_species_features(character, species_def, features_index));
-
-    let bg_iter = bg_cache
-        .get(character.identity.background.as_str())
-        .filter(|_| !character.identity.background.is_empty() && !character.applied.background)
-        .into_iter()
-        .flat_map(|bg_def| collect_background_features(character, bg_def, features_index));
-
-    // Iterate every 1..=level for each class. Per-feature `contains` dedup
-    // inside `collect_class_features` filters out already-applied entries —
-    // skipping levels by `applied.contains_level` would miss late-added
-    // subclass grants whose class level was already in the applied set
-    // (e.g. picking Death Domain at Cleric L3 surfaces its L1+L2 grants).
-    let class_iter =
-        character
-            .identity
-            .classes
-            .iter()
-            .enumerate()
-            .flat_map(|(idx, class_level)| {
-                let class_def = class_cache.get(class_level.class.as_ref());
-                (1..=class_level.level).flat_map(move |lvl| {
-                    class_def.into_iter().flat_map(move |def| {
-                        collect_class_features(character, idx, lvl, def, features_index)
-                    })
-                })
+    registry.with_definitions(|caches| {
+        let species_iter = caches
+            .species
+            .get(character.identity.species.as_str())
+            .filter(|_| !character.identity.species.is_empty() && !character.applied.species)
+            .into_iter()
+            .flat_map(|species_def| {
+                collect_species_features(character, species_def, features_index)
             });
 
-    species_iter.chain(bg_iter).chain(class_iter).collect()
+        let bg_iter = caches
+            .backgrounds
+            .get(character.identity.background.as_str())
+            .filter(|_| !character.identity.background.is_empty() && !character.applied.background)
+            .into_iter()
+            .flat_map(|bg_def| collect_background_features(character, bg_def, features_index));
+
+        // Iterate every 1..=level for each class. Per-feature `contains` dedup
+        // inside `collect_class_features` filters out already-applied entries —
+        // skipping levels by `applied.contains_level` would miss late-added
+        // subclass grants whose class level was already in the applied set
+        // (e.g. picking Death Domain at Cleric L3 surfaces its L1+L2 grants).
+        let class_iter =
+            character
+                .identity
+                .classes
+                .iter()
+                .enumerate()
+                .flat_map(|(idx, class_level)| {
+                    let class_def = caches.classes.get(class_level.class.as_ref());
+                    (1..=class_level.level).flat_map(move |lvl| {
+                        class_def.into_iter().flat_map(move |def| {
+                            collect_class_features(character, idx, lvl, def, features_index)
+                        })
+                    })
+                });
+
+        species_iter.chain(bg_iter).chain(class_iter).collect()
+    })
 }
 
 #[cfg(test)]

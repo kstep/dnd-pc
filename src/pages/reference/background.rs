@@ -24,16 +24,8 @@ pub fn BackgroundReference() -> impl IntoView {
 
     let bg_name = move || params.get().ok().and_then(|p| p.name).unwrap_or_default();
 
-    Effect::new(move || {
-        let name = bg_name();
-        if !name.is_empty() {
-            registry.backgrounds().fetch(&name);
-        }
-    });
-
     let current_label = Signal::derive(move || {
         registry
-            .index()
             .entry_label_desc(IndexEntry::Background(&bg_name()))
             .0
             .get()
@@ -85,9 +77,11 @@ pub fn BackgroundReference() -> impl IntoView {
         )
     };
 
+    // Defs are eager: spin only while the index itself loads; a name absent
+    // from the active package set renders as empty, not an infinite spinner.
     let loading = Signal::derive(move || {
         let name = bg_name();
-        !name.is_empty() && registry.backgrounds().with(&name, |_| ()).is_none()
+        !name.is_empty() && registry.backgrounds().index().is_pending()
     });
 
     view! {
@@ -97,8 +91,8 @@ pub fn BackgroundReference() -> impl IntoView {
             <div class="reference-layout">
                 <ReferenceSidebar current_label>
                     <RefSidebarEntries
-                        names=Signal::derive(move || registry.with_background_entries(|entries| {
-                            entries.values().map(|entry| entry.name.to_string()).collect()
+                        names=Signal::derive(move || registry.with_background_defs(|defs| {
+                            defs.keys().map(|name| name.to_string()).collect()
                         }))
                         kind=|n| IndexEntry::Background(n)
                     />

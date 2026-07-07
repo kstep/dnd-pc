@@ -225,10 +225,9 @@ impl<'a> LocalizedOption<'a> {
     }
 }
 
-/// Marker for definitions whose locale lives under the empty `""` key in a
-/// dedicated per-entity `LocaleMap` (one file per class/species/background).
-/// Distinct from `FeatureDefinition`, which uses its bare `name` as the key
-/// in the global `features.json` map.
+/// Marker for definitions living in a merged per-kind locale file
+/// (classes.json / species.json / backgrounds.json) keyed by entity name,
+/// same convention as `FeatureDefinition` in the global features map.
 pub trait RootKeyed: Named {}
 
 impl RootKeyed for ClassDefinition {}
@@ -238,35 +237,37 @@ impl RootKeyed for BackgroundDefinition {}
 impl<T: RootKeyed> LocalizedText<'_, T, LocaleMap> {
     pub fn label(&self) -> &str {
         self.locale
-            .and_then(|m| m.get(""))
+            .and_then(|m| m.get(self.data.name()))
             .and_then(|t| t.label.as_deref())
             .unwrap_or(self.data.name())
     }
 
     pub fn description(&self) -> &str {
         self.locale
-            .and_then(|m| m.get(""))
+            .and_then(|m| m.get(self.data.name()))
             .and_then(|t| t.description.as_deref())
             .unwrap_or("")
     }
 }
 
-/// `ClassDefinition` extra: subclasses keyed by `subclass.X`.
+/// `ClassDefinition` extra: subclasses keyed by `{Class}.subclass.{Sub}`.
 impl<'a> LocalizedText<'a, ClassDefinition, LocaleMap> {
     pub fn subclass(&'a self, name: &str) -> Option<LocalizedSubclass<'a>> {
         self.data
             .subclasses
             .get(name)
             .map(|sub_def| LocalizedSubclass {
+                parent: self.data.name(),
                 data: sub_def,
                 locale: self.locale,
             })
     }
 }
 
-/// Wrapper for a `SubclassDefinition` keyed by `subclass.X` in the parent
-/// class locale map.
+/// Wrapper for a `SubclassDefinition` keyed by `{parent}.subclass.{name}`
+/// in the merged classes locale map.
 pub struct LocalizedSubclass<'a> {
+    pub parent: &'a str,
     pub data: &'a SubclassDefinition,
     pub locale: Option<&'a LocaleMap>,
 }
@@ -281,7 +282,7 @@ impl<'a> Deref for LocalizedSubclass<'a> {
 
 impl<'a> LocalizedSubclass<'a> {
     fn entry(&self) -> Option<&'a LocaleText> {
-        let key = format!("subclass.{}", self.data.name);
+        let key = format!("{}.subclass.{}", self.parent, self.data.name);
         self.locale.and_then(|m| m.get(key.as_str()))
     }
 

@@ -28,26 +28,26 @@ impl RulesRegistry {
         mut set_desc: impl FnMut(&mut String, &str),
         mut on_spell_extra: impl FnMut(&mut Spell, SpellExtras),
     ) {
-        // 1. Class/subclass labels
-        let class_locales = self.class_cache.locale.read_untracked();
+        // 1. Class/subclass labels from the merged classes locale map
+        // (keys: "{Class}" / "{Class}.subclass.{Sub}").
+        let class_locale_guard = self.class_defs.locale.read_untracked();
+        let class_locales = class_locale_guard.as_ref().and_then(|opt| opt.as_ref());
         for class_level in &mut character.identity.classes {
             if class_level.class.is_empty() {
                 continue;
             }
-            if let Some(map) = class_locales.get(class_level.class.as_ref()) {
-                let class_text = map.get("");
+            let class_text = class_locales.and_then(|map| map.get(class_level.class.as_ref()));
+            set_label(
+                &mut class_level.class_label,
+                class_text.and_then(|t| t.label.as_deref()),
+            );
+            if let Some(sub_name) = &class_level.subclass {
+                let sub_key = format!("{}.subclass.{sub_name}", class_level.class);
+                let sub_text = class_locales.and_then(|map| map.get(sub_key.as_str()));
                 set_label(
-                    &mut class_level.class_label,
-                    class_text.and_then(|t| t.label.as_deref()),
+                    &mut class_level.subclass_label,
+                    sub_text.and_then(|t| t.label.as_deref()),
                 );
-                if let Some(sub_name) = &class_level.subclass {
-                    let sub_key = format!("subclass.{sub_name}");
-                    let sub_text = map.get(sub_key.as_str());
-                    set_label(
-                        &mut class_level.subclass_label,
-                        sub_text.and_then(|t| t.label.as_deref()),
-                    );
-                }
             }
         }
 

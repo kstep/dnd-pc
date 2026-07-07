@@ -12,7 +12,7 @@ use leptos_router::{
 mod ai;
 pub mod components;
 pub mod constvec;
-mod demap;
+pub mod demap;
 mod effective;
 mod export;
 pub mod expr;
@@ -104,7 +104,7 @@ pub fn App() -> impl IntoView {
     let active_packages = ActivePackages::load();
     provide_context(active_packages);
     Effect::new(move || storage::save_active_packages(&active_packages.0.read()));
-    provide_context(RulesRegistry::new(i18n));
+    provide_context(RulesRegistry::new(i18n, active_packages.0.into()));
     provide_context(ActiveCharacterId::default());
     let is_routing = IsRouting::default();
     provide_context(is_routing);

@@ -53,7 +53,7 @@ where
             key=|name| name.clone()
             children=move |name| {
                 let entry = kind(&name);
-                let (label, _) = registry.index().entry_label_desc(entry);
+                let (label, _) = registry.entry_label_desc(entry);
                 let href = format!("/r/{}/{}", entry.prefix(), encode_name(&name));
                 view! {
                     <Ref href=href attr:class="reference-nav-item">

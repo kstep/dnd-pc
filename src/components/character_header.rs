@@ -377,7 +377,7 @@ where
         if current.is_empty() {
             return String::new();
         }
-        let (label, _) = registry.index().entry_label_desc(kind(&current));
+        let (label, _) = registry.entry_label_desc(kind(&current));
         label.get()
     });
     view! {

@@ -23,9 +23,7 @@ pub use feature::{
     ActionDefinition, Assignment, ChoiceOption, ChoiceOptions, FeatureDefinition, FeaturesIndex,
     ReplaceWith, WhenCondition,
 };
-pub use index::{
-    BackgroundIndexEntry, ClassIndexEntry, Index, IndexEntry, SpeciesIndexEntry, SpellIndexEntry,
-};
+pub use index::IndexEntry;
 pub use packages::{ActivePackages, BUILTIN_PACKAGES, DefsIndex, PackageMerge, default_packages};
 pub use preview::{PreviewContext, eval_at_levels};
 pub use registry::{FeaturesView, RulesRegistry, make_system_feature};

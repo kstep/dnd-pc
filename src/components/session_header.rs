@@ -26,7 +26,6 @@ pub fn SessionHeader() -> impl IntoView {
             return String::new();
         }
         registry
-            .index()
             .entry_label_desc(IndexEntry::Species(&species_name))
             .0
             .get()

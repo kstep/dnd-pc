@@ -90,9 +90,6 @@ async fn run_ai_generation(
     // definition fetch separately — the subclass canonicalization below
     // and the cascade's class-feature collection both need it loaded.
     store.with_untracked(|character| registry.ensure_definitions_fetched(character));
-    if !concept.class.is_empty() {
-        registry.classes().fetch_untracked(&concept.class);
-    }
 
     // Wait for definitions to load
     let class_name = concept.class.clone();
@@ -406,27 +403,21 @@ pub fn AiGenerateModal(
         let description = description.clone();
         let settings = settings.get_untracked();
 
-        let species_list = registry.with_species_entries(|entries| {
-            join_iter(entries.values().map(|entry| &*entry.name), ", ")
-        });
+        let species_list =
+            registry.with_species_defs(|defs| join_iter(defs.keys().map(|name| &**name), ", "));
 
-        let backgrounds_list = registry.with_background_entries(|entries| {
-            join_iter(entries.values().map(|entry| &*entry.name), ", ")
-        });
+        let backgrounds_list =
+            registry.with_background_defs(|defs| join_iter(defs.keys().map(|name| &**name), ", "));
 
-        let classes_list = registry.with_class_entries(|entries| {
+        let classes_list = registry.with_class_defs(|defs| {
             join_iter(
-                entries.values().map(|entry| {
-                    let subclasses = registry
-                        .classes()
-                        .with(&entry.name, |def| {
-                            join_iter(def.subclasses.values().map(|sub| &*sub.name), ", ")
-                        })
-                        .unwrap_or_default();
+                defs.values().map(|class_def| {
+                    let subclasses =
+                        join_iter(class_def.subclasses.values().map(|sub| &*sub.name), ", ");
                     if subclasses.is_empty() {
-                        entry.name.to_string()
+                        class_def.name.to_string()
                     } else {
-                        format!("{} (subclasses: {subclasses})", entry.name)
+                        format!("{} (subclasses: {subclasses})", class_def.name)
                     }
                 }),
                 "\n",

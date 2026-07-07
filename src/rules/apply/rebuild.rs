@@ -1834,7 +1834,6 @@ mod tests {
     }
 
     use crate::rules::{
-        ClassIndexEntry,
         apply::plan::{plan_from_interleaving_with_caches, plan_from_markers},
         background::BackgroundDefinition,
         class::ClassDefinition,
@@ -1963,7 +1962,6 @@ mod tests {
             level: 3,
             ..ClassLevel::default()
         }];
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
         let class_index: BTreeMap<Box<str>, ClassDefinition> =
             std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
         let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
@@ -1979,7 +1977,6 @@ mod tests {
             &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
-            &class_entries,
         )
         .expect("plan");
 
@@ -2012,7 +2009,6 @@ mod tests {
             level: 3,
             ..ClassLevel::default()
         }];
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
         let class_index: BTreeMap<Box<str>, ClassDefinition> =
             std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
         let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
@@ -2028,7 +2024,6 @@ mod tests {
             &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
-            &class_entries,
         )
         .expect("plan");
         let clean = run_plan(&plan, &original, &feat_index, caches);
@@ -2058,7 +2053,6 @@ mod tests {
         original.identity.species = "Human".into();
         original.identity.background = "Soldier".into();
 
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
         let class_index: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
         let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = std::iter::once((
             Box::from("Human"),
@@ -2089,7 +2083,6 @@ mod tests {
             &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
-            &class_entries,
         )
         .expect("plan");
         let clean = run_plan(&plan, &original, &feat_index, caches);
@@ -2141,7 +2134,6 @@ mod tests {
             levels
         });
 
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
         let class_index: BTreeMap<Box<str>, ClassDefinition> =
             std::iter::once((Box::from("Fighter"), fighter_class_def())).collect();
         let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
@@ -2159,7 +2151,6 @@ mod tests {
             &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
-            &class_entries,
         )
         .expect("plan1");
         let clean1 = run_plan(&plan1, &original, &feat_index, caches);
@@ -2300,7 +2291,6 @@ mod tests {
             ]
         }))
         .unwrap();
-        let class_entries: BTreeMap<Box<str>, ClassIndexEntry> = BTreeMap::new();
         let class_index: BTreeMap<Box<str>, ClassDefinition> =
             std::iter::once((Box::from("Fighter"), class_def)).collect();
         let species_cache: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
@@ -2333,7 +2323,6 @@ mod tests {
             &original.core,
             FeaturesView::from_natural(&feat_index),
             caches,
-            &class_entries,
         )
         .expect("plan");
         let clean = run_plan(&plan, &original, &feat_index, caches);
