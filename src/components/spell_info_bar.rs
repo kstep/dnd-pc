@@ -27,6 +27,7 @@ fn format_components(components: SpellComponents) -> Option<impl IntoView> {
     }
     let material = components.material.map(|material| {
         let name = material.name.to_string();
+        let price = material.price.map(|money| money.to_string());
         let icon = if material.consumable { "gem" } else { "stone" };
         let title = if material.consumable {
             move_tr!("ref-spell-comp-consumable")
@@ -37,6 +38,9 @@ fn format_components(components: SpellComponents) -> Option<impl IntoView> {
             <span title=title><Icon name=icon /></span>
             {(!name.is_empty()).then(|| view! {
                 <span class="spell-tag">{name}</span>
+            })}
+            {price.map(|price| view! {
+                <span class="spell-tag">{price}</span>
             })}
         }
     });

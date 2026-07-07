@@ -5,7 +5,7 @@ use strum::{Display, EnumIter, EnumString, VariantArray};
 
 use crate::{
     demap::{self, Named},
-    model::{ActionType, EffectDefinition, EffectDuration, EffectRange, Translatable},
+    model::{ActionType, EffectDefinition, EffectDuration, EffectRange, Money, Translatable},
 };
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -100,6 +100,8 @@ pub struct MaterialComponent {
     pub consumable: bool,
     #[serde(default)]
     pub name: Box<str>,
+    #[serde(default)]
+    pub price: Option<Money>,
 }
 
 #[derive(Clone, Copy)]
@@ -348,6 +350,18 @@ mod tests {
         assert!(!def.components.verbal);
         assert!(!def.components.somatic);
         assert!(def.components.material.is_none());
+    }
+
+    #[test]
+    fn material_price_deserializes_as_copper() {
+        let json = serde_json::json!({
+            "name": "Test Spell",
+            "components": { "material": { "name": "diamonds", "price": 30000 } }
+        });
+        let def: SpellDefinition = serde_json::from_value(json).expect("must deserialize");
+        let material = def.components.material.expect("material present");
+        assert_eq!(&*material.name, "diamonds");
+        assert_eq!(material.price, Some(Money::from_gp(300)));
     }
 
     #[wasm_bindgen_test::wasm_bindgen_test]

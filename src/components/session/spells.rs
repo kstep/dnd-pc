@@ -292,11 +292,13 @@ pub fn SpellsBlock() -> impl IntoView {
                                                 } else {
                                                     tr!("ref-spell-comp-material")
                                                 };
-                                                let title = if material.name.is_empty() {
-                                                    label
-                                                } else {
-                                                    format!("{label}: {}", material.name)
-                                                };
+                                                let mut title = label;
+                                                if !material.name.is_empty() {
+                                                    title = format!("{title}: {}", material.name);
+                                                }
+                                                if let Some(price) = material.price {
+                                                    title = format!("{title} ({price})");
+                                                }
                                                 badges.push(view! {
                                                     <span class="entry-badge" title=title>
                                                         <Icon name=icon />

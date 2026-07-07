@@ -421,7 +421,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "gold dust worth at least 25gp"
+        "name": "gold dust",
+        "price": 2500
       }
     }
   },
@@ -544,7 +545,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "specially marked sticks, bones, or similar tokens worth at least 25gp"
+        "name": "specially marked sticks, bones, or similar tokens",
+        "price": 2500
       }
     }
   },
@@ -617,7 +619,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "an agate worth at least 1,000 gp"
+        "name": "an agate",
+        "price": 100000
       }
     }
   },
@@ -1179,7 +1182,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a small platinum lever and fulcrum worth 400 gp"
+        "name": "a small platinum lever and fulcrum",
+        "price": 40000
       }
     }
   },
@@ -1367,7 +1371,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "the powder of a crushed black pearl worth at least 500 gp"
+        "name": "the powder of a crushed black pearl",
+        "price": 50000
       }
     }
   },
@@ -1913,7 +1918,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a statuette of yourself carved from ivory and decorated with gems worth at least 1,500 gp"
+        "name": "a statuette of yourself carved from ivory and decorated with gems",
+        "price": 150000
       }
     }
   },
@@ -1933,7 +1939,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "ruby dust worth 50 gp"
+        "name": "ruby dust",
+        "price": 5000
       }
     }
   },
@@ -2766,7 +2773,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "incense and a sacrificial offering appropriate to your religion, together worth at least 25gp"
+        "name": "incense and a sacrificial offering appropriate to your religion",
+        "price": 2500
       }
     }
   },
@@ -4025,7 +4033,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a sprinkling of holy water, rare incense, and powdered ruby worth at least 1,000 gp"
+        "name": "a sprinkling of holy water, rare incense, and powdered ruby",
+        "price": 100000
       }
     }
   },
@@ -4050,7 +4059,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "ruby dust worth 1,500 gp"
+        "name": "ruby dust",
+        "price": 150000
       }
     }
   },
@@ -4266,7 +4276,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a diamond worth at least 5,000gp"
+        "name": "a diamond",
+        "price": 500000
       }
     }
   },
@@ -4424,7 +4435,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "incense and powdered diamond worth at least 200 gp"
+        "name": "incense and powdered diamond",
+        "price": 20000
       }
     }
   },
@@ -4554,7 +4566,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "diamond dust worth at least 100gp"
+        "name": "diamond dust",
+        "price": 10000
       }
     }
   },
@@ -4626,7 +4639,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "burning incense, a small measure of brimstone and oil, a knotted string, a small amount of umber hulk blood, and a small silver rod worth at least 10 gp"
+        "name": "burning incense, a small measure of brimstone and oil, a knotted string, a small amount of umber hulk blood, and a small silver rod",
+        "price": 1000
       }
     }
   },
@@ -4740,7 +4754,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "herbs, oils, and incense worth at least 1,000 gp"
+        "name": "herbs, oils, and incense",
+        "price": 100000
       }
     }
   },
@@ -4938,7 +4953,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a gem-encrusted bowl worth at least 1,000gp"
+        "name": "a gem-encrusted bowl",
+        "price": 100000
       }
     }
   },
@@ -6113,7 +6129,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "holy water or powdered silver and iron worth at least 100 gp"
+        "name": "holy water or powdered silver and iron",
+        "price": 10000
       }
     }
   },
@@ -6136,7 +6153,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a gem, crystal, reliquary, or some other ornamental container worth at least 500 gp"
+        "name": "a gem, crystal, reliquary, or some other ornamental container",
+        "price": 50000
       }
     }
   },
@@ -6179,7 +6197,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a small bit of honeycomb and jade dust worth at least 10 gp"
+        "name": "a small bit of honeycomb and jade dust",
+        "price": 1000
       }
     }
   },
@@ -7128,7 +7147,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a jewel worth at least 1,000 gp"
+        "name": "a jewel",
+        "price": 100000
       }
     }
   },
@@ -7444,7 +7464,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a bit of fleece and jade dust worth at least 25 gp"
+        "name": "a bit of fleece and jade dust",
+        "price": 2500
       }
     }
   },
@@ -7466,7 +7487,8 @@
       "somatic": true,
       "material": {
         "consumable": false,
-        "name": "a small replica of you made from materials worth at least 5 gp"
+        "name": "a small replica of you made from materials",
+        "price": 500
       }
     }
   },
@@ -7596,7 +7618,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a diamond worth at least 500gp"
+        "name": "a diamond",
+        "price": 50000
       }
     }
   },
@@ -7761,7 +7784,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "rare oils and unguents worth at least 1,000 gp"
+        "name": "rare oils and unguents",
+        "price": 100000
       }
     }
   },
@@ -7822,7 +7846,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a diamond worth at least 1,000gp"
+        "name": "a diamond",
+        "price": 100000
       }
     }
   },
@@ -7867,7 +7892,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "diamonds worth 300gp"
+        "name": "diamonds",
+        "price": 30000
       }
     }
   },
@@ -8111,7 +8137,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a powder composed of diamond, emerald, ruby, and sapphire dust worth at least 5,000 gp"
+        "name": "a powder composed of diamond, emerald, ruby, and sapphire dust",
+        "price": 500000
       }
     }
   },
@@ -8970,7 +8997,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "diamond dust worth 100 gp"
+        "name": "diamond dust",
+        "price": 10000
       }
     }
   },
@@ -9901,7 +9929,8 @@
       "somatic": true,
       "material": {
         "consumable": true,
-        "name": "a sprinkle of holy water and diamonds worth at least 25,000gp"
+        "name": "a sprinkle of holy water and diamonds",
+        "price": 2500000
       }
     }
   },
