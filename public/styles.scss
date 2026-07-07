@@ -3509,6 +3509,60 @@ dialog.modal.closing::backdrop {
   }
 }
 
+.package-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+  align-items: center;
+  position: relative;
+
+  &.compact {
+    gap: var(--size-1);
+
+    .package-chip {
+      font-size: var(--font-size-0);
+      padding-block: 2px;
+    }
+
+    .package-base {
+      font-size: var(--font-size-0);
+    }
+  }
+}
+
+.package-chip {
+  cursor: pointer;
+  border: 1px solid var(--panel-border);
+  background: transparent;
+
+  &.is-active {
+    background: var(--panel-border);
+    color: var(--text-primary);
+  }
+
+  &.is-locked {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+  &.is-unknown {
+    border-style: dashed;
+  }
+}
+
+.package-locked-pop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-2);
+  padding: var(--size-2) var(--size-3);
+  box-shadow: var(--shadow-3);
+  font-size: var(--font-size-0);
+}
+
 .reference-feature {
   scroll-margin-top: 3.5rem;
 

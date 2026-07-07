@@ -158,6 +158,15 @@ impl RulesRegistry {
             .map(|entries| f(entries))
     }
 
+    /// Tracked read of the manifest entries. `None` until resolved.
+    pub fn with_manifest<R>(&self, f: impl FnOnce(&[PackageManifestEntry]) -> R) -> Option<R> {
+        let guard = self.manifest.read();
+        guard
+            .as_ref()
+            .and_then(|result| result.as_ref().ok())
+            .map(|entries| f(entries))
+    }
+
     /// Package id → labels of the character's features that come from it.
     /// A package with entries here cannot be toggled off. One pass over the
     /// feature rows — identity rows are synth features and spells arrive
