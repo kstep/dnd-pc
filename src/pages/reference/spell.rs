@@ -163,16 +163,18 @@ pub fn SpellReference() -> impl IntoView {
                             move_tr!("ref-spell-level", {"level" => level})
                         };
                         view! {
-                            <h2 id=section_id>{heading}</h2>
-                            <div class="reference-features">
-                                <For
-                                    each=move || spells.clone()
-                                    key=|spell_name| spell_name.clone()
-                                    children=move |spell_name| view! {
-                                        <SpellRowView name=spell_name />
-                                    }
-                                />
-                            </div>
+                            <section class="spell-level-section">
+                                <h2 id=section_id>{heading}</h2>
+                                <div class="reference-features">
+                                    <For
+                                        each=move || spells.clone()
+                                        key=|spell_name| spell_name.clone()
+                                        children=move |spell_name| view! {
+                                            <SpellRowView name=spell_name />
+                                        }
+                                    />
+                                </div>
+                            </section>
                         }
                     }
                 />

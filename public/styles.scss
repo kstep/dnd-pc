@@ -3270,6 +3270,8 @@ dialog.modal.closing::backdrop {
   overflow: hidden;
   position: sticky;
   top: 3rem;
+  // Above the sticky spell-level headings (z-index: 10).
+  z-index: 11;
 }
 .reference-nav-item {
   display: block;
@@ -3352,6 +3354,21 @@ dialog.modal.closing::backdrop {
 
     @media (max-width: 768px) {
       scroll-margin-top: 6rem;
+    }
+  }
+
+  // Per-level wrapper: the heading sticks under the navbar until the next
+  // section pushes it away, so the current spell level stays visible.
+  .spell-level-section > h2 {
+    position: sticky;
+    top: 3rem;
+    z-index: 10;
+    background: var(--surface-1);
+
+    // The collapsed reference-sidebar strip (2.25rem) sits under the
+    // navbar on mobile — stick below it.
+    @media (max-width: 768px) {
+      top: calc(3rem + 2.25rem);
     }
   }
 }
