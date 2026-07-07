@@ -24,11 +24,11 @@ use crate::{
         },
         index::IndexEntry,
         locale::{EffectsLocaleMap, LocaleMap, LocaleText, LocalizedText, SpellsLocaleMap},
-        packages::{DefsIndex, PackageMerge},
+        packages::{DefsIndex, PackageManifestEntry, PackageMerge},
         resolve,
         species::SpeciesDefinition,
         spells::{EMPTY_SPELL_INDEX, SpellDefinition, SpellsIndex, SpellsList},
-        utils::fetch_merged_json,
+        utils::{fetch_json, fetch_merged_json},
     },
     vecset::VecSet,
 };
@@ -120,6 +120,9 @@ pub struct RulesRegistry {
     /// each value is a flat `Vec<String>`, fetched on demand (unioned across
     /// packages) and locale-less.
     spell_names_cache: FetchCache<Vec<String>>,
+    /// Package manifest (`rules/index.json`) — the source of available
+    /// packages; drives the default active set and import validation.
+    manifest: LocalResource<Result<Vec<PackageManifestEntry>, String>>,
     /// Global spells index merged across packages.
     /// Locale overlay re-fetched on language change.
     pub(super) spells_index: LocalizedIndex<SpellsIndex, SpellsLocaleMap>,
@@ -133,6 +136,28 @@ pub struct RulesRegistry {
 }
 
 impl RulesRegistry {
+    /// Tracked ids of every manifest-listed package, in manifest order
+    /// (base first = override priority). `None` until the manifest resolves.
+    pub fn manifest_ids(&self) -> Option<Vec<String>> {
+        let guard = self.manifest.read();
+        guard
+            .as_ref()
+            .and_then(|result| result.as_ref().ok())
+            .map(|entries| entries.iter().map(|entry| entry.id.clone()).collect())
+    }
+
+    /// Untracked read of the manifest entries. `None` until resolved.
+    pub fn with_manifest_untracked<R>(
+        &self,
+        f: impl FnOnce(&[PackageManifestEntry]) -> R,
+    ) -> Option<R> {
+        let guard = self.manifest.read_untracked();
+        guard
+            .as_ref()
+            .and_then(|result| result.as_ref().ok())
+            .map(|entries| f(entries))
+    }
+
     /// Tracked access to the merged class definitions map (empty until the
     /// defs index resolves).
     pub fn with_class_defs<R>(
@@ -393,7 +418,8 @@ impl RulesRegistry {
         backgrounds: BTreeMap<Box<str>, BackgroundDefinition>,
     ) -> Self {
         Self {
-            packages: Signal::stored(crate::rules::packages::default_packages()),
+            packages: Signal::stored(crate::rules::packages::test_packages()),
+            manifest: LocalResource::new(|| async { Ok(Vec::new()) }),
             class_defs: LocalizedIndex::for_test(DefsIndex(classes), None),
             species_defs: LocalizedIndex::for_test(DefsIndex(species), None),
             background_defs: LocalizedIndex::for_test(DefsIndex(backgrounds), None),
@@ -471,6 +497,10 @@ impl RulesRegistry {
         let spells_index =
             LocalizedIndex::<SpellsIndex, SpellsLocaleMap>::new(locale, packages, "spells.json");
 
+        let manifest = LocalResource::new(move || async move {
+            fetch_json::<Vec<PackageManifestEntry>>(&format!("{BASE_URL}/rules/index.json")).await
+        });
+
         let spell_names_cache = FetchCache::new();
 
         // Package-set change invalidates the unioned spell lists; the
@@ -540,6 +570,7 @@ impl RulesRegistry {
 
         Self {
             packages,
+            manifest,
             class_defs,
             species_defs,
             background_defs,
@@ -1615,7 +1646,7 @@ mod tests {
         let owner = Owner::new();
         let registry = owner.with(|| {
             let locale = RwSignal::new("en".to_string());
-            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let packages = RwSignal::new(crate::rules::packages::test_packages());
             let registry = RulesRegistry::new_with_locale(locale.into(), packages.into());
 
             // Seed synth_features directly — bypasses the defs Effect
@@ -1667,7 +1698,7 @@ mod tests {
         let owner = Owner::new();
         let registry = owner.with(|| {
             let locale = RwSignal::new("ru".to_string());
-            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let packages = RwSignal::new(crate::rules::packages::test_packages());
             let mut registry = RulesRegistry::new_with_locale(locale.into(), packages.into());
             // Inject merged defs + locale directly (no HTTP in tests).
             let mut classes = BTreeMap::new();
@@ -1698,7 +1729,7 @@ mod tests {
         let owner = Owner::new();
         let (registry, packages) = owner.with(|| {
             let locale = RwSignal::new("en".to_string());
-            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let packages = RwSignal::new(crate::rules::packages::test_packages());
             (
                 RulesRegistry::new_with_locale(locale.into(), packages.into()),
                 packages,
@@ -1729,7 +1760,7 @@ mod tests {
         let owner = Owner::new();
         let (registry, packages) = owner.with(|| {
             let locale = RwSignal::new("en".to_string());
-            let packages = RwSignal::new(crate::rules::packages::default_packages());
+            let packages = RwSignal::new(crate::rules::packages::test_packages());
             (
                 RulesRegistry::new_with_locale(locale.into(), packages.into()),
                 packages,

@@ -11,14 +11,29 @@ use crate::{
     vecset::VecSet,
 };
 
-/// All built-in rule packages, base first; order is override priority.
-pub const BUILTIN_PACKAGES: [&str; 5] = ["phb24", "efoa", "motm", "lorwyn", "grimhollow"];
+/// One entry of the package manifest (`public/rules/index.json`) — the ONLY
+/// source of available packages; nothing about them is hardcoded at runtime.
+#[derive(Clone, Deserialize)]
+pub struct PackageManifestEntry {
+    pub id: String,
+    pub kind: PackageKind,
+    pub name: String,
+}
 
-/// The default package set: every built-in package.
-pub fn default_packages() -> VecSet<String> {
-    BUILTIN_PACKAGES
-        .iter()
-        .map(|id| (*id).to_string())
+#[derive(Clone, Copy, PartialEq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PackageKind {
+    Base,
+    Addon,
+}
+
+/// Test fixture set matching the shipped packages; runtime code must use
+/// the fetched manifest instead.
+#[cfg(any(test, feature = "testing"))]
+pub fn test_packages() -> VecSet<String> {
+    ["phb24", "efoa", "motm", "lorwyn", "grimhollow"]
+        .map(str::to_string)
+        .into_iter()
         .collect()
 }
 
@@ -28,9 +43,10 @@ pub fn default_packages() -> VecSet<String> {
 pub struct ActivePackages(pub RwSignal<VecSet<String>>);
 
 impl ActivePackages {
-    /// Restore the persisted set, defaulting to all built-in packages.
+    /// Restore the persisted set. Empty until the manifest resolves and the
+    /// App-root effect fills it with every listed package.
     pub fn load() -> Self {
-        let initial = load_active_packages().unwrap_or_else(default_packages);
+        let initial = load_active_packages().unwrap_or_default();
         Self(RwSignal::new(initial))
     }
 }
@@ -144,9 +160,10 @@ mod tests {
     }
 
     #[test]
-    fn default_packages_covers_builtins_in_order() {
-        let defaults = default_packages();
-        assert_eq!(defaults.len(), BUILTIN_PACKAGES.len());
-        assert!(defaults.iter().zip(BUILTIN_PACKAGES).all(|(a, b)| a == b));
+    fn manifest_entry_deserializes() {
+        let entry: PackageManifestEntry =
+            serde_json::from_str(r#"{"id": "phb24", "kind": "base", "name": "PHB"}"#).unwrap();
+        assert!(entry.kind == PackageKind::Base);
+        assert_eq!(entry.id, "phb24");
     }
 }

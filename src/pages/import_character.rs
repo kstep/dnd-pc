@@ -15,7 +15,7 @@ use crate::{
     components::{cloud_sign_in_hint::CloudSignInHint, ref_link::Ref, toast::Toast},
     firebase,
     model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
-    rules::BUILTIN_PACKAGES,
+    rules::RulesRegistry,
     storage,
 };
 
@@ -567,12 +567,18 @@ struct CloudImportParams {
 }
 
 pub fn import_or_conflict(character: Character, avatar: Option<Avatar>) -> impl IntoView {
-    let unknown: Vec<&str> = character
-        .packages
-        .iter()
-        .map(String::as_str)
-        .filter(|pkg| !BUILTIN_PACKAGES.contains(pkg))
-        .collect();
+    // Best-effort: skip the warning when the manifest hasn't resolved yet.
+    let registry = expect_context::<RulesRegistry>();
+    let unknown: Vec<String> = registry
+        .with_manifest_untracked(|entries| {
+            character
+                .packages
+                .iter()
+                .filter(|pkg| !entries.iter().any(|entry| entry.id == **pkg))
+                .cloned()
+                .collect()
+        })
+        .unwrap_or_default();
     if !unknown.is_empty() {
         Toast::new(format!(
             "{} {}",

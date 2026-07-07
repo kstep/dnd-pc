@@ -24,7 +24,7 @@ pub use feature::{
     ReplaceWith, WhenCondition,
 };
 pub use index::IndexEntry;
-pub use packages::{ActivePackages, BUILTIN_PACKAGES, DefsIndex, PackageMerge, default_packages};
+pub use packages::{ActivePackages, DefsIndex, PackageKind, PackageManifestEntry, PackageMerge};
 pub use preview::{PreviewContext, eval_at_levels};
 pub use registry::{FeaturesView, RulesRegistry, make_system_feature};
 pub use species::SpeciesDefinition;

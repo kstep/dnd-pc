@@ -2,10 +2,12 @@ use std::collections::HashMap;
 
 use serde_json::Value;
 
-use crate::{
-    model::{Character, DamageType},
-    rules::BUILTIN_PACKAGES,
-};
+use crate::model::{Character, DamageType};
+
+/// Packages every pre-split character was implicitly built against. The one
+/// legitimate hardcode: migrations are synchronous and deterministic — they
+/// cannot depend on a fetched manifest.
+const LEGACY_DEFAULT_PACKAGES: [&str; 5] = ["phb24", "efoa", "motm", "lorwyn", "grimhollow"];
 
 /// Latest schema version. Bumped when a new migration step is added.
 /// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
@@ -436,7 +438,10 @@ fn migrate_v18(value: &mut Value) {
         .and_then(Value::as_array)
         .is_none_or(|list| list.is_empty());
     if missing {
-        let all: Vec<Value> = BUILTIN_PACKAGES.iter().map(|id| Value::from(*id)).collect();
+        let all: Vec<Value> = LEGACY_DEFAULT_PACKAGES
+            .iter()
+            .map(|id| Value::from(*id))
+            .collect();
         map.insert("packages".into(), Value::Array(all));
     }
 }
@@ -728,7 +733,7 @@ mod tests {
             .iter()
             .map(|item| item.as_str().unwrap())
             .collect();
-        assert_eq!(packages, BUILTIN_PACKAGES);
+        assert_eq!(packages, LEGACY_DEFAULT_PACKAGES);
     }
 
     #[test]
