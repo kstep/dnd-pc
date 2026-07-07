@@ -4,7 +4,7 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, spinner::Spinner},
+    components::{markdown::Markdown, package_picker::ReferencePackagesBar, spinner::Spinner},
     pages::reference::{
         RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
     },
@@ -118,7 +118,10 @@ pub fn BackgroundReference() -> impl IntoView {
                         kind=|n| IndexEntry::Background(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }

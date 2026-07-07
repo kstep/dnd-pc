@@ -16,6 +16,7 @@ background = Background
 alignment = Alignment
 xp = XP
 rule-packages = Rule packages
+rule-packages-count = { $active } of { $total }
 unknown-packages = Unknown rule packages:
 total-level = Total Level
 prof-bonus = Prof. Bonus

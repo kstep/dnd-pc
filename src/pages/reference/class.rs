@@ -4,7 +4,9 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
+    components::{
+        markdown::Markdown, package_picker::ReferencePackagesBar, ref_link::Ref, spinner::Spinner,
+    },
     expr::Context as _,
     hooks::use_hash_href,
     model::{Attribute, format_bonus, proficiency_bonus_for_level},
@@ -523,7 +525,10 @@ pub fn ClassReference() -> impl IntoView {
                         kind=|n| IndexEntry::Class(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }

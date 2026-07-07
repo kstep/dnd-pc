@@ -5,7 +5,7 @@ use reactive_stores::Store;
 use crate::{
     components::icon::Icon,
     model::{Character, CharacterStoreFields},
-    rules::{PackageKind, RulesRegistry},
+    rules::{ActivePackages, PackageKind, RulesRegistry},
     vecset::VecSet,
 };
 
@@ -97,9 +97,6 @@ pub fn PackagePicker(
     /// Character whose content locks packages; `None` = no guard (reference).
     #[prop(optional)]
     guard: Option<Store<Character>>,
-    /// Sidebar-sized chips.
-    #[prop(optional)]
-    compact: bool,
 ) -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
 
@@ -129,7 +126,7 @@ pub fn PackagePicker(
                 .collect();
             let known: Vec<String> = entries.iter().map(|entry| entry.id.clone()).collect();
             view! {
-                <div class="package-picker" class:compact=compact>
+                <div class="package-picker">
                     <select
                         class="package-base"
                         on:change=move |event| {
@@ -146,7 +143,7 @@ pub fn PackagePicker(
                                 let selected = value.read().contains(base.id.as_str());
                                 view! {
                                     <option value=base.id.clone() selected=selected>
-                                        {if compact { base.id.clone() } else { base.name.clone() }}
+                                        {base.name.clone()}
                                     </option>
                                 }
                             })
@@ -184,17 +181,15 @@ pub fn PackagePicker(
                                     }
                                     title={
                                         let lock_names = lock_names.clone();
-                                        let full_name = addon.name.clone();
-                                        move || match lock_names() {
-                                            Some(names) => {
-                                                Some(tr!("package-locked", { "names" => names.join(", ") }))
-                                            }
-                                            None if compact => Some(full_name.clone()),
-                                            None => None,
+                                        move || {
+                                            lock_names()
+                                                .map(|names| {
+                                                    tr!("package-locked", { "names" => names.join(", ") })
+                                                })
                                         }
                                     }
                                 >
-                                    {if compact { addon.id.clone() } else { addon.name.clone() }}
+                                    {addon.name.clone()}
                                     {
                                         let lock_names = lock_names.clone();
                                         move || {
@@ -233,6 +228,59 @@ pub fn CharacterPackagePanel(
                 on_change=Callback::new(move |set| store.packages().set(set))
                 guard=store
             />
+        </div>
+    }
+}
+
+/// Collapsed-by-default disclosure row with the reference package filter.
+/// Lives at the top of the reference main column; edits the global
+/// `ActivePackages` (characters untouched).
+#[component]
+pub fn ReferencePackagesBar() -> impl IntoView {
+    let registry = expect_context::<RulesRegistry>();
+    let active_packages = expect_context::<ActivePackages>();
+    let open = RwSignal::new(false);
+    let count = move || {
+        registry
+            .manifest_ids()
+            .map(|ids| {
+                let active = active_packages
+                    .0
+                    .read()
+                    .iter()
+                    .filter(|id| ids.contains(id))
+                    .count();
+                tr!("rule-packages-count", {
+                    "active" => active.to_string(), "total" => ids.len().to_string()
+                })
+            })
+            .unwrap_or_default()
+    };
+    view! {
+        <div class="reference-packages-bar" class:open=move || open.get()>
+            <button
+                type="button"
+                class="reference-packages-toggle"
+                on:click=move |_| open.update(|is_open| *is_open = !*is_open)
+            >
+                <span>{move_tr!("rule-packages")}</span>
+                <span class="reference-packages-count">
+                    {count} <Icon name="chevron-down" size=14 />
+                </span>
+            </button>
+            {move || {
+                open.get()
+                    .then(|| {
+                        view! {
+                            <div class="reference-packages-body">
+                                <PackagePicker
+                                    value=Signal::derive(move || active_packages.0.get())
+                                    on_change=Callback::new(move |set| active_packages.0.set(set))
+                                />
+                            </div>
+                        }
+                    })
+            }}
         </div>
     }
 }

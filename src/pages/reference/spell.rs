@@ -12,7 +12,10 @@ use strum::{IntoEnumIterator, VariantArray};
 use wasm_bindgen::JsCast;
 
 use crate::{
-    components::{markdown::Markdown, spell_info_bar::SpellInfoBar, spinner::Spinner},
+    components::{
+        markdown::Markdown, package_picker::ReferencePackagesBar, spell_info_bar::SpellInfoBar,
+        spinner::Spinner,
+    },
     hooks::{use_hash_href, use_query_signal},
     model::Translatable,
     pages::reference::{
@@ -202,7 +205,10 @@ pub fn SpellReference() -> impl IntoView {
                         kind=|n| IndexEntry::Spell(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }

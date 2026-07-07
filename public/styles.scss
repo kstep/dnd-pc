@@ -3281,9 +3281,43 @@ dialog.modal.closing::backdrop {
   // Above the sticky spell-level headings (z-index: 10).
   z-index: 11;
 }
-.reference-sidebar-packages {
-  padding: var(--size-2);
-  border-bottom: 1px solid var(--panel-border);
+.reference-packages-bar {
+  margin-bottom: var(--size-3);
+
+  .reference-packages-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-2);
+    padding: var(--size-1) var(--size-2);
+    font-size: var(--font-size-0);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .reference-packages-count {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-1);
+  }
+
+  .reference-packages-body {
+    border: 1px solid var(--panel-border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-2) var(--radius-2);
+    padding: var(--size-2);
+  }
+
+  &.open .reference-packages-toggle {
+    border-radius: var(--radius-2) var(--radius-2) 0 0;
+  }
+
+  &.open .reference-packages-count .icon-wrapper {
+    transform: rotate(180deg);
+  }
 }
 
 
@@ -3530,18 +3564,6 @@ dialog.modal.closing::backdrop {
   align-items: center;
   position: relative;
 
-  &.compact {
-    gap: var(--size-1);
-
-    .package-chip {
-      font-size: var(--font-size-0);
-      padding-block: 2px;
-    }
-
-    .package-base {
-      font-size: var(--font-size-0);
-    }
-  }
 }
 
 .package-chip {

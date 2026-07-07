@@ -16,6 +16,7 @@ background = Предыстория
 alignment = Мировоззрение
 xp = Опыт
 rule-packages = Наборы правил
+rule-packages-count = { $active } из { $total }
 unknown-packages = Неизвестные наборы правил:
 total-level = Общий уровень
 prof-bonus = Бонус мастерства

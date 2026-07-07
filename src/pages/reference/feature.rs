@@ -7,7 +7,7 @@ use leptos_router::{hooks::use_params, params::Params};
 use regex::RegexBuilder;
 
 use crate::{
-    components::ref_link::Ref,
+    components::{package_picker::ReferencePackagesBar, ref_link::Ref},
     hooks::use_query_signal,
     model::{FeatureCategory, Translatable},
     pages::reference::{ReferenceFeaturesView, ReferenceSidebar, collect_feature_views},
@@ -125,7 +125,10 @@ pub fn FeatureReference() -> impl IntoView {
                             on:input=move |event| on_search(event_target_value(&event))
                         />
                     </div>
-                    <main class="reference-main">{features_view}</main>
+                    <main class="reference-main">
+                        <ReferencePackagesBar />
+                        {features_view}
+                    </main>
                 </div>
             </div>
         </div>
