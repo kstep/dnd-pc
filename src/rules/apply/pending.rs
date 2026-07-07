@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// Names of the identity-slot picker placeholder features defined in
-/// `public/data/features.json`. Each carries a
+/// `public/rules/*/data/features.json`. Each carries a
 /// `replace_with: Category(System(_))` so the args modal can swap it for the
 /// user's pick during cascade.
 pub const PICK_SPECIES: &str = "Generation: Species";

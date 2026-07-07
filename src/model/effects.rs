@@ -141,7 +141,7 @@ impl demap::Named for ActiveEffect {
 }
 
 /// Catalog entry — locale-less template for predefined effects (loaded from
-/// `public/data/effects.json`). Runtime label/description come from the
+/// `public/rules/*/data/effects.json`). Runtime label/description come from the
 /// parallel `EffectsLocaleMap` overlay; user-edited fields live on
 /// `ActiveEffect` after the template is materialized.
 #[derive(Debug, Clone, Deserialize)]

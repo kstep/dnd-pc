@@ -12,47 +12,40 @@ const FIREBASE_URLS = [
   'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js',
 ];
 
-// Build data file URLs from index.json
+// Fixed per-package rules files; packages that don't ship one 404 harmlessly
+// (per-URL cache.add failures are tolerated below).
+const PKG_FILES = ['classes.json', 'species.json', 'backgrounds.json',
+                   'features.json', 'spells.json', 'effects.json'];
+
+// Build data file URLs from the package manifest (rules/index.json)
 async function buildPrecacheList() {
-  const urls = [...FIREBASE_URLS];
+  const urls = [
+    ...FIREBASE_URLS,
+    new URL('names.json', BASE).href,
+    new URL('rules/index.json', BASE).href,
+  ];
   try {
-    const resp = await fetch(new URL('data/index.json', BASE));
-    const index = await resp.json();
-
-    // Top-level data files
-    urls.push(
-      new URL('data/index.json', BASE).href,
-      new URL('data/features.json', BASE).href,
-      new URL('data/effects.json', BASE).href,
-      new URL('data/names.json', BASE).href,
-    );
-
-    // All entries from index categories (classes, species, backgrounds, spells)
-    const entryUrls = [];
-    for (const category of Object.values(index)) {
-      for (const entry of category) {
-        if (entry.url) entryUrls.push(entry.url);
+    const manifest = await (await fetch(new URL('rules/index.json', BASE))).json();
+    for (const pkg of manifest) {
+      for (const file of PKG_FILES) {
+        urls.push(new URL(`rules/${pkg.id}/data/${file}`, BASE).href);
+        for (const locale of LOCALES) {
+          urls.push(new URL(`rules/${pkg.id}/${locale}/${file}`, BASE).href);
+        }
       }
-    }
-
-    // Data files + locale overlays
-    for (const url of entryUrls) {
-      urls.push(new URL(`data/${url}`, BASE).href);
-      for (const locale of LOCALES) {
-        urls.push(new URL(`${locale}/${url}`, BASE).href);
-      }
-    }
-
-    // Locale top-level files
-    for (const locale of LOCALES) {
-      urls.push(
-        new URL(`${locale}/index.json`, BASE).href,
-        new URL(`${locale}/features.json`, BASE).href,
-        new URL(`${locale}/effects.json`, BASE).href,
-      );
+      // Spell lists have variable names; every "spells/<x>.json" Ref path
+      // appears verbatim in the package's features.json text.
+      try {
+        const features = await (
+          await fetch(new URL(`rules/${pkg.id}/data/features.json`, BASE))
+        ).text();
+        for (const match of features.matchAll(/"(spells\/[^"]+\.json)"/g)) {
+          urls.push(new URL(`rules/${pkg.id}/data/${match[1]}`, BASE).href);
+        }
+      } catch (e) {}
     }
   } catch (e) {
-    // If index fetch fails, just precache Firebase URLs
+    // If the manifest fetch fails, just precache Firebase URLs
   }
   return urls;
 }

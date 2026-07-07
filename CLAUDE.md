@@ -39,7 +39,9 @@ Leptos 0.8 CSR PWA, `wasm32-unknown-unknown`, bundled with Trunk.
 Router uses `option_env!("BASE_URL")` for base path. `use_navigate()` handles the base URL internally — use plain paths like `/c/{id}`, never prepend `BASE_URL`. The `BASE_URL` constant is only for `<A href=...>` and share link construction.
 
 ### Contexts provided at App root
-`RulesRegistry`, `ActiveCharacterId`, `IsRouting`, `ToastContainer`, `ArgsModalCtx`. `EffectiveCharacter` is provided per-character in `character/layout.rs`.
+`RulesRegistry`, `ActivePackages`, `ActiveCharacterId`, `IsRouting`, `ToastContainer`, `ArgsModalCtx`. `EffectiveCharacter` is provided per-character in `character/layout.rs`.
+
+**Rule packages.** Rules data ships as packages under `public/rules/{pkg}/{data,en,ru}` (manifest `public/rules/index.json`: id + kind base/addon + display name). `Character.packages: VecSet<String>` (root field, document-interpretation context like `schema_version`) selects the set; `ActivePackages` (RwSignal, persisted at `dnd_pc_packages`) follows the open character and drives the registry — every index fetches one file per package and merges in set order (later wins by name; spell name lists union). 404 = "package doesn't ship this file", silent. Built-ins: `phb24` (base), `efoa`, `motm`, `lorwyn`, `grimhollow` (`BUILTIN_PACKAGES`). Migration v18 fills legacy characters with all built-ins.
 
 ### Reactive State (`reactive_stores`)
 
@@ -57,13 +59,13 @@ Provide in `character/layout.rs`, consume with `expect_context::<Store<Character
 ### Effects in `character/layout.rs`
 1. **Auto-save** — persist to localStorage on any change
 2. **Fill** — `registry.fill_from_registry(c)` populates empty labels/descriptions from cached JSON (re-runs on locale change)
-3. **Fetch** — triggers class/species/background/spell-list fetches based on identity
+3. **Fetch** — triggers spell-list fetches based on identity (definitions are eager); a sibling effect pushes `character.packages` into `ActivePackages`
 4. **Effects recompute** — re-evaluates `ActiveEffects` overrides
 5. **Effects save** — persists effects to separate localStorage key
 
 ### Storage (`src/storage/`)
 
-`gloo_storage::LocalStorage`. Keys: `dnd_pc_char_{uuid}`, `dnd_pc_effects_{uuid}`, `dnd_pc_avatar_{uuid}`, `dnd_pc_stories_{uuid}`, `dnd_pc_panel_{class}`, `dnd_pc_last_sync`, `dnd_pc_last_sync_avatars`. Summaries are derived on demand by scanning keys with the `dnd_pc_char_` prefix — no separate index. Legacy `dnd_pc_index` is read once in `load_last_sync()` to seed `dnd_pc_last_sync`, then deleted. `CharacterSummary` carries `updated_at` for cheap sync comparison.
+`gloo_storage::LocalStorage`. Keys: `dnd_pc_char_{uuid}`, `dnd_pc_effects_{uuid}`, `dnd_pc_avatar_{uuid}`, `dnd_pc_stories_{uuid}`, `dnd_pc_panel_{class}`, `dnd_pc_packages`, `dnd_pc_last_sync`, `dnd_pc_last_sync_avatars`. Summaries are derived on demand by scanning keys with the `dnd_pc_char_` prefix — no separate index. Legacy `dnd_pc_index` is read once in `load_last_sync()` to seed `dnd_pc_last_sync`, then deleted. `CharacterSummary` carries `updated_at` for cheap sync comparison.
 
 Submodules:
 - `local.rs` — load/save characters, index, effects, panel state
@@ -79,31 +81,27 @@ Import supports conflict detection — shows a diff table if the local UUID exis
 
 ### Rules Registry (`src/rules/`)
 
-`RulesRegistry` is `Copy`, provided at App root. Structural data (locale-independent) in `public/data/`, locale overlays in `public/{en,ru}/`. Definition structs (`SpellDefinition`, `FeatureDefinition`, `ClassDefinition`, `EffectTemplate`, `*IndexEntry`, etc.) carry **only structural fields** — `name: Box<str>`, exprs, kinds. Locale text lives in a parallel resource and is overlaid via `LocalizedText` wrappers; the data resource never gets mutated on locale switch.
+`RulesRegistry` is `Copy`, provided at App root. Structural data (locale-independent) in `public/rules/{pkg}/data/`, locale overlays in `public/rules/{pkg}/{en,ru}/`. Definition structs (`SpellDefinition`, `FeatureDefinition`, `ClassDefinition`, `EffectTemplate`, etc.) carry **only structural fields** — `name: Box<str>`, exprs, kinds (`ClassDefinition` also carries `prerequisites`). Locale text lives in a parallel resource and is overlaid via `LocalizedText` wrappers; the data resource never gets mutated on locale switch.
 
-**Two parallel-resource patterns:**
-
-- `LocalizedIndex<T, L>` (registry.rs): one `LocalResource<Result<T>>` for data + one `LocalResource<Option<L>>` for the locale overlay. Used for whole-file indexes (`SpellsIndex`, `FeaturesIndex`, `EffectsIndex`, `Index`). Consumers obtain `LocalizedText<'_, Def, L>` via `.lookup(name, |loc| ...)` / `.iter(...)` and read `.label()` / `.description()` on the wrapper. Locale switch reloads only the locale resource — no deep clone of N-hundred entries. Derefs to its data resource so existing `.read*()` patterns keep working.
-- `LocalizedCache<T>` (cache.rs): the lazy per-name analog — pairs `FetchCache<T>` (data) + `FetchCache<LocaleMap>` (locale). Used for class/species/background definitions loaded one at a time. `DefinitionStore::lookup(name, |loc| ...)` gives a `LocalizedText<'_, Def, LocaleMap>` wrapper. On locale switch the locale cache is cleared; data survives.
+**Everything is a whole-file merged index.** `LocalizedIndex<T, L>` (registry.rs): one `LocalResource<Result<T>>` for data + one `LocalResource<Option<L>>` for the locale overlay; each fetches one file per active package (`fetch_merged_json`) and folds parts with `PackageMerge::absorb` (later package wins by name). Seven instances: `DefsIndex<ClassDefinition|SpeciesDefinition|BackgroundDefinition>` (classes.json / species.json / backgrounds.json), `FeaturesIndex`, `SpellsIndex`, `EffectsIndex`. Locale switch reloads only locale resources (`refetch_locale`); package-set switch reloads both (`refetch_all`). `DefinitionStore` (cache.rs) is a thin read facade (`has`/`with`/`lookup{,_untracked}`) over the three defs indexes — there is NO per-name definition fetching; only per-class spell name lists stay lazy (`FetchCache<Vec<String>>`, unioned across packages, cleared on set change).
 
 **Tracked vs untracked.** Both APIs follow the leptos `signal.get()` / `get_untracked()` convention: bare `lookup` / `has` / `with` / `fetch` subscribe the calling reactive context; `_untracked` variants don't. Apply pipeline + event handlers use `_untracked`; reactive views use the bare names.
 
 **Reactive label/description signals.** `LocalizedIndex` exposes `.label_desc(key, fallback) -> (Signal<String>, Signal<String>)` (generic over any locale map with `Borrow<str>` key) — both signals subscribe to the locale resource only. Derived signals are owned by the **calling scope**, so create them inside the `<For>` child closure (per-row scope, lives as long as the DOM node) — never inside a `Memo` body whose re-evaluation would dispose them while `<For>` keeps the matching child alive (causes "disposed reactive value" panic on locale switch).
 
-For the shared `Index` (class/species/background/spell entries under prefixed keys), use `IndexEntry<'a>::{Class,Species,Background,Spell}(&str)` + `registry.index().entry_label_desc(entry)`. `IndexEntry` has `Display` (via strum) producing the locale-overlay key (`"class.wizard"` etc.) and `prefix()`/`name()` accessors. `EntityField`, `RefSidebarEntries`, and the per-row reference views all take a `kind: for<'a> Fn(&'a str) -> IndexEntry<'a>` constructor — pass `IndexEntry::Class` (etc.) or a `|n| IndexEntry::Class(n)` closure when the constructor doesn't infer HRTB.
+For reference entries use `IndexEntry<'a>::{Class,Species,Background,Spell}(&str)` (routing helper: `prefix()`/`name()` for `/r/<prefix>/<name>` hrefs) + `registry.entry_label_desc(entry)`, which dispatches to the owning defs index (`Spell` lists derive their label from the owning class). `EntityField`, `RefSidebarEntries`, and the per-row reference views all take a `kind: for<'a> Fn(&'a str) -> IndexEntry<'a>` constructor — pass `IndexEntry::Class` (etc.) or a `|n| IndexEntry::Class(n)` closure when the constructor doesn't infer HRTB. The `/r/spell` sidebar names come from `registry.spell_list_names()` (two-hop: class level features → features index → `SpellsList::Ref`).
 
-`LocalizedText<'_, T, L>` derefs to `T` (transparent access to structural fields) and exposes `.label()` / `.description()` overlaying the locale entry on top of `name` fallback. Three flavors:
+`LocalizedText<'_, T, L>` derefs to `T` (transparent access to structural fields) and exposes `.label()` / `.description()` overlaying the locale entry on top of `name` fallback. Flavors:
 
 - Flat `L = LocaleText` (used for spells): one entry per name, simple `t.label` / `t.description` lookup.
 - Nested `L = LocaleMap` for `FeatureDefinition`: bare key = feature name; `loc.field(name)` returns `LocalizedField` (key `Feat.field.X`); `field.option(name)` returns `LocalizedOption` (key `Feat.field.X.option.Y`).
-- Nested `L = LocaleMap` for `ClassDefinition`: root key = `""`; `loc.subclass(name)` returns `LocalizedSubclass` (key `subclass.X`).
-- Root-only for `SpeciesDefinition` / `BackgroundDefinition`: just the `""` key.
+- Nested `L = LocaleMap` for `ClassDefinition` / `SpeciesDefinition` / `BackgroundDefinition` (`RootKeyed`): bare key = entity name in the merged per-kind locale file; `loc.subclass(name)` returns `LocalizedSubclass` (key `{Class}.subclass.{Sub}`).
 
 **Runtime types** (`Feature`, `Spell`, `FeatureField`, `FeatureOption`, `ActiveEffect`) keep their own `label`/`description` fields — they are user-editable and persisted with the character. `labels::sync_labels` populates them from definition lookups on every reactive cycle (Effect in `character/layout.rs`).
 
 Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `class`, `species`, `background`, `feature`, `spells`, `utils`.
 
-**Global Features Catalog:** all features live in `public/data/features.json` → `FeaturesIndex` (`BTreeMap<Box<str>, FeatureDefinition>`). Class/species/background definitions reference features by name (`VecSet<String>`).
+**Global Features Catalog:** all features live in `public/rules/*/data/features.json` → merged `FeaturesIndex` (`BTreeMap<Box<str>, FeatureDefinition>`). Class/species/background definitions reference features by name (`VecSet<String>`).
 
 **Feature application pipeline (`src/rules/apply/`):** all apply paths converge on a single `cascade()` over a list of `PendingFeature`. UI helper `apply_with_modal()` collects `ApplyInputs` through the args modal and feeds `cascade` via closures; level-up / quick-start / add-feat / edit / rebuild / args_modal speculative all share this entry. Public surface: `apply_pending`, `cascade`, `dry_run_apply_feature`, `restore_user_state`, `apply_feature` (registry_ext).
 
@@ -154,10 +152,10 @@ Half-migrated characters (`feature.inputs == []` but target state reflects prior
 `leptos-fluent` with `.ftl` files in `locales/{en,ru}/main.ftl`. `move_tr!("key")` reactive, `tr!("key")` non-reactive. Language persisted in localStorage.
 
 ### Public data (`public/`)
-- **Structural** (`public/data/`): `features.json`, `classes/*.json`, `species/*.json`, `backgrounds/*.json`, `spells/*.json`, `effects.json`, `index.json`, `names.json`
-- **Locale overlays** (`public/{en,ru}/`): mirrored structure with labels/descriptions only
+- **Rule packages** (`public/rules/{pkg}/`): per package — `data/{classes,species,backgrounds,features,spells,effects}.json` (arrays of full definitions; every file optional) + `data/spells/{class}.json` name lists; `{en,ru}/` mirror the data files with flat name-keyed `LocaleMap`s (`"Wizard"`, `"Wizard.subclass.Evoker"`, `"Feat.field.X"`). Manifest `public/rules/index.json` lists packages (HTTP can't list dirs).
+- **App-level**: `public/names.json` — flat `{first, last}` name-generator pools (not rules data).
 
-Both dirs need explicit `<link data-trunk rel="copy-dir" .../>` in `index.html`.
+`public/rules` needs `<link data-trunk rel="copy-dir" .../>`, `names.json` a `copy-file` in `index.html`. `public/sw.js` precaches rules data from the manifest (fixed per-package file names + spell-list paths regexed from features.json).
 
 ## Model (`src/model/`)
 
@@ -165,7 +163,7 @@ Split into focused files: `character`, `identity`, `ability`, `skills`, `attribu
 
 All structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (required for Memo). Root `Character` omits `PartialEq`.
 
-**Character fields:** `id`, `identity`, `abilities` (private), `saving_throws`, `skills` (private), `combat`, `personality`, `features` (container: list + data), `equipment`, `proficiencies`, `languages`, `damage_modifiers`, `spell_slots`, `applied`, `notes`, `updated_at`, `shared`. Key methods: `level()`, `proficiency_bonus()`, `initiative()`, `ability_modifier()`, `saving_throw_bonus()`, `skill_bonus()`, `spell_save_dc()`, `spell_attack_bonus()`, `caster_level()`, `active_pools()`, `class_summary()`, `clear_all_labels()`, `long_rest()`, `short_rest()`. Implements `expr::Context<Attribute>`.
+**Character fields:** `id`, `identity`, `abilities` (private), `saving_throws`, `skills` (private), `combat`, `personality`, `features` (container: list + data), `equipment`, `proficiencies`, `languages`, `damage_modifiers`, `spell_slots`, `applied`, `notes`, `updated_at`, `shared`, `packages` (rule-package set, root-level interpretation context). Key methods: `level()`, `proficiency_bonus()`, `initiative()`, `ability_modifier()`, `saving_throw_bonus()`, `skill_bonus()`, `spell_save_dc()`, `spell_attack_bonus()`, `caster_level()`, `active_pools()`, `class_summary()`, `clear_all_labels()`, `long_rest()`, `short_rest()`. Implements `expr::Context<Attribute>`.
 
 **Label pattern:** `Feature`, `Spell`, `FeatureField`, `FeatureOption` have optional `label: Option<String>` (`#[serde(default)]`) with `.label()` returning `label.as_deref().unwrap_or(&name)`. `name` is the stable key; `label` is locale-filled from registry.
 
@@ -177,7 +175,7 @@ All structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `Parti
 
 **Spellcasting:** Per-feature spell data in `FeatureData.spells: Option<SpellData>` keyed by feature name. Spell slots on `Character.spell_slots: BTreeMap<SpellSlotPool, ConstVec<SpellSlotLevel, 9>>` (pool = `Arcane`/`Pact`). `ClassLevel.caster_coef` (1/2/3 for full/half/third). `caster_level(pool)` sums across caster classes.
 
-**Transient effects (`effects.rs`, `effective.rs`):** `ActiveEffect { name, description, expr, enabled }` applied via expression evaluation without modifying stored character. `ActiveEffects.recompute()` caches overrides in `BTreeMap<Attribute, i32>`. `EffectiveCharacter` (Copy reactive view over `Store<Character>` + `RwSignal<ActiveEffects>`) resolves through overrides first. Effects stored separately at `dnd_pc_effects_{uuid}` — not cloud-synced. Predefined effects in `public/data/effects.json` + locale overlay.
+**Transient effects (`effects.rs`, `effective.rs`):** `ActiveEffect { name, description, expr, enabled }` applied via expression evaluation without modifying stored character. `ActiveEffects.recompute()` caches overrides in `BTreeMap<Attribute, i32>`. `EffectiveCharacter` (Copy reactive view over `Store<Character>` + `RwSignal<ActiveEffects>`) resolves through overrides first. Effects stored separately at `dnd_pc_effects_{uuid}` — not cloud-synced. Predefined effects in `public/rules/*/data/effects.json` + locale overlay.
 
 **Attribute** (`attribute.rs`): `Expr` variable type. Singletons follow a consistent dotted scheme: `LEVEL`, `CLASS.LEVEL`, `HP`/`HP.MAX`/`HP.TEMP`, `AC`, `SPEED`, `INIT`/`INIT.BONUS`, `INSPIRATION`, `PROF.BONUS`, `ATK`, `ATTACKS`. Spellcasting: `CASTER.LEVEL[.ARCANE/.PACT]`, `CASTER.MOD`/`CASTER.ABILITY`/`CASTER.COEF`, `SLOT.<n>`/`SLOT.<n>.USED`, `SLOT.LEVEL`, `SLOT.POOL`, `SPELL.DC`/`SPELL.ATK`/`SPELL.READY`/`SPELL.KNOWN`/`SPELL.CANTRIPS`. Per-ability: `STR`/`DEX`/...//`CHA`, with `.MOD`/`.SAVE`/`.SAVE.PROF`/`.ADV` suffixes. Skills: `SKILL.<abbr>` + `.PROF`/`.ADV`. Damage mods: `RESIST.<dt>`/`VULN.<dt>`/`IMMUNE.<dt>`/`DR.<dt>`. Maps: `LANG.\`<n>\``, `FEAT.\`<n>\``, `PROF.<equip>`, `FEAT_CAT.<cat>`. Named pools (lazy-created on first write): `POINTS.\`<n>\``/`POINTS.\`<n>\`.MAX`, `DIE.\`<n>\`.SIDES`/`.COUNT`/`.USED`, `BONUS.\`<n>\``, `CHOICE.\`<n>\`.COUNT`. Spell grants: `STICKY.\`<spell>\``, `FREE_USES.\`<spell>\``/`.USED`, scoped `FREE_USES`/`FREE_USES.USED` for pool broadcast. ARG: `ARG(n)` resolves through ApplyContext. `Character` implements `Context<Attribute>` for reads; mutating apply goes through `ApplyContext`.
 

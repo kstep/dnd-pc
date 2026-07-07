@@ -126,9 +126,8 @@ pub struct RulesRegistry {
     effects_index: LocalizedIndex<EffectsIndex, EffectsLocaleMap>,
     pub(super) features_index: LocalizedIndex<FeaturesIndex, LocaleMap>,
     /// Auto-generated `FeatureCategory::System(_)` features — one per
-    /// available species / background / subclass. Built reactively as the
-    /// underlying indexes (class_index for species/background, class_cache
-    /// for subclass) resolve. Merged with `features_index` by
+    /// available class / species / background / subclass. Built reactively
+    /// as the defs indexes resolve. Merged with `features_index` by
     /// `with_features_index`.
     synth_features: StoredValue<BTreeMap<Box<str>, FeatureDefinition>>,
 }

@@ -39,16 +39,14 @@ pub fn QuickStart() -> impl IntoView {
         if let Some(Some(ref data)) = *names_data.read() {
             let current = store.personality().name().get_untracked();
             if current == "New Character" {
-                let species = store.core().identity().species().get_untracked();
-                store.personality().name().set(data.generate_name(&species));
+                store.personality().name().set(data.generate_name());
             }
         }
     });
 
     let randomize_name = move |_| {
         if let Some(Some(ref data)) = *names_data.read_untracked() {
-            let species = store.core().identity().species().get_untracked();
-            store.personality().name().set(data.generate_name(&species));
+            store.personality().name().set(data.generate_name());
         }
     };
 
@@ -103,17 +101,16 @@ pub fn QuickStart() -> impl IntoView {
 
     view! {
         <AiGenerateModal show=show_ai_modal on_result=on_ai_result />
-        <form class="quick-start-page" on:submit=move |event| {
-            event.prevent_default();
-            on_create(event);
-        }>
+        <form
+            class="quick-start-page"
+            on:submit=move |event| {
+                event.prevent_default();
+                on_create(event);
+            }
+        >
             <div class="quick-start-header">
                 <h2>{move_tr!("quick-start-title")}</h2>
-                <button
-                    type="button"
-                    class="btn-primary"
-                    on:click=move |_| show_ai_modal.set(true)
-                >
+                <button type="button" class="btn-primary" on:click=move |_| show_ai_modal.set(true)>
                     <Icon name="sparkles" size=16 />
                     " "
                     {move_tr!("ai-generate-button")}
@@ -146,25 +143,33 @@ pub fn QuickStart() -> impl IntoView {
             <div class="quick-start-section">
                 <label>{move_tr!("quick-start-generation")}</label>
                 <div class="generation-options">
-                    {move || generation_options.read().iter().map(|(name, label)| {
-                        let name_for_check = name.clone();
-                        let name_for_set = name.clone();
-                        let label = label.clone();
-                        view! {
-                            <label class="generation-option">
-                                <input
-                                    type="radio"
-                                    name="generation"
-                                    value=name.clone()
-                                    prop:checked=move || {
-                                        generation_method.with(|method| method == &name_for_check)
-                                    }
-                                    on:change=move |_| generation_method.set(name_for_set.clone())
-                                />
-                                {move || label.get()}
-                            </label>
-                        }
-                    }).collect_view()}
+                    {move || {
+                        generation_options
+                            .read()
+                            .iter()
+                            .map(|(name, label)| {
+                                let name_for_check = name.clone();
+                                let name_for_set = name.clone();
+                                let label = label.clone();
+                                view! {
+                                    <label class="generation-option">
+                                        <input
+                                            type="radio"
+                                            name="generation"
+                                            value=name.clone()
+                                            prop:checked=move || {
+                                                generation_method.with(|method| method == &name_for_check)
+                                            }
+                                            on:change=move |_| {
+                                                generation_method.set(name_for_set.clone())
+                                            }
+                                        />
+                                        {move || label.get()}
+                                    </label>
+                                }
+                            })
+                            .collect_view()
+                    }}
                 </div>
             </div>
 

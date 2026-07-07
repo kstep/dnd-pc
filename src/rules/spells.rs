@@ -142,7 +142,7 @@ impl Named for SpellDefinition {
 }
 
 /// Global spells index — all spell definitions keyed by name. Mirrors
-/// `FeaturesIndex`. Loaded once from `public/data/spells.json`.
+/// `FeaturesIndex`. Merged from `public/rules/*/data/spells.json`.
 #[derive(Clone, Default)]
 pub struct SpellsIndex(pub BTreeMap<Box<str>, SpellDefinition>);
 
@@ -275,12 +275,21 @@ mod tests {
 
     use super::*;
 
+    /// Merge every package's spells.json, mirroring the runtime union.
     fn parse_spells_index() -> SpellsIndex {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/data/spells.json");
-        let data = std::fs::read_to_string(&path)
-            .unwrap_or_else(|error| panic!("failed to read {}: {error}", path.display()));
-        serde_json::from_str::<SpellsIndex>(&data)
-            .unwrap_or_else(|error| panic!("failed to parse spells.json: {error}"))
+        use crate::rules::packages::PackageMerge;
+        let rules_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
+        let mut merged = SpellsIndex::default();
+        for entry in std::fs::read_dir(&rules_dir).expect("read public/rules") {
+            let path = entry.expect("dir entry").path().join("data/spells.json");
+            let Ok(data) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let part: SpellsIndex = serde_json::from_str(&data)
+                .unwrap_or_else(|error| panic!("failed to parse {}: {error}", path.display()));
+            merged.absorb(part);
+        }
+        merged
     }
 
     #[test]
@@ -445,31 +454,34 @@ mod tests {
     #[test]
     fn per_class_spell_lists_resolve_into_index() {
         let index = parse_spells_index();
-        let lists_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/data/spells");
-        let classes = [
-            "artificer",
-            "bard",
-            "cleric",
-            "druid",
-            "paladin",
-            "ranger",
-            "sorcerer",
-            "warlock",
-            "wizard",
-        ];
-        for name in classes {
-            let path = lists_dir.join(format!("{name}.json"));
-            let data = std::fs::read_to_string(&path).expect("read class list");
-            let names: Vec<String> =
-                serde_json::from_str(&data).expect("class list is array of names");
-            assert!(!names.is_empty(), "{name}.json should have spell names");
-            for spell_name in &names {
+        let rules_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
+        let mut lists_seen = 0;
+        for pkg in std::fs::read_dir(&rules_dir).expect("read public/rules") {
+            let lists_dir = pkg.expect("dir entry").path().join("data/spells");
+            let Ok(entries) = std::fs::read_dir(&lists_dir) else {
+                continue;
+            };
+            for entry in entries {
+                let path = entry.expect("dir entry").path();
+                let data = std::fs::read_to_string(&path).expect("read class list");
+                let names: Vec<String> =
+                    serde_json::from_str(&data).expect("class list is array of names");
                 assert!(
-                    index.0.contains_key(spell_name.as_str()),
-                    "{name}.json references unknown spell {spell_name:?}"
+                    !names.is_empty(),
+                    "{} should have spell names",
+                    path.display()
                 );
+                lists_seen += 1;
+                for spell_name in &names {
+                    assert!(
+                        index.0.contains_key(spell_name.as_str()),
+                        "{} references unknown spell {spell_name:?}",
+                        path.display()
+                    );
+                }
             }
         }
+        assert!(lists_seen >= 9, "expected at least the 9 caster lists");
     }
 
     #[test]

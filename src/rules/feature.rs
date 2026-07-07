@@ -353,11 +353,25 @@ impl Named for ChoiceOption {
 mod tests {
     use super::*;
 
+    /// Merge every package's features.json, mirroring the runtime union.
+    fn parse_merged_features() -> FeaturesIndex {
+        use crate::rules::packages::PackageMerge;
+        let rules_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
+        let mut merged = FeaturesIndex::default();
+        for entry in std::fs::read_dir(&rules_dir).expect("read public/rules") {
+            let path = entry.expect("dir entry").path().join("data/features.json");
+            let Ok(data) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let part: FeaturesIndex = serde_json::from_str(&data).expect("parse features.json");
+            merged.absorb(part);
+        }
+        merged
+    }
+
     #[test]
     fn deserialize_features_json() {
-        let data = include_str!("../../public/data/features.json");
-        let index: FeaturesIndex = serde_json::from_str(data)
-            .expect("features.json should deserialize into FeaturesIndex");
+        let index = parse_merged_features();
         assert!(
             index.0.len() > 900,
             "expected 900+ features, got {}",
@@ -367,8 +381,7 @@ mod tests {
 
     #[test]
     fn class_specific_subclass_placeholders_removed() {
-        let data = include_str!("../../public/data/features.json");
-        let index: FeaturesIndex = serde_json::from_str(data).expect("deserialize");
+        let index = parse_merged_features();
         for class in [
             "Artificer",
             "Barbarian",
