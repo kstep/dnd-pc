@@ -565,6 +565,11 @@ impl Character {
             .classes
             .retain(|class_level| !class_level.class.is_empty());
         let personality = mem::take(&mut self.personality);
+        // Document-context fields survive: id, rule packages, schema version.
+        // Dropping schema_version to Default would re-run every migration on
+        // the next load (v18 would refill packages with all built-ins).
+        let packages = mem::take(&mut self.packages);
+        let schema_version = self.schema_version;
         *self = Self {
             id,
             core: CharacterCore {
@@ -572,6 +577,8 @@ impl Character {
                 ..CharacterCore::default()
             },
             personality,
+            packages,
+            schema_version,
             ..Default::default()
         };
     }
@@ -1060,6 +1067,31 @@ impl Character {
 
 #[cfg(test)]
 mod tests {
+
+    #[wasm_bindgen_test::wasm_bindgen_test]
+    fn clear_preserves_rule_packages() {
+        use crate::vecset::VecSet;
+        let mut character = Character::test_character();
+        character.packages = ["phb24"]
+            .map(str::to_string)
+            .into_iter()
+            .collect::<VecSet<_>>();
+        character.schema_version = 6;
+        character.clear();
+        assert_eq!(
+            character
+                .packages
+                .iter()
+                .map(String::as_str)
+                .collect::<Vec<_>>(),
+            ["phb24"],
+            "clear() must keep the rule-package set — it is document context like id"
+        );
+        assert_eq!(
+            character.schema_version, 6,
+            "clear() must keep schema_version — downgrading re-runs every migration on reload"
+        );
+    }
     use wasm_bindgen_test::*;
 
     use super::*;
