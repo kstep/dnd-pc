@@ -3273,6 +3273,11 @@ dialog.modal.closing::backdrop {
   // Above the sticky spell-level headings (z-index: 10).
   z-index: 11;
 }
+.reference-sidebar-packages {
+  padding: var(--size-2);
+  border-bottom: 1px solid var(--panel-border);
+}
+
 .reference-nav-item {
   display: block;
   padding: var(--size-2) var(--size-3);

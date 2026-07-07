@@ -1,13 +1,14 @@
 use leptos::prelude::*;
 
 use crate::{
-    components::{icon::Icon, ref_link::Ref},
+    components::{icon::Icon, package_picker::PackagePicker, ref_link::Ref},
     pages::reference::encode_name,
-    rules::{IndexEntry, RulesRegistry},
+    rules::{ActivePackages, IndexEntry, RulesRegistry},
 };
 
 #[component]
 pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> impl IntoView {
+    let active_packages = expect_context::<ActivePackages>();
     let manually_open = RwSignal::new(false);
 
     // Reset collapsed state when navigating to a different item
@@ -35,6 +36,13 @@ pub fn ReferenceSidebar(current_label: Signal<String>, children: ChildrenFn) -> 
                         }
                     })
             }}
+            <div class="reference-sidebar-packages">
+                <PackagePicker
+                    value=Signal::derive(move || active_packages.0.get())
+                    on_change=Callback::new(move |set| active_packages.0.set(set))
+                    compact=true
+                />
+            </div>
             {move || children()}
         </aside>
     }
