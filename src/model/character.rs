@@ -156,6 +156,10 @@ pub struct Character {
     pub updated_at: u64,
     #[serde(default)]
     pub shared: bool,
+    /// Rule packages this character resolves against; empty only pre-v6.
+    /// Interpretation context for the whole document, like schema_version.
+    #[serde(default, skip_serializing_if = "VecSet::is_empty")]
+    pub packages: VecSet<String>,
     pub schema_version: u32,
 }
 
@@ -715,6 +719,7 @@ impl Default for Character {
             notes: Vec::new(),
             updated_at: now_epoch_secs(),
             shared: false,
+            packages: VecSet::new(),
             schema_version: 1,
         }
     }
@@ -1047,6 +1052,7 @@ impl Character {
             notes: Vec::new(),
             updated_at: 0,
             shared: false,
+            packages: VecSet::new(),
             schema_version: 0,
         }
     }
@@ -1142,6 +1148,7 @@ mod tests {
             notes: Vec::new(),
             updated_at: 0,
             shared: false,
+            packages: VecSet::new(),
             schema_version: 0,
         }
     }

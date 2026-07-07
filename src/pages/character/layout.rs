@@ -14,7 +14,7 @@ use crate::{
     },
     effective::EffectiveCharacter,
     model::{Character, CharacterStoreFields, PersonalityStoreFields},
-    rules::RulesRegistry,
+    rules::{ActivePackages, RulesRegistry},
     storage,
 };
 
@@ -107,8 +107,25 @@ fn CharacterInner(char_data: Character) -> impl IntoView {
     // Auto-save + cloud sync pull (touch gated on initial sync).
     storage::setup_auto_save(store);
 
-    // Trigger definition fetches when the index arrives or character changes.
-    // This is cheap — just kicks off async fetches, no store mutation.
+    // Follow the character: its package set becomes the active one. While
+    // the triggered refetch is in flight the registry serves the previous
+    // merged set — same accepted staleness as a locale switch; the Fill
+    // effect tracks the indexes and re-runs when they land.
+    let active_packages = expect_context::<ActivePackages>();
+    Effect::new(move || {
+        let packages = store.packages().get();
+        if !packages.is_empty()
+            && active_packages
+                .0
+                .with_untracked(|active| active != &packages)
+        {
+            active_packages.0.set(packages);
+        }
+    });
+
+    // Trigger spell-list fetches when the indexes arrive or character
+    // changes. This is cheap — just kicks off async fetches, no store
+    // mutation.
     Effect::new(move || {
         store.with(|c| {
             registry.ensure_definitions_fetched(c);

@@ -2,12 +2,15 @@ use std::collections::HashMap;
 
 use serde_json::Value;
 
-use crate::model::{Character, DamageType};
+use crate::{
+    model::{Character, DamageType},
+    rules::BUILTIN_PACKAGES,
+};
 
 /// Latest schema version. Bumped when a new migration step is added.
 /// Characters persisted with schema_version >= CURRENT_SCHEMA_VERSION skip
 /// the migration loop entirely.
-pub const CURRENT_SCHEMA_VERSION: u32 = 5;
+pub const CURRENT_SCHEMA_VERSION: u32 = 6;
 
 /// Migrate legacy string damage_type values to u8 enum representation.
 fn migrate_v1(value: &mut Value) {
@@ -411,10 +414,31 @@ pub fn migrate_value(mut value: Value) -> Value {
         migrate_v17(&mut value);
     }
 
+    // → schema version 6: rules data split into pluggable packages;
+    // pre-split characters were built against the full built-in set.
+    if version < 6 {
+        migrate_v18(&mut value);
+    }
+
     if let Value::Object(map) = &mut value {
         map.insert("schema_version".into(), Value::from(CURRENT_SCHEMA_VERSION));
     }
     value
+}
+
+/// v18: fill top-level `packages` with all built-ins when absent/empty.
+fn migrate_v18(value: &mut Value) {
+    let Some(map) = value.as_object_mut() else {
+        return;
+    };
+    let missing = map
+        .get("packages")
+        .and_then(Value::as_array)
+        .is_none_or(|list| list.is_empty());
+    if missing {
+        let all: Vec<Value> = BUILTIN_PACKAGES.iter().map(|id| Value::from(*id)).collect();
+        map.insert("packages".into(), Value::Array(all));
+    }
 }
 
 /// Deserialize a `Value` into a `Character`, applying all
@@ -693,6 +717,26 @@ fn migrate_v17(value: &mut Value) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn migrate_v18_fills_empty_packages_with_builtins() {
+        let mut value = serde_json::json!({ "core": { "identity": { "species": "Human" } } });
+        migrate_v18(&mut value);
+        let packages: Vec<&str> = value["packages"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|item| item.as_str().unwrap())
+            .collect();
+        assert_eq!(packages, BUILTIN_PACKAGES);
+    }
+
+    #[test]
+    fn migrate_v18_keeps_existing_packages() {
+        let mut value = serde_json::json!({ "packages": ["phb24"] });
+        migrate_v18(&mut value);
+        assert_eq!(value["packages"], serde_json::json!(["phb24"]));
+    }
 
     #[test]
     fn migrate_unified_items() {

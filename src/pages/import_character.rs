@@ -12,9 +12,10 @@ use uuid::Uuid;
 use wasm_bindgen::JsValue;
 
 use crate::{
-    components::{cloud_sign_in_hint::CloudSignInHint, ref_link::Ref},
+    components::{cloud_sign_in_hint::CloudSignInHint, ref_link::Ref, toast::Toast},
     firebase,
     model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
+    rules::BUILTIN_PACKAGES,
     storage,
 };
 
@@ -179,6 +180,13 @@ impl Character {
             "xp",
             self.identity.experience_points.to_string(),
             imported.identity.experience_points.to_string(),
+        );
+        push_if_diff(
+            &mut rows,
+            sec,
+            "rule-packages",
+            self.packages.join(", "),
+            imported.packages.join(", "),
         );
         let local_classes = self.class_summary();
         let imported_classes = imported.class_summary();
@@ -553,6 +561,21 @@ struct CloudImportParams {
 }
 
 pub fn import_or_conflict(character: Character, avatar: Option<Avatar>) -> impl IntoView {
+    let unknown: Vec<&str> = character
+        .packages
+        .iter()
+        .map(String::as_str)
+        .filter(|pkg| !BUILTIN_PACKAGES.contains(pkg))
+        .collect();
+    if !unknown.is_empty() {
+        Toast::new(format!(
+            "{} {}",
+            tr!("unknown-packages"),
+            unknown.join(", ")
+        ))
+        .show();
+    }
+
     let existing = storage::load_character(&character.id);
     let has_conflict = existing
         .as_ref()

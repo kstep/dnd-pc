@@ -7,6 +7,7 @@ use crate::{
     components::{character_card::CharacterCard, cloud_sign_in_hint::CloudSignInHint},
     model::Character,
     pages::import_character::import_or_conflict,
+    rules::ActivePackages,
     storage,
 };
 
@@ -30,8 +31,10 @@ pub fn CharacterList() -> impl IntoView {
         index_version.get()
     });
 
+    let active_packages = expect_context::<ActivePackages>();
     let create_character = move |_| {
         let mut character = Character::new();
+        character.packages = active_packages.0.get_untracked();
         storage::save_and_sync_character(&mut character);
         let id = character.id;
         set_characters.set(load_summaries());
