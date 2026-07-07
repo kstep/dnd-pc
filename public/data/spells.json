@@ -11,7 +11,15 @@
           "Feet": 150
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of sponge"
+      }
+    }
   },
   {
     "name": "Absorb Elements",
@@ -27,7 +35,11 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Acid Splash",
@@ -60,7 +72,15 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a red dragon's scale"
+      }
+    }
   },
   {
     "name": "Aid",
@@ -101,7 +121,11 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Alarm",
@@ -164,7 +188,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a moonstone",
+        "price": 5000
+      }
+    }
   },
   {
     "name": "Animal Friendship",
@@ -290,7 +323,15 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a playing card depicting a rogue"
+      }
+    }
   },
   {
     "name": "Antilife Shell",
@@ -403,7 +444,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Arcane Lock",
@@ -438,7 +483,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Armor of Agathys",
@@ -460,7 +509,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a shard of blue glass"
+      }
+    }
   },
   {
     "name": "Arms of Hadar",
@@ -475,7 +532,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Ashardalon's Stride",
@@ -502,7 +563,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Astral Projection",
@@ -565,7 +630,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Aura of Purity",
@@ -582,7 +651,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Aura of Vitality",
@@ -600,7 +673,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Awaken",
@@ -638,7 +715,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Bane",
@@ -681,7 +762,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Banishment",
@@ -767,7 +852,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fur wrapped in cloth"
+      }
+    }
   },
   {
     "name": "Beast Sense",
@@ -783,7 +876,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Befuddlement",
@@ -798,7 +895,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a key ring with no keys"
+      }
+    }
   },
   {
     "name": "Bestow Curse",
@@ -846,7 +951,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an eggshell and a snakeskin glove"
+      }
+    }
   },
   {
     "name": "Blade Barrier",
@@ -884,7 +997,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Blade of Disaster",
@@ -903,7 +1020,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Bless",
@@ -964,7 +1085,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Blindness/Deafness",
@@ -1036,7 +1161,11 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Booming Blade",
@@ -1047,7 +1176,16 @@
         "name": "Thunder Damage",
         "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a melee weapon",
+        "price": 10
+      }
+    }
   },
   {
     "name": "Borrowed Knowledge",
@@ -1061,7 +1199,16 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a book",
+        "price": 2500
+      }
+    }
   },
   {
     "name": "Branding Smite",
@@ -1118,7 +1265,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Call Lightning",
@@ -1201,7 +1352,15 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of sand"
+      }
+    }
   },
   {
     "name": "Cause Fear",
@@ -1218,7 +1377,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Ceremony",
@@ -1278,7 +1441,11 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Charm Monster",
@@ -1350,7 +1517,16 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a diamond",
+        "price": 5000
+      }
+    }
   },
   {
     "name": "Circle of Death",
@@ -1392,7 +1568,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Clairvoyance",
@@ -1454,7 +1634,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sliver of glass"
+      }
+    }
   },
   {
     "name": "Cloudkill",
@@ -1576,7 +1764,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Comprehend Languages",
@@ -1706,7 +1898,16 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a melee or ranged weapon",
+        "price": 1
+      }
+    }
   },
   {
     "name": "Conjure Celestial",
@@ -1746,7 +1947,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a brass cog"
+      }
+    }
   },
   {
     "name": "Conjure Elemental",
@@ -1831,7 +2040,16 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a melee or ranged weapon",
+        "price": 1
+      }
+    }
   },
   {
     "name": "Conjure Woodland Beings",
@@ -1958,7 +2176,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Control Water",
@@ -2028,7 +2250,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Cordon of Arrows",
@@ -2043,7 +2269,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an ornamental braid"
+      }
+    }
   },
   {
     "name": "Counterspell",
@@ -2080,7 +2314,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Create Food and Water",
@@ -2112,7 +2350,16 @@
         "expr": "2d4"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "clay, ash, and mandrake root, all of, and a jewel-encrusted dagger",
+        "price": 100000
+      }
+    }
   },
   {
     "name": "Create Magen",
@@ -2125,7 +2372,15 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a vial of quicksilver worth 500 gp and a life-sized human doll, both of, and an intricate crystal rod worth at least 1,500 gp that is not"
+      }
+    }
   },
   {
     "name": "Create Spelljamming Helm",
@@ -2137,7 +2392,16 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a crystal rod",
+        "price": 500000
+      }
+    }
   },
   {
     "name": "Create Undead",
@@ -2221,7 +2485,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Crown of Stars",
@@ -2235,7 +2503,11 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Crusader's Mantle",
@@ -2253,7 +2525,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Cure Wounds",
@@ -2312,7 +2588,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Dark Star",
@@ -2324,7 +2604,15 @@
         "expr": "8d10"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a shard of onyx and a drop of the caster's blood, both of"
+      }
+    }
   },
   {
     "name": "Darkness",
@@ -2383,7 +2671,16 @@
         "expr": "(SLOT.LEVEL - 1)d10"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sunburst pendant",
+        "price": 10000
+      }
+    }
   },
   {
     "name": "Daylight",
@@ -2418,7 +2715,16 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "an onyx",
+        "price": 5000
+      }
+    }
   },
   {
     "name": "Death Ward",
@@ -2496,7 +2802,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "powdered gemstones worth 100+ gp, and one set of artisan's tools with which you have proficiency"
+      }
+    }
   },
   {
     "name": "Destructive Wave",
@@ -2519,7 +2833,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Detect Evil and Good",
@@ -2642,7 +2960,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Disguise Self",
@@ -2739,7 +3061,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Distort Value",
@@ -2754,7 +3080,11 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Divination",
@@ -2810,7 +3140,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Divine Word",
@@ -2910,7 +3244,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "soot and a dried eel"
+      }
+    }
   },
   {
     "name": "Draconic Transformation",
@@ -2927,7 +3269,16 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a statuette of a dragon,",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Dragon's Breath",
@@ -2944,7 +3295,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a hot pepper"
+      }
+    }
   },
   {
     "name": "Drawmij's Instant Summons",
@@ -2958,7 +3317,16 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a sapphire",
+        "price": 100000
+      }
+    }
   },
   {
     "name": "Dream",
@@ -2998,7 +3366,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a magic item or a willing creature from the destination world"
+      }
+    }
   },
   {
     "name": "Druid Grove",
@@ -3013,7 +3389,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "mistletoe, that was harvested with a golden sickle under the light of a full moon"
+      }
+    }
   },
   {
     "name": "Druidcraft",
@@ -3049,7 +3433,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of dust"
+      }
+    }
   },
   {
     "name": "Earth Tremor",
@@ -3066,7 +3458,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Earthbind",
@@ -3083,7 +3479,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Earthquake",
@@ -3146,7 +3546,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Elemental Weapon",
@@ -3170,7 +3574,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Elementalism",
@@ -3184,7 +3592,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Elminster's Effulgent Spheres",
@@ -3201,7 +3613,16 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an opal",
+        "price": 100000
+      }
+    }
   },
   {
     "name": "Elminster's Elusion",
@@ -3217,7 +3638,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Enemies Abound",
@@ -3234,7 +3659,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Enervation",
@@ -3249,7 +3678,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Enhance Ability",
@@ -3315,7 +3748,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Entangle",
@@ -3374,7 +3811,15 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of obsidian"
+      }
+    }
   },
   {
     "name": "Etherealness",
@@ -3410,7 +3855,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of tentacle from a giant octopus or a giant squid"
+      }
+    }
   },
   {
     "name": "Expeditious Retreat",
@@ -3523,7 +3976,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Fast Friends",
@@ -3540,7 +3997,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Fear",
@@ -3606,7 +4067,15 @@
         }
       }
     ],
-    "ritual": true
+    "ritual": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of graveyard dirt"
+      }
+    }
   },
   {
     "name": "Find Familiar",
@@ -3645,7 +4114,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Find Steed",
@@ -3827,7 +4300,16 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a platinum-plated dragon scale,",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Flame Arrows",
@@ -3843,7 +4325,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Flame Blade",
@@ -3966,7 +4452,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Fly",
@@ -4103,7 +4593,16 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a white pearl",
+        "price": 10000
+      }
+    }
   },
   {
     "name": "Fount of Moonlight",
@@ -4121,7 +4620,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Freedom of Movement",
@@ -4175,7 +4678,11 @@
         "name": "Cold Damage",
         "expr": "(SLOT.LEVEL + 1)d8"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Frostbite",
@@ -4213,7 +4720,15 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "25 gold pieces, or mineral goods of equivalent value"
+      }
+    }
   },
   {
     "name": "Galder's Tower",
@@ -4230,7 +4745,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a fragment of stone, wood, or other building material"
+      }
+    }
   },
   {
     "name": "Gaseous Form",
@@ -4290,7 +4813,15 @@
         "name": "Gate Seal",
         "duration": "Forever"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a broken portal key"
+      }
+    }
   },
   {
     "name": "Geas",
@@ -4372,7 +4903,15 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "2 gold coins, which is consumed as tax for using the spell"
+      }
+    }
   },
   {
     "name": "Glibness",
@@ -4480,7 +5019,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Gravity Fissure",
@@ -4494,7 +5037,15 @@
           "Feet": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a fistful of iron filings"
+      }
+    }
   },
   {
     "name": "Gravity Sinkhole",
@@ -4505,7 +5056,15 @@
         "name": "Force Damage",
         "expr": "(SLOT.LEVEL + 1)d10"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a black marble"
+      }
+    }
   },
   {
     "name": "Grease",
@@ -4580,7 +5139,16 @@
         "name": "Fire Damage",
         "expr": "tier(LEVEL, 1:0, 5:1, 11:2, 17:3)d8 + tier(LEVEL, 1:0, 5:CASTER.MOD)"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a melee weapon",
+        "price": 10
+      }
+    }
   },
   {
     "name": "Guardian of Faith",
@@ -4618,7 +5186,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Guards and Wards",
@@ -4696,7 +5268,11 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Gust of Wind",
@@ -4735,7 +5311,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Hallow",
@@ -4863,7 +5443,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Healing Word",
@@ -4995,7 +5579,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "the petrified eye of a newt"
+      }
+    }
   },
   {
     "name": "Hold Monster",
@@ -5089,7 +5681,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Holy Weapon",
@@ -5112,7 +5708,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Homunculus Servant",
@@ -5128,7 +5728,16 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gem",
+        "price": 10000
+      }
+    }
   },
   {
     "name": "Hunger of Hadar",
@@ -5156,7 +5765,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pickled tentacle"
+      }
+    }
   },
   {
     "name": "Hunter's Mark",
@@ -5227,7 +5844,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of water or a piece of ice"
+      }
+    }
   },
   {
     "name": "Ice Storm",
@@ -5272,7 +5897,15 @@
           "Feet": 15
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a vial of meltwater"
+      }
+    }
   },
   {
     "name": "Identify",
@@ -5311,7 +5944,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Illusory Script",
@@ -5350,7 +5987,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Immovable Object",
@@ -5364,7 +6005,16 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "gold dust",
+        "price": 2500
+      }
+    }
   },
   {
     "name": "Imprisonment",
@@ -5426,7 +6076,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gem",
+        "price": 5000
+      }
+    }
   },
   {
     "name": "Infernal Calling",
@@ -5444,7 +6103,16 @@
       }
     ],
     "concentration": true,
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a ruby",
+        "price": 99900
+      }
+    }
   },
   {
     "name": "Infestation",
@@ -5458,7 +6126,15 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a living flea"
+      }
+    }
   },
   {
     "name": "Inflict Wounds",
@@ -5517,7 +6193,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Investiture of Flame",
@@ -5535,7 +6215,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Investiture of Ice",
@@ -5553,7 +6237,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Investiture of Stone",
@@ -5570,7 +6258,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Investiture of Wind",
@@ -5588,7 +6280,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Invisibility",
@@ -5626,7 +6322,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a small piece of adamantine",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Jallarzi's Storm of Radiance",
@@ -5644,7 +6349,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pinch of phosphorus"
+      }
+    }
   },
   {
     "name": "Jim's Glowing Coin",
@@ -5660,7 +6373,15 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a coin, 2 gold coins, which is consumed as tax for using the spell"
+      }
+    }
   },
   {
     "name": "Jim's Magic Missile",
@@ -5671,7 +6392,15 @@
         "name": "Force Damage",
         "expr": "(SLOT.LEVEL + 2)d4 + SLOT.LEVEL + 2"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "1 gold coin, which is consumed as tax for using the spell"
+      }
+    }
   },
   {
     "name": "Jump",
@@ -5711,7 +6440,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Knock",
@@ -5744,7 +6477,16 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a silver pin",
+        "price": 25000
+      }
+    }
   },
   {
     "name": "Legend Lore",
@@ -5777,7 +6519,15 @@
         "range": "Touch",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a chest, 3 feet by 2 feet by 2 feet, constructed from rare materials worth 5,000+ gp, and a tiny replica of the chest made from the same materials worth 50+ gp"
+      }
+    }
   },
   {
     "name": "Leomund's Tiny Hut",
@@ -5795,7 +6545,15 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small crystal bead"
+      }
+    }
   },
   {
     "name": "Lesser Restoration",
@@ -5848,7 +6606,11 @@
         "name": "Necrotic Damage",
         "expr": "(SLOT.LEVEL + 1)d8"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Light",
@@ -5884,7 +6646,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Lightning Bolt",
@@ -5922,7 +6688,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Linked Glyphs",
@@ -5937,7 +6707,16 @@
         "duration": "Forever"
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "incense and powdered diamond",
+        "price": 30000
+      }
+    }
   },
   {
     "name": "Locate Animals or Plants",
@@ -6045,7 +6824,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a drop of pitch mixed with a drop of mercury"
+      }
+    }
   },
   {
     "name": "Maelstrom",
@@ -6063,7 +6850,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "paper or leaf in the shape of a funnel"
+      }
+    }
   },
   {
     "name": "Mage Armor",
@@ -6216,7 +7011,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Magic Weapon",
@@ -6247,7 +7046,11 @@
         "name": "Force Damage",
         "expr": "(SLOT.LEVEL + 1)d8"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Major Image",
@@ -6347,7 +7150,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a caterpillar cocoon"
+      }
+    }
   },
   {
     "name": "Mass Suggestion",
@@ -6386,7 +7197,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature hand sculpted from clay"
+      }
+    }
   },
   {
     "name": "Maze",
@@ -6442,7 +7261,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "powdered rhubarb leaf"
+      }
+    }
   },
   {
     "name": "Melf's Minute Meteors",
@@ -6457,7 +7284,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "niter, sulfur, and pine tar formed into a bead"
+      }
+    }
   },
   {
     "name": "Mending",
@@ -6493,7 +7328,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Message",
@@ -6552,7 +7391,16 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a diamond",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Mind Blank",
@@ -6587,7 +7435,11 @@
           "Rounds": 1
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Mind Spike",
@@ -6605,7 +7457,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Minor Illusion",
@@ -6738,7 +7594,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Moonbeam",
@@ -6781,7 +7641,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny silver whistle, a piece of bone, and a thread"
+      }
+    }
   },
   {
     "name": "Mordenkainen's Magnificent Mansion",
@@ -6798,7 +7666,16 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature portal carved from ivory, a small piece of polished marble, and a tiny silver spoon, each item",
+        "price": 500
+      }
+    }
   },
   {
     "name": "Mordenkainen's Private Sanctum",
@@ -6815,7 +7692,15 @@
         }
       }
     ],
-    "cast_time": 100
+    "cast_time": 100,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a thin sheet of lead, a piece of opaque glass, a wad of cotton or cloth, and powdered chrysolite"
+      }
+    }
   },
   {
     "name": "Mordenkainen's Sword",
@@ -6833,7 +7718,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature platinum sword with a grip and pommel of copper and zinc,",
+        "price": 25000
+      }
+    }
   },
   {
     "name": "Motivational Speech",
@@ -6851,7 +7745,11 @@
         }
       }
     ],
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Move Earth",
@@ -6894,7 +7792,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of crust from an apple pie"
+      }
+    }
   },
   {
     "name": "Negative Energy Flood",
@@ -6908,7 +7814,15 @@
           "Feet": 60
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a broken bone and a square of black silk"
+      }
+    }
   },
   {
     "name": "Nondetection",
@@ -6944,7 +7858,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small square of silk"
+      }
+    }
   },
   {
     "name": "Otiluke's Freezing Sphere",
@@ -6959,7 +7881,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small crystal sphere"
+      }
+    }
   },
   {
     "name": "Otiluke's Resilient Sphere",
@@ -6976,7 +7906,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a glass sphere"
+      }
+    }
   },
   {
     "name": "Otto's Irresistible Dance",
@@ -6993,7 +7931,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Pass without Trace",
@@ -7061,7 +8003,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of fleece"
+      }
+    }
   },
   {
     "name": "Phantasmal Killer",
@@ -7245,7 +8195,11 @@
         "range": "Caster",
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Power Word Heal",
@@ -7259,7 +8213,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Power Word Kill",
@@ -7369,7 +8327,11 @@
         "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d10",
         "range": "Caster"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Primordial Ward",
@@ -7384,7 +8346,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Prismatic Spray",
@@ -7564,7 +8530,11 @@
           "Feet": 90
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Purify Food and Drink",
@@ -7599,7 +8569,11 @@
           "Rounds": 10
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Raise Dead",
@@ -7638,7 +8612,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "pieces of eggshell from two different kinds of creatures"
+      }
+    }
   },
   {
     "name": "Raulothim's Psychic Lance",
@@ -7652,7 +8634,11 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Ravenous Void",
@@ -7664,7 +8650,15 @@
         "expr": "5d10"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a small, nine-pointed star made of iron"
+      }
+    }
   },
   {
     "name": "Ray of Enfeeblement",
@@ -7740,7 +8734,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a crystal prism"
+      }
+    }
   },
   {
     "name": "Regenerate",
@@ -7909,7 +8911,15 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a vial of meltwater"
+      }
+    }
   },
   {
     "name": "Rope Trick",
@@ -7986,7 +8996,11 @@
         "name": "Necrotic Damage",
         "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d4"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Scatter",
@@ -7999,7 +9013,11 @@
           "Feet": 30
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Scorching Ray",
@@ -8058,7 +9076,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "See Invisibility",
@@ -8154,7 +9176,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Shadow of Moil",
@@ -8172,7 +9198,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an undead eyeball encased in a gem",
+        "price": 15000
+      }
+    }
   },
   {
     "name": "Shape Water",
@@ -8188,7 +9223,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true
+    }
   },
   {
     "name": "Shapechange",
@@ -8322,7 +9361,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Shocking Grasp",
@@ -8354,7 +9397,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Silence",
@@ -8415,7 +9462,11 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Simbul's Synostodweomer",
@@ -8429,7 +9480,11 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Simulacrum",
@@ -8465,7 +9520,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Skywrite",
@@ -8480,7 +9539,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Sleep",
@@ -8570,7 +9633,15 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "25 feet of rope"
+      }
+    }
   },
   {
     "name": "Snilloc's Snowball Swarm",
@@ -8584,7 +9655,15 @@
           "Feet": 90
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a piece of ice or a small white rock chip"
+      }
+    }
   },
   {
     "name": "Songal's Elemental Suffusion",
@@ -8602,7 +9681,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pearl",
+        "price": 10000
+      }
+    }
   },
   {
     "name": "Sorcerous Burst",
@@ -8617,7 +9705,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Soul Cage",
@@ -8633,7 +9725,16 @@
         }
       }
     ],
-    "cast_time": "Reaction"
+    "cast_time": "Reaction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a tiny silver cage",
+        "price": 10000
+      }
+    }
   },
   {
     "name": "Spare the Dying",
@@ -8728,7 +9829,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Spellfire Storm",
@@ -8746,7 +9851,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Spider Climb",
@@ -8834,7 +9943,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Spirit of Death",
@@ -8849,7 +9962,15 @@
         "expr": "1d8 + 3 + SLOT.LEVEL"
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gilded playing card worth at least 400 gp and depicting an avatar of death"
+      }
+    }
   },
   {
     "name": "Spiritual Weapon",
@@ -8886,7 +10007,15 @@
           "Feet": 15
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a deck of cards"
+      }
+    }
   },
   {
     "name": "Staggering Smite",
@@ -8900,7 +10029,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Starry Wisp",
@@ -8915,7 +10048,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Steel Wind Strike",
@@ -8930,7 +10067,16 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": false,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a melee weapon",
+        "price": 10
+      }
+    }
   },
   {
     "name": "Stinking Cloud",
@@ -9015,7 +10161,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Storm of Vengeance",
@@ -9077,7 +10227,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pickled tentacle and an eyeball in a platinum-inlaid vial",
+        "price": 40000
+      }
+    }
   },
   {
     "name": "Summon Beast",
@@ -9094,7 +10253,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a feather, tuft of fur, and fish tail inside a gilded acorn",
+        "price": 20000
+      }
+    }
   },
   {
     "name": "Summon Celestial",
@@ -9111,7 +10279,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a reliquary",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Summon Construct",
@@ -9129,7 +10306,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a lockbox",
+        "price": 40000
+      }
+    }
   },
   {
     "name": "Summon Dragon",
@@ -9146,7 +10332,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an object with the image of a dragon engraved on it",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Summon Elemental",
@@ -9163,7 +10358,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "air, a pebble, ash, and water inside a gold-inlaid vial",
+        "price": 40000
+      }
+    }
   },
   {
     "name": "Summon Fey",
@@ -9180,7 +10384,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gilded flower",
+        "price": 30000
+      }
+    }
   },
   {
     "name": "Summon Fiend",
@@ -9197,7 +10410,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bloody vial",
+        "price": 60000
+      }
+    }
   },
   {
     "name": "Summon Greater Demon",
@@ -9214,7 +10436,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a vial of blood from a humanoid killed within the past 24 hours"
+      }
+    }
   },
   {
     "name": "Summon Lesser Demons",
@@ -9231,7 +10461,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a vial of blood from a humanoid killed within the past 24 hours"
+      }
+    }
   },
   {
     "name": "Summon Shadowspawn",
@@ -9248,7 +10486,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "tears inside a crystal vial",
+        "price": 30000
+      }
+    }
   },
   {
     "name": "Summon Undead",
@@ -9266,7 +10513,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gilded skull",
+        "price": 30000
+      }
+    }
   },
   {
     "name": "Sunbeam",
@@ -9331,7 +10587,16 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a quiver",
+        "price": 100
+      }
+    }
   },
   {
     "name": "Sword Burst",
@@ -9342,7 +10607,11 @@
         "name": "Force Damage",
         "expr": "tier(LEVEL, 1:1, 5:2, 11:3, 17:4)d6"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Syluné's Viper",
@@ -9359,7 +10628,15 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a snake fang"
+      }
+    }
   },
   {
     "name": "Symbol",
@@ -9396,7 +10673,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Tasha's Bubbling Cauldron",
@@ -9412,7 +10693,16 @@
           "Rounds": 100
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a gilded ladle",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Tasha's Caustic Brew",
@@ -9430,7 +10720,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a bit of rotten food"
+      }
+    }
   },
   {
     "name": "Tasha's Hideous Laughter",
@@ -9447,7 +10745,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "tiny tarts and a feather that is waved in the air"
+      }
+    }
   },
   {
     "name": "Tasha's Mind Whip",
@@ -9461,7 +10767,11 @@
           "Feet": 90
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Tasha's Otherworldly Guise",
@@ -9478,7 +10788,16 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "an object engraved with a symbol of the outer planes,",
+        "price": 50000
+      }
+    }
   },
   {
     "name": "Telekinesis",
@@ -9512,7 +10831,15 @@
           "Rounds": 14400
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a pair of linked silver rings"
+      }
+    }
   },
   {
     "name": "Teleport",
@@ -9570,7 +10897,16 @@
         }
       }
     ],
-    "cast_time": 600
+    "cast_time": 600,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a holy symbol",
+        "price": 500
+      }
+    }
   },
   {
     "name": "Temporal Shunt",
@@ -9586,7 +10922,11 @@
           "Rounds": 1
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Tenser's Floating Disk",
@@ -9603,7 +10943,15 @@
           "Rounds": 600
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of mercury"
+      }
+    }
   },
   {
     "name": "Tenser's Transformation",
@@ -9619,7 +10967,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a few hairs from a bull"
+      }
+    }
   },
   {
     "name": "Tether Essence",
@@ -9636,7 +10992,16 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "a spool of platinum cord",
+        "price": 25000
+      }
+    }
   },
   {
     "name": "Thaumaturgy",
@@ -9671,7 +11036,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "the stem of a thorny plant"
+      }
+    }
   },
   {
     "name": "Thunder Step",
@@ -9685,7 +11058,11 @@
           "Feet": 90
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Thunderclap",
@@ -9718,7 +11095,11 @@
         "duration": "Instant"
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Thunderwave",
@@ -9751,7 +11132,15 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of water"
+      }
+    }
   },
   {
     "name": "Time Ravage",
@@ -9765,7 +11154,16 @@
           "Rounds": 432000
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": true,
+        "name": "an hourglass filled with diamond dust",
+        "price": 500000
+      }
+    }
   },
   {
     "name": "Time Stop",
@@ -9796,7 +11194,11 @@
           "Rounds": 4800
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Toll the Dead",
@@ -9811,7 +11213,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Tongues",
@@ -9846,7 +11252,15 @@
           "Feet": 120
         }
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "clay and water"
+      }
+    }
   },
   {
     "name": "Transport via Plants",
@@ -9987,7 +11401,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": 10
+    "cast_time": 10,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Unseen Servant",
@@ -10066,7 +11484,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of bile"
+      }
+    }
   },
   {
     "name": "Vortex Warp",
@@ -10080,7 +11506,11 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Wall of Fire",
@@ -10172,7 +11602,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a hand mirror"
+      }
+    }
   },
   {
     "name": "Wall of Sand",
@@ -10189,7 +11627,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a handful of sand"
+      }
+    }
   },
   {
     "name": "Wall of Stone",
@@ -10257,7 +11703,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a drop of water"
+      }
+    }
   },
   {
     "name": "Wardaway",
@@ -10272,7 +11726,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature clay hand"
+      }
+    }
   },
   {
     "name": "Warding Bond",
@@ -10312,7 +11774,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Warp Sense",
@@ -10327,7 +11793,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a razorvine leaf"
+      }
+    }
   },
   {
     "name": "Water Breathing",
@@ -10394,7 +11868,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a droplet of water"
+      }
+    }
   },
   {
     "name": "Web",
@@ -10460,7 +11942,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a piece of straw"
+      }
+    }
   },
   {
     "name": "Wind Walk",
@@ -10546,7 +12036,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a twig struck by lightning"
+      }
+    }
   },
   {
     "name": "Wither and Bloom",
@@ -10557,7 +12055,15 @@
         "name": "Necrotic Damage",
         "expr": "(SLOT.LEVEL)d6"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a withered vine twisted into a loop"
+      }
+    }
   },
   {
     "name": "Word of Radiance",
@@ -10572,7 +12078,15 @@
         },
         "duration": "Instant"
       }
-    ]
+    ],
+    "components": {
+      "verbal": true,
+      "somatic": false,
+      "material": {
+        "consumable": false,
+        "name": "a sunburst token"
+      }
+    }
   },
   {
     "name": "Word of Recall",
@@ -10608,7 +12122,11 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true
+    }
   },
   {
     "name": "Wrathful Smite",
@@ -10624,7 +12142,11 @@
         }
       }
     ],
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Yolande's Regal Presence",
@@ -10642,7 +12164,15 @@
         }
       }
     ],
-    "concentration": true
+    "concentration": true,
+    "components": {
+      "verbal": true,
+      "somatic": true,
+      "material": {
+        "consumable": false,
+        "name": "a miniature tiara"
+      }
+    }
   },
   {
     "name": "Zephyr Strike",
@@ -10659,7 +12189,11 @@
       }
     ],
     "concentration": true,
-    "cast_time": "BonusAction"
+    "cast_time": "BonusAction",
+    "components": {
+      "verbal": true,
+      "somatic": false
+    }
   },
   {
     "name": "Zone of Truth",
