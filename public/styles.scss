@@ -3283,25 +3283,40 @@ dialog.modal.closing::backdrop {
 .package-picker-panel {
   padding: var(--size-1) var(--size-2);
 
+  // .editor-tab is a flex column with its own gap — the .panel bottom
+  // margin would double the spacing there.
+  .editor-tab > & {
+    margin-bottom: 0;
+  }
+
   summary {
     margin: 0;
     padding: 0;
     border-bottom: none;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
+    justify-content: flex-start;
+    gap: 0.4em;
+
+    &::before {
+      content: "+";
+    }
 
     &::after {
-      font-size: var(--font-size-0);
+      content: none;
     }
   }
 
   &[open] > summary {
     margin-bottom: var(--size-2);
+
+    &::before {
+      content: "\2212";
+    }
   }
 
   .package-picker-count {
     margin-left: auto;
-    padding-right: var(--size-2);
     font-size: var(--font-size-0);
     font-weight: normal;
     color: var(--text-secondary);
