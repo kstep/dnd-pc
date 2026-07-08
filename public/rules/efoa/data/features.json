@@ -868,5 +868,218 @@
   },
   {
     "name": "Constructed Endurance"
+  },
+  {
+    "name": "Aberrant Dragonmark",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Aberrant Mark",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Aberrant Dragonmark`",
+    "assign": [
+      {
+        "expr": "if(CON < 20, CON += 1)",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Detection",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Detection`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Finding",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Finding`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Handling",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Handling`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Healing",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Healing`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Hospitality",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Hospitality`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Making",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Making`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Passage",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Passage`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Scribing",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Scribing`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Sentinel",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Sentinel`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Shadow",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Shadow`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Storm",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Storm`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Greater Mark of Warding",
+    "prerequisites": "LEVEL >= 8 and FEAT.`Mark of Warding`",
+    "assign": [
+      {
+        "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 20, @ += @ARG))))",
+        "when": "OnFeatureAdd"
+      }
+    ],
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Detection",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Finding",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Handling",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Healing",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Hospitality",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Making",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Passage",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Scribing",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Sentinel",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Shadow",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Storm",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Mark of Warding",
+    "prerequisites": "LEVEL >= 4 and not FEAT_CAT.Dragonmark",
+    "category": "Dragonmark"
+  },
+  {
+    "name": "Potent Dragonmark",
+    "prerequisites": "LEVEL >= 4 and FEAT_CAT.Dragonmark",
+    "category": "General"
   }
 ]

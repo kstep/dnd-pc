@@ -12,7 +12,10 @@ use strum::{IntoEnumIterator, VariantArray};
 use wasm_bindgen::JsCast;
 
 use crate::{
-    components::{markdown::Markdown, spell_info_bar::SpellInfoBar, spinner::Spinner},
+    components::{
+        markdown::Markdown, package_picker::ReferencePackagesBar, spell_info_bar::SpellInfoBar,
+        spinner::Spinner,
+    },
     hooks::{use_hash_href, use_query_signal},
     model::Translatable,
     pages::reference::{
@@ -202,7 +205,10 @@ pub fn SpellReference() -> impl IntoView {
                         kind=|n| IndexEntry::Spell(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }
@@ -243,10 +249,32 @@ fn SpellRowView(name: String) -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let anchor_id = format!("spell-{name}");
     let (label, description) = registry.spells().label_desc(&name, &name);
+    // Package is structural (locale-independent) — read separately from the
+    // locale-overlaid lookup below so it can sit next to the heading.
+    let package = Signal::derive({
+        let name = name.clone();
+        move || {
+            registry
+                .with_spells_index(|index| {
+                    index.get(name.as_str()).map(|def| def.package.to_string())
+                })
+                .unwrap_or_default()
+        }
+    });
 
     view! {
         <div class="reference-feature" id=anchor_id>
-            <h3>{move || label.get()}</h3>
+            <div class="reference-row-head">
+                <h3>{move || label.get()}</h3>
+                {move || {
+                    let package = package.get();
+                    (!package.is_empty())
+                        .then(|| {
+                            let label = move || registry.package_display_name(&package);
+                            view! { <span class="entry-badge package-badge">{label}</span> }
+                        })
+                }}
+            </div>
             {move || {
                 registry
                     .spells()

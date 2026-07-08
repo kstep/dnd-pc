@@ -4,7 +4,7 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, spinner::Spinner},
+    components::{markdown::Markdown, package_picker::ReferencePackagesBar, spinner::Spinner},
     pages::reference::{
         RefSidebarEntries, ReferenceFeaturesView, ReferenceSidebar, collect_feature_views,
     },
@@ -45,13 +45,15 @@ pub fn BackgroundReference() -> impl IntoView {
             );
         }
 
-        let (title, description, feature_names) = registry.backgrounds().lookup(&name, |loc| {
-            (
-                loc.label().to_string(),
-                loc.description().to_string(),
-                loc.data.features.clone(),
-            )
-        })?;
+        let (title, description, feature_names, package) =
+            registry.backgrounds().lookup(&name, |loc| {
+                (
+                    loc.label().to_string(),
+                    loc.description().to_string(),
+                    loc.data.features.clone(),
+                    loc.data.package.to_string(),
+                )
+            })?;
 
         let features = registry.with_features_index(|features_index| {
             let iter = feature_names
@@ -66,6 +68,19 @@ pub fn BackgroundReference() -> impl IntoView {
                 <div class="reference-detail">
                     <h1>{title}</h1>
                     <Markdown text=description />
+
+                    {(!package.is_empty())
+                        .then(|| {
+                            let package_label = move || registry.package_display_name(&package);
+                            view! {
+                                <div class="reference-info-bar">
+                                    <div class="info-item">
+                                        <span class="info-label">{move_tr!("ref-package")}</span>
+                                        <span class="info-value">{package_label}</span>
+                                    </div>
+                                </div>
+                            }
+                        })}
 
                     {(!features.is_empty())
                         .then(|| {
@@ -103,7 +118,10 @@ pub fn BackgroundReference() -> impl IntoView {
                         kind=|n| IndexEntry::Background(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }

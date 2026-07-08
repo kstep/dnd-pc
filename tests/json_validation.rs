@@ -161,7 +161,8 @@ fn spell_lists_resolve_into_merged_index() {
     let mut merged = SpellsIndex::default();
     for pkg in package_dirs() {
         if let Some(part) = parse_if_exists::<SpellsIndex>(&pkg.join("data/spells.json")) {
-            merged.absorb(part);
+            let pkg_id = pkg.file_name().unwrap().to_string_lossy().to_string();
+            merged.absorb(part, &pkg_id);
         }
     }
     let mut lists_seen = 0;

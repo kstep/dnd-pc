@@ -7,6 +7,8 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 ## Features
 
 - Create, edit, and delete multiple characters
+- Guided character creation (quick start) with optional AI generation
+- Pluggable rule packages: a base ruleset plus addons, selectable per character
 - Auto-save to browser localStorage with optional Firebase cloud sync
 - Ability scores, modifiers, and saving throws
 - Skills with proficiency tracking
@@ -14,9 +16,10 @@ A web-based D&D 5th Edition character sheet manager built with Rust and WebAssem
 - Spellcasting with multiple spell slot pools (Arcane, Pact) and spell lists
 - Equipment and inventory management
 - Multiclassing support with automatic class feature application
-- Character summary view (read-only overview)
-- Reference pages for classes, races, backgrounds, and spells
-- Share characters via compressed URL
+- Transient effects (buffs/conditions) applied over the stored character
+- Game session view (read-only overview with rest/damage tracking)
+- Reference pages for classes, species, backgrounds, feats, and spells
+- Share characters via cloud link
 - JSON import/export
 - Internationalization (English and Russian)
 - PWA with offline support
@@ -61,64 +64,58 @@ cargo +nightly fmt
 ### Testing
 
 ```sh
-WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown
+# Authoritative suite — most tests are #[wasm_bindgen_test] and run in headless Chrome
+WASM_BINDGEN_USE_BROWSER=1 cargo test --target wasm32-unknown-unknown --features testing
+
+# Fast native subset (JSON validation, parsers, pure logic)
+cargo test --lib --features testing
 ```
 
-Tests run in headless Chrome via `wasm-bindgen-test`. The `WASM_BINDGEN_USE_BROWSER=1` env var is required to use a real browser environment.
+The `testing` cargo feature unlocks test-only constructors used by integration
+tests; production builds leave it off.
 
 ## Project Structure
 
 ```
 src/
-├── lib.rs              # App entry, routing, theme detection
-├── model/              # Data model (split into focused files)
-│   ├── character.rs    # Character, CharacterIndex, CharacterSummary
-│   ├── identity.rs     # CharacterIdentity, ClassLevel
-│   ├── ability.rs      # AbilityScores
-│   ├── attribute.rs    # Attribute enum for expressions
-│   ├── feature.rs      # Feature, FeatureData, FeatureField, FeatureValue
-│   ├── combat.rs       # CombatStats, SpellSlotLevel, FreeUses
-│   ├── equipment.rs    # Equipment, Weapon, Item, Armor
-│   ├── spell.rs        # Spell, SpellData, SpellSlotPool
-│   ├── die.rs          # Die struct
-│   ├── money.rs        # Money, Currency
-│   └── enums.rs        # Ability, Skill, Alignment, etc.
-├── rules/              # Game rules engine
-│   ├── registry.rs     # RulesRegistry — context-provided rules fetcher
-│   ├── apply.rs        # Level-up, rest mechanics, assignment evaluation
-│   ├── resolve.rs      # Cross-cache feature lookup
-│   ├── labels.rs       # Fill/clear label synchronization
-│   ├── cache.rs        # FetchCache<T>, DefinitionStore trait
-│   ├── index.rs        # Index entry types for classes, races, etc.
-│   ├── class.rs        # ClassDefinition, SubclassDefinition
-│   ├── race.rs         # RaceDefinition, RaceTrait
-│   ├── background.rs   # BackgroundDefinition
-│   ├── feature.rs      # FeatureDefinition, FieldKind, ChoiceOptions
-│   ├── spells.rs       # SpellsDefinition, SpellList, SpellMap
-│   └── utils.rs        # get_for_level(), fetch_json()
+├── lib.rs              # App entry, routing, app-root contexts
+├── model/              # Data model (character, identity, feature, combat, …)
+├── rules/              # Rules engine: registry, package merge, definitions
+│   ├── registry.rs     # RulesRegistry — merged per-package indexes
+│   ├── packages.rs     # ActivePackages, PackageMerge, manifest types
+│   └── apply/          # Feature application pipeline (cascade, rebuild, solver)
+├── expr/               # Generic RPN expression evaluator (parse, eval, format)
 ├── components/         # Reusable UI components
 │   ├── panels/         # Character sheet editor panels
 │   └── summary/        # Summary view block components
 ├── pages/              # Route pages
-│   ├── character/      # Character editor, summary, list
-│   └── reference/      # Class/race/background/spell reference
-├── storage.rs          # localStorage CRUD with migrations
-├── firebase.rs         # Firebase/Firestore cloud sync
-├── share.rs            # Character sharing (compressed URL + Firestore)
-├── expr.rs             # Expression evaluator for feature assignments
-├── demap.rs            # Custom serde deserializers
-├── constvec.rs         # Fixed-size vector for compact serialization
-└── vecset.rs           # Vec-backed ordered set
+│   ├── character/      # Editor tabs, session, quick start, story
+│   └── reference/      # Class/species/background/feat/spell browsers
+├── storage/            # localStorage CRUD, migrations, cloud sync queue
+├── firebase.rs         # Firebase/Firestore bindings
+└── ai.rs               # AI character generation (via backend proxy)
 public/
-├── {en,ru}/            # Locale-specific JSON data files
-│   ├── classes/        # Class definitions
-│   ├── races/          # Race definitions
-│   ├── backgrounds/    # Background definitions
-│   ├── spells/         # Spell lists
-│   └── index.json      # Available classes, races, backgrounds
+├── rules/              # Rule packages
+│   ├── index.json      # Package manifest (id, kind base/addon, name)
+│   ├── names.json      # Name generator pools
+│   └── {pkg}/          # One directory per package (phb24, efoa, …)
+│       ├── data/       # Structural definitions (classes, species, spells, …)
+│       └── {en,ru}/    # Locale overlays mirroring data files
 ├── styles.scss         # Main stylesheet
+├── sw.js               # Service worker (precaches rules data)
 └── manifest.json       # PWA manifest
 ```
+
+### Rule packages
+
+Rules data ships as packages under `public/rules/{pkg}/`. The manifest
+`public/rules/index.json` lists available packages; each is either the base
+ruleset or an addon. Every character stores its own package set
+(`Character.packages`); reference pages filter by a global set persisted in
+localStorage. Indexes fetch one file per active package and merge them in set
+order — a later package overrides earlier entries by name. Definitions are
+stamped with their source package, shown as a badge in reference views; a
+package used by a character's content cannot be toggled off for it.
 
 ## Cloud Sync (Firebase)
 
@@ -145,18 +142,8 @@ To enable cross-device sync:
 
 5. **Create Firestore database:**
    - Go to **Firestore Database** > **Create database**
-   - Set security rules:
-
-```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId}/characters/{charId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-```
+   - Deploy the security rules from [`firestore.rules`](firestore.rules)
+     (owner read/write, public read for characters shared via link)
 
 6. **Add config to the app:**
    - Paste your Firebase config into `index.html`, replacing the placeholder values:

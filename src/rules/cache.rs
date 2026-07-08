@@ -59,7 +59,7 @@ impl<T: Clone + Send + Sync + 'static> FetchCache<T> {
 impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T> {
     /// Fetch and union one URL per package into a single cache entry.
     /// No-op if already loaded or fetch in flight.
-    pub fn fetch_merged(&self, name: &str, urls: Vec<String>, error_ctx: &'static str)
+    pub fn fetch_merged(&self, name: &str, sources: Vec<(String, String)>, error_ctx: &'static str)
     where
         T: PackageMerge + Default,
     {
@@ -75,7 +75,7 @@ impl<T: Clone + for<'de> Deserialize<'de> + Send + Sync + 'static> FetchCache<T>
         let data = self.data;
         let pending = self.pending;
         leptos::task::spawn_local(async move {
-            let result = fetch_merged_json::<T>(&urls).await;
+            let result = fetch_merged_json::<T>(&sources).await;
             pending.update(|set| {
                 set.remove(&name);
             });

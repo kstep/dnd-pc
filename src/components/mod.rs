@@ -30,6 +30,7 @@ pub mod logo;
 pub mod markdown;
 pub mod modal;
 pub mod navbar;
+pub mod package_picker;
 pub mod panels;
 pub mod ref_link;
 pub mod resource_slot;

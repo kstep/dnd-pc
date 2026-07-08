@@ -6,12 +6,15 @@ use crate::{
     demap::{self, Named},
     expr::Eval as _,
     model::{CharacterCore, Expr},
-    rules::utils::LevelRules,
+    rules::{packages::HasPackage, utils::LevelRules},
     vecset::VecSet,
 };
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ClassDefinition {
+    /// Source package id, stamped during merge; empty = unknown.
+    #[serde(skip)]
+    pub package: Box<str>,
     pub name: Box<str>,
     /// Multiclass prerequisite expression (moved from the old index entry).
     #[serde(default)]
@@ -25,6 +28,12 @@ pub struct ClassDefinition {
 impl Named for ClassDefinition {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+
+impl HasPackage for ClassDefinition {
+    fn set_package(&mut self, package: &str) {
+        self.package = package.into();
     }
 }
 

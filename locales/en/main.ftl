@@ -16,6 +16,7 @@ background = Background
 alignment = Alignment
 xp = XP
 rule-packages = Rule packages
+rule-packages-count = { $active } of { $total }
 unknown-packages = Unknown rule packages:
 total-level = Total Level
 prof-bonus = Prof. Bonus
@@ -446,6 +447,7 @@ spell-cat-summon = Summon
 spell-cat-social = Social
 ref-prerequisites = Prerequisites
 ref-spell-list-link = Spell List
+ref-package = Package
 expr-and = and
 expr-or = or
 expr-not = not
@@ -559,3 +561,6 @@ weapon-category = Category
 ability = Ability
 armor-type = Armor type
 magic-bonus = Magic bonus
+
+# --- Package picker ---
+package-locked = Used by: { $names }

@@ -297,6 +297,11 @@ pub fn build_clean(
 fn rebuild_skeleton(original: &Character) -> Character {
     let mut skeleton = Character {
         id: original.id,
+        // Document-interpretation context, like in `Character::clear`:
+        // dropping schema_version re-runs migrations on reload, which would
+        // refill an emptied package set with the legacy default.
+        packages: original.packages.clone(),
+        schema_version: original.schema_version,
         ..Character::default()
     };
     skeleton.personality.name = original.personality.name.clone();
@@ -860,6 +865,22 @@ mod tests {
     }
 
     #[wasm_bindgen_test]
+    fn skeleton_preserves_packages_and_schema_version() {
+        let mut original = Character::default();
+        original.packages = ["phb24".to_string()].into_iter().collect();
+        original.schema_version = 6;
+
+        let skeleton = rebuild_skeleton(&original);
+
+        let as_vec: Vec<&str> = skeleton.packages.iter().map(String::as_str).collect();
+        assert_eq!(as_vec, ["phb24"], "rebuild must not reset the package set");
+        assert_eq!(
+            skeleton.schema_version, 6,
+            "downgrading schema_version re-runs migrations, refilling packages"
+        );
+    }
+
+    #[wasm_bindgen_test]
     fn merge_preserves_equipment_personality_notes() {
         let original = Character {
             personality: Personality {
@@ -1223,6 +1244,7 @@ mod tests {
         replace_with: ReplaceWith,
     ) -> FeatureDefinition {
         FeatureDefinition {
+            package: Box::default(),
             name: name.into(),
             stackable: false,
             category,
@@ -1880,6 +1902,7 @@ mod tests {
             index.insert(
                 Box::from(name),
                 FeatureDefinition {
+                    package: Box::default(),
                     name: Box::from(name),
                     stackable: false,
                     category,

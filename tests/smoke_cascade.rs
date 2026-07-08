@@ -38,6 +38,7 @@ fn class_def(name: &str, levels: serde_json::Value) -> ClassDefinition {
 
 fn plain_feat(name: &str) -> FeatureDefinition {
     FeatureDefinition {
+        package: Box::default(),
         name: Box::from(name),
         stackable: false,
         category: FeatureCategory::Class,
@@ -178,6 +179,7 @@ fn class_level_replacement_to_new_class_emits_l1_followups() {
     feat_index.insert(
         "Class Level".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Class Level".into(),
             stackable: true,
             replace_with: ReplaceWith::Category(FeatureCategory::System(IdentitySlot::Class)),
@@ -327,6 +329,7 @@ fn asi_replacement_keeps_prior_asi_intact() {
     feat_index.insert(
         "Ability Score Improvement".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Ability Score Improvement".into(),
             stackable: true,
             category: FeatureCategory::General,
@@ -442,6 +445,7 @@ fn rebuild_recovers_per_source_replacement_from_original() {
     feat_index.insert(
         "Ability Score Improvement".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Ability Score Improvement".into(),
             stackable: true,
             category: FeatureCategory::General,
@@ -583,6 +587,7 @@ fn rebuild_uncheck_replace_at_one_source_and_check_at_another() {
     feat_index.insert(
         "Ability Score Improvement".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Ability Score Improvement".into(),
             stackable: true,
             category: FeatureCategory::General,

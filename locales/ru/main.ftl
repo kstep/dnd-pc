@@ -16,6 +16,7 @@ background = Предыстория
 alignment = Мировоззрение
 xp = Опыт
 rule-packages = Наборы правил
+rule-packages-count = { $active } из { $total }
 unknown-packages = Неизвестные наборы правил:
 total-level = Общий уровень
 prof-bonus = Бонус мастерства
@@ -446,6 +447,7 @@ spell-cat-summon = Призыв
 spell-cat-social = Социальное
 ref-prerequisites = Требования
 ref-spell-list-link = Список заклинаний
+ref-package = Набор
 expr-and = и
 expr-or = или
 expr-not = не
@@ -554,3 +556,6 @@ weapon-category = Категория
 ability = Характеристика
 armor-type = Тип доспеха
 magic-bonus = Магический бонус
+
+# --- Package picker ---
+package-locked = Используется: { $names }

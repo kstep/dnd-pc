@@ -783,6 +783,7 @@ mod tests {
         let bg_defs: BTreeMap<Box<str>, BackgroundDefinition> = [(
             Box::<str>::from("Test BG"),
             BackgroundDefinition {
+                package: Box::default(),
                 name: Box::from("Test BG"),
                 features: ["Sub Feat".to_string()].into_iter().collect(),
             },
@@ -870,6 +871,7 @@ mod tests {
         feat_index_map.insert(
             Box::from("Test BG Abilities"),
             FeatureDefinition {
+                package: Box::default(),
                 name: Box::from("Test BG Abilities"),
                 stackable: false,
                 category: FeatureCategory::Origin,
@@ -977,6 +979,7 @@ mod tests {
         feat_index_map.insert(
             Box::from("Generation: Test"),
             FeatureDefinition {
+                package: Box::default(),
                 name: Box::from("Generation: Test"),
                 stackable: false,
                 category: FeatureCategory::Generation,
@@ -1141,6 +1144,7 @@ mod tests {
         let bg_defs: BTreeMap<Box<str>, BackgroundDefinition> = [(
             Box::<str>::from("Test BG"),
             BackgroundDefinition {
+                package: Box::default(),
                 name: Box::from("Test BG"),
                 features: ["Test BG Abilities".to_string()].into_iter().collect(),
             },
@@ -1167,6 +1171,7 @@ mod tests {
         feat_index_map.insert(
             Box::from("Test BG Abilities"),
             FeatureDefinition {
+                package: Box::default(),
                 name: Box::from("Test BG Abilities"),
                 stackable: false,
                 category: FeatureCategory::Origin,
@@ -1185,6 +1190,7 @@ mod tests {
         feat_index_map.insert(
             Box::from("Generation: Test"),
             FeatureDefinition {
+                package: Box::default(),
                 name: Box::from("Generation: Test"),
                 stackable: false,
                 category: FeatureCategory::Generation,
@@ -1203,6 +1209,7 @@ mod tests {
         feat_index_map.insert(
             Box::from("Test ASI"),
             FeatureDefinition {
+                package: Box::default(),
                 name: Box::from("Test ASI"),
                 stackable: false,
                 category: FeatureCategory::General,

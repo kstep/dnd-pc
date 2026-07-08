@@ -41,7 +41,7 @@ Router uses `option_env!("BASE_URL")` for base path. `use_navigate()` handles th
 ### Contexts provided at App root
 `RulesRegistry`, `ActivePackages`, `ActiveCharacterId`, `IsRouting`, `ToastContainer`, `ArgsModalCtx`. `EffectiveCharacter` is provided per-character in `character/layout.rs`.
 
-**Rule packages.** Rules data ships as packages under `public/rules/{pkg}/{data,en,ru}` (manifest `public/rules/index.json`: id + kind base/addon + display name). `Character.packages: VecSet<String>` (root field, document-interpretation context like `schema_version`) selects the set; `ActivePackages` (RwSignal, persisted at `dnd_pc_packages`) follows the open character and drives the registry — every index fetches one file per package and merges in set order (later wins by name; spell name lists union). 404 = "package doesn't ship this file", silent. The manifest is the ONLY runtime source of available packages (registry loads it; an App-root effect activates all listed packages when the stored set is empty; import warns on ids missing from it). The single allowed hardcode is `LEGACY_DEFAULT_PACKAGES` inside `migrate.rs` — migrations are synchronous and can't fetch; v18 fills legacy characters with that set.
+**Rule packages.** Rules data ships as packages under `public/rules/{pkg}/{data,en,ru}` (manifest `public/rules/index.json`: id + kind base/addon + display name). `Character.packages: VecSet<String>` (root field, document-interpretation context like `schema_version`) selects the set; `ActivePackages` (RwSignal, persisted at `dnd_pc_packages`) follows the open character and drives the registry — every index fetches one file per package and merges in set order (later wins by name; spell name lists union). 404 = "package doesn't ship this file", silent. The manifest is the ONLY runtime source of available packages (registry loads it; an App-root effect activates all listed packages when the stored set is empty; import warns on ids missing from it). The single allowed hardcode is `LEGACY_DEFAULT_PACKAGES` inside `migrate.rs` — migrations are synchronous and can't fetch; the v6 block fills legacy characters with that set. Because a dropped `packages`/`schema_version` re-runs that refill on reload, both fields are document-interpretation context preserved by `Character::clear()` and `rebuild_skeleton` (rebuild). Definitions carry `package: Box<str>` (stamped in `PackageMerge::absorb(overlay, package)`; empty = unknown — no badge, no lock); `RulesRegistry::locked_packages(character)` blocks toggling off a used package; reference views show source badges via `package_display_name`. UI (components/package_picker.rs): `PackagePicker` is the base-select + addon-chips widget; `PackagePickerPanel` wraps it in a collapsed-by-default `<details class="panel">` with an "N of M" count — the Build tab mounts it guarded by the character, reference pages mount it via `ReferencePackagesBar` (edits `ActivePackages`, unguarded) atop the content column; quick-start embeds the flat `PackagePicker` in its own section (guarded).
 
 ### Reactive State (`reactive_stores`)
 
@@ -99,7 +99,7 @@ For reference entries use `IndexEntry<'a>::{Class,Species,Background,Spell}(&str
 
 **Runtime types** (`Feature`, `Spell`, `FeatureField`, `FeatureOption`, `ActiveEffect`) keep their own `label`/`description` fields — they are user-editable and persisted with the character. `labels::sync_labels` populates them from definition lookups on every reactive cycle (Effect in `character/layout.rs`).
 
-Modules: `registry`, `apply`, `resolve`, `labels`, `cache`, `locale`, `index`, `class`, `species`, `background`, `feature`, `spells`, `utils`.
+Modules: `registry`, `apply`, `packages`, `resolve`, `labels`, `cache`, `locale`, `index`, `class`, `species`, `background`, `feature`, `spells`, `preview`, `summarizer`, `utils`.
 
 **Global Features Catalog:** all features live in `public/rules/*/data/features.json` → merged `FeaturesIndex` (`BTreeMap<Box<str>, FeatureDefinition>`). Class/species/background definitions reference features by name (`VecSet<String>`).
 
@@ -159,7 +159,7 @@ Half-migrated characters (`feature.inputs == []` but target state reflects prior
 
 ## Model (`src/model/`)
 
-Split into focused files: `character`, `identity`, `ability`, `skills`, `attribute`, `attribute_group`, `feature`, `combat`, `equipment`, `spell`, `die`, `money`, `effects`, `personality`, `applied`, `enums`. All re-exported from `mod.rs`.
+Split into focused files: `character`, `identity`, `ability`, `skills`, `attribute`, `attribute_group`, `feature`, `combat`, `equipment`, `enchantment`, `spell`, `die`, `money`, `weight`, `tools`, `note`, `avatar`, `effects`, `applied`, `enums`. All re-exported from `mod.rs` (`Personality` lives in `character.rs`).
 
 All structs derive `Store`, `Clone`, `Debug`, `Serialize`, `Deserialize`, `PartialEq` (required for Memo). Root `Character` omits `PartialEq`.
 

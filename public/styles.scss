@@ -1842,6 +1842,13 @@ select.tool-ability {
   }
 }
 
+.package-badge {
+  font-size: var(--font-size-0);
+  opacity: 0.6;
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+
 .entry-actions {
   grid-column: 3;
   display: flex;
@@ -3273,6 +3280,35 @@ dialog.modal.closing::backdrop {
   // Above the sticky spell-level headings (z-index: 10).
   z-index: 11;
 }
+.package-picker-panel {
+  padding: var(--size-1) var(--size-2);
+
+  summary {
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+
+    &::after {
+      font-size: var(--font-size-0);
+    }
+  }
+
+  &[open] > summary {
+    margin-bottom: var(--size-2);
+  }
+
+  .package-picker-count {
+    margin-left: auto;
+    padding-right: var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: normal;
+    color: var(--text-secondary);
+  }
+}
+
+
 .reference-nav-item {
   display: block;
   padding: var(--size-2) var(--size-3);
@@ -3509,6 +3545,28 @@ dialog.modal.closing::backdrop {
   }
 }
 
+.package-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--size-2);
+  align-items: center;
+  position: relative;
+
+}
+
+.package-chip {
+  cursor: pointer;
+
+  &.is-locked {
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+  &.is-unknown {
+    border-style: dashed;
+  }
+}
+
 .reference-feature {
   scroll-margin-top: 3.5rem;
 
@@ -3535,6 +3593,20 @@ dialog.modal.closing::backdrop {
     font-size: var(--font-size-1);
     color: var(--text-secondary);
     max-inline-size: none;
+  }
+}
+
+// Heading + package badge on one row, badge pinned to the right edge via
+// .package-badge's margin-inline-start: auto. Long names wrap within the
+// h3's shrunk flex box instead of pushing the badge off-row.
+.reference-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--size-2);
+
+  h3 {
+    flex: 1 1 auto;
+    min-inline-size: 0;
   }
 }
 

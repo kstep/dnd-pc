@@ -257,6 +257,7 @@ mod tests {
 
     fn plain_feat(name: &str) -> FeatureDefinition {
         FeatureDefinition {
+            package: Box::default(),
             name: Box::from(name),
             stackable: false,
             category: FeatureCategory::Class,
@@ -338,6 +339,7 @@ mod tests {
         feat_index.insert(
             "Class Level".into(),
             FeatureDefinition {
+                package: Box::default(),
                 name: "Class Level".into(),
                 stackable: true,
                 replace_with: ReplaceWith::Category(FeatureCategory::System(IdentitySlot::Class)),
@@ -473,6 +475,7 @@ mod tests {
         feat_index.insert(
             "Class Level".into(),
             FeatureDefinition {
+                package: Box::default(),
                 name: "Class Level".into(),
                 stackable: true,
                 replace_with: ReplaceWith::Category(FeatureCategory::System(IdentitySlot::Class)),
@@ -595,6 +598,7 @@ mod tests {
         feat_index.insert(
             "Class Level".into(),
             FeatureDefinition {
+                package: Box::default(),
                 name: "Class Level".into(),
                 stackable: true,
                 replace_with: ReplaceWith::Category(FeatureCategory::System(IdentitySlot::Class)),
@@ -714,6 +718,7 @@ mod tests {
         feat_index.insert(
             "Class Level".into(),
             FeatureDefinition {
+                package: Box::default(),
                 name: "Class Level".into(),
                 stackable: true,
                 replace_with: ReplaceWith::Category(FeatureCategory::System(IdentitySlot::Class)),
@@ -727,6 +732,7 @@ mod tests {
         feat_index.insert(
             "Subclass".into(),
             FeatureDefinition {
+                package: Box::default(),
                 name: "Subclass".into(),
                 stackable: false,
                 replace_with: ReplaceWith::Category(FeatureCategory::System(

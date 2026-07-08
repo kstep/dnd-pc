@@ -4,7 +4,9 @@ use leptos_meta::Title;
 use leptos_router::{hooks::use_params, params::Params};
 
 use crate::{
-    components::{markdown::Markdown, ref_link::Ref, spinner::Spinner},
+    components::{
+        markdown::Markdown, package_picker::ReferencePackagesBar, ref_link::Ref, spinner::Spinner,
+    },
     expr::Context as _,
     hooks::use_hash_href,
     model::{Attribute, format_bonus, proficiency_bonus_for_level},
@@ -78,6 +80,7 @@ pub fn ClassReference() -> impl IntoView {
                     None => class_label.clone(),
                 };
                 let description = loc.description().to_string();
+                let package = def.package.to_string();
 
                 // Hit-die size lives on the `Class Proficiencies (X)` feature
                 // as a `HIT_DICE.SIDES = N` assign — eval the OnFeatureAdd
@@ -310,6 +313,18 @@ pub fn ClassReference() -> impl IntoView {
                                         </div>
                                     }
                                 })}
+                            {(!package.is_empty())
+                                .then(|| {
+                                    let package_label = move || {
+                                        registry.package_display_name(&package)
+                                    };
+                                    view! {
+                                        <div class="info-item">
+                                            <span class="info-label">{move_tr!("ref-package")}</span>
+                                            <span class="info-value">{package_label}</span>
+                                        </div>
+                                    }
+                                })}
                         </div>
 
                         <h2>{move_tr!("ref-progression")}</h2>
@@ -510,7 +525,10 @@ pub fn ClassReference() -> impl IntoView {
                         kind=|n| IndexEntry::Class(n)
                     />
                 </ReferenceSidebar>
-                <main class="reference-main">{detail}</main>
+                <main class="reference-main">
+                    <ReferencePackagesBar />
+                    {detail}
+                </main>
             </div>
         </div>
     }

@@ -29,6 +29,7 @@ async fn for_test_registry_exposes_features() {
     features.insert(
         "Test Feature".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Test Feature".into(),
             stackable: false,
             category: Default::default(),
@@ -98,6 +99,7 @@ async fn replacement_candidates_evaluate_given_character() {
     features.insert(
         "Elemental Adept (Fire)".into(),
         FeatureDefinition {
+            package: Box::default(),
             name: "Elemental Adept (Fire)".into(),
             stackable: false,
             category: FeatureCategory::General,

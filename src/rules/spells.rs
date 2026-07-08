@@ -6,6 +6,7 @@ use strum::{Display, EnumIter, EnumString, VariantArray};
 use crate::{
     demap::{self, Named},
     model::{ActionType, EffectDefinition, EffectDuration, EffectRange, Money, Translatable},
+    rules::packages::HasPackage,
 };
 
 #[derive(Debug, Clone, Copy, Deserialize)]
@@ -67,6 +68,9 @@ impl Translatable for SpellCategory {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SpellDefinition {
+    /// Source package id, stamped during merge; empty = unknown.
+    #[serde(skip)]
+    pub package: Box<str>,
     pub name: Box<str>,
     #[serde(default)]
     pub level: u32,
@@ -138,6 +142,12 @@ impl SpellDefinition {
 impl Named for SpellDefinition {
     fn name(&self) -> &str {
         &self.name
+    }
+}
+
+impl HasPackage for SpellDefinition {
+    fn set_package(&mut self, package: &str) {
+        self.package = package.into();
     }
 }
 
@@ -281,13 +291,15 @@ mod tests {
         let rules_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
         let mut merged = SpellsIndex::default();
         for entry in std::fs::read_dir(&rules_dir).expect("read public/rules") {
-            let path = entry.expect("dir entry").path().join("data/spells.json");
+            let entry = entry.expect("dir entry");
+            let pkg_id = entry.file_name().to_string_lossy().to_string();
+            let path = entry.path().join("data/spells.json");
             let Ok(data) = std::fs::read_to_string(&path) else {
                 continue;
             };
             let part: SpellsIndex = serde_json::from_str(&data)
                 .unwrap_or_else(|error| panic!("failed to parse {}: {error}", path.display()));
-            merged.absorb(part);
+            merged.absorb(part, &pkg_id);
         }
         merged
     }

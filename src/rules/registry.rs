@@ -158,6 +158,56 @@ impl RulesRegistry {
             .map(|entries| f(entries))
     }
 
+    /// Tracked read of the manifest entries. `None` until resolved.
+    pub fn with_manifest<R>(&self, f: impl FnOnce(&[PackageManifestEntry]) -> R) -> Option<R> {
+        let guard = self.manifest.read();
+        guard
+            .as_ref()
+            .and_then(|result| result.as_ref().ok())
+            .map(|entries| f(entries))
+    }
+
+    /// Package id → labels of the character's features that come from it.
+    /// A package with entries here cannot be toggled off. One pass over the
+    /// feature rows — identity rows are synth features and spells arrive
+    /// through features, so features are the single accounting point.
+    pub fn locked_packages(&self, character: &Character) -> BTreeMap<Box<str>, Vec<String>> {
+        self.with_features_index(|view| {
+            let mut locked: BTreeMap<Box<str>, Vec<String>> = BTreeMap::new();
+            for feature in character.features.iter() {
+                if feature.name.is_empty() {
+                    continue;
+                }
+                let Some(def) = view.get(&feature.name) else {
+                    continue;
+                };
+                if def.package.is_empty() {
+                    continue;
+                }
+                let labels = locked.entry(def.package.clone()).or_default();
+                let label = feature.label().to_string();
+                // Stackable features (e.g. ASI taken twice) must not repeat
+                // their label in the popover.
+                if !labels.contains(&label) {
+                    labels.push(label);
+                }
+            }
+            locked
+        })
+    }
+
+    /// Manifest display name for a package id; falls back to the raw id.
+    pub fn package_display_name(&self, id: &str) -> String {
+        self.with_manifest(|entries| {
+            entries
+                .iter()
+                .find(|entry| entry.id == id)
+                .map(|entry| entry.name.clone())
+        })
+        .flatten()
+        .unwrap_or_else(|| id.to_string())
+    }
+
     /// Tracked access to the merged class definitions map (empty until the
     /// defs index resolves).
     pub fn with_class_defs<R>(
@@ -515,57 +565,20 @@ impl RulesRegistry {
         let synth_features: StoredValue<BTreeMap<Box<str>, FeatureDefinition>> =
             StoredValue::new(BTreeMap::new());
 
-        // Synthesize System features whenever a defs index resolves. All
-        // definitions arrive eagerly (whole-file per package), so classes,
-        // species, backgrounds AND subclasses are covered by one Effect.
+        // Rebuild the System features mirror whenever any defs index
+        // changes. A full rebuild (not accumulate) so entries from packages
+        // removed from the active set disappear with them.
         Effect::new(move || {
-            species_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for name in defs.0.keys() {
-                        map.entry(name.clone()).or_insert_with(|| {
-                            make_system_feature(name.clone(), IdentitySlot::Species)
-                        });
-                    }
-                });
-            });
-            background_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for name in defs.0.keys() {
-                        map.entry(name.clone()).or_insert_with(|| {
-                            make_system_feature(name.clone(), IdentitySlot::Background)
-                        });
-                    }
-                });
-            });
-            class_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for (name, class_def) in &defs.0 {
-                        let prerequisites = class_def.prerequisites.clone();
-                        map.entry(name.clone()).or_insert_with(|| {
-                            let prereq = compose_class_prereq(name, prerequisites);
-                            let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
-                            feat.prerequisites = prereq;
-                            feat
-                        });
-                        // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1`
-                        // prereq so the picker only shows subclasses for
-                        // classes the character actually has.
-                        for subclass_name in class_def.subclasses.keys() {
-                            map.entry(subclass_name.clone()).or_insert_with(|| {
-                                let mut feat = make_system_feature(
-                                    subclass_name.clone(),
-                                    IdentitySlot::Subclass,
-                                );
-                                feat.prerequisites = Some(parent_class_prereq(name));
-                                feat
-                            });
-                        }
-                    }
-                });
-            });
+            let class_guard = class_defs.data.read();
+            let species_guard = species_defs.data.read();
+            let background_guard = background_defs.data.read();
+            let classes = defs_or_empty(&class_guard, &EMPTY_CLASS_DEFS);
+            let species = defs_or_empty(&species_guard, &EMPTY_SPECIES_DEFS);
+            let backgrounds = defs_or_empty(&background_guard, &EMPTY_BACKGROUND_DEFS);
+            if classes.is_empty() && species.is_empty() && backgrounds.is_empty() {
+                return;
+            }
+            synth_features.set_value(build_synth_features(classes, species, backgrounds));
         });
 
         Self {
@@ -663,12 +676,13 @@ impl RulesRegistry {
 
     // ---- Internal helpers ----
 
-    /// One URL per active package for a package-relative data path.
-    fn package_data_urls(&self, path: &str) -> Vec<String> {
+    /// One `(package_id, url)` pair per active package for a package-relative
+    /// data path.
+    fn package_data_sources(&self, path: &str) -> Vec<(String, String)> {
         self.packages
             .read_untracked()
             .iter()
-            .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{path}"))
+            .map(|pkg| (pkg.clone(), format!("{BASE_URL}/rules/{pkg}/data/{path}")))
             .collect()
     }
 
@@ -880,7 +894,7 @@ impl RulesRegistry {
     /// locale-less — just `["Acid Splash", ...]`.
     pub fn fetch_spell_list_untracked(&self, path: &str) {
         self.spell_names_cache
-            .fetch_merged(path, self.package_data_urls(path), "spell list");
+            .fetch_merged(path, self.package_data_sources(path), "spell list");
     }
 
     /// Same as `fetch_spell_list_untracked` — `Ref { from }` values are
@@ -1138,6 +1152,42 @@ fn compose_class_prereq(class_name: &str, existing: Option<Expr>) -> Option<Expr
     )
 }
 
+/// Build the full synthesized `System(_)` features map from the current
+/// merged definitions. Pure — the synth Effect replaces the map with this
+/// wholesale so stale entries vanish when the package set narrows.
+pub fn build_synth_features(
+    classes: &BTreeMap<Box<str>, ClassDefinition>,
+    species: &BTreeMap<Box<str>, SpeciesDefinition>,
+    backgrounds: &BTreeMap<Box<str>, BackgroundDefinition>,
+) -> BTreeMap<Box<str>, FeatureDefinition> {
+    let mut map: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+    for (name, species_def) in species {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Species);
+        feat.package = species_def.package.clone();
+        map.insert(name.clone(), feat);
+    }
+    for (name, background_def) in backgrounds {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Background);
+        feat.package = background_def.package.clone();
+        map.insert(name.clone(), feat);
+    }
+    for (name, class_def) in classes {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
+        feat.prerequisites = compose_class_prereq(name, class_def.prerequisites.clone());
+        feat.package = class_def.package.clone();
+        map.insert(name.clone(), feat);
+        // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1` prereq so the
+        // picker only shows subclasses for classes the character has.
+        for subclass_name in class_def.subclasses.keys() {
+            let mut feat = make_system_feature(subclass_name.clone(), IdentitySlot::Subclass);
+            feat.prerequisites = Some(parent_class_prereq(name));
+            feat.package = class_def.package.clone();
+            map.entry(subclass_name.clone()).or_insert(feat);
+        }
+    }
+    map
+}
+
 /// Build the System feature for a single species/background/subclass/class
 /// entry. `slot` selects which identity attribute the OnFeatureAdd assign
 /// writes. Species/Background/Subclass write a boolean toggle (`= 1`);
@@ -1193,6 +1243,7 @@ pub fn make_system_feature(name: Box<str>, slot: IdentitySlot) -> FeatureDefinit
         }
     };
     FeatureDefinition {
+        package: Box::default(),
         name: Box::from(interned),
         stackable,
         category: FeatureCategory::System(slot),
@@ -1311,21 +1362,31 @@ where
         // explicitly by the Effects below so we have a single point that
         // toggles the in-flight counter.
         let data = LocalResource::new(move || {
-            let urls: Vec<String> = packages
+            let sources: Vec<(String, String)> = packages
                 .read_untracked()
                 .iter()
-                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/data/{file_name}"))
+                .map(|pkg| {
+                    (
+                        pkg.clone(),
+                        format!("{BASE_URL}/rules/{pkg}/data/{file_name}"),
+                    )
+                })
                 .collect();
-            async move { fetch_merged_json::<T>(&urls).await }
+            async move { fetch_merged_json::<T>(&sources).await }
         });
         let locale_resource = LocalResource::new(move || {
             let lang = locale.get_untracked();
-            let urls: Vec<String> = packages
+            let sources: Vec<(String, String)> = packages
                 .read_untracked()
                 .iter()
-                .map(|pkg| format!("{BASE_URL}/rules/{pkg}/{lang}/{file_name}"))
+                .map(|pkg| {
+                    (
+                        pkg.clone(),
+                        format!("{BASE_URL}/rules/{pkg}/{lang}/{file_name}"),
+                    )
+                })
                 .collect();
-            async move { fetch_merged_json::<L>(&urls).await.ok() }
+            async move { fetch_merged_json::<L>(&sources).await.ok() }
         });
 
         let loading = Signal::derive(move || in_flight.get() > 0);
@@ -1634,6 +1695,7 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
+    use crate::model::Feature;
 
     wasm_bindgen_test_configure!(run_in_browser);
 
@@ -1690,6 +1752,23 @@ mod tests {
         // Settle in-flight fetches before the Owner drops — leaked futures
         // polled after disposal panic inside a later test.
         registry.await_ready().await;
+    }
+
+    #[test]
+    fn synth_rebuild_drops_entries_from_removed_packages() {
+        let mut species: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let mut boggart: SpeciesDefinition =
+            serde_json::from_str(r#"{"name": "Boggart"}"#).unwrap();
+        boggart.package = "lorwyn".into();
+        species.insert(Box::from("Boggart"), boggart);
+
+        let full = build_synth_features(&BTreeMap::new(), &species, &BTreeMap::new());
+        assert!(full.contains_key("Boggart"));
+        assert_eq!(&*full["Boggart"].package, "lorwyn");
+
+        // The package got toggled off → defs shrink → rebuild must forget it.
+        let narrowed = build_synth_features(&BTreeMap::new(), &BTreeMap::new(), &BTreeMap::new());
+        assert!(narrowed.is_empty());
     }
 
     #[wasm_bindgen_test]
@@ -1781,5 +1860,72 @@ mod tests {
         );
         // Settle the refetches before the Owner drops (see synth test note).
         registry.await_ready().await;
+    }
+
+    #[wasm_bindgen_test]
+    async fn locked_packages_groups_features_by_stamp() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let registry = owner.with(|| {
+            let mut features: FeaturesIndex =
+                serde_json::from_str(r#"[{"name": "Tinker's Magic"}, {"name": "Rage"}]"#).unwrap();
+            features.0.get_mut("Tinker's Magic").unwrap().package = "efoa".into();
+            features.0.get_mut("Rage").unwrap().package = "phb24".into();
+            RulesRegistry::for_test(features, BTreeMap::new(), BTreeMap::new(), BTreeMap::new())
+        });
+        registry.await_ready().await;
+
+        let mut character = Character::new();
+        character.features.push(Feature {
+            name: "Tinker's Magic".into(),
+            ..Feature::default()
+        });
+
+        let locked = registry.locked_packages(&character);
+        assert_eq!(locked.len(), 1);
+        assert_eq!(locked["efoa"], vec!["Tinker's Magic".to_string()]);
+
+        let empty = registry.locked_packages(&Character::new());
+        assert!(empty.is_empty());
+    }
+
+    #[wasm_bindgen_test]
+    async fn locked_packages_locks_synth_identity_row() {
+        let _ = any_spawner::Executor::init_wasm_bindgen();
+        let owner = Owner::new();
+        let registry = owner.with(|| {
+            let mut classes: BTreeMap<Box<str>, ClassDefinition> = BTreeMap::new();
+            let mut artificer: ClassDefinition =
+                serde_json::from_str(r#"{"name": "Artificer"}"#).unwrap();
+            artificer.package = "efoa".into();
+            classes.insert(Box::from("Artificer"), artificer);
+            let registry = RulesRegistry::for_test(
+                FeaturesIndex::default(),
+                classes,
+                BTreeMap::new(),
+                BTreeMap::new(),
+            );
+            // for_test builds no reactive Owner-wired defs Effect (the synth
+            // Effect never runs), so seed the class's synth identity row
+            // directly via the test-only handle.
+            let synth = registry.synth_features_handle();
+            synth.update_value(|map| {
+                let mut feat = make_system_feature(Box::from("Artificer"), IdentitySlot::Class);
+                feat.package = "efoa".into();
+                map.insert(Box::from("Artificer"), feat);
+            });
+            registry
+        });
+        registry.await_ready().await;
+
+        let mut character = Character::new();
+        character.features.push(Feature {
+            name: "Artificer".into(),
+            ..Feature::default()
+        });
+
+        let locked = registry.locked_packages(&character);
+        assert_eq!(locked.len(), 1);
+        assert_eq!(locked["efoa"], vec!["Artificer".to_string()]);
     }
 }

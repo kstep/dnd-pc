@@ -11,6 +11,7 @@ use crate::{
         ai_generate_modal::{AiGenerateModal, AiGenerateResult},
         apply::{apply_with_modal, apply_with_prefilled_args, mark_all_applied},
         icon::Icon,
+        package_picker::PackagePicker,
         ref_link::Ref,
     },
     model::{
@@ -138,6 +139,15 @@ pub fn QuickStart() -> impl IntoView {
                         <Icon name="dices" size=16 />
                     </button>
                 </div>
+            </div>
+
+            <div class="quick-start-section">
+                <label>{move_tr!("rule-packages")}</label>
+                <PackagePicker
+                    value=Signal::derive(move || store.packages().get())
+                    on_change=Callback::new(move |set| store.packages().set(set))
+                    guard=Some(store)
+                />
             </div>
 
             <div class="quick-start-section">
