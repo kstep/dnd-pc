@@ -239,7 +239,6 @@ pub fn CharacterPackagePanel(
 pub fn ReferencePackagesBar() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
     let active_packages = expect_context::<ActivePackages>();
-    let open = RwSignal::new(false);
     let count = move || {
         registry
             .manifest_ids()
@@ -257,31 +256,15 @@ pub fn ReferencePackagesBar() -> impl IntoView {
             .unwrap_or_default()
     };
     view! {
-        <div class="reference-packages-bar" class:open=move || open.get()>
-            <button
-                type="button"
-                class="reference-packages-toggle"
-                on:click=move |_| open.update(|is_open| *is_open = !*is_open)
-            >
-                <span>{move_tr!("rule-packages")}</span>
-                <span class="reference-packages-count">
-                    {count} <Icon name="chevron-down" size=14 />
-                </span>
-            </button>
-            {move || {
-                open.get()
-                    .then(|| {
-                        view! {
-                            <div class="reference-packages-body">
-                                <PackagePicker
-                                    value=Signal::derive(move || active_packages.0.get())
-                                    on_change=Callback::new(move |set| active_packages.0.set(set))
-                                />
-                            </div>
-                        }
-                    })
-            }}
-        </div>
+        <details class="panel reference-packages-bar">
+            <summary>
+                {move_tr!("rule-packages")} <span class="reference-packages-count">{count}</span>
+            </summary>
+            <PackagePicker
+                value=Signal::derive(move || active_packages.0.get())
+                on_change=Callback::new(move |set| active_packages.0.set(set))
+            />
+        </details>
     }
 }
 

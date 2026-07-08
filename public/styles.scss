@@ -3282,41 +3282,30 @@ dialog.modal.closing::backdrop {
   z-index: 11;
 }
 .reference-packages-bar {
-  margin-bottom: var(--size-3);
+  padding: var(--size-1) var(--size-2);
 
-  .reference-packages-toggle {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--panel-bg);
-    border: 1px solid var(--panel-border);
-    border-radius: var(--radius-2);
-    padding: var(--size-1) var(--size-2);
-    font-size: var(--font-size-0);
-    color: var(--text-secondary);
-    cursor: pointer;
+  summary {
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+
+    &::after {
+      font-size: var(--font-size-0);
+    }
+  }
+
+  &[open] > summary {
+    margin-bottom: var(--size-2);
   }
 
   .reference-packages-count {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--size-1);
-  }
-
-  .reference-packages-body {
-    border: 1px solid var(--panel-border);
-    border-top: none;
-    border-radius: 0 0 var(--radius-2) var(--radius-2);
-    padding: var(--size-2);
-  }
-
-  &.open .reference-packages-toggle {
-    border-radius: var(--radius-2) var(--radius-2) 0 0;
-  }
-
-  &.open .reference-packages-count .icon-wrapper {
-    transform: rotate(180deg);
+    margin-left: auto;
+    padding-right: var(--size-2);
+    font-size: var(--font-size-0);
+    font-weight: normal;
+    color: var(--text-secondary);
   }
 }
 

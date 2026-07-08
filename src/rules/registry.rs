@@ -565,64 +565,20 @@ impl RulesRegistry {
         let synth_features: StoredValue<BTreeMap<Box<str>, FeatureDefinition>> =
             StoredValue::new(BTreeMap::new());
 
-        // Synthesize System features whenever a defs index resolves. All
-        // definitions arrive eagerly (whole-file per package), so classes,
-        // species, backgrounds AND subclasses are covered by one Effect.
+        // Rebuild the System features mirror whenever any defs index
+        // changes. A full rebuild (not accumulate) so entries from packages
+        // removed from the active set disappear with them.
         Effect::new(move || {
-            species_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for (name, species_def) in defs.0.iter() {
-                        map.entry(name.clone()).or_insert_with(|| {
-                            let mut feat = make_system_feature(name.clone(), IdentitySlot::Species);
-                            feat.package = species_def.package.clone();
-                            feat
-                        });
-                    }
-                });
-            });
-            background_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for (name, background_def) in defs.0.iter() {
-                        map.entry(name.clone()).or_insert_with(|| {
-                            let mut feat =
-                                make_system_feature(name.clone(), IdentitySlot::Background);
-                            feat.package = background_def.package.clone();
-                            feat
-                        });
-                    }
-                });
-            });
-            class_defs.with_data(|maybe_defs| {
-                let Some(defs) = maybe_defs else { return };
-                synth_features.update_value(|map| {
-                    for (name, class_def) in &defs.0 {
-                        let prerequisites = class_def.prerequisites.clone();
-                        map.entry(name.clone()).or_insert_with(|| {
-                            let prereq = compose_class_prereq(name, prerequisites);
-                            let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
-                            feat.prerequisites = prereq;
-                            feat.package = class_def.package.clone();
-                            feat
-                        });
-                        // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1`
-                        // prereq so the picker only shows subclasses for
-                        // classes the character actually has.
-                        for subclass_name in class_def.subclasses.keys() {
-                            map.entry(subclass_name.clone()).or_insert_with(|| {
-                                let mut feat = make_system_feature(
-                                    subclass_name.clone(),
-                                    IdentitySlot::Subclass,
-                                );
-                                feat.prerequisites = Some(parent_class_prereq(name));
-                                feat.package = class_def.package.clone();
-                                feat
-                            });
-                        }
-                    }
-                });
-            });
+            let class_guard = class_defs.data.read();
+            let species_guard = species_defs.data.read();
+            let background_guard = background_defs.data.read();
+            let classes = defs_or_empty(&class_guard, &EMPTY_CLASS_DEFS);
+            let species = defs_or_empty(&species_guard, &EMPTY_SPECIES_DEFS);
+            let backgrounds = defs_or_empty(&background_guard, &EMPTY_BACKGROUND_DEFS);
+            if classes.is_empty() && species.is_empty() && backgrounds.is_empty() {
+                return;
+            }
+            synth_features.set_value(build_synth_features(classes, species, backgrounds));
         });
 
         Self {
@@ -1196,6 +1152,42 @@ fn compose_class_prereq(class_name: &str, existing: Option<Expr>) -> Option<Expr
     )
 }
 
+/// Build the full synthesized `System(_)` features map from the current
+/// merged definitions. Pure — the synth Effect replaces the map with this
+/// wholesale so stale entries vanish when the package set narrows.
+pub fn build_synth_features(
+    classes: &BTreeMap<Box<str>, ClassDefinition>,
+    species: &BTreeMap<Box<str>, SpeciesDefinition>,
+    backgrounds: &BTreeMap<Box<str>, BackgroundDefinition>,
+) -> BTreeMap<Box<str>, FeatureDefinition> {
+    let mut map: BTreeMap<Box<str>, FeatureDefinition> = BTreeMap::new();
+    for (name, species_def) in species {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Species);
+        feat.package = species_def.package.clone();
+        map.insert(name.clone(), feat);
+    }
+    for (name, background_def) in backgrounds {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Background);
+        feat.package = background_def.package.clone();
+        map.insert(name.clone(), feat);
+    }
+    for (name, class_def) in classes {
+        let mut feat = make_system_feature(name.clone(), IdentitySlot::Class);
+        feat.prerequisites = compose_class_prereq(name, class_def.prerequisites.clone());
+        feat.package = class_def.package.clone();
+        map.insert(name.clone(), feat);
+        // Subclasses carry a `CLASS.`<parent>`.LEVEL >= 1` prereq so the
+        // picker only shows subclasses for classes the character has.
+        for subclass_name in class_def.subclasses.keys() {
+            let mut feat = make_system_feature(subclass_name.clone(), IdentitySlot::Subclass);
+            feat.prerequisites = Some(parent_class_prereq(name));
+            feat.package = class_def.package.clone();
+            map.entry(subclass_name.clone()).or_insert(feat);
+        }
+    }
+    map
+}
+
 /// Build the System feature for a single species/background/subclass/class
 /// entry. `slot` selects which identity attribute the OnFeatureAdd assign
 /// writes. Species/Background/Subclass write a boolean toggle (`= 1`);
@@ -1760,6 +1752,23 @@ mod tests {
         // Settle in-flight fetches before the Owner drops — leaked futures
         // polled after disposal panic inside a later test.
         registry.await_ready().await;
+    }
+
+    #[test]
+    fn synth_rebuild_drops_entries_from_removed_packages() {
+        let mut species: BTreeMap<Box<str>, SpeciesDefinition> = BTreeMap::new();
+        let mut boggart: SpeciesDefinition =
+            serde_json::from_str(r#"{"name": "Boggart"}"#).unwrap();
+        boggart.package = "lorwyn".into();
+        species.insert(Box::from("Boggart"), boggart);
+
+        let full = build_synth_features(&BTreeMap::new(), &species, &BTreeMap::new());
+        assert!(full.contains_key("Boggart"));
+        assert_eq!(&*full["Boggart"].package, "lorwyn");
+
+        // The package got toggled off → defs shrink → rebuild must forget it.
+        let narrowed = build_synth_features(&BTreeMap::new(), &BTreeMap::new(), &BTreeMap::new());
+        assert!(narrowed.is_empty());
     }
 
     #[wasm_bindgen_test]
