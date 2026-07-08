@@ -33,7 +33,9 @@ jobs:
         run: cargo install wasm-bindgen-cli --version 0.2.112
 
       - name: Run wasm tests
-        run: cargo test --target wasm32-unknown-unknown --features testing
+        # CHROMEDRIVER forces Chrome: the runner image ships geckodriver too,
+        # and wasm-bindgen's PATH scan checks it first (Firefox is flaky/OOM).
+        run: CHROMEDRIVER="$CHROMEWEBDRIVER/chromedriver" cargo test --target wasm32-unknown-unknown --features testing
         env:
           WASM_BINDGEN_USE_BROWSER: 1
 
