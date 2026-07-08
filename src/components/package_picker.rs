@@ -4,7 +4,7 @@ use reactive_stores::Store;
 
 use crate::{
     components::icon::Icon,
-    model::{Character, CharacterStoreFields},
+    model::Character,
     rules::{ActivePackages, PackageKind, RulesRegistry},
     vecset::VecSet,
 };
@@ -95,7 +95,7 @@ pub fn PackagePicker(
     /// Receives the full normalized set on every change.
     on_change: Callback<VecSet<String>>,
     /// Character whose content locks packages; `None` = no guard (reference).
-    #[prop(optional)]
+    #[prop(optional_no_strip)]
     guard: Option<Store<Character>>,
 ) -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
@@ -113,17 +113,11 @@ pub fn PackagePicker(
 
     move || {
         registry.with_manifest(|entries| {
-            let bases: Vec<_> = entries
+            let (bases, addons): (Vec<_>, Vec<_>) = entries
                 .iter()
-                .filter(|entry| entry.kind == PackageKind::Base)
                 .cloned()
-                .collect();
+                .partition(|entry| entry.kind == PackageKind::Base);
             let base_ids: Vec<String> = bases.iter().map(|base| base.id.clone()).collect();
-            let addons: Vec<_> = entries
-                .iter()
-                .filter(|entry| entry.kind == PackageKind::Addon)
-                .cloned()
-                .collect();
             let known: Vec<String> = entries.iter().map(|entry| entry.id.clone()).collect();
             view! {
                 <div class="package-picker">
@@ -209,46 +203,25 @@ pub fn PackagePicker(
     }
 }
 
-/// Package-picker panel wired to a character's `packages` store field, wrapped
-/// in a page-specific container class (quick-start section vs build-tab
-/// panel). Both call sites share identical label + wiring, only the wrapper
-/// markup differs.
+/// Collapsed-by-default `<details>` panel around the package picker; the
+/// summary shows an "N of M" count against the manifest.
 #[component]
-pub fn CharacterPackagePanel(
-    store: Store<Character>,
-    /// DOM class for the wrapper `<div>` — differs per page.
+pub fn PackagePickerPanel(
+    /// Current set (order = override priority, base first).
     #[prop(into)]
-    wrapper_class: String,
+    value: Signal<VecSet<String>>,
+    /// Receives the full normalized set on every change.
+    on_change: Callback<VecSet<String>>,
+    /// Character whose content locks packages; `None` = no guard (reference).
+    #[prop(optional)]
+    guard: Option<Store<Character>>,
 ) -> impl IntoView {
-    view! {
-        <div class=wrapper_class>
-            <label>{move_tr!("rule-packages")}</label>
-            <PackagePicker
-                value=Signal::derive(move || store.packages().get())
-                on_change=Callback::new(move |set| store.packages().set(set))
-                guard=store
-            />
-        </div>
-    }
-}
-
-/// Collapsed-by-default disclosure row with the reference package filter.
-/// Lives at the top of the reference main column; edits the global
-/// `ActivePackages` (characters untouched).
-#[component]
-pub fn ReferencePackagesBar() -> impl IntoView {
     let registry = expect_context::<RulesRegistry>();
-    let active_packages = expect_context::<ActivePackages>();
     let count = move || {
         registry
             .manifest_ids()
             .map(|ids| {
-                let active = active_packages
-                    .0
-                    .read()
-                    .iter()
-                    .filter(|id| ids.contains(id))
-                    .count();
+                let active = value.read().iter().filter(|id| ids.contains(id)).count();
                 tr!("rule-packages-count", {
                     "active" => active.to_string(), "total" => ids.len().to_string()
                 })
@@ -256,15 +229,25 @@ pub fn ReferencePackagesBar() -> impl IntoView {
             .unwrap_or_default()
     };
     view! {
-        <details class="panel reference-packages-bar">
+        <details class="panel package-picker-panel">
             <summary>
-                {move_tr!("rule-packages")} <span class="reference-packages-count">{count}</span>
+                {move_tr!("rule-packages")} <span class="package-picker-count">{count}</span>
             </summary>
-            <PackagePicker
-                value=Signal::derive(move || active_packages.0.get())
-                on_change=Callback::new(move |set| active_packages.0.set(set))
-            />
+            <PackagePicker value on_change guard=guard />
         </details>
+    }
+}
+
+/// Reference-page package filter: a `PackagePickerPanel` editing the global
+/// `ActivePackages` (characters untouched, no lock guard).
+#[component]
+pub fn ReferencePackagesBar() -> impl IntoView {
+    let active_packages = expect_context::<ActivePackages>();
+    view! {
+        <PackagePickerPanel
+            value=Signal::derive(move || active_packages.0.get())
+            on_change=Callback::new(move |set| active_packages.0.set(set))
+        />
     }
 }
 

@@ -536,8 +536,7 @@ input.inline-input {
   justify-content: space-between;
 }
 
-.quick-start-section,
-.package-picker-panel {
+.quick-start-section {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-2);
@@ -3281,7 +3280,7 @@ dialog.modal.closing::backdrop {
   // Above the sticky spell-level headings (z-index: 10).
   z-index: 11;
 }
-.reference-packages-bar {
+.package-picker-panel {
   padding: var(--size-1) var(--size-2);
 
   summary {
@@ -3300,7 +3299,7 @@ dialog.modal.closing::backdrop {
     margin-bottom: var(--size-2);
   }
 
-  .reference-packages-count {
+  .package-picker-count {
     margin-left: auto;
     padding-right: var(--size-2);
     font-size: var(--font-size-0);
