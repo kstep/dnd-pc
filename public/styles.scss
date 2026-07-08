@@ -3625,6 +3625,25 @@ dialog.modal.closing::backdrop {
   }
 }
 
+// Mobile: stack the badge below the heading, aligned to the left edge
+// instead of pinned to the right. Reset the auto margin that pushes it
+// to the far side in the desktop row layout.
+@media (max-width: 600px) {
+  .reference-row-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+
+    .package-badge {
+      margin-inline-start: 0;
+    }
+  }
+
+  .reference-feature h3 {
+    margin: 0;
+  }
+}
+
 .spell-prereq {
   font-weight: normal;
   font-size: var(--font-size-1);
