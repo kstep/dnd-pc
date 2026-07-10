@@ -258,20 +258,33 @@ pub fn ClassReference() -> impl IntoView {
                 view! {
                     <Title text=title.clone() />
                     <div class="reference-detail">
-                        <h1>
-                            {if let Some(sc_label) = subclass_label {
-                                let class_href = format!("/r/class/{name}");
-                                Either::Left(
+                        <div class="reference-row-head">
+                            <h1>
+                                {if let Some(sc_label) = subclass_label {
+                                    let class_href = format!("/r/class/{name}");
+                                    Either::Left(
+                                        view! {
+                                            <Ref href=class_href>{class_label}</Ref>
+                                            {" \u{2014} "}
+                                            {sc_label}
+                                        },
+                                    )
+                                } else {
+                                    Either::Right(class_label)
+                                }}
+                            </h1>
+                            {(!package.is_empty())
+                                .then(|| {
+                                    let package_label = move || {
+                                        registry.package_display_name(&package)
+                                    };
                                     view! {
-                                        <Ref href=class_href>{class_label}</Ref>
-                                        {" \u{2014} "}
-                                        {sc_label}
-                                    },
-                                )
-                            } else {
-                                Either::Right(class_label)
-                            }}
-                        </h1>
+                                        <span class="entry-badge package-badge">
+                                            {package_label}
+                                        </span>
+                                    }
+                                })}
+                        </div>
                         <Markdown text=description />
 
                         {(!subclass_desc.is_empty())
@@ -310,18 +323,6 @@ pub fn ClassReference() -> impl IntoView {
                                                     "/r/spell/{sln}",
                                                 )>{move_tr!("ref-spell-list-link")}</Ref>
                                             </span>
-                                        </div>
-                                    }
-                                })}
-                            {(!package.is_empty())
-                                .then(|| {
-                                    let package_label = move || {
-                                        registry.package_display_name(&package)
-                                    };
-                                    view! {
-                                        <div class="info-item">
-                                            <span class="info-label">{move_tr!("ref-package")}</span>
-                                            <span class="info-value">{package_label}</span>
                                         </div>
                                     }
                                 })}

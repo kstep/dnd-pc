@@ -66,21 +66,19 @@ pub fn BackgroundReference() -> impl IntoView {
             view! {
                 <Title text=title.clone() />
                 <div class="reference-detail">
-                    <h1>{title}</h1>
+                    <div class="reference-row-head">
+                        <h1>{title}</h1>
+                        {(!package.is_empty())
+                            .then(|| {
+                                let package_label = move || {
+                                    registry.package_display_name(&package)
+                                };
+                                view! {
+                                    <span class="entry-badge package-badge">{package_label}</span>
+                                }
+                            })}
+                    </div>
                     <Markdown text=description />
-
-                    {(!package.is_empty())
-                        .then(|| {
-                            let package_label = move || registry.package_display_name(&package);
-                            view! {
-                                <div class="reference-info-bar">
-                                    <div class="info-item">
-                                        <span class="info-label">{move_tr!("ref-package")}</span>
-                                        <span class="info-value">{package_label}</span>
-                                    </div>
-                                </div>
-                            }
-                        })}
 
                     {(!features.is_empty())
                         .then(|| {

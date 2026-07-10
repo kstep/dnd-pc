@@ -3619,6 +3619,7 @@ dialog.modal.closing::backdrop {
   align-items: baseline;
   gap: var(--size-2);
 
+  h1,
   h3 {
     flex: 1 1 auto;
     min-inline-size: 0;
@@ -3641,6 +3642,16 @@ dialog.modal.closing::backdrop {
 
   .reference-feature h3 {
     margin: 0;
+  }
+
+  // Detail heading keeps its bottom margin as the pre-description gap; move
+  // it to the wrapper so the badge sits tight under the title.
+  .reference-detail .reference-row-head {
+    margin-bottom: var(--size-2);
+
+    h1 {
+      margin: 0;
+    }
   }
 }
 
