@@ -141,20 +141,26 @@ pub fn setup_auto_save(store: Store<Character>) {
             cloud_updating.update_untracked(|updating| *updating = false);
             return;
         }
+        // `try_` variants: `sync_done` is a global signal, so this effect can
+        // re-fire during character-route teardown — after the store's owner is
+        // disposed. Skip the save rather than panic (same disposed-safe idiom
+        // as character/layout.rs).
         if sync_done.get() {
-            store.update_untracked(|character| {
+            store.try_update_untracked(|character| {
                 character.touch();
                 local::save_character(character);
                 schedule_cloud_push(character);
             });
-        } else {
-            local::save_character(&store.read_untracked());
+        } else if let Some(character) = store.try_read_untracked() {
+            local::save_character(&character);
         }
     });
 
     let index_version = sync_index_version();
     Effect::new(move |previous: Option<u32>| {
-        let id = store.read_untracked().id;
+        let Some(id) = store.try_read_untracked().map(|character| character.id) else {
+            return index_version.get();
+        };
         if previous.is_some()
             && let Some(character) = local::load_character(&id)
         {
