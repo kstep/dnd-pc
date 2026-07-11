@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::BTreeMap, time::Duration};
 
 use leptos::{leptos_dom::helpers::set_timeout, prelude::*};
 use leptos_fluent::move_tr;
@@ -7,6 +7,7 @@ use reactive_stores::Store;
 use uuid::Uuid;
 
 use crate::{
+    ai::CharacterConcept,
     components::{
         ai_generate_modal::{AiGenerateModal, AiGenerateResult},
         apply::{apply_with_modal, apply_with_prefilled_args, mark_all_applied},
@@ -334,6 +335,30 @@ fn quick_start_recompute(registry: RulesRegistry, gen_name: String) -> Recompute
 
 // --- AI creation ---
 
+/// Seed replacements for the four identity-slot placeholders from the AI
+/// concept. `run_ai_generation` pre-writes species/background into identity
+/// (so Phase 2 can prefill their features' ARGs), but the modal drives every
+/// identity slot through the placeholder → System(_) swap — without a seed the
+/// species/background pickers open unselected and, being required, block
+/// submit.
+fn seed_identity_replacements(
+    concept: &CharacterConcept,
+    replacements: &mut BTreeMap<String, String>,
+) {
+    if !concept.species.is_empty() {
+        replacements.insert(PICK_SPECIES.into(), concept.species.clone());
+    }
+    if !concept.background.is_empty() {
+        replacements.insert(PICK_BACKGROUND.into(), concept.background.clone());
+    }
+    if !concept.class.is_empty() {
+        replacements.insert(PICK_CLASS.into(), concept.class.clone());
+    }
+    if let Some(subclass) = concept.subclass.as_deref().filter(|sub| !sub.is_empty()) {
+        replacements.insert(PICK_SUBCLASS.into(), subclass.to_string());
+    }
+}
+
 fn apply_ai_result(
     store: Store<Character>,
     registry: RulesRegistry,
@@ -342,6 +367,14 @@ fn apply_ai_result(
 ) {
     let concept = result.concept;
     let prefilled = result.feature_choices;
+
+    // Drive identity acquisition through the placeholder replacement-pick
+    // path: every identity slot (species/background/class/subclass) resolves
+    // by swapping its Generation placeholder for the System(_) marker the
+    // AI chose, so the modal opens with the pickers pre-selected. Seed before
+    // the personality moves below consume `concept`.
+    let mut replacements = result.replacements;
+    seed_identity_replacements(&concept, &mut replacements);
 
     // Fill personality fields
     store
@@ -368,20 +401,6 @@ fn apply_ai_result(
 
     let all_pending = collect_quick_start_pending(&store, &registry, &preset_name);
 
-    // Drive class / subclass acquisition through the placeholder
-    // replacement-pick path. AI no longer pre-writes identity.classes
-    // directly — the System(Class) and System(Subclass) features'
-    // assigns set the values when the placeholders swap.
-    let mut replacements = result.replacements;
-    if !concept.class.is_empty() {
-        replacements.insert(PICK_CLASS.into(), concept.class.clone());
-    }
-    if let Some(subclass) = concept.subclass.as_deref()
-        && !subclass.is_empty()
-    {
-        replacements.insert(PICK_SUBCLASS.into(), subclass.to_string());
-    }
-
     let recompute = quick_start_recompute(registry, preset_name);
 
     apply_with_prefilled_args(
@@ -393,4 +412,79 @@ fn apply_ai_result(
         Some(recompute),
         finalize_quick_start,
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::*;
+
+    fn concept(
+        species: &str,
+        background: &str,
+        class: &str,
+        subclass: Option<&str>,
+    ) -> CharacterConcept {
+        CharacterConcept {
+            name: "Eledrin".into(),
+            species: species.into(),
+            class: class.into(),
+            subclass: subclass.map(Into::into),
+            background: background.into(),
+            personality_traits: String::new(),
+            ideals: String::new(),
+            bonds: String::new(),
+            flaws: String::new(),
+            backstory: String::new(),
+        }
+    }
+
+    /// Mirrors the reported "A wood elf focused on archery" run: every identity
+    /// slot the AI chose must be seeded as a placeholder replacement, or the
+    /// species/background pickers open unselected and block submit.
+    #[wasm_bindgen_test]
+    fn seeds_all_four_identity_slots() {
+        let concept = concept("Wood Elf", "Guide", "Ranger", Some("Hunter"));
+        let mut replacements = BTreeMap::new();
+        seed_identity_replacements(&concept, &mut replacements);
+
+        assert_eq!(
+            replacements.get(PICK_SPECIES).map(String::as_str),
+            Some("Wood Elf")
+        );
+        assert_eq!(
+            replacements.get(PICK_BACKGROUND).map(String::as_str),
+            Some("Guide")
+        );
+        assert_eq!(
+            replacements.get(PICK_CLASS).map(String::as_str),
+            Some("Ranger")
+        );
+        assert_eq!(
+            replacements.get(PICK_SUBCLASS).map(String::as_str),
+            Some("Hunter")
+        );
+    }
+
+    /// AI-suggested feat replacements already in the map are preserved.
+    #[wasm_bindgen_test]
+    fn preserves_existing_replacements() {
+        let concept = concept("Human", "Soldier", "Fighter", None);
+        let mut replacements = BTreeMap::new();
+        replacements.insert("Ability Score Improvement".into(), "Lucky".into());
+        seed_identity_replacements(&concept, &mut replacements);
+
+        assert_eq!(
+            replacements
+                .get("Ability Score Improvement")
+                .map(String::as_str),
+            Some("Lucky")
+        );
+        assert_eq!(
+            replacements.get(PICK_SUBCLASS),
+            None,
+            "no subclass → no seed"
+        );
+    }
 }
