@@ -908,6 +908,10 @@ fn friendly_attr_name(attr: &Attribute) -> &'static str {
         Attribute::Ability(Intelligence) => "Intelligence",
         Attribute::Ability(Wisdom) => "Wisdom",
         Attribute::Ability(Charisma) => "Charisma",
+        // Group loops surface the primary column of `@SKILL(...)` /
+        // `@DMG(...)` (e.g. Keen Senses, Elemental Affinity) — name it directly.
+        Attribute::Skill(skill) => skill.into(),
+        Attribute::Resistance(damage_type) => damage_type.into(),
         Attribute::SkillProficiency(Acrobatics) => "Acrobatics proficiency",
         Attribute::SkillProficiency(AnimalHandling) => "Animal Handling proficiency",
         Attribute::SkillProficiency(Arcana) => "Arcana proficiency",
@@ -1398,4 +1402,53 @@ pub fn build_feature_choices_messages(
             content: user_message,
         },
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::wasm_bindgen_test;
+
+    use super::*;
+    use crate::model::Expr;
+
+    /// Skill-choice features loop over `@SKILL(...)`, so the AI-prompt ARG
+    /// labels come from the group's primary column — `Attribute::Skill(_)`.
+    /// `friendly_attr_name` must name those, or the model sees "unknown" and
+    /// can't tell which ARG picks which skill. Mirrors "Keen Senses".
+    #[wasm_bindgen_test]
+    fn skill_choice_args_are_named_not_unknown() {
+        let expr: Expr = "with(@SKILL(INSI, PERC, SURV), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.PROF == 0, @.PROF += @ARG))))"
+            .parse()
+            .expect("Keen Senses expr parses");
+        let summary = expr.run(ArgSummarizer::new()).expect("summarizer runs");
+        let names: Vec<&str> = summary
+            .group_members
+            .iter()
+            .map(friendly_attr_name)
+            .collect();
+        assert_eq!(
+            names,
+            vec!["Insight", "Perception", "Survival"],
+            "got {names:?}"
+        );
+    }
+
+    /// Damage-resistance choices loop over `@DMG(...)`; the primary column is
+    /// `Attribute::Resistance(_)`. Mirrors "Elemental Affinity".
+    #[wasm_bindgen_test]
+    fn damage_choice_args_are_named_not_unknown() {
+        let expr: Expr = "with(@DMG(ACID, COLD, FIRE, LIGHT, POISON), guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@.VULN == 0, @ += @ARG))))"
+            .parse()
+            .expect("Elemental Affinity expr parses");
+        let summary = expr.run(ArgSummarizer::new()).expect("summarizer runs");
+        let names: Vec<&str> = summary
+            .group_members
+            .iter()
+            .map(friendly_attr_name)
+            .collect();
+        assert!(
+            !names.contains(&"unknown"),
+            "damage-type ARGs must be named, got {names:?}"
+        );
+    }
 }

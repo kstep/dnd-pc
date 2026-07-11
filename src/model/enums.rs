@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum::{Display, EnumIter, EnumString, VariantArray};
+use strum::{Display, EnumIter, EnumString, IntoStaticStr, VariantArray};
 
 pub trait Translatable {
     fn tr_key(&self) -> &'static str;
@@ -150,6 +150,7 @@ enum_serde_u8!(Ability {
     EnumIter,
     Display,
     EnumString,
+    IntoStaticStr,
     PartialOrd,
     Ord,
     VariantArray
@@ -369,6 +370,7 @@ enum_serde_u8!(Proficiency {
     PartialOrd,
     Ord,
     Display,
+    IntoStaticStr,
     EnumIter,
     VariantArray
 )]
