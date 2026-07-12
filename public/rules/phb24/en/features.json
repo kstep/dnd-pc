@@ -3644,7 +3644,10 @@
     "description": "Reaction when hit by melee attack: deal Fire damage equal to Sorcerer level to attacker (ignores resistance)"
   },
   "Quivering Palm": {
-    "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them."
+    "description": "You gain the ability to set up lethal vibrations in someone's body. When you hit a creature with an Unarmed Strike, you can expend 4 Focus Points to start these imperceptible vibrations, which last for a number of days equal to your Monk level. The vibrations are harmless unless you take an action to end them. Alternatively, when you take the Attack action on your turn, you can forgo one of the attacks to end the vibrations. To end them, you and the target must be on the same plane of existence. When you end them, the target must make a Constitution saving throw, taking 10d12 Force damage on a failed save or half as much damage on a successful one. You can have only one creature under the effect of this feature at a time."
+  },
+  "Quivering Palm.field.Actions.option.Quivering Palm": {
+    "description": "Spend 4 Focus Points on an Unarmed Strike hit; vibrations last days equal to your Monk level. End them with an action (or by forgoing an attack): CON save, 10d12 Force damage (half on a success)."
   },
   "Radiance of the Dawn": {
     "description": "As a Magic action, you present your Holy Symbol and expend a use of your Channel Divinity to emit a flash of light in a 30-foot Emanation [Area of Effect] originating from yourself. Any magical Darkness—such as that created by the Darkness spell—in that area is dispelled. Additionally, each creature of your choice in that area must make a Constitution saving throw, taking Radiant damage equal to 2d10 plus your Cleric level on a failed save, or half as much damage on a successful one."
