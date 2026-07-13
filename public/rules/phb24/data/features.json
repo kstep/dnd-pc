@@ -4563,7 +4563,27 @@
     "name": "Fleet Step"
   },
   {
-    "name": "Quivering Palm"
+    "name": "Quivering Palm",
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Quivering Palm",
+            "action": "Action",
+            "cost": 4,
+            "level": 17,
+            "effects": [
+              {
+                "name": "Damage",
+                "expr": "10d12"
+              }
+            ]
+          }
+        ],
+        "cost": "Focus Points"
+      }
+    ]
   },
   {
     "name": "Lay on Hands",

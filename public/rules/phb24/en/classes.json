@@ -219,7 +219,7 @@
     "description": "At the start of your turn, you can expend 1 Focus Point to imbue yourself with elemental energy. The energy lasts for 10 minutes or until you have the Incapacitated condition. You gain the following benefits while this feature is active."
   },
   "Monk.subclass.Warrior of the Open Hand": {
-    "description": "Whenever you hit a creature with an attack granted by your Flurry of Blows, you can impose one of the following effects on that target. Addle: The target can't make Opportunity Attack until the start of its next turn."
+    "description": "Warriors of the Open Hand are masters of unarmed combat. They learn techniques to push and trip their enemies and manipulate their own energy to protect themselves from harm."
   },
   "Paladin": {
     "description": "A holy warrior bound to a sacred oath."

@@ -30,6 +30,6 @@
     "description": "As an action, you can reshape your body to a two-legged Humanoid shape or to a four-legged Beast shape. While in Humanoid shape, you can wear clothing and armor made for a Humanoid of your size."
   },
   "Unpredictable Movement": {
-    "description": "When you roll Initiative and don't have Disadvantage on that roll, you can take the Dash action as a Reaction."
+    "description": "When you roll Initiative and don't have **Disadvantage** on that roll, you can take the Dash action as a Reaction."
   }
 }

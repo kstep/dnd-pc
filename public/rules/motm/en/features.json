@@ -12,7 +12,7 @@
     "description": "You have Resistance to Necrotic damage."
   },
   "Vampiric Bite": {
-    "description": "When you use your Unarmed Strike and deal damage, you can bite with your fangs for 1d4 + CON Piercing damage. When you deal this damage to a non-Construct, non-Undead creature, you can empower yourself: Drain (regain HP equal to damage) or Strengthen (bonus to next ability check or attack roll equal to damage). Usable a number of times equal to your Proficiency Bonus per Long Rest."
+    "description": "When you use your Unarmed Strike and deal damage, you can bite with your fangs for 1d4 + CON Piercing damage. When you deal this damage to a non-Construct, non-Undead creature, you can empower yourself: Drain (regain HP equal to damage) or Strengthen (bonus to next ability check or **attack roll** equal to damage). Usable a number of times equal to your Proficiency Bonus per Long Rest."
   },
   "Vampiric Bite.field.Drain": {
     "label": "Drain"
