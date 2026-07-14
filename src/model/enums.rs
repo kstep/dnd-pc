@@ -199,6 +199,42 @@ enum_serde_u8!(Skill {
     Survival,
 });
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Hash,
+    PartialOrd,
+    Ord,
+    Display,
+    EnumString,
+    IntoStaticStr,
+    VariantArray,
+    EnumIter
+)]
+#[strum(serialize_all = "UPPERCASE")]
+pub enum SpeedMode {
+    Walk,
+    Fly,
+    Swim,
+    Climb,
+    Burrow,
+}
+
+impl Translatable for SpeedMode {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Walk => "speed",
+            Self::Fly => "speed-fly",
+            Self::Swim => "speed-swim",
+            Self::Climb => "speed-climb",
+            Self::Burrow => "speed-burrow",
+        }
+    }
+}
+
 impl Skill {
     pub fn ability(self) -> Ability {
         match self {

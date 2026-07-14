@@ -361,6 +361,35 @@ impl Named for ChoiceOption {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::model::EffectsIndex;
+
+    /// Merge every package's effects.json, mirroring the runtime union.
+    fn parse_merged_effects() -> EffectsIndex {
+        use crate::rules::packages::PackageMerge;
+        let rules_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("public/rules");
+        let mut merged = EffectsIndex::default();
+        for entry in std::fs::read_dir(&rules_dir).expect("read public/rules") {
+            let entry = entry.expect("dir entry");
+            let pkg_id = entry.file_name().to_string_lossy().to_string();
+            let path = entry.path().join("data/effects.json");
+            let Ok(data) = std::fs::read_to_string(&path) else {
+                continue;
+            };
+            let part: EffectsIndex = serde_json::from_str(&data).expect("parse effects.json");
+            merged.absorb(part, &pkg_id);
+        }
+        merged
+    }
+
+    #[test]
+    fn deserialize_effects_json() {
+        let index = parse_merged_effects();
+        assert!(
+            index.0.len() > 100,
+            "expected 100+ effects, got {}",
+            index.0.len()
+        );
+    }
 
     /// Merge every package's features.json, mirroring the runtime union.
     fn parse_merged_features() -> FeaturesIndex {

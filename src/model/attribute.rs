@@ -4,7 +4,8 @@ use leptos_fluent::{I18n, tr};
 use serde::{Deserialize, Serialize};
 
 use crate::model::{
-    Ability, DamageType, FeatureCategory, Proficiency, Sense, Skill, SpellSlotPool, Translatable,
+    Ability, DamageType, FeatureCategory, Proficiency, Sense, Skill, SpeedMode, SpellSlotPool,
+    Translatable,
 };
 
 /// Identifies a named or scope-implicit pool/die/bonus/choice.
@@ -38,7 +39,7 @@ pub enum Attribute {
     TempHp,
     Level,
     Ac,
-    Speed,
+    Speed(SpeedMode),
     /// Class level: `Scoped` reads via `ApplyContext` (current class scope);
     /// `Named(name)` reads/writes the named class's level via
     /// `Character::assign`/`resolve`.
@@ -454,7 +455,7 @@ impl FromStr for Attribute {
                 "HP" => Ok(Self::Hp),
                 "LEVEL" => Ok(Self::Level),
                 "AC" => Ok(Self::Ac),
-                "SPEED" => Ok(Self::Speed),
+                "SPEED" => Ok(Self::Speed(SpeedMode::Walk)),
                 "ATK" => Ok(Self::AttackBonus),
                 "INIT" => Ok(Self::Initiative),
                 "INSPIRATION" => Ok(Self::Inspiration),
@@ -502,6 +503,10 @@ impl FromStr for Attribute {
                 "TEMP" => Ok(Self::TempHp),
                 _ => Err("unknown HP suffix (expected MAX or TEMP)"),
             },
+            "SPEED" => rest
+                .parse::<SpeedMode>()
+                .map(Self::Speed)
+                .map_err(|_| "unknown speed mode (expected WALK/FLY/SWIM/CLIMB/BURROW)"),
             "CLASS" => match rest {
                 "LEVEL" => Ok(Self::ClassLevel(AttrKey::Scoped)),
                 "COUNT" => Ok(Self::ClassCount),
@@ -709,7 +714,8 @@ impl fmt::Display for Attribute {
             Self::TempHp => f.write_str("HP.TEMP"),
             Self::Level => f.write_str("LEVEL"),
             Self::Ac => f.write_str("AC"),
-            Self::Speed => f.write_str("SPEED"),
+            Self::Speed(SpeedMode::Walk) => f.write_str("SPEED"),
+            Self::Speed(mode) => write!(f, "SPEED.{}", <&'static str>::from(*mode)),
             Self::ClassLevel(key) => fmt_attr_key(key, "CLASS", ".LEVEL", f),
             Self::ClassCount => f.write_str("CLASS.COUNT"),
             Self::HitDice => f.write_str("HIT_DICE"),
@@ -820,7 +826,7 @@ impl Attribute {
             }
             Self::EquipmentProficiency(p) => i18n.tr(p.tr_key()),
             Self::MaxHp => tr!(i18n, "hp-max"),
-            Self::Speed => tr!(i18n, "speed"),
+            Self::Speed(mode) => i18n.tr(mode.tr_key()),
             Self::Initiative | Self::InitiativeBonus => tr!(i18n, "initiative"),
             Self::Ac => tr!(i18n, "armor-class"),
             Self::Inspiration => tr!(i18n, "inspiration"),
@@ -981,6 +987,28 @@ mod tests {
     use wasm_bindgen_test::*;
 
     use super::*;
+
+    #[wasm_bindgen_test]
+    fn speed_attribute_round_trips() {
+        for (text, mode) in [
+            ("SPEED", SpeedMode::Walk),
+            ("SPEED.FLY", SpeedMode::Fly),
+            ("SPEED.SWIM", SpeedMode::Swim),
+            ("SPEED.CLIMB", SpeedMode::Climb),
+            ("SPEED.BURROW", SpeedMode::Burrow),
+        ] {
+            let attr: Attribute = text.parse().expect("must parse");
+            assert_eq!(attr, Attribute::Speed(mode));
+            assert_eq!(attr.to_string(), text);
+        }
+    }
+
+    #[wasm_bindgen_test]
+    fn speed_walk_alias_parses_but_displays_bare() {
+        let attr: Attribute = "SPEED.WALK".parse().expect("must parse");
+        assert_eq!(attr, Attribute::Speed(SpeedMode::Walk));
+        assert_eq!(attr.to_string(), "SPEED");
+    }
 
     #[wasm_bindgen_test]
     fn parse_named_pool_optional_backticks() {

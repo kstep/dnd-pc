@@ -1236,7 +1236,7 @@
             "effects": [
               {
                 "name": "Rage of the Gods",
-                "expr": "RESIST.NECRO = 1; RESIST.RADI = 1"
+                "expr": "RESIST.NECRO = 1; RESIST.RADI = 1; SPEED.FLY = SPEED"
               }
             ]
           }
@@ -3229,7 +3229,23 @@
     "name": "Dragon"
   },
   {
-    "name": "Twinkling Constellations"
+    "name": "Twinkling Constellations",
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Twinkling Constellations",
+            "effects": [
+              {
+                "name": "Twinkling Constellations",
+                "expr": "SPEED.FLY = 20"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Full of Stars",
@@ -3311,7 +3327,13 @@
     ]
   },
   {
-    "name": "Aquatic Affinity"
+    "name": "Aquatic Affinity",
+    "assign": [
+      {
+        "expr": "SPEED.SWIM = SPEED",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Oceanic Gift"
@@ -3821,7 +3843,13 @@
           {
             "name": "Psi-Powered Leap",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Psi-Powered Leap",
+                "expr": "SPEED.FLY = 2 * SPEED"
+              }
+            ]
           }
         ]
       }
@@ -4309,7 +4337,23 @@
     "name": "Draconic Disciple"
   },
   {
-    "name": "Wings Unfurled"
+    "name": "Wings Unfurled",
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Wings Unfurled",
+            "effects": [
+              {
+                "name": "Wings Unfurled",
+                "expr": "SPEED.FLY = SPEED"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Aspect of the Wyrm",
@@ -4492,7 +4536,23 @@
     ]
   },
   {
-    "name": "Stride of the Elements"
+    "name": "Stride of the Elements",
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Stride of the Elements",
+            "effects": [
+              {
+                "name": "Stride of the Elements",
+                "expr": "SPEED.FLY = SPEED; SPEED.SWIM = SPEED"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Elemental Epitome",
@@ -4919,7 +4979,13 @@
           {
             "name": "Avenging Angel",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Avenging Angel",
+                "expr": "SPEED.FLY = 60"
+              }
+            ]
           }
         ]
       }
@@ -5386,7 +5452,13 @@
           {
             "name": "Noble Scion",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Noble Scion",
+                "expr": "SPEED.FLY = 60"
+              }
+            ]
           }
         ]
       }
@@ -5457,7 +5529,7 @@
     "name": "Roving",
     "assign": [
       {
-        "expr": "SPEED += 10",
+        "expr": "SPEED += 10; SPEED.CLIMB = SPEED; SPEED.SWIM = SPEED",
         "when": "OnCompute"
       }
     ]
@@ -6207,7 +6279,13 @@
     ]
   },
   {
-    "name": "Second-Story Work"
+    "name": "Second-Story Work",
+    "assign": [
+      {
+        "expr": "SPEED.CLIMB = SPEED",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Supreme Sneak"
@@ -6406,7 +6484,13 @@
           {
             "name": "Ghost Walk",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Ghost Walk",
+                "expr": "SPEED.FLY = 10"
+              }
+            ]
           }
         ]
       }
@@ -6660,7 +6744,13 @@
         "options": [
           {
             "name": "Otherworldly Wings",
-            "action": "BonusAction"
+            "action": "BonusAction",
+            "effects": [
+              {
+                "name": "Otherworldly Wings",
+                "expr": "SPEED.FLY = 30"
+              }
+            ]
           }
         ]
       }
@@ -6800,7 +6890,13 @@
     ]
   },
   {
-    "name": "Wind Soul"
+    "name": "Wind Soul",
+    "assign": [
+      {
+        "expr": "SPEED.FLY = 60",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Lunar Embodiment"
@@ -7152,7 +7248,13 @@
           {
             "name": "Dragon Wings",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Dragon Wings",
+                "expr": "SPEED.FLY = 60"
+              }
+            ]
           }
         ]
       }
@@ -7538,7 +7640,13 @@
     "name": "Master of Hexes"
   },
   {
-    "name": "Gift of the Sea"
+    "name": "Gift of the Sea",
+    "assign": [
+      {
+        "expr": "SPEED.SWIM = 40",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Tentacle of the Deeps",
@@ -7782,7 +7890,13 @@
           {
             "name": "Elemental Gift",
             "action": "BonusAction",
-            "cost": 1
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Elemental Gift",
+                "expr": "SPEED.FLY = 30"
+              }
+            ]
           }
         ]
       }
@@ -10082,7 +10196,13 @@
     ]
   },
   {
-    "name": "Flight"
+    "name": "Flight",
+    "assign": [
+      {
+        "expr": "SPEED.FLY = SPEED",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Fire Resistance",

@@ -14,7 +14,7 @@ use wasm_bindgen::JsValue;
 use crate::{
     components::{cloud_sign_in_hint::CloudSignInHint, ref_link::Ref, toast::Toast},
     firebase,
-    model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, Translatable},
+    model::{Ability, Avatar, Character, Item, Note, Proficiency, Skill, SpeedMode, Translatable},
     rules::RulesRegistry,
     storage,
 };
@@ -223,13 +223,15 @@ impl Character {
             self.armor_class().to_string(),
             imported.armor_class().to_string(),
         );
-        push_if_diff(
-            &mut rows,
-            sec,
-            "speed",
-            self.speed().to_string(),
-            imported.speed().to_string(),
-        );
+        for mode in SpeedMode::iter() {
+            push_if_diff(
+                &mut rows,
+                sec,
+                mode.tr_key(),
+                self.combat.speed.get(mode).to_string(),
+                imported.combat.speed.get(mode).to_string(),
+            );
+        }
         push_if_diff(
             &mut rows,
             sec,

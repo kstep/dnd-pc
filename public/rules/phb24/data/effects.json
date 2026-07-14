@@ -148,7 +148,7 @@
   },
   {
     "name": "Stormborn",
-    "expr": "RESIST.COLD = 1; RESIST.LIGHT = 1; RESIST.THUND = 1"
+    "expr": "RESIST.COLD = 1; RESIST.LIGHT = 1; RESIST.THUND = 1; SPEED.FLY = SPEED"
   },
   {
     "name": "Superior Defense",
@@ -211,19 +211,24 @@
     "expr": "RESIST.THUND = 1"
   },
   {
-    "name": "Steps of Night"
+    "name": "Steps of Night",
+    "expr": "SPEED.FLY = SPEED"
   },
   {
-    "name": "Draconic Flight"
+    "name": "Draconic Flight",
+    "expr": "SPEED.FLY = SPEED"
   },
   {
-    "name": "Celestial Revelation: Wings"
+    "name": "Celestial Revelation: Wings",
+    "expr": "SPEED.FLY = SPEED"
   },
   {
-    "name": "Power of the Wilds: Falcon"
+    "name": "Power of the Wilds: Falcon",
+    "expr": "SPEED.FLY = SPEED"
   },
   {
-    "name": "Writhing Tide"
+    "name": "Writhing Tide",
+    "expr": "SPEED.FLY = 10"
   },
   {
     "name": "Rage Damage"
@@ -304,7 +309,7 @@
   },
   {
     "name": "Tasha's Otherworldly Guise",
-    "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD)"
+    "expr": "AC = max(AC, 10 + DEX.MOD + CHA.MOD); SPEED.FLY = 40"
   },
   {
     "name": "Alustriel's Mooncloak",
@@ -316,7 +321,7 @@
   },
   {
     "name": "Syluné's Viper",
-    "expr": "HP.TEMP = max(HP.TEMP, 15)"
+    "expr": "HP.TEMP = max(HP.TEMP, 15); SPEED.CLIMB = SPEED"
   },
   {
     "name": "Motivational Speech",
@@ -347,7 +352,16 @@
     "name": "Warding Wind"
   },
   {
-    "name": "Fly"
+    "name": "Fly",
+    "expr": "SPEED.FLY = 60"
+  },
+  {
+    "name": "Draconic Transformation",
+    "expr": "SPEED.FLY = 60"
+  },
+  {
+    "name": "Wind Walk",
+    "expr": "SPEED.FLY = 300"
   },
   {
     "name": "Dragon's Breath"
@@ -434,7 +448,7 @@
   },
   {
     "name": "Investiture of Wind",
-    "expr": "DEX.SAVE.ADV = 1"
+    "expr": "DEX.SAVE.ADV = 1; SPEED.FLY = 60"
   },
   {
     "name": "Primordial Ward",
@@ -442,23 +456,23 @@
   },
   {
     "name": "Songal's Elemental Suffusion: Acid",
-    "expr": "RESIST.ACID = 1"
+    "expr": "RESIST.ACID = 1; SPEED.FLY = 30"
   },
   {
     "name": "Songal's Elemental Suffusion: Cold",
-    "expr": "RESIST.COLD = 1"
+    "expr": "RESIST.COLD = 1; SPEED.FLY = 30"
   },
   {
     "name": "Songal's Elemental Suffusion: Fire",
-    "expr": "RESIST.FIRE = 1"
+    "expr": "RESIST.FIRE = 1; SPEED.FLY = 30"
   },
   {
     "name": "Songal's Elemental Suffusion: Lightning",
-    "expr": "RESIST.LIGHT = 1"
+    "expr": "RESIST.LIGHT = 1; SPEED.FLY = 30"
   },
   {
     "name": "Songal's Elemental Suffusion: Thunder",
-    "expr": "RESIST.THUND = 1"
+    "expr": "RESIST.THUND = 1; SPEED.FLY = 30"
   },
   {
     "name": "Heroes' Feast",
@@ -501,7 +515,8 @@
     "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 150)"
   },
   {
-    "name": "Spider Climb"
+    "name": "Spider Climb",
+    "expr": "SPEED.CLIMB = SPEED"
   },
   {
     "name": "Invisibility"
@@ -521,10 +536,11 @@
   },
   {
     "name": "Gaseous Form",
-    "expr": "each(@DMG, @ = 1)"
+    "expr": "each(@DMG, @ = 1); SPEED.FLY = 10"
   },
   {
-    "name": "Alter Self"
+    "name": "Alter Self",
+    "expr": "SPEED.SWIM = SPEED"
   },
   {
     "name": "Levitate"

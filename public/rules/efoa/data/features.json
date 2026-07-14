@@ -114,7 +114,13 @@
           },
           {
             "name": "Cloak of the Manta Ray",
-            "level": 6
+            "level": 6,
+            "effects": [
+              {
+                "name": "Cloak of the Manta Ray",
+                "expr": "SPEED.SWIM = 60"
+              }
+            ]
           },
           {
             "name": "Dazzling Weapon",
@@ -158,7 +164,13 @@
           },
           {
             "name": "Ring of Swimming",
-            "level": 6
+            "level": 6,
+            "effects": [
+              {
+                "name": "Ring of Swimming",
+                "expr": "SPEED.SWIM = 40"
+              }
+            ]
           },
           {
             "name": "Ring of Water Walking",
@@ -278,7 +290,13 @@
           },
           {
             "name": "Slippers of Spider Climbing",
-            "level": 10
+            "level": 10,
+            "effects": [
+              {
+                "name": "Slippers of Spider Climbing",
+                "expr": "SPEED.CLIMB = SPEED"
+              }
+            ]
           },
           {
             "name": "Ventilating Lungs",
@@ -294,7 +312,13 @@
           },
           {
             "name": "Winged Boots",
-            "level": 10
+            "level": 10,
+            "effects": [
+              {
+                "name": "Winged Boots",
+                "expr": "SPEED.FLY = SPEED"
+              }
+            ]
           },
           {
             "name": "Wraps of Unarmed Power +2",
@@ -334,7 +358,13 @@
           },
           {
             "name": "Cloak of the Bat",
-            "level": 14
+            "level": 14,
+            "effects": [
+              {
+                "name": "Cloak of the Bat",
+                "expr": "SPEED.FLY = 40"
+              }
+            ]
           },
           {
             "name": "Dimensional Shackles",
@@ -482,7 +512,13 @@
             "name": "Boldness"
           },
           {
-            "name": "Flight"
+            "name": "Flight",
+            "effects": [
+              {
+                "name": "Flight",
+                "expr": "SPEED.FLY = 10"
+              }
+            ]
           }
         ]
       },

@@ -1,12 +1,13 @@
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use reactive_stores::Store;
+use strum::IntoEnumIterator;
 
 use crate::{
     components::{icon::Icon, slot_box::SlotBox, stat_box::StatBox},
     model::{
         Character, CharacterCoreStoreFields, CharacterIdentityStoreFields, CharacterStoreFields,
-        CombatStatsStoreFields, format_bonus,
+        CombatStatsStoreFields, SpeedMode, Translatable, format_bonus,
     },
     rules::RulesRegistry,
 };
@@ -16,7 +17,10 @@ pub fn CombatPanel() -> impl IntoView {
     let store = expect_context::<Store<Character>>();
     let registry = expect_context::<RulesRegistry>();
 
+    let i18n = expect_context::<leptos_fluent::I18n>();
     let combat = store.core().combat();
+    let speed = combat.speed();
+    let speed_expanded = RwSignal::new(false);
     let classes = store.core().identity().classes();
     let initiative = Memo::new(move |_| store.read().initiative());
 
@@ -50,17 +54,6 @@ pub fn CombatPanel() -> impl IntoView {
                     >
                         {move || if combat.inspiration().get() { "\u{2605}" } else { "\u{2606}" }}
                     </button>
-                </StatBox>
-                <StatBox label=move_tr!("speed")>
-                    <input
-                        type="number"
-                        prop:value=move || combat.speed().get().to_string()
-                        on:input=move |e| {
-                            if let Ok(value) = event_target_value(&e).parse::<u32>() {
-                                combat.speed().set(value);
-                            }
-                        }
-                    />
                 </StatBox>
                 <StatBox label=move_tr!("attack-count")>
                     <input
@@ -118,6 +111,51 @@ pub fn CombatPanel() -> impl IntoView {
                         }
                     />
                 </StatBox>
+            </div>
+
+            <div class="speed-section">
+                <div class="section-header">
+                    <button
+                        class="btn-toggle-desc"
+                        class:expanded=move || speed_expanded.get()
+                        on:click=move |_| speed_expanded.update(|expanded| *expanded = !*expanded)
+                    />
+                    <h4
+                        class="clickable"
+                        on:click=move |_| speed_expanded.update(|expanded| *expanded = !*expanded)
+                    >
+                        {move_tr!("speed")}
+                    </h4>
+                </div>
+                <div class="slot-box-list">
+                    {move || {
+                        let expanded = speed_expanded.get();
+                        SpeedMode::iter()
+                            .filter(move |mode| {
+                                *mode == SpeedMode::Walk || expanded || speed.get().get(*mode) > 0
+                            })
+                            .map(|mode| {
+                                let tr_key = mode.tr_key();
+                                let label = Signal::derive(move || i18n.tr(tr_key));
+                                view! {
+                                    <StatBox label=label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            prop:value=move || speed.get().get(mode).to_string()
+                                            on:input=move |event| {
+                                                if let Ok(value) = event_target_value(&event).parse::<u32>()
+                                                {
+                                                    speed.update(|current| current.set(mode, value));
+                                                }
+                                            }
+                                        />
+                                    </StatBox>
+                                }
+                            })
+                            .collect_view()
+                    }}
+                </div>
             </div>
 
             <div class="hit-dice-section">

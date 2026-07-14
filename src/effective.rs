@@ -6,8 +6,8 @@ use crate::{
     expr::{self, Context, Eval as _, VarGroup},
     model::{
         Ability, AbilityGroup, ActiveEffects, Attribute, AttributeGroup, Character,
-        DamageModifiers, DamageType, DmgGroup, Item, Sense, Senses, Skill, SkillGroup, ToolGroup,
-        intern,
+        DamageModifiers, DamageType, DmgGroup, Item, Sense, Senses, Skill, SkillGroup, SpeedMode,
+        ToolGroup, intern,
     },
 };
 
@@ -126,7 +126,11 @@ impl EffectiveCharacter {
     }
 
     pub fn speed(&self) -> i32 {
-        self.get(Attribute::Speed)
+        self.speed_of(SpeedMode::Walk)
+    }
+
+    pub fn speed_of(&self, mode: SpeedMode) -> i32 {
+        self.get(Attribute::Speed(mode))
     }
 
     /// Evaluate a weapon item's derived attack expression with effect

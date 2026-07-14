@@ -1,12 +1,116 @@
 use std::{
     collections::BTreeMap,
+    fmt,
     ops::{Deref, DerefMut},
 };
 
 use reactive_stores::Store;
-use serde::{Deserialize, Serialize};
+use serde::{
+    Deserialize, Serialize,
+    de::{self, MapAccess, Visitor, value::MapAccessDeserializer},
+};
 
-use crate::model::{DamageType, Sense};
+use crate::model::{DamageType, Sense, SpeedMode};
+
+/// Default walking speed in feet (most species).
+pub const DEFAULT_SPEED: u32 = 30;
+
+/// Per-mode movement speeds in feet. Walking speed is the primary mode; the
+/// others are 0 unless a species/feature/effect sets them.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Store)]
+pub struct Speed {
+    pub walk: u32,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub fly: u32,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub swim: u32,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub climb: u32,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub burrow: u32,
+}
+
+fn is_zero(value: &u32) -> bool {
+    *value == 0
+}
+
+impl Speed {
+    pub fn get(&self, mode: SpeedMode) -> u32 {
+        match mode {
+            SpeedMode::Walk => self.walk,
+            SpeedMode::Fly => self.fly,
+            SpeedMode::Swim => self.swim,
+            SpeedMode::Climb => self.climb,
+            SpeedMode::Burrow => self.burrow,
+        }
+    }
+
+    pub fn set(&mut self, mode: SpeedMode, value: u32) {
+        match mode {
+            SpeedMode::Walk => self.walk = value,
+            SpeedMode::Fly => self.fly = value,
+            SpeedMode::Swim => self.swim = value,
+            SpeedMode::Climb => self.climb = value,
+            SpeedMode::Burrow => self.burrow = value,
+        }
+    }
+}
+
+/// Legacy characters store `speed` as a bare walking-speed number; current
+/// ones store a per-mode map. Accept both transparently — no schema bump.
+impl<'de> Deserialize<'de> for Speed {
+    fn deserialize<D: serde::Deserializer<'de>>(de: D) -> Result<Self, D::Error> {
+        struct SpeedVisitor;
+
+        impl<'de> Visitor<'de> for SpeedVisitor {
+            type Value = Speed;
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                f.write_str("a walking-speed number or a per-mode speed map")
+            }
+
+            fn visit_u64<E: de::Error>(self, value: u64) -> Result<Speed, E> {
+                Ok(Speed {
+                    walk: value as u32,
+                    ..Default::default()
+                })
+            }
+
+            fn visit_i64<E: de::Error>(self, value: i64) -> Result<Speed, E> {
+                Ok(Speed {
+                    walk: value.max(0) as u32,
+                    ..Default::default()
+                })
+            }
+
+            fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Speed, A::Error> {
+                #[derive(Deserialize)]
+                struct Raw {
+                    #[serde(default)]
+                    walk: u32,
+                    #[serde(default)]
+                    fly: u32,
+                    #[serde(default)]
+                    swim: u32,
+                    #[serde(default)]
+                    climb: u32,
+                    #[serde(default)]
+                    burrow: u32,
+                }
+                let raw = Raw::deserialize(MapAccessDeserializer::new(map))?;
+                Ok(Speed {
+                    walk: raw.walk,
+                    fly: raw.fly,
+                    swim: raw.swim,
+                    climb: raw.climb,
+                    burrow: raw.burrow,
+                })
+            }
+        }
+
+        de.deserialize_any(SpeedVisitor)
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
@@ -15,7 +119,7 @@ pub struct CombatStats {
     #[serde(default)]
     pub armor_class: u32,
     #[serde(default)]
-    pub speed: u32,
+    pub speed: Speed,
     #[serde(default)]
     pub hp_max: u32,
     #[serde(default)]
@@ -51,7 +155,10 @@ impl Default for CombatStats {
         Self {
             concentrating: None,
             armor_class: 10,
-            speed: 30,
+            speed: Speed {
+                walk: DEFAULT_SPEED,
+                ..Default::default()
+            },
             hp_max: 0,
             hp_current: 0,
             hp_temp: 0,
@@ -280,6 +387,7 @@ impl CombatStats {
 #[cfg(test)]
 mod tests {
     use serde_json::json;
+    use strum::IntoEnumIterator;
 
     use super::*;
 
@@ -295,6 +403,65 @@ mod tests {
         assert_eq!(senses.get(Sense::Truesight), 0);
         senses.set(Sense::Darkvision, 0);
         assert_eq!(senses.get(Sense::Darkvision), 0);
+    }
+
+    #[test]
+    fn speed_deserializes_legacy_number_into_walk() {
+        let speed: Speed = serde_json::from_value(json!(30)).expect("must deserialize");
+        assert_eq!(
+            speed,
+            Speed {
+                walk: 30,
+                ..Default::default()
+            }
+        );
+    }
+
+    #[test]
+    fn speed_deserializes_full_map() {
+        let value = json!({ "walk": 30, "fly": 60, "swim": 15, "climb": 10, "burrow": 5 });
+        let speed: Speed = serde_json::from_value(value).expect("must deserialize");
+        assert_eq!(
+            speed,
+            Speed {
+                walk: 30,
+                fly: 60,
+                swim: 15,
+                climb: 10,
+                burrow: 5
+            }
+        );
+    }
+
+    #[test]
+    fn speed_deserializes_partial_map_defaulting_missing() {
+        let speed: Speed = serde_json::from_value(json!({ "walk": 25 })).expect("must deserialize");
+        assert_eq!(
+            speed,
+            Speed {
+                walk: 25,
+                ..Default::default()
+            }
+        );
+    }
+
+    #[test]
+    fn speed_serialize_skips_zero_non_walk_fields() {
+        let value = serde_json::to_value(Speed {
+            walk: 30,
+            ..Default::default()
+        })
+        .unwrap();
+        assert_eq!(value, json!({ "walk": 30 }));
+    }
+
+    #[test]
+    fn speed_get_set_round_trips_each_mode() {
+        let mut speed = Speed::default();
+        for mode in SpeedMode::iter() {
+            speed.set(mode, 42);
+            assert_eq!(speed.get(mode), 42);
+        }
     }
 
     #[test]

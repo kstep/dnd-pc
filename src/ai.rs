@@ -11,7 +11,9 @@ use crate::{
     expr::{self, BinOp, BlockIndex, Cmp, Interpreter, ResolveGroup},
     firebase,
     hooks::join_iter,
-    model::{Ability, Attribute, AttributeGroup, Character, Op, Skill, StaticAttrSource},
+    model::{
+        Ability, Attribute, AttributeGroup, Character, Op, Skill, SpeedMode, StaticAttrSource,
+    },
     rules::{PendingInputs, RulesRegistry},
 };
 
@@ -901,6 +903,7 @@ pub fn describe_pending_replacements(
 fn friendly_attr_name(attr: &Attribute) -> &'static str {
     use Ability::*;
     use Skill::*;
+    use SpeedMode::*;
     match attr {
         Attribute::Ability(Strength) => "Strength",
         Attribute::Ability(Dexterity) => "Dexterity",
@@ -931,7 +934,11 @@ fn friendly_attr_name(attr: &Attribute) -> &'static str {
         Attribute::SkillProficiency(Stealth) => "Stealth proficiency",
         Attribute::SkillProficiency(Survival) => "Survival proficiency",
         Attribute::Ac => "Armor Class",
-        Attribute::Speed => "Speed",
+        Attribute::Speed(Walk) => "Speed",
+        Attribute::Speed(Fly) => "Flying Speed",
+        Attribute::Speed(Swim) => "Swimming Speed",
+        Attribute::Speed(Climb) => "Climbing Speed",
+        Attribute::Speed(Burrow) => "Burrowing Speed",
         Attribute::MaxHp => "Max HP",
         Attribute::ToolProficiency(name) => name,
         Attribute::ToolCount => "tool slot count",

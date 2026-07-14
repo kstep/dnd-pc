@@ -34,6 +34,7 @@ ignore = [
     "tests",
     "target",
     "dist",
+    ".playwright-mcp",
 ]
 
 [serve]

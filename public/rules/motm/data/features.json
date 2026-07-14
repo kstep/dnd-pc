@@ -12,7 +12,22 @@
     "name": "Fairy Magic"
   },
   {
-    "name": "Spider Climb"
+    "name": "Flight",
+    "assign": [
+      {
+        "expr": "SPEED.FLY = 30",
+        "when": "OnCompute"
+      }
+    ]
+  },
+  {
+    "name": "Spider Climb",
+    "assign": [
+      {
+        "expr": "SPEED.CLIMB = SPEED",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Trace of Undeath",

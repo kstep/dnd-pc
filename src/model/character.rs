@@ -12,15 +12,12 @@ use crate::{
     expr::{self, Eval as _},
     model::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
-        DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
-        IdentitySlot, Item, ItemKind, Note, Personality, Senses, Skills, SpellData, SpellSlots,
-        ToolEntry, Tools, default_attunement_max, enums::*,
+        DEFAULT_SPEED, DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource,
+        Features, IdentitySlot, Item, ItemKind, Note, Personality, Senses, Skills, Speed,
+        SpellData, SpellSlots, ToolEntry, Tools, default_attunement_max, enums::*,
     },
     vecset::VecSet,
 };
-
-/// Default walking speed in feet (most species).
-const DEFAULT_SPEED: u32 = 30;
 
 /// Maximum class level a user can enter. D&D 5e standard progression caps at
 /// 20; we allow up to 40 for epic-tier campaigns and homebrew content.
@@ -393,7 +390,10 @@ impl CharacterCore {
     /// Reset speed to the default walking speed (30 ft).
     /// Race/feature `OnCompute` assignments override this.
     pub fn compute_speed(&mut self) -> u32 {
-        self.combat.speed = DEFAULT_SPEED;
+        self.combat.speed = Speed {
+            walk: DEFAULT_SPEED,
+            ..Default::default()
+        };
         DEFAULT_SPEED
     }
 
@@ -621,7 +621,7 @@ impl Character {
     }
 
     pub fn speed(&self) -> u32 {
-        self.combat.speed
+        self.combat.speed.walk
     }
 
     pub fn hp_max(&self) -> u32 {
@@ -770,8 +770,8 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::Ac => {
                 self.combat.armor_class = value as u32;
             }
-            Attribute::Speed => {
-                self.combat.speed = value as u32;
+            Attribute::Speed(mode) => {
+                self.combat.speed.set(mode, value.max(0) as u32);
             }
             Attribute::AttackBonus => {
                 self.combat.attack_bonus = value;
@@ -900,7 +900,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::TempHp => Ok(self.combat.hp_temp as i32),
             Attribute::Level => Ok(self.level() as i32),
             Attribute::Ac => Ok(self.combat.armor_class as i32),
-            Attribute::Speed => Ok(self.combat.speed as i32),
+            Attribute::Speed(mode) => Ok(self.combat.speed.get(mode) as i32),
             // Scope-free bare form means "any pool"; pools never stack, so max.
             Attribute::CasterLevel(None) => Ok(self
                 .caster_level(SpellSlotPool::Arcane)
@@ -1003,7 +1003,10 @@ impl Character {
                 combat: CombatStats {
                     concentrating: None,
                     armor_class: 13,
-                    speed: 30,
+                    speed: Speed {
+                        walk: DEFAULT_SPEED,
+                        ..Default::default()
+                    },
                     hp_max: 24,
                     hp_current: 20,
                     hp_temp: 5,
@@ -1156,7 +1159,10 @@ mod tests {
                 combat: CombatStats {
                     concentrating: None,
                     armor_class: 12,
-                    speed: 30,
+                    speed: Speed {
+                        walk: DEFAULT_SPEED,
+                        ..Default::default()
+                    },
                     hp_max: 44,
                     hp_current: 44,
                     hp_temp: 0,
@@ -2210,10 +2216,20 @@ mod tests {
     #[wasm_bindgen_test]
     fn compute_speed_resets_to_default() {
         let mut ch = test_character();
-        ch.combat.speed = 50;
+        ch.combat.speed = Speed {
+            walk: 50,
+            fly: 40,
+            ..Default::default()
+        };
         let speed = ch.compute_speed();
-        assert_eq!(speed, 30);
-        assert_eq!(ch.combat.speed, 30);
+        assert_eq!(speed, DEFAULT_SPEED);
+        assert_eq!(
+            ch.combat.speed,
+            Speed {
+                walk: DEFAULT_SPEED,
+                ..Default::default()
+            }
+        );
     }
 
     #[wasm_bindgen_test]

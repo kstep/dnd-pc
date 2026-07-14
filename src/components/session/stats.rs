@@ -8,7 +8,7 @@ use crate::{
     effective::{AdvantageState, EffectiveCharacter},
     model::{
         Ability, Character, CharacterCoreStoreFields, CharacterStoreFields, CombatStatsStoreFields,
-        DamageType, ProficiencyLevel, Skill, Translatable, format_bonus,
+        DamageType, ProficiencyLevel, Skill, SpeedMode, Translatable, format_bonus,
     },
 };
 
@@ -258,6 +258,21 @@ pub fn StatsBlock() -> impl IntoView {
                         <label>{move_tr!("speed")}</label>
                         <span>{move || eff.speed()}</span>
                     </div>
+                    {move || {
+                        SpeedMode::iter()
+                            .filter(|mode| *mode != SpeedMode::Walk && eff.speed_of(*mode) > 0)
+                            .map(|mode| {
+                                let tr_key = mode.tr_key();
+                                let label = Signal::derive(move || i18n.tr(tr_key));
+                                view! {
+                                    <div class="session-stat-box">
+                                        <label>{label}</label>
+                                        <span>{move || eff.speed_of(mode)}</span>
+                                    </div>
+                                }
+                            })
+                            .collect_view()
+                    }}
                 </div>
 
                 // -- Ability modifiers --

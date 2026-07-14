@@ -275,6 +275,12 @@
   "Fly": {
     "description": "Fly speed 60 ft (concentration, 10 min)"
   },
+  "Draconic Transformation": {
+    "description": "Fly speed 60 ft with hover (concentration, 1 min)"
+  },
+  "Wind Walk": {
+    "description": "Cloud form, Fly speed 300 ft (8 hours)"
+  },
   "Dragon's Breath": {
     "description": "Target can exhale 15-ft cone for 3d6 damage of chosen type (concentration, 1 min)"
   },
