@@ -406,6 +406,37 @@ enum_serde_u8!(DamageType {
     Thunder,
 });
 
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Display,
+    EnumIter,
+    VariantArray
+)]
+#[repr(u8)]
+pub enum Sense {
+    Darkvision,
+    Blindsight,
+    Tremorsense,
+    Truesight,
+}
+
+impl Sense {
+    pub fn icon_name(self) -> &'static str {
+        match self {
+            Self::Darkvision => "eye",
+            Self::Blindsight => "ear",
+            Self::Tremorsense => "footprints",
+            Self::Truesight => "scan-eye",
+        }
+    }
+}
+
 impl Translatable for Ability {
     fn tr_key(&self) -> &'static str {
         match self {
@@ -588,6 +619,17 @@ impl Translatable for DamageType {
             Self::Radiant => "damage-radiant",
             Self::Slashing => "damage-slashing",
             Self::Thunder => "damage-thunder",
+        }
+    }
+}
+
+impl Translatable for Sense {
+    fn tr_key(&self) -> &'static str {
+        match self {
+            Self::Darkvision => "sense-darkvision",
+            Self::Blindsight => "sense-blindsight",
+            Self::Tremorsense => "sense-tremorsense",
+            Self::Truesight => "sense-truesight",
         }
     }
 }

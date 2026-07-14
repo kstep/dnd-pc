@@ -13,8 +13,8 @@ use crate::{
     model::{
         AbilityScores, Applied, AttrKey, Attribute, CharacterIdentity, ClassLevel, CombatStats,
         DamageModifiers, Equipment, Feature, FeatureCategory, FeatureSource, Features,
-        IdentitySlot, Item, ItemKind, Note, Personality, Skills, SpellData, SpellSlots, ToolEntry,
-        Tools, default_attunement_max, enums::*,
+        IdentitySlot, Item, ItemKind, Note, Personality, Senses, Skills, SpellData, SpellSlots,
+        ToolEntry, Tools, default_attunement_max, enums::*,
     },
     vecset::VecSet,
 };
@@ -133,6 +133,8 @@ pub struct CharacterCore {
     pub tools: Tools,
     #[serde(default)]
     pub damage_modifiers: DamageModifiers,
+    #[serde(default)]
+    pub senses: Senses,
     #[serde(default)]
     pub spell_slots: SpellSlots,
     #[serde(default)]
@@ -355,6 +357,7 @@ impl CharacterCore {
             && self.languages == other.languages
             && self.tools == other.tools
             && self.damage_modifiers == other.damage_modifiers
+            && self.senses == other.senses
     }
 
     /// Compute base max HP from class levels and CON modifier.
@@ -408,6 +411,9 @@ impl CharacterCore {
         self.combat.initiative_misc_bonus = 0;
         self.combat.attack_count = 1;
         self.combat.attunement_max = default_attunement_max();
+        // Senses are fully derived: reset to zero so OnCompute grants (which
+        // may be additive, e.g. Umbral Sight) rebuild from a clean base.
+        self.senses = Senses::default();
     }
 
     /// True if there are forward-only changes that can be materialized
@@ -871,6 +877,9 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::DamageReduction(dt) => {
                 self.damage_modifiers.set_reduction(dt, value.max(0) as u32);
             }
+            Attribute::Sense(sense) => {
+                self.senses.set(sense, value.max(0) as u32);
+            }
             other => return Err(expr::Error::read_only_var(other)),
         }
 
@@ -917,6 +926,7 @@ impl expr::Context<Attribute, i32> for CharacterCore {
             Attribute::Vulnerability(dt) => Ok(self.damage_modifiers.is_vulnerable(dt) as i32),
             Attribute::Immunity(dt) => Ok(self.damage_modifiers.is_immune(dt) as i32),
             Attribute::DamageReduction(dt) => Ok(self.damage_modifiers.reduction(dt) as i32),
+            Attribute::Sense(sense) => Ok(self.senses.get(sense) as i32),
             Attribute::Feature(name) => Ok(self.features.has(name) as i32),
             Attribute::Language(name) => Ok(self.languages.contains(name) as i32),
             Attribute::ToolProficiency(name) => Ok(self.tools.level(name).multiplier()),
@@ -1043,6 +1053,7 @@ impl Character {
                 languages: VecSet::new(),
                 tools: Tools::default(),
                 damage_modifiers: DamageModifiers::default(),
+                senses: Senses::default(),
                 spell_slots: SpellSlots::default(),
                 applied: Applied {
                     species: true,
@@ -1169,6 +1180,7 @@ mod tests {
                 languages: VecSet::new(),
                 tools: Tools::default(),
                 damage_modifiers: DamageModifiers::default(),
+                senses: Senses::default(),
                 spell_slots: SpellSlots::default(),
                 applied: Applied::default(),
             },
@@ -2222,6 +2234,25 @@ mod tests {
     fn attune_max_parses_and_displays() {
         let expr: Expr = "ATTUNE.MAX = 4".parse().unwrap();
         assert_eq!(expr.to_string(), "ATTUNE.MAX = 4");
+    }
+
+    #[wasm_bindgen_test]
+    fn compute_resets_senses() {
+        let mut ch = test_character();
+        ch.senses.darkvision = 60;
+        ch.senses.tremorsense = 30;
+        ch.compute();
+        assert_eq!(ch.senses, crate::model::Senses::default());
+    }
+
+    #[wasm_bindgen_test]
+    fn assign_sense_sets_and_clears_field() {
+        let mut ch = test_character();
+        ch.assign(Attribute::Sense(Sense::Darkvision), 60).unwrap();
+        assert_eq!(ch.senses.darkvision, 60);
+        assert_eq!(ch.resolve(Attribute::Sense(Sense::Darkvision)).unwrap(), 60);
+        ch.assign(Attribute::Sense(Sense::Darkvision), 0).unwrap();
+        assert_eq!(ch.senses.darkvision, 0);
     }
 
     #[wasm_bindgen_test]

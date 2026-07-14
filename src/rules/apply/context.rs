@@ -1128,8 +1128,47 @@ mod tests {
     use super::*;
     use crate::{
         expr::Context as _,
-        model::{Character, ClassLevel, Feature, FeatureSource, intern},
+        model::{Character, ClassLevel, Expr, Feature, FeatureSource, intern},
     };
+
+    /// Elven Lineage grants a spell only from a threshold level. The data
+    /// gates both the `STICKY` grant and its `FREE_USES` behind a 3-arg `if`
+    /// (`, 0` else) so that below the threshold they apply cleanly — no stack
+    /// underflow from a bodyless false branch, no `UnsupportedVar` from a
+    /// `FREE_USES` write to an ungranted spell, and no phantom spell row.
+    #[wasm_bindgen_test]
+    fn gated_spell_grant_and_free_uses_are_clean_below_threshold() {
+        let mut character = Character::new();
+        character.identity.species = "Wood Elf".into();
+        character.identity.classes.push(ClassLevel {
+            class: "Ranger".into(),
+            level: 1,
+            ..ClassLevel::default()
+        });
+        character.features.list.push(Feature {
+            name: "Elven Lineage (Wood Elf)".into(),
+            source: FeatureSource::Species("Wood Elf".into()),
+            ..Default::default()
+        });
+        let mut ctx = ApplyContext::new(&mut character, 0);
+        for src in [
+            "if(LEVEL >= 3, STICKY.`Longstrider` = 1, 0)",
+            "if(LEVEL >= 3, FREE_USES.`Longstrider` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
+        ] {
+            let expr: Expr = src.parse().unwrap();
+            assert!(
+                expr.apply(&mut ctx).is_ok(),
+                "{src} must apply cleanly at L1"
+            );
+        }
+        drop(ctx);
+        let granted = character
+            .features
+            .get("Elven Lineage (Wood Elf)")
+            .and_then(|data| data.spells.as_ref())
+            .is_some_and(|spells| spells.spells.iter().any(|s| s.name == "Longstrider"));
+        assert!(!granted, "Longstrider must not be granted below level 3");
+    }
 
     fn fighter_at_5() -> Character {
         let mut character = Character::new();

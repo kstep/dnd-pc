@@ -6,7 +6,8 @@ use crate::{
     expr::{self, Context, Eval as _, VarGroup},
     model::{
         Ability, AbilityGroup, ActiveEffects, Attribute, AttributeGroup, Character,
-        DamageModifiers, DamageType, DmgGroup, Item, Skill, SkillGroup, ToolGroup, intern,
+        DamageModifiers, DamageType, DmgGroup, Item, Sense, Senses, Skill, SkillGroup, ToolGroup,
+        intern,
     },
 };
 
@@ -230,6 +231,21 @@ impl EffectiveCharacter {
                 if !entry.is_active() {
                     result.remove(&damage_type);
                 }
+            }
+        }
+
+        result
+    }
+
+    /// Effective senses: character base merged with effect overrides.
+    pub fn senses(&self) -> Senses {
+        let character = self.store.read();
+        let effects = self.effects.read();
+        let mut result = character.senses.clone();
+
+        for sense in Sense::iter() {
+            if let Some(value) = effects.global_override(Attribute::Sense(sense)) {
+                result.set(sense, value.max(0) as u32);
             }
         }
 

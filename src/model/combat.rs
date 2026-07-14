@@ -6,7 +6,7 @@ use std::{
 use reactive_stores::Store;
 use serde::{Deserialize, Serialize};
 
-use crate::model::DamageType;
+use crate::model::{DamageType, Sense};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Store)]
 pub struct CombatStats {
@@ -205,6 +205,37 @@ impl DamageModifiers {
     }
 }
 
+/// Per-character senses, each a range in feet (0 = the character lacks it).
+/// Granted by features/effects through `SENSE.<X>` assign expressions.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize, Store)]
+#[serde(default)]
+pub struct Senses {
+    pub darkvision: u32,
+    pub blindsight: u32,
+    pub tremorsense: u32,
+    pub truesight: u32,
+}
+
+impl Senses {
+    pub fn get(&self, sense: Sense) -> u32 {
+        match sense {
+            Sense::Darkvision => self.darkvision,
+            Sense::Blindsight => self.blindsight,
+            Sense::Tremorsense => self.tremorsense,
+            Sense::Truesight => self.truesight,
+        }
+    }
+
+    pub fn set(&mut self, sense: Sense, feet: u32) {
+        match sense {
+            Sense::Darkvision => self.darkvision = feet,
+            Sense::Blindsight => self.blindsight = feet,
+            Sense::Tremorsense => self.tremorsense = feet,
+            Sense::Truesight => self.truesight = feet,
+        }
+    }
+}
+
 impl CombatStats {
     /// Copy play state fields (hp_current/temp, death saves, concentrating,
     /// inspiration) from `other` into `self`, clamping `hp_current` to the
@@ -251,6 +282,20 @@ mod tests {
     use serde_json::json;
 
     use super::*;
+
+    #[test]
+    fn senses_get_set_dispatch() {
+        let mut senses = Senses::default();
+        assert_eq!(senses.get(Sense::Darkvision), 0);
+        senses.set(Sense::Darkvision, 60);
+        senses.set(Sense::Tremorsense, 30);
+        assert_eq!(senses.get(Sense::Darkvision), 60);
+        assert_eq!(senses.get(Sense::Tremorsense), 30);
+        assert_eq!(senses.get(Sense::Blindsight), 0);
+        assert_eq!(senses.get(Sense::Truesight), 0);
+        senses.set(Sense::Darkvision, 0);
+        assert_eq!(senses.get(Sense::Darkvision), 0);
+    }
 
     #[test]
     fn damage_modifiers_deserialize_drops_null_tombstones() {

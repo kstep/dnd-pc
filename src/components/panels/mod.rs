@@ -6,5 +6,6 @@ pub mod features;
 pub mod notes;
 pub mod personality;
 pub mod proficiencies;
+pub mod senses;
 pub mod skills;
 pub mod spellcasting;

@@ -442,23 +442,23 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Healing Word` = 1; STICKY.`Ray of Sickness` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Healing Word` = 1; STICKY.`Ray of Sickness` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Flaming Sphere` = 1; STICKY.`Melf's Acid Arrow` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Flaming Sphere` = 1; STICKY.`Melf's Acid Arrow` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Gaseous Form` = 1; STICKY.`Mass Healing Word` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Gaseous Form` = 1; STICKY.`Mass Healing Word` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Death Ward` = 1; STICKY.`Vitriolic Sphere` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Death Ward` = 1; STICKY.`Vitriolic Sphere` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Cloudkill` = 1; STICKY.`Raise Dead` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Cloudkill` = 1; STICKY.`Raise Dead` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -536,23 +536,23 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Magic Missile` = 1; STICKY.`Thunderwave` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Magic Missile` = 1; STICKY.`Thunderwave` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Mirror Image` = 1; STICKY.`Shatter` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Mirror Image` = 1; STICKY.`Shatter` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Hypnotic Pattern` = 1; STICKY.`Lightning Bolt` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Hypnotic Pattern` = 1; STICKY.`Lightning Bolt` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Fire Shield` = 1; STICKY.`Greater Invisibility` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Fire Shield` = 1; STICKY.`Greater Invisibility` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Passwall` = 1; STICKY.`Wall of Force` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Passwall` = 1; STICKY.`Wall of Force` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -580,23 +580,23 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Shield` = 1; STICKY.`Thunderwave` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Shield` = 1; STICKY.`Thunderwave` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Scorching Ray` = 1; STICKY.`Shatter` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Scorching Ray` = 1; STICKY.`Shatter` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Fireball` = 1; STICKY.`Wind Wall` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Fireball` = 1; STICKY.`Wind Wall` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1; STICKY.`Wall of Fire` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1; STICKY.`Wall of Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Cone of Cold` = 1; STICKY.`Wall of Force` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Cone of Cold` = 1; STICKY.`Wall of Force` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -630,23 +630,23 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Heroism` = 1; STICKY.`Shield` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Heroism` = 1; STICKY.`Shield` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Shining Smite` = 1; STICKY.`Warding Bond` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Shining Smite` = 1; STICKY.`Warding Bond` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Aura of Vitality` = 1; STICKY.`Conjure Barrage` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Aura of Vitality` = 1; STICKY.`Conjure Barrage` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Aura of Purity` = 1; STICKY.`Fire Shield` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Aura of Purity` = 1; STICKY.`Fire Shield` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Banishing Smite` = 1; STICKY.`Mass Cure Wounds` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Banishing Smite` = 1; STICKY.`Mass Cure Wounds` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -671,23 +671,23 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Healing Word` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Healing Word` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Locate Object` = 1; STICKY.`Mind Spike` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Locate Object` = 1; STICKY.`Mind Spike` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Call Lightning` = 1; STICKY.`Clairvoyance` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Call Lightning` = 1; STICKY.`Clairvoyance` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Banishment` = 1; STICKY.`Locate Creature` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Banishment` = 1; STICKY.`Locate Creature` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Scrying` = 1; STICKY.`Teleportation Circle` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Scrying` = 1; STICKY.`Teleportation Circle` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -879,7 +879,7 @@
     "prerequisites": "LEVEL >= 8 and FEAT.`Aberrant Dragonmark`",
     "assign": [
       {
-        "expr": "if(CON < 20, CON += 1)",
+        "expr": "if(CON < 20, CON += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],

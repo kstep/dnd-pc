@@ -497,7 +497,8 @@
     "expr": "RESIST.RADI = 1"
   },
   {
-    "name": "Darkvision"
+    "name": "Darkvision",
+    "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 150)"
   },
   {
     "name": "Spider Climb"
@@ -744,5 +745,21 @@
   {
     "name": "Exhaustion 5",
     "expr": "SPEED = 0; HP.MAX /= 2; ATK.ADV = -1; each(@ABIL, @.ADV = -1; @.SAVE.ADV = -1)"
+  },
+  {
+    "name": "True Seeing",
+    "expr": "SENSE.TRUESIGHT = max(SENSE.TRUESIGHT, 120)"
+  },
+  {
+    "name": "Stonecunning",
+    "expr": "SENSE.TREMORSENSE = max(SENSE.TREMORSENSE, 60)"
+  },
+  {
+    "name": "Mortal Bulwark",
+    "expr": "SENSE.TRUESIGHT = max(SENSE.TRUESIGHT, 120)"
+  },
+  {
+    "name": "The Third Eye",
+    "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 120)"
   }
 ]

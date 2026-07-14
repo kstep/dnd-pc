@@ -4,7 +4,7 @@ use leptos_fluent::{I18n, tr};
 use serde::{Deserialize, Serialize};
 
 use crate::model::{
-    Ability, DamageType, FeatureCategory, Proficiency, Skill, SpellSlotPool, Translatable,
+    Ability, DamageType, FeatureCategory, Proficiency, Sense, Skill, SpellSlotPool, Translatable,
 };
 
 /// Identifies a named or scope-implicit pool/die/bonus/choice.
@@ -116,6 +116,7 @@ pub enum Attribute {
     Species(&'static str),
     Background(&'static str),
     Subclass(&'static str),
+    Sense(Sense),
 }
 
 thread_local! {
@@ -326,6 +327,27 @@ impl DamageType {
     }
 }
 
+pub fn parse_sense(s: &str) -> Option<Sense> {
+    match s {
+        "DARKVISION" => Some(Sense::Darkvision),
+        "BLINDSIGHT" => Some(Sense::Blindsight),
+        "TREMORSENSE" => Some(Sense::Tremorsense),
+        "TRUESIGHT" => Some(Sense::Truesight),
+        _ => None,
+    }
+}
+
+impl Sense {
+    pub fn abbr(self) -> &'static str {
+        match self {
+            Self::Darkvision => "DARKVISION",
+            Self::Blindsight => "BLINDSIGHT",
+            Self::Tremorsense => "TREMORSENSE",
+            Self::Truesight => "TRUESIGHT",
+        }
+    }
+}
+
 impl Proficiency {
     fn abbr(self) -> &'static str {
         match self {
@@ -512,6 +534,7 @@ impl FromStr for Attribute {
             "DR" => parse_damage_type(rest)
                 .map(Self::DamageReduction)
                 .ok_or("unknown damage type"),
+            "SENSE" => parse_sense(rest).map(Self::Sense).ok_or("unknown sense"),
             "HIT_DICE" => match rest {
                 "MAX" => Ok(Self::HitDiceMax),
                 "USED" => Ok(Self::HitDiceUsed),
@@ -753,6 +776,7 @@ impl fmt::Display for Attribute {
             Self::Species(name) => write!(f, "SPECIES.`{name}`"),
             Self::Background(name) => write!(f, "BACKGROUND.`{name}`"),
             Self::Subclass(name) => write!(f, "SUBCLASS.`{name}`"),
+            Self::Sense(sense) => write!(f, "SENSE.{}", sense.abbr()),
             Self::FeatCategory(cat) => write!(f, "FEAT_CAT.{cat}"),
         }
     }
@@ -912,6 +936,7 @@ impl Attribute {
             Self::SpellCantrips => tr!(i18n, "spell-cantrips"),
             Self::SpellKnown => tr!(i18n, "spell-known"),
             Self::SpellReady => tr!(i18n, "spell-ready"),
+            Self::Sense(sense) => format!("{} ({})", tr!(i18n, "sense"), i18n.tr(sense.tr_key())),
             _ => self.to_string(),
         }
     }
@@ -1120,6 +1145,34 @@ mod tests {
         assert!(!Attribute::Ac.is_advantage());
         assert!(!Attribute::AttackBonus.is_advantage());
         assert!(!Attribute::Skill(Skill::Stealth).is_advantage());
+    }
+
+    #[wasm_bindgen_test]
+    fn parse_sense_attributes() {
+        assert_eq!(
+            "SENSE.DARKVISION".parse::<Attribute>().unwrap(),
+            Attribute::Sense(Sense::Darkvision)
+        );
+        assert_eq!(
+            "SENSE.TREMORSENSE".parse::<Attribute>().unwrap(),
+            Attribute::Sense(Sense::Tremorsense)
+        );
+        assert!("SENSE.NOPE".parse::<Attribute>().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn display_sense_round_trip() {
+        for sense in [
+            Sense::Darkvision,
+            Sense::Blindsight,
+            Sense::Tremorsense,
+            Sense::Truesight,
+        ] {
+            let attr = Attribute::Sense(sense);
+            let text = attr.to_string();
+            let parsed: Attribute = text.parse().unwrap();
+            assert_eq!(parsed, attr, "round-trip failed for {text}");
+        }
     }
 
     #[wasm_bindgen_test]

@@ -7,7 +7,7 @@ use crate::{
         icon::Icon,
         session::{
             BackpackBlock, ChoicesBlock, DamageModifiersBlock, EffectsBlock, GearActionsBlock,
-            LanguagesBlock, ResourcesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
+            LanguagesBlock, ResourcesBlock, SensesBlock, SpellsBlock, StatsBlock, WeaponsBlock,
         },
         session_header::SessionHeader,
         session_nav::SessionNav,
@@ -51,6 +51,7 @@ pub fn CharacterSession() -> impl IntoView {
                     <ChoicesBlock />
                     <LanguagesBlock />
                     <DamageModifiersBlock />
+                    <SensesBlock />
                 </div>
 
                 // === Right column: Effects + Stats + Resources ===

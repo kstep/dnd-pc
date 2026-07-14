@@ -214,7 +214,7 @@
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
     "assign": [
       {
-        "expr": "if(DEX < 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -236,7 +236,7 @@
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
     "assign": [
       {
-        "expr": "if(DEX < 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -258,7 +258,7 @@
     "prerequisites": "LEVEL >= 4 and CON >= 13",
     "assign": [
       {
-        "expr": "if(CON < 20, CON += 1)",
+        "expr": "if(CON < 20, CON += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -307,7 +307,7 @@
     "prerequisites": "LEVEL >= 4 and STR >= 13",
     "assign": [
       {
-        "expr": "if(STR < 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -318,7 +318,7 @@
     "prerequisites": "LEVEL >= 4 and PROF.MEDIUM_ARMOR == 1",
     "assign": [
       {
-        "expr": "if(STR < 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -329,7 +329,7 @@
     "prerequisites": "LEVEL >= 4 and PROF.HEAVY_ARMOR == 1",
     "assign": [
       {
-        "expr": "if(STR < 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -351,7 +351,7 @@
     "prerequisites": "LEVEL >= 4 and INT >= 13",
     "assign": [
       {
-        "expr": "if(INT < 20, INT += 1)",
+        "expr": "if(INT < 20, INT += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -532,7 +532,7 @@
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
     "assign": [
       {
-        "expr": "if(DEX < 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -543,7 +543,7 @@
     "prerequisites": "LEVEL >= 4 and PROF.SHIELDS == 1",
     "assign": [
       {
-        "expr": "if(STR < 20, STR += 1)",
+        "expr": "if(STR < 20, STR += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -565,7 +565,7 @@
     "prerequisites": "LEVEL >= 4 and DEX >= 13",
     "assign": [
       {
-        "expr": "if(DEX < 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],
@@ -699,7 +699,13 @@
   },
   {
     "name": "Blind Fighting",
-    "category": "FightingStyle"
+    "category": "FightingStyle",
+    "assign": [
+      {
+        "expr": "SENSE.BLINDSIGHT = max(SENSE.BLINDSIGHT, 10)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Defense",
@@ -914,6 +920,10 @@
       {
         "expr": "with(@ABIL, guard(fold(and, @, in(@ARG, 0, 1)) and fold(+, @, @ARG) == 1, each(@, if(@ < 30, @ += @ARG))))",
         "when": "OnFeatureAdd"
+      },
+      {
+        "expr": "SENSE.TRUESIGHT = max(SENSE.TRUESIGHT, 60)",
+        "when": "OnCompute"
       }
     ],
     "category": "EpicBoon"
@@ -1516,7 +1526,7 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Mirror Image` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Mirror Image` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -1990,19 +2000,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Bless` = 1; STICKY.`Cure Wounds` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Bless` = 1; STICKY.`Cure Wounds` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Mass Healing Word` = 1; STICKY.`Revivify` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Mass Healing Word` = 1; STICKY.`Revivify` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Aura of Life` = 1; STICKY.`Death Ward` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Aura of Life` = 1; STICKY.`Death Ward` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Mass Cure Wounds` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Mass Cure Wounds` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -2045,19 +2055,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Faerie Fire` = 1; STICKY.`Scorching Ray` = 1; STICKY.`See Invisibility` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Faerie Fire` = 1; STICKY.`Scorching Ray` = 1; STICKY.`See Invisibility` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Daylight` = 1; STICKY.`Fireball` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Daylight` = 1; STICKY.`Fireball` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Arcane Eye` = 1; STICKY.`Wall of Fire` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Arcane Eye` = 1; STICKY.`Wall of Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Flame Strike` = 1; STICKY.`Scrying` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Flame Strike` = 1; STICKY.`Scrying` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -2275,19 +2285,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Disguise Self` = 1; STICKY.`Invisibility` = 1; STICKY.`Pass without Trace` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1; STICKY.`Disguise Self` = 1; STICKY.`Invisibility` = 1; STICKY.`Pass without Trace` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Hypnotic Pattern` = 1; STICKY.`Nondetection` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Hypnotic Pattern` = 1; STICKY.`Nondetection` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Confusion` = 1; STICKY.`Dimension Door` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Confusion` = 1; STICKY.`Dimension Door` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Dominate Person` = 1; STICKY.`Modify Memory` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Dominate Person` = 1; STICKY.`Modify Memory` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -2303,19 +2313,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Shield of Faith` = 1; STICKY.`Magic Weapon` = 1; STICKY.`Spiritual Weapon` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Shield of Faith` = 1; STICKY.`Magic Weapon` = 1; STICKY.`Spiritual Weapon` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Crusader's Mantle` = 1; STICKY.`Spirit Guardians` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Crusader's Mantle` = 1; STICKY.`Spirit Guardians` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Freedom of Movement` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Freedom of Movement` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Hold Monster` = 1; STICKY.`Steel Wind Strike` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Hold Monster` = 1; STICKY.`Steel Wind Strike` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -2721,7 +2731,13 @@
     "name": "Expansive Bond"
   },
   {
-    "name": "Eyes of Night"
+    "name": "Eyes of Night",
+    "assign": [
+      {
+        "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 300)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Vigilant Blessing"
@@ -2885,19 +2901,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Fog Cloud` = 1; STICKY.`Ray of Sickness` = 1; STICKY.`Sleep` = 1; STICKY.`Blur` = 1; STICKY.`Hold Person` = 1; STICKY.`Misty Step` = 1; STICKY.`Web` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Fog Cloud` = 1; STICKY.`Ray of Sickness` = 1; STICKY.`Sleep` = 1; STICKY.`Blur` = 1; STICKY.`Hold Person` = 1; STICKY.`Misty Step` = 1; STICKY.`Web` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Fireball` = 1; STICKY.`Lightning Bolt` = 1; STICKY.`Sleet Storm` = 1; STICKY.`Stinking Cloud` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Fireball` = 1; STICKY.`Lightning Bolt` = 1; STICKY.`Sleet Storm` = 1; STICKY.`Stinking Cloud` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Blight` = 1; STICKY.`Freedom of Movement` = 1; STICKY.`Ice Storm` = 1; STICKY.`Polymorph` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Blight` = 1; STICKY.`Freedom of Movement` = 1; STICKY.`Ice Storm` = 1; STICKY.`Polymorph` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Cone of Cold` = 1; STICKY.`Insect Plague` = 1; STICKY.`Tree Stride` = 1; STICKY.`Wall of Stone` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Cone of Cold` = 1; STICKY.`Insect Plague` = 1; STICKY.`Tree Stride` = 1; STICKY.`Wall of Stone` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -2966,19 +2982,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Moonbeam` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Moonbeam` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Conjure Animals` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Conjure Animals` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Fount of Moonlight` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Fount of Moonlight` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Mass Cure Wounds` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Mass Cure Wounds` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -3261,19 +3277,19 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Fog Cloud` = 1; STICKY.`Thunderwave` = 1; STICKY.`Gust of Wind` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Fog Cloud` = 1; STICKY.`Thunderwave` = 1; STICKY.`Gust of Wind` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Lightning Bolt` = 1; STICKY.`Water Breathing` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Lightning Bolt` = 1; STICKY.`Water Breathing` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Control Water` = 1; STICKY.`Ice Storm` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Control Water` = 1; STICKY.`Ice Storm` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Conjure Elemental` = 1; STICKY.`Hold Monster` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Conjure Elemental` = 1; STICKY.`Hold Monster` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -4377,7 +4393,13 @@
     "name": "Darkness"
   },
   {
-    "name": "Darkvision"
+    "name": "Darkvision",
+    "assign": [
+      {
+        "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 60)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Shadowy Figments",
@@ -4684,23 +4706,23 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Protection from Evil and Good` = 1; STICKY.`Shield of Faith` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Protection from Evil and Good` = 1; STICKY.`Shield of Faith` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Aid` = 1; STICKY.`Zone of Truth` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Aid` = 1; STICKY.`Zone of Truth` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Beacon of Hope` = 1; STICKY.`Dispel Magic` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Beacon of Hope` = 1; STICKY.`Dispel Magic` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Freedom of Movement` = 1; STICKY.`Guardian of Faith` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Freedom of Movement` = 1; STICKY.`Guardian of Faith` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Commune` = 1; STICKY.`Flame Strike` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Commune` = 1; STICKY.`Flame Strike` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -4772,23 +4794,23 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Ensnaring Strike` = 1; STICKY.`Speak with Animals` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Ensnaring Strike` = 1; STICKY.`Speak with Animals` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1; STICKY.`Moonbeam` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1; STICKY.`Moonbeam` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Plant Growth` = 1; STICKY.`Protection from Energy` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Plant Growth` = 1; STICKY.`Protection from Energy` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1; STICKY.`Stoneskin` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1; STICKY.`Stoneskin` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Commune with Nature` = 1; STICKY.`Tree Stride` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Commune with Nature` = 1; STICKY.`Tree Stride` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -4839,23 +4861,23 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Bane` = 1; STICKY.`Hunter's Mark` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Bane` = 1; STICKY.`Hunter's Mark` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1; STICKY.`Misty Step` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1; STICKY.`Misty Step` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Haste` = 1; STICKY.`Protection from Energy` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Haste` = 1; STICKY.`Protection from Energy` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Banishment` = 1; STICKY.`Dimension Door` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Banishment` = 1; STICKY.`Dimension Door` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Hold Monster` = 1; STICKY.`Scrying` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Hold Monster` = 1; STICKY.`Scrying` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -5143,23 +5165,23 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Heroism` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1; STICKY.`Heroism` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Enhance Ability` = 1; STICKY.`Magic Weapon` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Enhance Ability` = 1; STICKY.`Magic Weapon` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Haste` = 1; STICKY.`Protection from Energy` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Haste` = 1; STICKY.`Protection from Energy` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Compulsion` = 1; STICKY.`Freedom of Movement` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Compulsion` = 1; STICKY.`Freedom of Movement` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Legend Lore` = 1; STICKY.`Yolande's Regal Presence` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Legend Lore` = 1; STICKY.`Yolande's Regal Presence` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -5306,23 +5328,23 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Thunderous Smite` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Thunderous Smite` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Mirror Image` = 1; STICKY.`Phantasmal Force` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Mirror Image` = 1; STICKY.`Phantasmal Force` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Fly` = 1; STICKY.`Gaseous Form` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Fly` = 1; STICKY.`Gaseous Form` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Conjure Minor Elementals` = 1; STICKY.`Summon Elemental` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Conjure Minor Elementals` = 1; STICKY.`Summon Elemental` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Banishing Smite` = 1; STICKY.`Contact Other Plane` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Banishing Smite` = 1; STICKY.`Contact Other Plane` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -5495,7 +5517,13 @@
     "name": "Precise Hunter"
   },
   {
-    "name": "Feral Senses"
+    "name": "Feral Senses",
+    "assign": [
+      {
+        "expr": "SENSE.BLINDSIGHT = max(SENSE.BLINDSIGHT, 30)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Foe Slayer"
@@ -5566,29 +5594,35 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Disguise Self` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Disguise Self` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Rope Trick` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Rope Trick` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Fear` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Fear` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Greater Invisibility` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Greater Invisibility` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Seeming` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Seeming` = 1, 0)",
         "when": "OnCompute"
       }
     ]
   },
   {
-    "name": "Umbral Sight"
+    "name": "Umbral Sight",
+    "assign": [
+      {
+        "expr": "SENSE.DARKVISION += 60",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Iron Mind",
@@ -5732,23 +5766,23 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Charm Person` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Summon Fey` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Summon Fey` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Dimension Door` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Dimension Door` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Mislead` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Mislead` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -5857,23 +5891,23 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Ice Knife` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Ice Knife` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Remove Curse` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Remove Curse` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1)",
+        "expr": "if(LEVEL >= 13, STICKY.`Ice Storm` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 17, STICKY.`Cone of Cold` = 1)",
+        "expr": "if(LEVEL >= 17, STICKY.`Cone of Cold` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -6654,7 +6688,13 @@
     ]
   },
   {
-    "name": "Eyes of the Dark"
+    "name": "Eyes of the Dark",
+    "assign": [
+      {
+        "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 120)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Strength of the Grave"
@@ -6878,19 +6918,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Arms of Hadar` = 1; STICKY.`Dissonant Whispers` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Detect Thoughts` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Arms of Hadar` = 1; STICKY.`Dissonant Whispers` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Detect Thoughts` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Hunger of Hadar` = 1; STICKY.`Sending` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Hunger of Hadar` = 1; STICKY.`Sending` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Evard's Black Tentacles` = 1; STICKY.`Summon Aberration` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Evard's Black Tentacles` = 1; STICKY.`Summon Aberration` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Rary's Telepathic Bond` = 1; STICKY.`Telekinesis` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Rary's Telepathic Bond` = 1; STICKY.`Telekinesis` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -6966,19 +7006,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Alarm` = 1; STICKY.`Protection from Evil and Good` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Alarm` = 1; STICKY.`Protection from Evil and Good` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Dispel Magic` = 1; STICKY.`Protection from Energy` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Dispel Magic` = 1; STICKY.`Protection from Energy` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Freedom of Movement` = 1; STICKY.`Summon Construct` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Freedom of Movement` = 1; STICKY.`Summon Construct` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Wall of Force` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Wall of Force` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -7058,19 +7098,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Command` = 1; STICKY.`Alter Self` = 1; STICKY.`Dragon's Breath` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Chromatic Orb` = 1; STICKY.`Command` = 1; STICKY.`Alter Self` = 1; STICKY.`Dragon's Breath` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Fear` = 1; STICKY.`Fly` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Fear` = 1; STICKY.`Fly` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Arcane Eye` = 1; STICKY.`Charm Monster` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Arcane Eye` = 1; STICKY.`Charm Monster` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Legend Lore` = 1; STICKY.`Summon Dragon` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Legend Lore` = 1; STICKY.`Summon Dragon` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -7153,19 +7193,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Lesser Restoration` = 1; STICKY.`Scorching Ray` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Lesser Restoration` = 1; STICKY.`Scorching Ray` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Aura of Vitality` = 1; STICKY.`Counterspell` = 1; STICKY.`Dispel Magic` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Aura of Vitality` = 1; STICKY.`Counterspell` = 1; STICKY.`Dispel Magic` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Wall of Fire` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Wall of Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Flame Strike` = 1; STICKY.`Greater Restoration` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Flame Strike` = 1; STICKY.`Greater Restoration` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -7827,19 +7867,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Sleep` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Misty Step` = 1; STICKY.`Phantasmal Force` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1; STICKY.`Sleep` = 1; STICKY.`Calm Emotions` = 1; STICKY.`Misty Step` = 1; STICKY.`Phantasmal Force` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Blink` = 1; STICKY.`Plant Growth` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Blink` = 1; STICKY.`Plant Growth` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Dominate Beast` = 1; STICKY.`Greater Invisibility` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Dominate Beast` = 1; STICKY.`Greater Invisibility` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Dominate Person` = 1; STICKY.`Seeming` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Dominate Person` = 1; STICKY.`Seeming` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -7885,19 +7925,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Cure Wounds` = 1; STICKY.`Guiding Bolt` = 1; STICKY.`Aid` = 1; STICKY.`Lesser Restoration` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Daylight` = 1; STICKY.`Revivify` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Daylight` = 1; STICKY.`Revivify` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Guardian of Faith` = 1; STICKY.`Wall of Fire` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Guardian of Faith` = 1; STICKY.`Wall of Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Summon Celestial` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Greater Restoration` = 1; STICKY.`Summon Celestial` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -7968,19 +8008,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Command` = 1; STICKY.`Scorching Ray` = 1; STICKY.`Suggestion` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Burning Hands` = 1; STICKY.`Command` = 1; STICKY.`Scorching Ray` = 1; STICKY.`Suggestion` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Fireball` = 1; STICKY.`Stinking Cloud` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Fireball` = 1; STICKY.`Stinking Cloud` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Wall of Fire` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Fire Shield` = 1; STICKY.`Wall of Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Geas` = 1; STICKY.`Insect Plague` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Geas` = 1; STICKY.`Insect Plague` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -8131,19 +8171,19 @@
         "expr": "CASTER.ABIL = 5"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Dissonant Whispers` = 1; STICKY.`Hex` = 1; STICKY.`Tasha's Hideous Laughter` = 1; STICKY.`Detect Thoughts` = 1; STICKY.`Phantasmal Force` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Dissonant Whispers` = 1; STICKY.`Hex` = 1; STICKY.`Tasha's Hideous Laughter` = 1; STICKY.`Detect Thoughts` = 1; STICKY.`Phantasmal Force` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Clairvoyance` = 1; STICKY.`Hunger of Hadar` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Clairvoyance` = 1; STICKY.`Hunger of Hadar` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 7, STICKY.`Confusion` = 1; STICKY.`Summon Aberration` = 1)",
+        "expr": "if(LEVEL >= 7, STICKY.`Confusion` = 1; STICKY.`Summon Aberration` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 9, STICKY.`Modify Memory` = 1; STICKY.`Telekinesis` = 1)",
+        "expr": "if(LEVEL >= 9, STICKY.`Modify Memory` = 1; STICKY.`Telekinesis` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -8521,7 +8561,7 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 10, STICKY.`See Invisibility` = 1)",
+        "expr": "if(LEVEL >= 10, STICKY.`See Invisibility` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -8571,7 +8611,7 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 6, STICKY.`Summon Beast` = 1; STICKY.`Summon Fey` = 1)",
+        "expr": "if(LEVEL >= 6, STICKY.`Summon Beast` = 1; STICKY.`Summon Fey` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -8678,7 +8718,7 @@
         "expr": "CASTER.ABIL = 4"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Guiding Bolt` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -8735,7 +8775,7 @@
         "expr": "CASTER.ABIL = 3"
       },
       {
-        "expr": "if(LEVEL >= 10, STICKY.`Counterspell` = 1; STICKY.`Dispel Magic` = 1)",
+        "expr": "if(LEVEL >= 10, STICKY.`Counterspell` = 1; STICKY.`Dispel Magic` = 1, 0)",
         "when": "OnCompute"
       }
     ]
@@ -9291,11 +9331,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Faerie Fire` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Darkness` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Darkness` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9303,11 +9343,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Faerie Fire` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`Faerie Fire` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Darkness` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Darkness` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9359,11 +9399,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Detect Magic` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Detect Magic` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Misty Step` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9371,11 +9411,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Detect Magic` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`Detect Magic` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Misty Step` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Misty Step` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9405,11 +9445,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Longstrider` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Longstrider` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Pass without Trace` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Pass without Trace` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9417,11 +9457,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Longstrider` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`Longstrider` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Pass without Trace` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Pass without Trace` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9457,11 +9497,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Ray of Sickness` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Ray of Sickness` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Hold Person` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9473,11 +9513,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Ray of Sickness` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`Ray of Sickness` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Hold Person` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Hold Person` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9507,11 +9547,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`False Life` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`False Life` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Ray of Enfeeblement` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Ray of Enfeeblement` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9523,11 +9563,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`False Life` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`False Life` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Ray of Enfeeblement` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Ray of Enfeeblement` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9557,11 +9597,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 3, STICKY.`Hellish Rebuke` = 1)",
+        "expr": "if(LEVEL >= 3, STICKY.`Hellish Rebuke` = 1, 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "if(LEVEL >= 5, STICKY.`Darkness` = 1)",
+        "expr": "if(LEVEL >= 5, STICKY.`Darkness` = 1, 0)",
         "when": "OnCompute"
       },
       {
@@ -9573,11 +9613,11 @@
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Hellish Rebuke` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 3, FREE_USES.`Hellish Rebuke` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       },
       {
-        "expr": "FREE_USES.`Darkness` = tier(CLASS.LEVEL, 3:1, 5:2)",
+        "expr": "if(LEVEL >= 5, FREE_USES.`Darkness` = tier(CLASS.LEVEL, 3:1, 5:2), 0)",
         "when": "OnCompute"
       }
     ]
@@ -9621,7 +9661,13 @@
     "name": "Damage Resistance"
   },
   {
-    "name": "Superior Darkvision"
+    "name": "Superior Darkvision",
+    "assign": [
+      {
+        "expr": "SENSE.DARKVISION = max(SENSE.DARKVISION, 120)",
+        "when": "OnCompute"
+      }
+    ]
   },
   {
     "name": "Fey Ancestry"
@@ -10127,7 +10173,7 @@
     "prerequisites": "LEVEL >= 4",
     "assign": [
       {
-        "expr": "if(DEX < 20, DEX += 1)",
+        "expr": "if(DEX < 20, DEX += 1, 0)",
         "when": "OnFeatureAdd"
       }
     ],

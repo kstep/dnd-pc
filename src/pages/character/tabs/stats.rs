@@ -2,7 +2,8 @@ use leptos::prelude::*;
 
 use crate::components::panels::{
     ability_scores::AbilityScoresPanel, combat::CombatPanel,
-    damage_modifiers::DamageModifiersPanel, proficiencies::ProficienciesPanel, skills::SkillsPanel,
+    damage_modifiers::DamageModifiersPanel, proficiencies::ProficienciesPanel, senses::SensesPanel,
+    skills::SkillsPanel,
 };
 
 #[component]
@@ -11,6 +12,7 @@ pub fn StatsTab() -> impl IntoView {
         <div class="editor-tab">
             <AbilityScoresPanel />
             <DamageModifiersPanel />
+            <SensesPanel />
             <CombatPanel />
             <SkillsPanel />
             <ProficienciesPanel />

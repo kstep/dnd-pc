@@ -580,5 +580,17 @@
   },
   "Wand of the War Mage +3": {
     "description": "+3 to spell attack rolls (attunement, spellcaster)"
+  },
+  "True Seeing": {
+    "description": "Truesight 120 ft (concentration, 1 hour)"
+  },
+  "Stonecunning": {
+    "description": "Tremorsense 60 ft (10 min, on stone)"
+  },
+  "Mortal Bulwark": {
+    "description": "Truesight 120 ft (1 min)"
+  },
+  "The Third Eye": {
+    "description": "Darkvision 120 ft (until a rest)"
   }
 }
