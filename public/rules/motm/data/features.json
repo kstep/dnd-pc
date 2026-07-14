@@ -15,7 +15,7 @@
     "name": "Flight",
     "assign": [
       {
-        "expr": "SPEED.FLY = 30",
+        "expr": "SPEED.FLY = SPEED",
         "when": "OnCompute"
       }
     ]

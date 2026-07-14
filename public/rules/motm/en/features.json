@@ -1,6 +1,6 @@
 {
   "Flight": {
-    "description": "You have a Fly Speed of 30 feet. You can't use this flight if you're wearing Medium or Heavy armor."
+    "description": "Because of your wings, you have a flying speed equal to your walking speed. You can't use this flying speed if you're wearing medium or heavy armor."
   },
   "Fairy Magic": {
     "description": "You know the Druidcraft cantrip. At 3rd level, you can cast Faerie Fire once per Long Rest. At 5th level, you can also cast Enlarge/Reduce once per Long Rest. You can also cast these using spell slots. Intelligence, Wisdom, or Charisma is your spellcasting ability."

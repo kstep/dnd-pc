@@ -10220,15 +10220,6 @@
     ]
   },
   {
-    "name": "Flight",
-    "assign": [
-      {
-        "expr": "SPEED.FLY = SPEED",
-        "when": "OnCompute"
-      }
-    ]
-  },
-  {
     "name": "Fire Resistance",
     "assign": [
       {
