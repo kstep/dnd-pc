@@ -9467,7 +9467,31 @@
     ]
   },
   {
-    "name": "Stonecunning"
+    "name": "Stonecunning",
+    "assign": [
+      {
+        "expr": "POINTS.`Stonecunning`.MAX = PROF.BONUS",
+        "when": "OnCompute"
+      }
+    ],
+    "actions": [
+      {
+        "name": "Actions",
+        "options": [
+          {
+            "name": "Stonecunning",
+            "action": "BonusAction",
+            "cost": 1,
+            "effects": [
+              {
+                "name": "Stonecunning",
+                "expr": "SENSE.TREMORSENSE = max(SENSE.TREMORSENSE, 60)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   },
   {
     "name": "Gnomish Lineage",
