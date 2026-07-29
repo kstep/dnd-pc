@@ -1329,13 +1329,8 @@
       }
     ],
     "components": {
-      "verbal": true,
-      "somatic": true,
-      "material": {
-        "consumable": false,
-        "name": "a small platinum lever and fulcrum",
-        "price": 40000
-      }
+      "verbal": false,
+      "somatic": true
     }
   },
   {
